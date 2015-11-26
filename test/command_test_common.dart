@@ -1,13 +1,13 @@
-library tekartik_cmdo.test.cmdo_test_common;
+library tekartik_command.test.command_test_common;
 
 export 'package:dev_test/test.dart';
-import 'package:cmdo/cmdo.dart';
-export 'package:cmdo/cmdo.dart';
-import 'package:cmdo/cmdo_dry.dart';
+import 'package:command/command.dart';
+export 'package:command/command.dart';
+import 'package:command/command_dry.dart';
 export 'dart:async';
 import 'dart:async';
 
-const String testExecutableThrows = "com.tekartik.cmdo.test.dummy.throws";
+const String testExecutableThrows = "com.tekartik.command.test.dummy.throws";
 CommandInput testCommandThrows =
     commandInput(testExecutableThrows, null, throwException: true);
 

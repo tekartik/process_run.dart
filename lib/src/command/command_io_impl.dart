@@ -1,4 +1,4 @@
-part of tekartik_cmdo.cmdo_io;
+part of tekartik_command.command_io;
 
 // set to true for quick debugging
 bool _debugCmdoIo = false;

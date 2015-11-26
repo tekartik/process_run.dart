@@ -1,13 +1,13 @@
 #!/usr/bin/env dart
-library tekartik_cmdo.bin.cmdo;
+library tekartik_command.bin.command;
 
 import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:args/args.dart';
-import 'package:cmdo/cmdo.dart';
-import 'package:cmdo/cmdo_io.dart';
-import 'package:cmdo/cmdo_dry.dart';
+import 'package:command/command.dart';
+import 'package:command/command_io.dart';
+import 'package:command/command_dry.dart';
 
 const String _HELP = 'help';
 const String _LOG = 'log';
@@ -30,7 +30,7 @@ main(List<String> arguments) async {
       help: 'Do not execute, show the command executed',
       negatable: false);
   parser.addFlag(_VERSION,
-      help: 'Print the cmdo version and VM version', negatable: false);
+      help: 'Print the command version and VM version', negatable: false);
 
   ArgResults _argsResult = parser.parse(arguments);
 

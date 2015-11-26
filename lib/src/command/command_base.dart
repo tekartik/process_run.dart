@@ -1,6 +1,6 @@
-library tekartik_cmdo.src.cmdo.cmdo_base;
+library tekartik_command.src.command.command_base;
 
-import 'package:cmdo/cmdo.dart';
+import 'package:command/command.dart';
 import 'dart:async';
 
 /// Base executor

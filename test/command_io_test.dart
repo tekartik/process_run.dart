@@ -1,9 +1,9 @@
 @TestOn("vm")
-library tekartik_cmdo.test.cmdo_io_test;
+library tekartik_command.test.command_io_test;
 
-import 'cmdo_io_test_common.dart';
-import 'cmdo_test_.dart' as _test;
-import 'package:cmdo/dartbin.dart';
+import 'command_io_test_common.dart';
+import 'command_test_.dart' as _test;
+import 'package:command/dartbin.dart';
 import 'dart:mirrors';
 import 'package:path/path.dart';
 import 'dart:io';
@@ -22,7 +22,7 @@ void main() {
   group('io', () {
     exampleCmd(List<String> arguments) {
       return dartCmd(new List.from(arguments)
-        ..insert(0, join(testDir, 'cmdo_example.dart')));
+        ..insert(0, join(testDir, 'command_example.dart')));
     }
     _test.defineTests(io);
 

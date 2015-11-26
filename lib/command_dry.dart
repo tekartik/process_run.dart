@@ -1,8 +1,8 @@
-library tekartik_cmdo.cmdo_dry;
+library tekartik_command.command_dry;
 
-import 'package:cmdo/src/cmdo/cmdo_base.dart';
-import 'cmdo.dart';
-export 'cmdo.dart';
+import 'package:command/src/command/command_base.dart';
+import 'command.dart';
+export 'command.dart';
 import 'dart:async';
 
 /// the dry executor

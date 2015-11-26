@@ -1,14 +1,14 @@
-library tekartik_cmdo.test.cmdo_test;
+library tekartik_command.test.command_test;
 
-import 'cmdo_test_common.dart';
+import 'command_test_common.dart';
 
 void main() => defineTests(dry);
 
-void defineTests(CommandExecutor cmdo) {
+void defineTests(CommandExecutor command) {
   test('throw bad exe', () async {
     var err;
     try {
-      print(await cmdo.runCmd(testCommandThrows.clone()..connectIo));
+      print(await command.runCmd(testCommandThrows.clone()..connectIo));
     } catch (e) {
       err = e;
     }
@@ -16,7 +16,7 @@ void defineTests(CommandExecutor cmdo) {
   });
 
   test('nothrow bad exe', () async {
-    CommandResult result = await cmdo.runCmd(testCommandThrows.clone()
+    CommandResult result = await command.runCmd(testCommandThrows.clone()
       ..throwException = false
       ..connectIo = false);
 

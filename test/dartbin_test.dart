@@ -1,10 +1,10 @@
 @TestOn("vm")
-library tekartik_cmdo.test.dartbin_test;
+library tekartik_command.test.dartbin_test;
 
 import 'package:dev_test/test.dart';
-import 'cmdo_io_test_common.dart';
+import 'command_io_test_common.dart';
 import 'package:path/path.dart';
-import 'package:cmdo/dartbin.dart';
+import 'package:command/dartbin.dart';
 import 'dart:io';
 
 void main() => defineTests();

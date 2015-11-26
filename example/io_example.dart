@@ -1,8 +1,8 @@
 #!/usr/bin/env dart
-library tekartik_cmdo.example.io_example;
+library tekartik_command.example.io_example;
 
-import 'package:cmdo/cmdo_io.dart';
-import 'package:cmdo/dartbin.dart';
+import 'package:command/command_io.dart';
+import 'package:command/dartbin.dart';
 
 main() async {
   await io.run('echo', ['hello world']);
@@ -13,5 +13,5 @@ main() async {
 
   print((await io.run('echo', ['hello world'])).out);
   print((await io.runCmd(dartCmd(['--version']))).err);
-  print((await io.runCmd(dartCmd(['example/cmdo.dart', '--version']))).out);
+  print((await io.runCmd(dartCmd(['example/command.dart', '--version']))).out);
 }

@@ -1,13 +1,13 @@
-library tekartik_cmdo.cmdo_io;
+library tekartik_command.command_io;
 
-import 'package:cmdo/src/cmdo/cmdo_base.dart';
-import 'cmdo.dart';
-export 'cmdo.dart';
+import 'package:command/src/command/command_base.dart';
+import 'command.dart';
+export 'command.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-part 'src/cmdo/cmdo_io_impl.dart';
+part 'src/command/command_io_impl.dart';
 
 // The global executor
 IoCommandExecutor io = new IoCommandExecutor();

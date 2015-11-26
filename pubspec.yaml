@@ -1,6 +1,6 @@
-name: cmdo
-version: 0.2.2
-description: Commando - Command line utilies for Linux/Win/Mac
+name: command
+version: 0.1.0
+description: Command line helpers for Linux/Win/Mac
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:

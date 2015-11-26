@@ -1,8 +1,8 @@
-library tekartik_cmdo.dartbin_utils;
+library tekartik_command.dartbin_utils;
 
 import 'dart:io';
 import 'package:path/path.dart';
-import 'cmdo.dart';
+import 'command.dart';
 
 String _dartVmBin;
 
