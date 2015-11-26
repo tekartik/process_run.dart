@@ -1,8 +1,8 @@
 library command.command_dry;
 
-import 'package:command/src/command/command_base.dart';
-import 'command.dart';
-export 'command.dart';
+import 'package:command/src/command_base.dart';
+import 'command_common.dart';
+export 'command_common.dart';
 import 'dart:async';
 
 /// the dry executor

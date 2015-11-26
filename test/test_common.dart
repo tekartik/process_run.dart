@@ -1,8 +1,8 @@
-library command.test.command_test_common;
+library command.test.test_common;
 
 export 'package:dev_test/test.dart';
-import 'package:command/command.dart';
-export 'package:command/command.dart';
+import 'package:command/command_common.dart';
+export 'package:command/command_common.dart';
 import 'package:command/command_dry.dart';
 export 'dart:async';
 import 'dart:async';

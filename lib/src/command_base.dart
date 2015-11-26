@@ -1,6 +1,6 @@
-library command.src.command.command_base;
+library command.src.command_base;
 
-import 'package:command/command.dart';
+import 'package:command/command_common.dart';
 import 'dart:async';
 
 /// Base executor
@@ -17,9 +17,6 @@ abstract class CommandExecutorMixin implements CommandExecutor {
           runInShell: runInShell,
           connectIo: connectIo,
           throwException: throwException));
-
-  @deprecated
-  Future<CommandResult> runInput(CommandInput input) => runCmd(input);
 }
 
 /// convert arguments to show something similar to what is entered in the

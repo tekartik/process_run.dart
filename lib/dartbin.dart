@@ -1,8 +1,8 @@
-library command.dartbin_utils;
+library command.dartbin;
 
 import 'dart:io';
 import 'package:path/path.dart';
-import 'command.dart';
+import 'command_common.dart';
 
 String _dartVmBin;
 
@@ -22,13 +22,9 @@ String get _dartBinDirPath => dirname(dartVmBin);
 
 String get _dartVmBinExecutable => dartVmBin;
 
-// Create a dart cmd
+/// Create a dart cmd
 CommandInput dartCmd(List<String> arguments) =>
     commandInput(_dartVmBinExecutable, arguments);
-
-// use dartCmd instead
-@deprecated
-CommandInput dartBinCmd(List<String> arguments) => dartCmd(arguments);
 
 List<String> _dartBinCmdArguments(String cmd, List<String> args) {
   // clone it

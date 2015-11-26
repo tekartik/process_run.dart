@@ -1,14 +1,14 @@
-library command.test.command_test;
+library command.test.command_test_;
 
-import 'command_test_common.dart';
+import 'test_common.dart';
 
 void main() => defineTests(dry);
 
-void defineTests(CommandExecutor command) {
+void defineTests(CommandExecutor executor) {
   test('throw bad exe', () async {
     var err;
     try {
-      print(await command.runCmd(testCommandThrows.clone()..connectIo));
+      print(await executor.runCmd(testCommandThrows.clone()..connectIo));
     } catch (e) {
       err = e;
     }
@@ -16,7 +16,7 @@ void defineTests(CommandExecutor command) {
   });
 
   test('nothrow bad exe', () async {
-    CommandResult result = await command.runCmd(testCommandThrows.clone()
+    CommandResult result = await executor.runCmd(testCommandThrows.clone()
       ..throwException = false
       ..connectIo = false);
 

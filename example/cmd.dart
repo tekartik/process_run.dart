@@ -5,8 +5,9 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:args/args.dart';
+import 'package:command/command_common.dart';
+import 'package:command/src/command_impl.dart';
 import 'package:command/command.dart';
-import 'package:command/command_io.dart';
 import 'package:command/command_dry.dart';
 
 const String _HELP = 'help';
@@ -37,7 +38,7 @@ main(List<String> arguments) async {
   bool help = _argsResult[_HELP];
 
   _printUsage() {
-    stdout.writeln('Cmdo utility');
+    stdout.writeln('Command utility');
     stdout.writeln();
     stdout.writeln('Usage: ${currentScriptName} <command> [<arguments>]');
     stdout.writeln();
@@ -57,7 +58,7 @@ main(List<String> arguments) async {
   bool verbose = _argsResult[_VERBOSE];
   if (verbose) {
     // for now just set the debug flag
-    debugCmdoIoSetVerbose = true;
+    debugCommandSetVerbose = true;
   }
   bool version = _argsResult[_VERSION];
 
@@ -75,7 +76,7 @@ main(List<String> arguments) async {
     if (dryRun) {
       executor = dry;
     } else {
-      executor = io;
+      executor = ioExecutor;
     }
 
     CommandInput input = commandInput(executable, arguments, connectIo: true);

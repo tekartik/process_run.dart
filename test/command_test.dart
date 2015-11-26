@@ -1,9 +1,10 @@
 @TestOn("vm")
-library command.test.command_io_test;
+library command.test.command_test;
 
-import 'command_io_test_common.dart';
+import 'test_common_io.dart';
 import 'command_test_.dart' as _test;
 import 'package:command/dartbin.dart';
+import 'package:command/src/command_impl.dart';
 import 'dart:mirrors';
 import 'package:path/path.dart';
 import 'dart:io';
@@ -17,36 +18,38 @@ class _TestUtils {
 String get testScriptPath => _TestUtils.scriptPath;
 String get testDir => dirname(testScriptPath);
 
+runCmdAsync(CommandInput input) =>
+    (ioExecutor as IoCommandExecutorImpl).runCmdAsync(input);
 void main() {
-  //_io.debugCmdoIo = true;
+  //_io.debugCommand = true;
   group('io', () {
     exampleCmd(List<String> arguments) {
       return dartCmd(new List.from(arguments)
         ..insert(0, join(testDir, 'command_example.dart')));
     }
-    _test.defineTests(io);
+    _test.defineTests(ioExecutor);
 
     test('example', () async {
-      CommandResult result = await io.runCmd(exampleCmd([]));
+      CommandResult result = await ioExecutor.runCmd(exampleCmd([]));
       expect(result.out, "");
       expect(result.err, "");
       expect(result.output.outLines, []);
       expect(result.output.errLines, []);
       expect(result.exitCode, 0);
 
-      result = await io.runCmdAsync(exampleCmd([]));
+      result = await runCmdAsync(exampleCmd([]));
       expect(result.out, "");
       expect(result.err, "");
       expect(result.output.outLines, []);
       expect(result.output.errLines, []);
       expect(result.exitCode, 0);
 
-      result = await io.runCmd(exampleCmd(["out", "err", "1"]));
+      result = await ioExecutor.runCmd(exampleCmd(["out", "err", "1"]));
       expect(result.output.outLines, ["out"]);
       expect(result.output.errLines, ["err"]);
       expect(result.exitCode, 1);
 
-      result = await io.runCmdAsync(exampleCmd(["out", "err", "1"]));
+      result = await runCmdAsync(exampleCmd(["out", "err", "1"]));
       expect(result.output.outLines, ["out"]);
       expect(result.output.errLines, ["err"]);
       expect(result.exitCode, 1);
@@ -56,7 +59,7 @@ void main() {
       // use 'cat' on mac and linux
       // use 'type' on windows
       if (Platform.isMacOS || Platform.isLinux) {
-        CommandResult result = await io.run('cat', ['pubspec.yaml'],
+        CommandResult result = await ioExecutor.run('cat', ['pubspec.yaml'],
             workingDirectory: dirname(testDir));
 
         // read pubspec.yaml
@@ -72,7 +75,7 @@ void main() {
       test('throw bad exe', () async {
         var err;
         try {
-          await io.runCmdAsync(testCommandThrows.clone());
+          await runCmdAsync(testCommandThrows.clone());
         } catch (e) {
           err = e;
         }
@@ -80,8 +83,8 @@ void main() {
       });
 
       test('nothrow bad exe', () async {
-        CommandResult result = await io
-            .runCmdAsync(testCommandThrows.clone()..throwException = false);
+        CommandResult result = await runCmdAsync(
+            testCommandThrows.clone()..throwException = false);
 
         expect(result.err, isNull);
         expect(result.out, isNull);
@@ -91,11 +94,11 @@ void main() {
 
       test('dart_version', () async {
         CommandInput input = commandInput(dartVmBin, ['--version']);
-        CommandResult result = await io.runCmd(input);
+        CommandResult result = await ioExecutor.runCmd(input);
         expect(result.output.errLines.first.toLowerCase(), contains("dart"));
         expect(result.output.errLines.first.toLowerCase(), contains("version"));
 
-        result = await io.runCmdAsync(input);
+        result = await runCmdAsync(input);
         expect(result.output.errLines.first.toLowerCase(), contains("dart"));
         expect(result.output.errLines.first.toLowerCase(), contains("version"));
       });

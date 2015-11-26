@@ -1,17 +1,23 @@
-part of command.command_io;
+library command.src.command_impl;
+
+import 'package:command/command_common.dart';
+import 'package:command/command.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
 
 // set to true for quick debugging
-bool _debugCmdoIo = false;
-bool get debugCmdoIo => _debugCmdoIo;
+bool _debugCommand = false;
+bool get debugCommand => _debugCommand;
 
 /// make sure caller don't checking such change
 @deprecated
-set debugCmdoIo(bool debug) => _debugCmdoIo = debug;
+set debugCommand(bool debug) => _debugCommand = debug;
 
-set debugCmdoIoSetVerbose(bool debug) => _debugCmdoIo = debug;
+set debugCommandSetVerbose(bool debug) => _debugCommand = debug;
 
-class _IoCommandExecutorImpl extends IoCommandExecutor {
-  _IoCommandExecutorImpl() : super._();
+class IoCommandExecutorImpl extends IoCommandExecutor {
+  IoCommandExecutorImpl() : super.created();
 
   Future<CommandResult> runCmdAsync(CommandInput input) => _runCmd(input, true);
 
@@ -22,7 +28,7 @@ class _IoCommandExecutorImpl extends IoCommandExecutor {
       return new CommandResult(input, output);
     }
 
-    if (debugCmdoIo) {
+    if (debugCommand) {
       print(input);
     }
 
@@ -102,7 +108,7 @@ class _IoCommandExecutorImpl extends IoCommandExecutor {
       }
     }
 
-    if (debugCmdoIo) {
+    if (debugCommand) {
       print('$output');
     }
 
