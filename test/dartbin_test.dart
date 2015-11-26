@@ -5,6 +5,7 @@ import 'package:dev_test/test.dart';
 import 'cmdo_io_test_common.dart';
 import 'package:path/path.dart';
 import 'package:cmdo/dartbin.dart';
+import 'dart:io';
 
 void main() => defineTests();
 
@@ -17,8 +18,10 @@ void defineTests() {
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
     });
 
-    test('path', () {
+    test('dartVmBin', () {
       expect(isAbsolute(dartVmBin), isTrue);
+      expect(new Directory(join(dirname(dartVmBin), 'snapshots')).existsSync(),
+          isTrue);
     });
 
     test('connectIo', () async {

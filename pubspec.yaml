@@ -1,12 +1,12 @@
 name: cmdo
-version: 0.2.1
+version: 0.2.2
 description: Commando - Command line utilies for Linux/Win/Mac
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
   pub_semver: any
-dev_dependencies:
   path: any
+dev_dependencies:
   args: any
   dev_test: any
   test: any

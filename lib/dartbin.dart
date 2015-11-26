@@ -14,22 +14,6 @@ bool _debug = false;
 String get dartVmBin {
   if (_dartVmBin == null) {
     _dartVmBin = Platform.resolvedExecutable;
-
-    /*
-    if (_debug) {
-      print('dartVmBin: ${_dartVmBin}');
-    }
-    if (FileSystemEntity.isLinkSync(_dartVmBin)) {
-      String link = _dartVmBin;
-      _dartVmBin = new Link(_dartVmBin).targetSync();
-
-      // on mac, if installed with brew, we might get something like ../Cellar/dart/1.12.1/bin
-      // so make sure to make it absolute
-      if (!isAbsolute(_dartVmBin)) {
-        _dartVmBin = absolute(normalize(join(dirname(link), _dartVmBin)));
-      }
-    }
-    */
   }
   return _dartVmBin;
 }
@@ -38,8 +22,13 @@ String get _dartBinDirPath => dirname(dartVmBin);
 
 String get _dartVmBinExecutable => dartVmBin;
 
-CommandInput dartBinCmd(List<String> arguments) =>
+// Create a dart cmd
+CommandInput dartCmd(List<String> arguments) =>
     commandInput(_dartVmBinExecutable, arguments);
+
+// use dartCmd instead
+@deprecated
+CommandInput dartBinCmd(List<String> arguments) => dartCmd(arguments);
 
 List<String> _dartCmdArguments(String cmd, List<String> args) {
   // clone it
@@ -50,15 +39,13 @@ List<String> _dartCmdArguments(String cmd, List<String> args) {
 
 List<String> dartFmtArguments(List<String> args) =>
     _dartCmdArguments('dartfmt', args);
-CommandInput dartFmtCmd(List<String> args) =>
-    dartBinCmd(dartFmtArguments(args));
+CommandInput dartFmtCmd(List<String> args) => dartCmd(dartFmtArguments(args));
 List<String> dartAnalyzerArguments(List<String> args) =>
     _dartCmdArguments('dartanalyzer', args);
 CommandInput dartAnalyzerCmd(List<String> args) =>
-    dartBinCmd(dartAnalyzerArguments(args));
+    dartCmd(dartAnalyzerArguments(args));
 List<String> dart2JsArguments(List<String> args) =>
     _dartCmdArguments('dart2js', args);
-CommandInput dart2JsCmd(List<String> args) =>
-    dartBinCmd(dart2JsArguments(args));
+CommandInput dart2JsCmd(List<String> args) => dartCmd(dart2JsArguments(args));
 List<String> pubArguments(List<String> args) => _dartCmdArguments('pub', args);
-CommandInput pubCmd(List<String> args) => dartBinCmd(pubArguments(args));
+CommandInput pubCmd(List<String> args) => dartCmd(pubArguments(args));
