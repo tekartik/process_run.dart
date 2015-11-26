@@ -82,6 +82,6 @@ main(List<String> arguments) async {
     }
 
     CommandInput input = commandInput(executable, arguments, connectIo: true);
-    await executor.runInput(input);
+    await executor.runCmd(input);
   }
 }

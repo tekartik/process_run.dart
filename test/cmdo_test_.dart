@@ -8,7 +8,7 @@ void defineTests(CommandExecutor cmdo) {
   test('throw bad exe', () async {
     var err;
     try {
-      await cmdo.runInput(testCommandThrows.clone()..connectIo = false);
+      print(await cmdo.runCmd(testCommandThrows.clone()..connectIo));
     } catch (e) {
       err = e;
     }
@@ -16,7 +16,7 @@ void defineTests(CommandExecutor cmdo) {
   });
 
   test('nothrow bad exe', () async {
-    CommandResult result = await cmdo.runInput(testCommandThrows.clone()
+    CommandResult result = await cmdo.runCmd(testCommandThrows.clone()
       ..throwException = false
       ..connectIo = false);
 

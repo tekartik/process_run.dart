@@ -14,7 +14,7 @@ void main() {
       test('throw bad exe', () async {
         var err;
         try {
-          await io.runInputAsync(testCommandThrows.clone());
+          await io.runCmdAsync(testCommandThrows.clone());
         } catch (e) {
           err = e;
         }
@@ -23,7 +23,7 @@ void main() {
 
       test('nothrow bad exe', () async {
         CommandResult result = await io
-            .runInputAsync(testCommandThrows.clone()..throwException = false);
+            .runCmdAsync(testCommandThrows.clone()..throwException = false);
 
         expect(result.err, isNull);
         expect(result.out, isNull);
@@ -33,11 +33,11 @@ void main() {
 
       test('dart_version', () async {
         CommandInput input = commandInput(dartVmBin, ['--version']);
-        CommandResult result = await io.runInput(input);
+        CommandResult result = await io.runCmd(input);
         expect(result.output.errLines.first.toLowerCase(), contains("dart"));
         expect(result.output.errLines.first.toLowerCase(), contains("version"));
 
-        result = await io.runInputAsync(input);
+        result = await io.runCmdAsync(input);
         expect(result.output.errLines.first.toLowerCase(), contains("dart"));
         expect(result.output.errLines.first.toLowerCase(), contains("version"));
       });

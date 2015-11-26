@@ -11,7 +11,7 @@ CommandExecutor dry = new DryCommandExecutor();
 class DryCommandExecutor extends Object
     with CommandExecutorMixin
     implements CommandExecutor {
-  Future<CommandResult> runInput(CommandInput input) async {
+  Future<CommandResult> runCmd(CommandInput input) async {
     CommandOutput output = new CommandOutput(
         out: '${input.executable} ${argumentsToDebugString(input.arguments)}');
     CommandResult getResult() {

@@ -5,7 +5,7 @@ import 'cmdo_test_.dart' as _test;
 
 void main() {
   //_io.debugCmdoIo = true;
-  group('io', () {
+  group('dry', () {
     _test.defineTests(dry);
   });
 }

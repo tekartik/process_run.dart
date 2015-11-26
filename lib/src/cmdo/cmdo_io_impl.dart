@@ -6,11 +6,10 @@ bool debugCmdoIo = false;
 class _IoCommandExecutorImpl extends IoCommandExecutor {
   _IoCommandExecutorImpl() : super._();
 
-  Future<CommandResult> runInputAsync(CommandInput input) =>
-      _runInput(input, true);
+  Future<CommandResult> runCmdAsync(CommandInput input) => _runCmd(input, true);
 
-  Future<CommandResult> runInput(CommandInput input) => _runInput(input);
-  Future<CommandResult> _runInput(CommandInput input, [bool useStart]) async {
+  Future<CommandResult> runCmd(CommandInput input) => _runCmd(input);
+  Future<CommandResult> _runCmd(CommandInput input, [bool useStart]) async {
     CommandOutput output;
     CommandResult getResult() {
       return new CommandResult(input, output);

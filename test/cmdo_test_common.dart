@@ -12,8 +12,9 @@ CommandInput testCommandThrows =
     commandInput(testExecutableThrows, null, throwException: true);
 
 class TestDryCommandExecutor extends DryCommandExecutor {
-  Future<CommandResult> runInput(CommandInput input) async {
-    CommandResult result = await super.runInput(input);
+  @override
+  Future<CommandResult> runCmd(CommandInput input) async {
+    CommandResult result = await super.runCmd(input);
 
     // Only throw if asked for
     if (input.executable == testExecutableThrows) {

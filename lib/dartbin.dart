@@ -38,7 +38,7 @@ String get _dartBinDirPath => dirname(dartVmBin);
 
 String get _dartVmBinExecutable => dartVmBin;
 
-CommandInput _dartBinCmd(List<String> arguments) =>
+CommandInput dartBinCmd(List<String> arguments) =>
     commandInput(_dartVmBinExecutable, arguments);
 
 List<String> _dartCmdArguments(String cmd, List<String> args) {
@@ -51,14 +51,14 @@ List<String> _dartCmdArguments(String cmd, List<String> args) {
 List<String> dartFmtArguments(List<String> args) =>
     _dartCmdArguments('dartfmt', args);
 CommandInput dartFmtCmd(List<String> args) =>
-    _dartBinCmd(dartFmtArguments(args));
+    dartBinCmd(dartFmtArguments(args));
 List<String> dartAnalyzerArguments(List<String> args) =>
     _dartCmdArguments('dartanalyzer', args);
 CommandInput dartAnalyzerCmd(List<String> args) =>
-    _dartBinCmd(dartAnalyzerArguments(args));
+    dartBinCmd(dartAnalyzerArguments(args));
 List<String> dart2JsArguments(List<String> args) =>
     _dartCmdArguments('dart2js', args);
 CommandInput dart2JsCmd(List<String> args) =>
-    _dartBinCmd(dart2JsArguments(args));
+    dartBinCmd(dart2JsArguments(args));
 List<String> pubArguments(List<String> args) => _dartCmdArguments('pub', args);
-CommandInput pubCmd(List<String> args) => _dartBinCmd(pubArguments(args));
+CommandInput pubCmd(List<String> args) => dartBinCmd(pubArguments(args));

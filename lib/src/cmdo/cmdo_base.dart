@@ -11,12 +11,13 @@ abstract class CommandExecutorMixin implements CommandExecutor {
           bool runInShell,
           bool connectIo,
           bool throwException}) =>
-      runInput(commandInput(executable, arguments,
+      runCmd(commandInput(executable, arguments,
           workingDirectory: workingDirectory,
           environment: environment,
           runInShell: runInShell,
           connectIo: connectIo,
           throwException: throwException));
+  Future<CommandResult> runInput(CommandInput input) => runCmd(input);
 }
 
 /// convert arguments to show something similar to what is entered in the

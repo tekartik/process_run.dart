@@ -119,17 +119,17 @@ class CommandResult {
 }
 
 abstract class CommandExecutor {
+  @deprecated
   Future<CommandResult> runInput(CommandInput input);
+
+  /// run a command
+  Future<CommandResult> runCmd(CommandInput input);
+
+  /// run helper
   Future<CommandResult> run(String executable, List<String> arguments,
-          {String workingDirectory,
-          Map<String, String> environment,
-          bool runInShell,
-          bool connectIo,
-          bool throwException}) =>
-      runInput(commandInput(executable, arguments,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          runInShell: runInShell,
-          connectIo: connectIo,
-          throwException: throwException));
+      {String workingDirectory,
+      Map<String, String> environment,
+      bool runInShell,
+      bool connectIo,
+      bool throwException});
 }

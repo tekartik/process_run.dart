@@ -18,6 +18,6 @@ abstract class IoCommandExecutor extends Object
   factory IoCommandExecutor() => new _IoCommandExecutorImpl();
 
   // for use of Process.start
-  Future<CommandResult> runInputAsync(CommandInput input);
+  Future<CommandResult> runCmdAsync(CommandInput input);
   IoCommandExecutor._();
 }
