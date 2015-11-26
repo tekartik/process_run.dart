@@ -93,7 +93,7 @@ void main() {
       });
 
       test('dart_version', () async {
-        CommandInput input = commandInput(dartVmBin, ['--version']);
+        CommandInput input = command(dartVmBin, ['--version']);
         CommandResult result = await ioExecutor.runCmd(input);
         expect(result.output.errLines.first.toLowerCase(), contains("dart"));
         expect(result.output.errLines.first.toLowerCase(), contains("version"));

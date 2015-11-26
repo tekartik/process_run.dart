@@ -9,7 +9,7 @@ import 'dart:async';
 
 const String testExecutableThrows = "com.tekartik.command.test.dummy.throws";
 CommandInput testCommandThrows =
-    commandInput(testExecutableThrows, null, throwException: true);
+    command(testExecutableThrows, null, throwException: true);
 
 class TestDryCommandExecutor extends DryCommandExecutor {
   @override

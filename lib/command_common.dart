@@ -35,7 +35,7 @@ class CommandInput {
   }
 
   CommandInput clone() {
-    return commandInput(executable, arguments,
+    return command(executable, arguments,
         workingDirectory: workingDirectory,
         environment: environment,
         runInShell: runInShell,
@@ -45,7 +45,7 @@ class CommandInput {
 }
 
 /// public constructor
-CommandInput commandInput(String executable, List<String> arguments,
+CommandInput command(String executable, List<String> arguments,
         {String workingDirectory,
         Map<String, String> environment,
         bool runInShell,
@@ -118,6 +118,7 @@ class CommandResult {
   }
 }
 
+/// Executor interface
 abstract class CommandExecutor {
   /// run a command
   Future<CommandResult> runCmd(CommandInput input);

@@ -79,7 +79,7 @@ main(List<String> arguments) async {
       executor = ioExecutor;
     }
 
-    CommandInput input = commandInput(executable, arguments, connectIo: true);
+    CommandInput input = command(executable, arguments, connectIo: true);
     await executor.runCmd(input);
   }
 }

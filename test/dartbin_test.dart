@@ -54,34 +54,34 @@ void defineTests() {
     });
 
     test('dartfmt', () async {
-      CommandResult result = await runCmd(dartFmtCmd(['--help']));
+      CommandResult result = await runCmd(dartfmtCmd(['--help']));
       expect(result.exitCode, 0);
       expect(result.out, contains("Usage: dartfmt"));
 
       // dartfmt has no version option yet
-      result = await runCmd(dartFmtCmd(['--version']));
+      result = await runCmd(dartfmtCmd(['--version']));
       expect(result.exitCode, 64);
     });
 
     test('dartanalyzer', () async {
       CommandResult result =
-          await runCmd(dartAnalyzerCmd(['--help'])..connectIo = false);
+          await runCmd(dartanalyzerCmd(['--help'])..connectIo = false);
       // Weird this is in err instead of out
       expect(result.err, contains("Usage: dartanalyzer"));
       expect(result.exitCode, 0);
 
-      result = await runCmd(dartAnalyzerCmd(['--version'])..connectIo = false);
+      result = await runCmd(dartanalyzerCmd(['--version'])..connectIo = false);
       expect(result.out, contains("dartanalyzer"));
       expect(result.exitCode, 0);
     });
 
     test('dart2js', () async {
       CommandResult result =
-          await runCmd(dart2JsCmd(['--help'])..connectIo = false);
+          await runCmd(dart2jsCmd(['--help'])..connectIo = false);
       expect(result.out, contains("Usage: dart2js"));
       expect(result.exitCode, 0);
 
-      result = await runCmd(dart2JsCmd(['--version'])..connectIo = false);
+      result = await runCmd(dart2jsCmd(['--version'])..connectIo = false);
       expect(result.out, contains("dart2js"));
       expect(result.exitCode, 0);
     });

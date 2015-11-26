@@ -7,6 +7,9 @@ import 'package:command/dartbin.dart';
 main() async {
   await ioExecutor.run('echo', ['hello world']);
 
+  var cmd = command('echo', ['hello world']);
+  await ioExecutor.runCmd(cmd);
+
   await ioExecutor.runCmd(dartCmd(['--version']));
 
   await ioExecutor

@@ -11,7 +11,7 @@ abstract class CommandExecutorMixin implements CommandExecutor {
           bool runInShell,
           bool connectIo,
           bool throwException}) =>
-      runCmd(commandInput(executable, arguments,
+      runCmd(command(executable, arguments,
           workingDirectory: workingDirectory,
           environment: environment,
           runInShell: runInShell,
