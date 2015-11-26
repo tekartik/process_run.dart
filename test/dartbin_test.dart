@@ -40,35 +40,35 @@ void defineTests() {
 
   group('help', () {
     test('dartfmt', () async {
-      CommandResult result = await io.runInput(dartFmtCmd(['--help']));
+      CommandResult result = await io.runCmd(dartFmtCmd(['--help']));
       expect(result.exitCode, 0);
       expect(result.out, contains("Usage: dartfmt"));
 
       // dartfmt has no version option yet
-      result = await io.runInput(dartFmtCmd(['--version']));
+      result = await io.runCmd(dartFmtCmd(['--version']));
       expect(result.exitCode, 64);
     });
 
     test('dartanalyzer', () async {
       CommandResult result =
-          await io.runInput(dartAnalyzerCmd(['--help'])..connectIo = false);
+          await io.runCmd(dartAnalyzerCmd(['--help'])..connectIo = false);
       // Weird this is in err instead of out
       expect(result.err, contains("Usage: dartanalyzer"));
       expect(result.exitCode, 0);
 
       result =
-          await io.runInput(dartAnalyzerCmd(['--version'])..connectIo = false);
+          await io.runCmd(dartAnalyzerCmd(['--version'])..connectIo = false);
       expect(result.out, contains("dartanalyzer"));
       expect(result.exitCode, 0);
     });
 
     test('dart2js', () async {
       CommandResult result =
-          await io.runInput(dart2JsCmd(['--help'])..connectIo = false);
+          await io.runCmd(dart2JsCmd(['--help'])..connectIo = false);
       expect(result.out.contains("Usage: dart2js"), isTrue);
       expect(result.exitCode, 0);
 
-      result = await io.runInput(dart2JsCmd(['--version'])..connectIo = false);
+      result = await io.runCmd(dart2JsCmd(['--version'])..connectIo = false);
       expect(result.out, contains("dart2js"));
       expect(result.exitCode, 0);
     });
@@ -76,11 +76,11 @@ void defineTests() {
     test('pub', () async {
       // change false to true to check that you get output
       CommandResult result =
-          await io.runInput(pubCmd(['--help'])..connectIo = false);
+          await io.runCmd(pubCmd(['--help'])..connectIo = false);
       expect(result.out.contains("Usage: pub"), isTrue);
       expect(result.exitCode, 0);
 
-      result = await io.runInput(pubCmd(['--version'])..connectIo = false);
+      result = await io.runCmd(pubCmd(['--version'])..connectIo = false);
       expect(result.out.contains("Pub"), isTrue);
       expect(result.exitCode, 0);
     });

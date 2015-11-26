@@ -17,6 +17,8 @@ abstract class CommandExecutorMixin implements CommandExecutor {
           runInShell: runInShell,
           connectIo: connectIo,
           throwException: throwException));
+
+  @deprecated
   Future<CommandResult> runInput(CommandInput input) => runCmd(input);
 }
 
