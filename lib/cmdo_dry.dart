@@ -1,18 +1,21 @@
 library tekartik_cmdo.cmdo_dry;
 
-import 'cmdo.dart' as cmdo;
-import 'cmdo.dart' show CommandInput, CommandResult, CommandOutput;
+import 'package:cmdo/src/cmdo/cmdo_base.dart';
+import 'cmdo.dart';
 export 'cmdo.dart';
 import 'dart:async';
 
-// set to true for quick debugging
-bool debugCmdoDryRun = false;
+/// the dry executor
+CommandExecutor dry = new DryCommandExecutor();
 
-class CommandExecutor implements cmdo.CommandExecutor {
-  Future<CommandResult> run(CommandInput input) async {
-    print(input);
+class DryCommandExecutor extends Object
+    with CommandExecutorMixin
+    implements CommandExecutor {
+  Future<CommandResult> runInput(CommandInput input) async {
+    CommandOutput output = new CommandOutput(
+        out: '${input.executable} ${argumentsToDebugString(input.arguments)}');
     CommandResult getResult() {
-      return new CommandResult(input, null);
+      return new CommandResult(input, output);
     }
     return getResult();
   }

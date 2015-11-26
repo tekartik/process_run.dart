@@ -1,11 +1,14 @@
 library tekartik_cmdo;
 
 import 'dart:async';
+import 'dart:convert';
 
-// Input command, specify at least executable
+/// Input command, specify at least executable
 class CommandInput {
-  // in
+  // required
   String executable;
+
+  // optional
   List<String> arguments;
   String workingDirectory;
   Map<String, String> environment;
@@ -13,10 +16,8 @@ class CommandInput {
   bool runInShell;
   bool connectIo;
 
-  CommandInput(
-      {this.executable,
-      this.arguments,
-      this.workingDirectory,
+  CommandInput._(this.executable, this.arguments,
+      {this.workingDirectory,
       this.environment,
       this.runInShell,
       this.connectIo,
@@ -34,9 +35,7 @@ class CommandInput {
   }
 
   CommandInput clone() {
-    return new CommandInput(
-        executable: executable,
-        arguments: arguments,
+    return commandInput(executable, arguments,
         workingDirectory: workingDirectory,
         environment: environment,
         runInShell: runInShell,
@@ -45,29 +44,67 @@ class CommandInput {
   }
 }
 
-// Output command
-class CommandOutput {
-  List<String> out;
-  List<String> err;
-  int exitCode;
+/// public constructor
+CommandInput commandInput(String executable, List<String> arguments,
+        {String workingDirectory,
+        Map<String, String> environment,
+        bool runInShell,
+        bool connectIo,
+        bool throwException}) =>
+    new CommandInput._(executable, arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        runInShell: runInShell,
+        connectIo: connectIo,
+        throwException: throwException);
 
-  CommandOutput({this.exitCode, this.out, this.err});
+/// Command output
+class CommandOutput {
+  var out;
+  var err;
+  int exitCode;
+  // set internally
+  var exception;
+
+  List<String> _getLines(var output) =>
+      const LineSplitter().convert(output.toString().trim());
+
+  List<String> get outLines => _getLines(out);
+  List<String> get errLines => _getLines(err);
+
+  CommandOutput({this.exitCode, var out, var err});
 
   @override
   String toString() {
     StringBuffer sb = new StringBuffer();
     sb.writeln("exitCode ${exitCode}");
-    if (out != null && out.length > 0) {
+    if (outLines != null && outLines.length > 0) {
       sb.writeln("> $out");
     }
-    if (err != null && err.length > 0) {
+    if (errLines != null && errLines.length > 0) {
       sb.writeln("ERR: ${err}");
     }
     return sb.toString();
   }
 }
 
+/// Command result, including input and output
 class CommandResult {
+  // in
+  String get executable => input.executable;
+  List<String> get arguments => input.arguments;
+  String get workingDirectory => input.workingDirectory;
+  Map<String, String> get environment => input.environment;
+  bool get throwException => input.throwException;
+  bool get runInShell => input.runInShell;
+  bool get connectIo => input.connectIo;
+
+  // out
+  get out => output.out;
+  get err => output.err;
+  int get exitCode => output.exitCode;
+  get exception => output.exception;
+
   final CommandInput input;
   final CommandOutput output;
   CommandResult(this.input, this.output);
@@ -82,5 +119,17 @@ class CommandResult {
 }
 
 abstract class CommandExecutor {
-  Future<CommandResult> run(CommandInput input);
+  Future<CommandResult> runInput(CommandInput input);
+  Future<CommandResult> run(String executable, List<String> arguments,
+          {String workingDirectory,
+          Map<String, String> environment,
+          bool runInShell,
+          bool connectIo,
+          bool throwException}) =>
+      runInput(commandInput(executable, arguments,
+          workingDirectory: workingDirectory,
+          environment: environment,
+          runInShell: runInShell,
+          connectIo: connectIo,
+          throwException: throwException));
 }

@@ -5,9 +5,9 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:args/args.dart';
-import 'package:cmdo/cmdo.dart' as _cmdo;
-import 'package:cmdo/cmdo_io.dart' as _io;
-import 'package:cmdo/cmdo_dry.dart' as _dry;
+import 'package:cmdo/cmdo.dart';
+import 'package:cmdo/cmdo_io.dart';
+import 'package:cmdo/cmdo_dry.dart';
 
 const String _HELP = 'help';
 const String _LOG = 'log';
@@ -59,7 +59,8 @@ main(List<String> arguments) async {
   //String logLevel = _argsResult[_LOG];
   bool verbose = _argsResult[_VERBOSE];
   if (verbose) {
-    _io.debugCmdoIo = true;
+    // for now just set the debug flag
+    debugCmdoIo = true;
   }
   bool version = _argsResult[_VERSION];
 
@@ -73,15 +74,14 @@ main(List<String> arguments) async {
     String executable = rest.first;
     List<String> arguments = rest.sublist(1);
 
-    _cmdo.CommandExecutor executor;
+    CommandExecutor executor;
     if (dryRun) {
-      executor = new _dry.CommandExecutor();
+      executor = dry;
     } else {
-      executor = new _io.CommandExecutor();
+      executor = io;
     }
 
-    _cmdo.CommandInput input = new _cmdo.CommandInput(
-        executable: executable, arguments: arguments, connectIo: true);
-    await executor.run(input);
+    CommandInput input = commandInput(executable, arguments, connectIo: true);
+    await executor.runInput(input);
   }
 }
