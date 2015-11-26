@@ -4,10 +4,9 @@ description: Commando - Command line utilies for Linux/Win/Mac
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
-  path: any
   pub_semver: any
 dev_dependencies:
+  path: any
+  args: any
   dev_test: any
   test: any
-executables:
-  cmdo:
