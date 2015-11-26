@@ -3,6 +3,10 @@
 .pub/
 build/
 packages
+.packages
+
+# webstorm
+.idea/
 
 # Or the files created by dart2js.
 *.dart.js
