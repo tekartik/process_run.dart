@@ -1,4 +1,4 @@
-library tekartik_command;
+library command;
 
 import 'dart:async';
 import 'dart:convert';

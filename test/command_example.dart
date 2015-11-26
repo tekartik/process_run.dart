@@ -1,5 +1,5 @@
 #!/usr/bin/env dart
-library tekartik_command.test.command_example.dart;
+library command.test.command_example.dart;
 
 import 'dart:io';
 

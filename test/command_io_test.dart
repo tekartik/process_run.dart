@@ -1,5 +1,5 @@
 @TestOn("vm")
-library tekartik_command.test.command_io_test;
+library command.test.command_io_test;
 
 import 'command_io_test_common.dart';
 import 'command_test_.dart' as _test;

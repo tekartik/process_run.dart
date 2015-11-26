@@ -1,4 +1,4 @@
-library tekartik_command.test.command_test_common;
+library command.test.command_test_common;
 
 export 'package:dev_test/test.dart';
 import 'package:command/command.dart';

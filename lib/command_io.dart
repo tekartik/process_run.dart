@@ -1,4 +1,4 @@
-library tekartik_command.command_io;
+library command.command_io;
 
 import 'package:command/src/command/command_base.dart';
 import 'command.dart';

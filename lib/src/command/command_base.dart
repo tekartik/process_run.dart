@@ -1,4 +1,4 @@
-library tekartik_command.src.command.command_base;
+library command.src.command.command_base;
 
 import 'package:command/command.dart';
 import 'dart:async';
