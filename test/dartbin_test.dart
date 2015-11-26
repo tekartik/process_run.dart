@@ -42,6 +42,17 @@ void defineTests() {
   });
 
   group('help', () {
+    test('dart', () async {
+      CommandResult result = await io.runCmd(dartCmd(['--help']));
+      expect(result.exitCode, 0);
+      // help is on stderr
+      expect(result.err, contains("Usage: dart "));
+
+      // Version is on stderr
+      result = await io.runCmd(dartCmd(['--version']));
+      expect(result.err, contains("Dart VM"));
+    });
+
     test('dartfmt', () async {
       CommandResult result = await io.runCmd(dartFmtCmd(['--help']));
       expect(result.exitCode, 0);
@@ -68,7 +79,7 @@ void defineTests() {
     test('dart2js', () async {
       CommandResult result =
           await io.runCmd(dart2JsCmd(['--help'])..connectIo = false);
-      expect(result.out.contains("Usage: dart2js"), isTrue);
+      expect(result.out, contains("Usage: dart2js"));
       expect(result.exitCode, 0);
 
       result = await io.runCmd(dart2JsCmd(['--version'])..connectIo = false);
@@ -76,15 +87,26 @@ void defineTests() {
       expect(result.exitCode, 0);
     });
 
+    test('dartdoc', () async {
+      CommandResult result =
+          await io.runCmd(dartdocCmd(['--help'])..connectIo = false);
+      expect(result.out, contains("Usage: dartdoc"));
+      expect(result.exitCode, 0);
+
+      result = await io.runCmd(dartdocCmd(['--version'])..connectIo = false);
+      expect(result.out, contains("dartdoc"));
+      expect(result.exitCode, 0);
+    });
+
     test('pub', () async {
       // change false to true to check that you get output
       CommandResult result =
           await io.runCmd(pubCmd(['--help'])..connectIo = false);
-      expect(result.out.contains("Usage: pub"), isTrue);
+      expect(result.out, contains("Usage: pub"));
       expect(result.exitCode, 0);
 
       result = await io.runCmd(pubCmd(['--version'])..connectIo = false);
-      expect(result.out.contains("Pub"), isTrue);
+      expect(result.out, contains("Pub"));
       expect(result.exitCode, 0);
     });
   });

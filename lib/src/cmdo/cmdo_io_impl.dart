@@ -1,7 +1,14 @@
 part of tekartik_cmdo.cmdo_io;
 
 // set to true for quick debugging
-bool debugCmdoIo = false;
+bool _debugCmdoIo = false;
+bool get debugCmdoIo => _debugCmdoIo;
+
+/// make sure caller don't checking such change
+@deprecated
+set debugCmdoIo(bool debug) => _debugCmdoIo = debug;
+
+set debugCmdoIoSetVerbose(bool debug) => _debugCmdoIo = debug;
 
 class _IoCommandExecutorImpl extends IoCommandExecutor {
   _IoCommandExecutorImpl() : super._();

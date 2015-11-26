@@ -16,3 +16,6 @@ packages
 
 # Include when developing application packages.
 pubspec.lock
+
+# generated doc
+doc/api

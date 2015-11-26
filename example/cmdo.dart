@@ -17,9 +17,6 @@ const String _VERSION = "version";
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
-///
-/// clone hg or git repository
-///
 main(List<String> arguments) async {
   //setupQuickLogging();
 
@@ -60,7 +57,7 @@ main(List<String> arguments) async {
   bool verbose = _argsResult[_VERBOSE];
   if (verbose) {
     // for now just set the debug flag
-    debugCmdoIo = true;
+    debugCmdoIoSetVerbose = true;
   }
   bool version = _argsResult[_VERSION];
 

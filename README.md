@@ -1,13 +1,23 @@
 # cmdo.dart
 
-Command line utilies for Linux/Win/Mac
+Command line helpers for Linux/Win/Mac
+
+[![Build Status](https://travis-ci.org/tekartik/cmdo.dart.svg?branch=master)](https://travis-ci.org/tekartik/cmdo.dart)
 
 ## Usage
 
-## Command line tool
+Calling a system command
 
 ````
-cmdo --version
-cmdo --help
+import 'package:cmdo/cmdo_io.dart';
+...
+await io.run('echo', ['hello world']);
+````
 
+Calling dart
+
+````
+import 'package:cmdo/dartbin.dart';
+...
+await io.runCmd(dartCmd(['--version']));
 ````
