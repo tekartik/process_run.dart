@@ -1,15 +1,22 @@
 #!/usr/bin/env dart
 library process_run.bin.demo;
 
+import 'dart:io';
+
 import 'package:process_run/process_run.dart';
 import 'package:process_run/dartbin.dart';
 
 main() async {
+  // Simple echo command
+  // Somehow windows requires runInShell for the system commands
+  bool runInShell = Platform.isWindows;
+
   // Run the command
-  await run('echo', ['hello world']);
+  await run('echo', ['hello world'], runInShell: runInShell);
 
   // Stream the out to stdout
-  await run('echo', ['hello world'], connectStdout: true);
+  await run('echo', ['hello world'],
+      runInShell: runInShell, connectStdout: true);
 
   // Calling dart
   await run(dartExecutable, ['--version']);

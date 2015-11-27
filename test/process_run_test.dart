@@ -215,10 +215,37 @@ void main() {
 
       if (Platform.isWindows) {
         await _runCheck(check, 'type', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir));
+            workingDirectory: dirname(testDir), runInShell: true);
       } else {
         await _runCheck(check, 'cat', ['pubspec.yaml'],
             workingDirectory: dirname(testDir));
+      }
+    });
+
+    test('windows_system_command', () async {
+      if (Platform.isWindows) {
+        if (Platform.isWindows) {
+          ProcessResult result;
+
+          result = await run('cmd', ['/c', 'echo', "hi"]);
+          expect(result.stdout, 'hi\r\n');
+          expect(result.stderr, '');
+          expect(result.pid, isNotNull);
+          expect(result.exitCode, 0);
+
+          await run('echo', ["hi"], runInShell: true);
+          expect(result.stdout, 'hi\r\n');
+          expect(result.stderr, '');
+          expect(result.pid, isNotNull);
+          expect(result.exitCode, 0);
+
+          // not using runInShell crashes
+          try {
+            await run('echo', ["hi"]);
+          } on ProcessException catch (_) {
+            // ProcessException: not fount
+          }
+        }
       }
     });
   });
