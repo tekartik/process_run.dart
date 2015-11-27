@@ -1,7 +1,7 @@
 ///
 /// Helper to run a process and connect the input/output for verbosity
 ///
-library tekartik_process_run;
+library process_run;
 
 import 'dart:io';
 import 'dart:convert';

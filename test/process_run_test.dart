@@ -3,9 +3,9 @@ library command.test.process_run_test_;
 
 import 'dart:io';
 import 'package:dev_test/test.dart';
-import 'package:command/dartbin.dart';
+import 'package:process_run/dartbin.dart';
 import 'package:path/path.dart';
-import 'package:command/process_run.dart';
+import 'package:process_run/process_run.dart';
 import 'process_run_test_common.dart';
 import 'dart:async';
 import 'dart:convert';

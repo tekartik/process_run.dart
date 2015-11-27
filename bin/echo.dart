@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:args/args.dart';
-import 'package:command/hex_utils.dart';
+import 'hex_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 Version version = new Version(0, 0, 1);

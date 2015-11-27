@@ -1,12 +1,12 @@
-name: command
+name: process_run
 version: 0.1.0
-description: Command line helpers for Linux/Win/Mac
+description: Process run helpers for Linux/Win/Mac
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
-  pub_semver: any
   path: any
 dev_dependencies:
+  pub_semver: any
   args: any
   dev_test: any
   test: any

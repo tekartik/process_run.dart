@@ -3,7 +3,7 @@ library command.test.dartbin_test;
 
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
-import 'package:command/dartbin.dart';
+import 'package:process_run/dartbin.dart';
 import 'dart:io';
 
 void main() => defineTests();

@@ -1,4 +1,4 @@
-library tekartik_dartbin;
+library process_run.dartbin;
 
 import 'dart:io';
 import 'package:path/path.dart';

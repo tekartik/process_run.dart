@@ -1,7 +1,7 @@
 library tekartik_utils.hex_utils_tests;
 
 import 'package:test/test.dart';
-import 'package:command/hex_utils.dart';
+import 'hex_utils.dart';
 
 main() {
   group('hex utils', () {
