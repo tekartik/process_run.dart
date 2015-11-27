@@ -2,4 +2,4 @@
 
 ## 0.1.0
 
-* Initial version, executor and dartbin utilities
+* Initial version, run and dartbin utilities
