@@ -1,6 +1,7 @@
 name: process_run
 version: 0.1.0
 description: Process run helpers for Linux/Win/Mac
+homepage: https://pub.dartlang.org/packages/process_run
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
