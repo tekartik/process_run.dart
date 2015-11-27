@@ -8,7 +8,7 @@ environment:
 dependencies:
   path: any
 dev_dependencies:
-  pub_semver: anyœ
+  pub_semver: any
   args: any
   dev_test: any
   test: any
