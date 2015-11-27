@@ -24,7 +24,6 @@ main(List<String> arguments) async {
   ArgParser parser = new ArgParser(allowTrailingOptions: false);
   parser.addFlag(_HELP, abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag(_VERBOSE, abbr: 'v', help: 'Verbose', negatable: false);
-
   parser.addOption(_LOG, abbr: 'l', help: 'Log level (fine, debug, info...)');
   parser.addFlag(_DRY_RUN,
       abbr: 'd',
@@ -35,7 +34,7 @@ main(List<String> arguments) async {
 
   ArgResults _argsResult = parser.parse(arguments);
 
-  bool help = _argsResult[_HELP];
+  bool help = _argsResult['help'];
 
   _printUsage() {
     stdout.writeln('Command utility');

@@ -3,7 +3,7 @@ library command.test.command_test;
 
 import 'test_common_io.dart';
 import 'command_test_.dart' as _test;
-import 'package:command/dartbin.dart';
+import 'package:command/command_dartbin.dart';
 import 'package:command/src/command_impl.dart';
 import 'dart:mirrors';
 import 'package:path/path.dart';

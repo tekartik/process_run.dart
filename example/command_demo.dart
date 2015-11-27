@@ -2,21 +2,19 @@
 library command.example.command_demo;
 
 import 'package:command/command.dart';
-import 'package:command/dartbin.dart';
+import 'package:command/command_dartbin.dart';
 
 main() async {
-  await ioExecutor.run('echo', ['hello world']);
+  await run('echo', ['hello world']);
 
   var cmd = command('echo', ['hello world']);
-  await ioExecutor.runCmd(cmd);
+  await runCmd(cmd);
 
-  await ioExecutor.runCmd(dartCmd(['--version']));
+  await runCmd(dartCmd(['--version']));
 
-  await ioExecutor
-      .runCmd(dartCmd(['my_script.dart', 'my_first_arg', 'my_second_arg']));
+  await runCmd(dartCmd(['my_script.dart', 'my_first_arg', 'my_second_arg']));
 
-  print((await ioExecutor.run('echo', ['hello world'])).out);
-  print((await ioExecutor.runCmd(dartCmd(['--version']))).err);
-  print((await ioExecutor
-      .runCmd(dartCmd(['example/command.dart', '--version']))).out);
+  print((await run('echo', ['hello world'])).out);
+  print((await runCmd(dartCmd(['--version']))).err);
+  print((await runCmd(dartCmd(['example/command.dart', '--version']))).out);
 }

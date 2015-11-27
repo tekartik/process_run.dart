@@ -2,7 +2,6 @@
 library command.test.dartbin_test;
 
 import 'package:dev_test/test.dart';
-import 'test_common_io.dart';
 import 'package:path/path.dart';
 import 'package:command/dartbin.dart';
 import 'dart:io';
@@ -12,100 +11,105 @@ void main() => defineTests();
 void defineTests() {
   group('dart', () {
     test('run', () async {
-      CommandResult result = await run(dartVmBin, ['--version']);
-      expect(result.output.errLines.first.toLowerCase(), contains("dart"));
-      expect(result.output.errLines.first.toLowerCase(), contains("version"));
+      ProcessResult result = await Process.run(dartExecutable, ['--version']);
+      expect(result.stderr.toLowerCase(), contains("dart"));
+      expect(result.stderr.toLowerCase(), contains("version"));
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
     });
 
-    test('dartVmBin', () {
-      expect(isAbsolute(dartVmBin), isTrue);
-      expect(new Directory(join(dirname(dartVmBin), 'snapshots')).existsSync(),
+    test('dartExecutable_path', () {
+      expect(isAbsolute(dartExecutable), isTrue);
+      expect(
+          new Directory(join(dirname(dartExecutable), 'snapshots'))
+              .existsSync(),
           isTrue);
     });
 
-    test('connectIo', () async {
-      // change false to true to check that you get output
-      CommandResult result =
-          await run(dartVmBin, ['--version'], connectIo: false);
-      expect(result.output.err, contains("version"));
+    test('dart_empty_param', () async {
+      ProcessResult result = await Process.run(dartExecutable, []);
+      expect(result.exitCode, 255);
     });
 
-    test('throw bad dart param', () async {
-      CommandResult result = await run(dartVmBin, null);
-      expect(result.input.executable, equals(dartVmBin));
-      expect(result.input.arguments.isEmpty, isTrue);
-      expect(result.out.isEmpty, isTrue);
-      expect(result.err.isEmpty, isFalse);
-      expect(result.exitCode, equals(255));
+    test('dart_null_param', () async {
+      try {
+        await Process.run(dartExecutable, null);
+        fail("should fail");
+      } on ArgumentError catch (_) {}
     });
   });
 
   group('help', () {
     test('dart', () async {
-      CommandResult result = await runCmd(dartCmd(['--help']));
+      ProcessResult result = await Process.run(dartExecutable, ['--help']);
       expect(result.exitCode, 0);
       // help is on stderr
-      expect(result.err, contains("Usage: dart "));
+      expect(result.stdout, "");
+      expect(result.stderr, contains("Usage: dart "));
 
       // Version is on stderr
-      result = await runCmd(dartCmd(['--version']));
-      expect(result.err, contains("Dart VM"));
+      result = await Process.run(dartExecutable, ['--version']);
+      expect(result.stdout, "");
+      expect(result.stderr, contains("Dart VM"));
     });
 
     test('dartfmt', () async {
-      CommandResult result = await runCmd(dartfmtCmd(['--help']));
+      ProcessResult result =
+          await Process.run(dartExecutable, dartfmtArguments(['--help']));
       expect(result.exitCode, 0);
-      expect(result.out, contains("Usage: dartfmt"));
+      expect(result.stdout, contains("Usage: dartfmt"));
 
       // dartfmt has no version option yet
-      result = await runCmd(dartfmtCmd(['--version']));
+      result =
+          await Process.run(dartExecutable, dartfmtArguments(['--version']));
       expect(result.exitCode, 64);
     });
 
     test('dartanalyzer', () async {
-      CommandResult result =
-          await runCmd(dartanalyzerCmd(['--help'])..connectIo = false);
+      ProcessResult result =
+          await Process.run(dartExecutable, dartanalyzerArguments(['--help']));
       // Weird this is in err instead of out
-      expect(result.err, contains("Usage: dartanalyzer"));
+      expect(result.stderr, contains("Usage: dartanalyzer"));
       expect(result.exitCode, 0);
 
-      result = await runCmd(dartanalyzerCmd(['--version'])..connectIo = false);
-      expect(result.out, contains("dartanalyzer"));
+      result = await Process.run(
+          dartExecutable, dartanalyzerArguments(['--version']));
+      expect(result.stdout, contains("dartanalyzer"));
       expect(result.exitCode, 0);
     });
 
     test('dart2js', () async {
-      CommandResult result =
-          await runCmd(dart2jsCmd(['--help'])..connectIo = false);
-      expect(result.out, contains("Usage: dart2js"));
+      ProcessResult result =
+          await Process.run(dartExecutable, dart2jsArguments(['--help']));
+      expect(result.stdout, contains("Usage: dart2js"));
       expect(result.exitCode, 0);
 
-      result = await runCmd(dart2jsCmd(['--version'])..connectIo = false);
-      expect(result.out, contains("dart2js"));
+      result =
+          await Process.run(dartExecutable, dart2jsArguments(['--version']));
+      expect(result.stdout, contains("dart2js"));
       expect(result.exitCode, 0);
     });
 
     test('dartdoc', () async {
-      CommandResult result =
-          await runCmd(dartdocCmd(['--help'])..connectIo = false);
-      expect(result.out, contains("Usage: dartdoc"));
+      ProcessResult result =
+          await Process.run(dartExecutable, dartdocArguments(['--help']));
+      expect(result.stdout, contains("Usage: dartdoc"));
       expect(result.exitCode, 0);
 
-      result = await runCmd(dartdocCmd(['--version'])..connectIo = false);
-      expect(result.out, contains("dartdoc"));
+      result =
+          await Process.run(dartExecutable, dartdocArguments(['--version']));
+      expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
     });
 
     test('pub', () async {
       // change false to true to check that you get output
-      CommandResult result =
-          await runCmd(pubCmd(['--help'])..connectIo = false);
-      expect(result.out, contains("Usage: pub"));
+      ProcessResult result =
+          await Process.run(dartExecutable, pubArguments(['--help']));
+      expect(result.stdout, contains("Usage: pub"));
       expect(result.exitCode, 0);
 
-      result = await runCmd(pubCmd(['--version'])..connectIo = false);
-      expect(result.out, contains("Pub"));
+      result = await Process.run(dartExecutable, pubArguments(['--version']));
+      expect(result.stdout, contains("Pub"));
       expect(result.exitCode, 0);
     });
   });

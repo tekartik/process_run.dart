@@ -1,55 +1,46 @@
-library command.dartbin;
+library tekartik_dartbin;
 
 import 'dart:io';
 import 'package:path/path.dart';
-import 'command_common.dart';
 
-String _dartVmBin;
+String _dartExecutable;
 
 ///
 /// Get dart vm either from executable or using the which command
 ///
-String get dartVmBin {
-  if (_dartVmBin == null) {
-    _dartVmBin = Platform.resolvedExecutable;
+String get dartExecutable {
+  if (_dartExecutable == null) {
+    _dartExecutable = Platform.resolvedExecutable;
   }
-  return _dartVmBin;
+  return _dartExecutable;
 }
 
-String get _dartBinDirPath => dirname(dartVmBin);
+String get _dartbinDirPath => dirname(dartExecutable);
 
-String get _dartVmBinExecutable => dartVmBin;
-
-/// Create a dart cmd
-CommandInput dartCmd(List<String> arguments) =>
-    command(_dartVmBinExecutable, arguments);
-
-List<String> _dartbinCmdArguments(String cmd, List<String> args) {
+/// For a dart binary (pub, dart2js, dartfmt...)
+List<String> dartbinCmdArguments(String cmd, List<String> args) {
   // clone it
   args = new List.from(args);
-  args.insert(0, join(_dartBinDirPath, 'snapshots', '${cmd}.dart.snapshot'));
+  args.insert(0, join(_dartbinDirPath, 'snapshots', '${cmd}.dart.snapshot'));
   return args;
 }
 
-List<String> _dartfmtArguments(List<String> args) =>
-    _dartbinCmdArguments('dartfmt', args);
-
 /// dartfmt command
-CommandInput dartfmtCmd(List<String> args) => dartCmd(_dartfmtArguments(args));
+List<String> dartfmtArguments(List<String> args) =>
+    dartbinCmdArguments('dartfmt', args);
 
-List<String> _dartanalyzerArguments(List<String> args) =>
-    _dartbinCmdArguments('dartanalyzer', args);
-CommandInput dartanalyzerCmd(List<String> args) =>
-    dartCmd(_dartanalyzerArguments(args));
+/// dartanalysze
+List<String> dartanalyzerArguments(List<String> args) =>
+    dartbinCmdArguments('dartanalyzer', args);
 
-List<String> _dart2jsArguments(List<String> args) =>
-    _dartbinCmdArguments('dart2js', args);
-CommandInput dart2jsCmd(List<String> args) => dartCmd(_dart2jsArguments(args));
+/// dart2js
+List<String> dart2jsArguments(List<String> args) =>
+    dartbinCmdArguments('dart2js', args);
 
+/// dartdoc
 List<String> dartdocArguments(List<String> args) =>
-    _dartbinCmdArguments('dartdoc', args);
-CommandInput dartdocCmd(List<String> args) => dartCmd(dartdocArguments(args));
+    dartbinCmdArguments('dartdoc', args);
 
+/// pub
 List<String> pubArguments(List<String> args) =>
-    _dartbinCmdArguments('pub', args);
-CommandInput pubCmd(List<String> args) => dartCmd(pubArguments(args));
+    dartbinCmdArguments('pub', args);
