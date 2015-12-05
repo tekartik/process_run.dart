@@ -3,6 +3,9 @@ library process_run.src.process_cmd;
 import 'dart:convert';
 import 'dart:io';
 import 'package:collection/collection.dart';
+import '../process_run.dart';
+import '../process_run.dart' as process_run;
+import 'dart:async';
 
 class ProcessCmd {
   String executable;
@@ -50,6 +53,21 @@ class ProcessCmd {
     }
     return false;
   }
+
+  @override
+  String toString() => executableArgumentsToString(executable, arguments);
+
+  /// Execute
+  Future<ProcessResult> run() => process_run.run(executable, arguments,
+      workingDirectory: workingDirectory,
+      environment: environment,
+      includeParentEnvironment: includeParentEnvironment,
+      runInShell: runInShell,
+      stdoutEncoding: stdoutEncoding,
+      stderrEncoding: stderrEncoding,
+      connectStdin: connectStdin,
+      connectStdout: connectStdout,
+      connectStderr: connectStderr);
 }
 
 ProcessCmd processCmd(String executable, List<String> arguments,

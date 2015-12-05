@@ -29,7 +29,7 @@ List<String> dartbinCmdArguments(String cmd, List<String> args) {
 List<String> dartfmtArguments(List<String> args) =>
     dartbinCmdArguments('dartfmt', args);
 
-/// dartanalysze
+/// dartanalyzer
 List<String> dartanalyzerArguments(List<String> args) =>
     dartbinCmdArguments('dartanalyzer', args);
 
