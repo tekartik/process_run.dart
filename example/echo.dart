@@ -8,7 +8,7 @@ import 'package:args/args.dart';
 import 'hex_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-Version version = new Version(0, 0, 1);
+Version version = new Version(0, 1, 0);
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
 ///

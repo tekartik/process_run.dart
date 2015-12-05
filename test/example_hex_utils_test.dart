@@ -1,7 +1,8 @@
-library tekartik_utils.hex_utils_tests;
+@TestOn("vm")
+library process_run.hex_utils_test;
 
-import 'package:test/test.dart';
-import 'hex_utils.dart';
+import 'package:dev_test/test.dart';
+import '../example/hex_utils.dart';
 
 main() {
   group('hex utils', () {
