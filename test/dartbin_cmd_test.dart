@@ -2,8 +2,8 @@
 library command.test.process_cmd_test_;
 
 import 'package:dev_test/test.dart';
-import 'package:process_run/src/process_cmd.dart';
-import 'package:process_run/src/dartbin_cmd.dart';
+import 'package:process_run/cmd/process_cmd.dart';
+import 'package:process_run/cmd/dartbin_cmd.dart';
 import 'package:process_run/dartbin.dart';
 import 'dart:io';
 import 'package:path/path.dart';

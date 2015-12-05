@@ -2,7 +2,7 @@
 library command.test.process_cmd_test_;
 
 import 'package:dev_test/test.dart';
-import 'package:process_run/src/process_cmd.dart';
+import 'package:process_run/cmd/process_cmd.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart';

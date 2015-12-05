@@ -1,6 +1,6 @@
 library process_run.src.dartbin_cmd;
 
-import 'process_cmd.dart';
+import 'package:process_run/cmd/process_cmd.dart';
 import '../dartbin.dart';
 
 /// Dart command
