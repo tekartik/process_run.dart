@@ -23,7 +23,7 @@ void main() {
       expect(cmd1, isNot(cmd2));
       cmd2
         ..executable = "b"
-        ..arguments = [1];
+        ..arguments = ['1'];
       expect(cmd1, isNot(cmd2));
     });
     test('clone', () {
