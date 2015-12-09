@@ -10,6 +10,7 @@ export 'src/dartbin_cmd.dart';
 export 'src/process_cmd.dart';
 export 'process_run.dart';
 export 'dartbin.dart';
+export 'src/dev_cmd_run.dart';
 
 import 'dart:io';
 import 'dart:async';

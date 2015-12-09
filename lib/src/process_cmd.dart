@@ -92,3 +92,25 @@ ProcessCmd processCmd(String executable, List<String> arguments,
       connectStdout: connectStdout,
       connectStderr: connectStderr);
 }
+
+String processResultToDebugString(ProcessResult result) {
+  StringBuffer sb = new StringBuffer();
+  sb.writeln("exitCode: ${result.exitCode}");
+  if (result.stdout.isNotEmpty) {
+    sb.writeln("out: ${result.stdout}");
+  }
+  if (result.stderr.isNotEmpty) {
+    sb.writeln("err: ${result.stderr}");
+  }
+  return sb.toString();
+}
+
+String processCmdToDebugString(ProcessCmd cmd) {
+  StringBuffer sb = new StringBuffer();
+  if (cmd.workingDirectory != null) {
+    sb.writeln("dir: ${cmd.workingDirectory}");
+  }
+  sb.writeln("cmd: ${cmd}");
+
+  return sb.toString();
+}

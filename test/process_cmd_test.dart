@@ -64,5 +64,28 @@ void main() {
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
     });
+
+    test('processResultToDebugString', () {
+      expect(
+          LineSplitter.split(processResultToDebugString(
+              new ProcessResult(1, 0, "out", "err"))),
+          ['exitCode: 0', 'out: out', 'err: err']);
+      expect(
+          LineSplitter.split(processResultToDebugString(
+              new ProcessResult(2, 1, "testout", "testerr"))),
+          ['exitCode: 1', 'out: testout', 'err: testerr']);
+    });
+
+    test('processCmdToDebugString', () {
+      expect(
+          LineSplitter
+              .split(processCmdToDebugString(new ProcessCmd("cmd", ['arg']))),
+          ['cmd: cmd arg']);
+
+      expect(
+          LineSplitter.split(processCmdToDebugString(
+              new ProcessCmd("cmd", ['arg'])..workingDirectory = "dir")),
+          ['dir: dir', 'cmd: cmd arg']);
+    });
   });
 }
