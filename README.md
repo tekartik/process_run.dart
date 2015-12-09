@@ -24,6 +24,32 @@ Helper to format dart binaries argument that works cross-platforms
 
 ### Sample usage
 
+#### Using ProcessCmd
+
+````
+// Simple echo command
+// Somehow windows requires runInShell for the system commands
+bool runInShell = Platform.isWindows;
+
+// Run the command
+ProcessCmd cmd = processCmd('echo', ['hello world'], runInShell: runInShell);
+await runCmd(cmd);
+// Stream the out to stdout
+await runCmd(cmd..connectStdout = true);
+
+// Calling dart
+cmd = dartCmd(['--version']);
+await runCmd(cmd);
+
+// stream stderr
+// clone the command to allow other modifications
+await runCmd(cmd.clone()..connectStderr = true);
+// stream stdout
+await runCmd(cmd.clone()..connectStdout = true);
+````
+
+#### Low level
+
 ````
 import 'package:process_run/process_run.dart';
 import 'package:process_run/dartbin.dart';
