@@ -2,8 +2,9 @@
 library command.test.process_cmd_test_;
 
 import 'package:dev_test/test.dart';
-import 'package:process_run/cmd/process_cmd.dart';
-import 'package:process_run/cmd/dartbin_cmd.dart';
+import 'package:process_run/cmd_run.dart' show runCmd;
+import 'package:process_run/src/dartbin_cmd.dart';
+import 'package:process_run/src/process_cmd.dart';
 import 'package:process_run/dartbin.dart';
 import 'dart:io';
 import 'package:path/path.dart';
@@ -14,17 +15,17 @@ void main() {
       ProcessCmd cmd = dartCmd(['version']);
       expect(cmd.executable, dartExecutable);
       expect(cmd.arguments, ['version']);
-      ProcessResult result = await cmd.run();
+      ProcessResult result = await runCmd(cmd);
       expect(result.stderr.toLowerCase(), contains("dart"));
       expect(result.stderr.toLowerCase(), contains("version"));
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
     });
     test('others', () async {
-      expect((await dartfmtCmd(['--help']).run()).exitCode, 0);
-      expect((await dartanalyzerCmd(['--help']).run()).exitCode, 0);
-      expect((await dart2jsCmd(['--help']).run()).exitCode, 0);
-      expect((await dartdocCmd(['--help']).run()).exitCode, 0);
-      expect((await pubCmd(['--help']).run()).exitCode, 0);
+      expect((await runCmd(dartfmtCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(dartanalyzerCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(dart2jsCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(dartdocCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(pubCmd(['--help']))).exitCode, 0);
     });
     test('arguments', () {
       _expect(ProcessCmd cmd, String snapshotCmd) {

@@ -2,7 +2,8 @@
 library command.test.process_cmd_test_;
 
 import 'package:dev_test/test.dart';
-import 'package:process_run/cmd/process_cmd.dart';
+import 'package:process_run/cmd_run.dart' show runCmd;
+import 'package:process_run/src/process_cmd.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart';
@@ -35,7 +36,7 @@ void main() {
     });
     test('dart_cmd', () async {
       ProcessResult result =
-          await processCmd(dartExecutable, ['--version']).run();
+          await runCmd(processCmd(dartExecutable, ['--version']));
       expect(result.stderr.toLowerCase(), contains("dart"));
       expect(result.stderr.toLowerCase(), contains("version"));
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
@@ -57,7 +58,7 @@ void main() {
         cmd = processCmd('cat', ['pubspec.yaml'],
             workingDirectory: dirname(testDir));
       }
-      ProcessResult result = await cmd.run();
+      ProcessResult result = await runCmd(cmd);
       expect(LineSplitter.split(result.stdout), lines);
       expect(result.stderr, '');
       expect(result.pid, isNotNull);
