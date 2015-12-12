@@ -4,6 +4,7 @@ library command.test.dartbin_test;
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'dart:io';
 
 void main() => defineTests();
@@ -59,9 +60,16 @@ void defineTests() {
       expect(result.stdout, contains("Usage: dartfmt"));
 
       // dartfmt has no version option yet
+      // Fixed in 1.14.0-dev.4!
       result =
           await Process.run(dartExecutable, dartfmtArguments(['--version']));
-      expect(result.exitCode, 64);
+      if (new Version.parse(Platform.version.split(' ').first) <
+          new Version(1, 14, 0, pre: "4")) {
+        expect(result.exitCode, 64);
+      } else {
+        expect(result.stdout, contains("dartfmt"));
+        expect(result.exitCode, 0);
+      }
     });
 
     test('dartanalyzer', () async {
