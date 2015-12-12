@@ -67,7 +67,7 @@ void defineTests() {
           new Version(1, 14, 0, pre: "4")) {
         expect(result.exitCode, 64);
       } else {
-        expect(result.stdout, contains("dartfmt"));
+        // no contains the version only...expect(result.stdout, contains("dartfmt"));
         expect(result.exitCode, 0);
       }
     });
