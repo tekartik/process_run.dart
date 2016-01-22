@@ -14,7 +14,6 @@ void defineTests() {
     group('arguments', () {
       test('dartdoc', () {
         List args = dartdocArguments([]);
-        print(args);
         expect(args[0], startsWith("--packages"));
         expect(args[0], endsWith(".packages"));
         expect(args[1], endsWith("dartdoc.dart.snapshot"));
