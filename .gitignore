@@ -19,3 +19,6 @@ pubspec.lock
 
 # generated doc
 doc/api
+
+# test
+test_out

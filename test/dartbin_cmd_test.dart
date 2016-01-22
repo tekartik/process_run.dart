@@ -11,7 +11,22 @@ import 'package:path/path.dart';
 
 void main() {
   group('dartbin_cmd', () {
-    test('dartCmd', () async {
+    test('arguments', () {
+      _expect(ProcessCmd cmd, String snapshotCmd) {
+        expect(cmd.executable, dartExecutable);
+        expect(cmd.arguments, [
+          join(dirname(dartExecutable), 'snapshots',
+              '${snapshotCmd}.dart.snapshot'),
+          '--help'
+        ]);
+      }
+      _expect(dartfmtCmd(['--help']), 'dartfmt');
+      _expect(dartanalyzerCmd(['--help']), 'dartanalyzer');
+      _expect(dart2jsCmd(['--help']), 'dart2js');
+      //_expect(dartdocCmd(['--help']), 'dartdoc');
+      _expect(pubCmd(['--help']), 'pub');
+    });
+    test('dartcmd_arguments', () async {
       ProcessCmd cmd = dartCmd(['version']);
       expect(cmd.executable, dartExecutable);
       expect(cmd.arguments, ['version']);
@@ -26,21 +41,6 @@ void main() {
       expect((await runCmd(dart2jsCmd(['--help']))).exitCode, 0);
       expect((await runCmd(dartdocCmd(['--help']))).exitCode, 0);
       expect((await runCmd(pubCmd(['--help']))).exitCode, 0);
-    });
-    test('arguments', () {
-      _expect(ProcessCmd cmd, String snapshotCmd) {
-        expect(cmd.executable, dartExecutable);
-        expect(cmd.arguments, [
-          join(dirname(dartExecutable), 'snapshots',
-              '${snapshotCmd}.dart.snapshot'),
-          '--help'
-        ]);
-      }
-      _expect(dartfmtCmd(['--help']), 'dartfmt');
-      _expect(dartanalyzerCmd(['--help']), 'dartanalyzer');
-      _expect(dart2jsCmd(['--help']), 'dart2js');
-      _expect(dartdocCmd(['--help']), 'dartdoc');
-      _expect(pubCmd(['--help']), 'pub');
     });
   });
 }

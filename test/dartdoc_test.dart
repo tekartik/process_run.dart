@@ -1,0 +1,44 @@
+@TestOn("vm")
+library command.test.dartbin_test;
+
+import 'package:dev_test/test.dart';
+import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart';
+import 'dart:io';
+
+import 'dart:mirrors';
+
+String getScriptPath(Type type) =>
+    (reflectClass(type).owner as LibraryMirror).uri.toFilePath();
+
+class Script {
+  static String get path => getScriptPath(Script);
+}
+
+String projectTop = dirname(dirname(Script.path));
+String testOut = join(projectTop, 'test_out');
+
+void main() => defineTests();
+
+void defineTests() {
+  group('dartdoc', () {
+    test('help', () async {
+      ProcessResult result = await runCmd(dartdocCmd(['--help']));
+      expect(result.stdout, contains("Usage: dartdoc"));
+      expect(result.exitCode, 0);
+    });
+    test('version', () async {
+      ProcessResult result = await await runCmd(dartdocCmd(['--version']));
+      expect(result.stdout, contains("dartdoc"));
+      expect(result.exitCode, 0);
+    });
+    test('build', () async {
+      // from dartdoc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdoc/.packages" "$SNAPSHOT" "$@"
+
+      ProcessResult result = await await runCmd(
+          dartdocCmd(['--output', join(testOut, joinAll(testDescriptions))]));
+      //expect(result.stdout, contains("dartdoc"));
+      expect(result.exitCode, 0);
+    });
+  });
+}

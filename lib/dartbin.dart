@@ -17,11 +17,14 @@ String get dartExecutable {
 
 String get _dartbinDirPath => dirname(dartExecutable);
 
+String dartbinCmdSnapshot(String cmd) =>
+    join(_dartbinDirPath, 'snapshots', '${cmd}.dart.snapshot');
+
 /// For a dart binary (pub, dart2js, dartfmt...)
 List<String> dartbinCmdArguments(String cmd, List<String> args) {
   // clone it
   args = new List.from(args);
-  args.insert(0, join(_dartbinDirPath, 'snapshots', '${cmd}.dart.snapshot'));
+  args.insert(0, dartbinCmdSnapshot(cmd));
   return args;
 }
 
@@ -38,8 +41,14 @@ List<String> dart2jsArguments(List<String> args) =>
     dartbinCmdArguments('dart2js', args);
 
 /// dartdoc
-List<String> dartdocArguments(List<String> args) =>
-    dartbinCmdArguments('dartdoc', args);
+List<String> dartdocArguments(List<String> args) {
+  String cmd = 'dartdoc';
+  return new List<String>.from(args)
+    ..insertAll(0, [
+      '--packages=${join(_dartbinDirPath, 'snapshots', 'resources', cmd, '.packages')}',
+      dartbinCmdSnapshot(cmd)
+    ]);
+}
 
 /// pub
 List<String> pubArguments(List<String> args) =>
