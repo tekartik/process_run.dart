@@ -31,20 +31,36 @@ bool _isWhitespace(int rune) => ((rune >= 0x0009 && rune <= 0x000D) ||
     rune == 0x3000 ||
     rune == 0xFEFF);
 
+// argument must not be null
+String argumentToString(String argument) {
+  bool hasWhitespace = false;
+  bool hasSingleQuote = false;
+  bool hasDoubleQuote = false;
+  if (argument.length == 0) {
+    return '""';
+  }
+  for (int rune in argument.runes) {
+    if ((!hasWhitespace) && (_isWhitespace(rune))) {
+      hasWhitespace = true;
+    } else if (rune == 0x0027) { // '
+      hasSingleQuote = true;
+    } else if (rune == 0x0022) { // "
+      hasDoubleQuote = true;
+    }
+  }
+  if (hasWhitespace || hasSingleQuote) {
+    argument = '"$argument"';
+  } else if (hasDoubleQuote) {
+    argument = "'$argument'";
+  }
+  return argument;
+}
+
 String argumentsToString(List<String> arguments) {
   List<String> argumentStrings = [];
   for (String argument in arguments) {
-    bool hasWhitespace = false;
-    for (int rune in argument.runes) {
-      if (_isWhitespace(rune)) {
-        hasWhitespace = true;
-        break;
-      }
-    }
-    if (hasWhitespace) {
-      argument = '"$argument"';
-    }
-    argumentStrings.add(argument);
+
+    argumentStrings.add(argumentToString(argument));
   }
   return argumentStrings.join(' ');
 }

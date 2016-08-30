@@ -13,6 +13,15 @@ import 'dart:convert';
 void main() {
   group('toString', () {
     test('argumentsToString', () {
+      expect(argumentToString(''), '""');
+      expect(argumentToString('a'), 'a');
+      expect(argumentToString(' '), '" "');
+      expect(argumentToString('\t'), '"\t"');
+      expect(argumentToString('\n'), '"\n"');
+      expect(argumentToString('\''), '"\'"');
+      expect(argumentToString('"'), '\'"\'');
+    });
+    test('argumentsToString', () {
       expect(argumentsToString([]), '');
       expect(argumentsToString(["a"]), 'a');
       expect(argumentsToString(["a", "b"]), 'a b');
@@ -28,6 +37,8 @@ void main() {
       expect(executableArgumentsToString('cmd', ['a']), 'cmd a');
       expect(executableArgumentsToString('cmd', ["a", "b"]), 'cmd a b');
       expect(executableArgumentsToString('cmd', [' ']), 'cmd " "');
+      expect(executableArgumentsToString('cmd', [' ']), 'cmd " "');
+      expect(executableArgumentsToString('cmd', ['"']), 'cmd \'"\'');
     });
   });
 

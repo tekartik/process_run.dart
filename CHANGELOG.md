@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+* add argumentToString to handle basic quote or double quote
+
 ## 0.3.2
 
 * fix dartdoc to add --packages argument along with the snapshot
