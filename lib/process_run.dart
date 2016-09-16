@@ -34,8 +34,8 @@ bool _isWhitespace(int rune) => ((rune >= 0x0009 && rune <= 0x000D) ||
 // argument must not be null
 String argumentToString(String argument) {
   bool hasWhitespace = false;
-  bool hasSingleQuote = false;
-  bool hasDoubleQuote = false;
+  int singleQuoteCount = 0;
+  int doubleQuoteCount = 0;
   if (argument.length == 0) {
     return '""';
   }
@@ -43,15 +43,22 @@ String argumentToString(String argument) {
     if ((!hasWhitespace) && (_isWhitespace(rune))) {
       hasWhitespace = true;
     } else if (rune == 0x0027) { // '
-      hasSingleQuote = true;
+      singleQuoteCount++;
     } else if (rune == 0x0022) { // "
-      hasDoubleQuote = true;
+      doubleQuoteCount++;
     }
   }
-  if (hasWhitespace || hasSingleQuote) {
-    argument = '"$argument"';
-  } else if (hasDoubleQuote) {
+  if (singleQuoteCount > 0) {
+    if (doubleQuoteCount > 0) {
+      // simply escape all double quotes
+      argument = '"${argument.replaceAll('"', '\\"')}"';
+    } else {
+      argument = '"$argument"';
+    }
+  } else if (doubleQuoteCount > 0) {
     argument = "'$argument'";
+  } else if (hasWhitespace) {
+    argument = '"$argument"';
   }
   return argument;
 }

@@ -21,11 +21,13 @@ void main() {
       expect(argumentToString('\''), '"\'"');
       expect(argumentToString('"'), '\'"\'');
     });
-    test('argumentsToString', () {
+    solo_test('argumentsToString', () {
       expect(argumentsToString([]), '');
       expect(argumentsToString(["a"]), 'a');
       expect(argumentsToString(["a", "b"]), 'a b');
       expect(argumentsToString([' ']), '" "');
+      expect(argumentsToString(['" ']), '\'" \'');
+      expect(argumentsToString(['""\'']), '"\\"\\"\'"');
       expect(argumentsToString(['\t']), '"\t"');
       expect(argumentsToString(['\n']), '"\n"');
       expect(argumentsToString(['a', 'b\nc', 'd']), 'a "b\nc" d');
