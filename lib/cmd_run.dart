@@ -27,6 +27,8 @@ Future<ProcessResult> runCmd(ProcessCmd cmd) =>
         runInShell: cmd.runInShell,
         stdoutEncoding: cmd.stdoutEncoding,
         stderrEncoding: cmd.stderrEncoding,
+        stdin: cmd.stdin,
+        // ignore: deprecated_member_use
         connectStdin: cmd.connectStdin,
         connectStdout: cmd.connectStdout,
         connectStderr: cmd.connectStderr);

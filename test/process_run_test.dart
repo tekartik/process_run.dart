@@ -21,7 +21,7 @@ void main() {
       expect(argumentToString('\''), '"\'"');
       expect(argumentToString('"'), '\'"\'');
     });
-    solo_test('argumentsToString', () {
+    test('argumentsToString', () {
       expect(argumentsToString([]), '');
       expect(argumentsToString(["a"]), 'a');
       expect(argumentsToString(["a", "b"]), 'a b');
@@ -72,6 +72,7 @@ void main() {
           stderrEncoding: stderrEncoding,
           connectStderr: connectStderr,
           connectStdout: connectStdout,
+          // ignore: deprecated_member_use
           connectStdin: connectStdin);
       check(result);
     }

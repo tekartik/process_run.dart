@@ -3,13 +3,27 @@ library tekartik_process.bin.echo;
 
 import 'dart:io';
 
-import 'package:path/path.dart';
 import 'package:args/args.dart';
-import 'hex_utils.dart';
+import 'package:path/path.dart';
 import 'package:pub_semver/pub_semver.dart';
 
+import 'hex_utils.dart';
+
 Version version = new Version(0, 1, 0);
+
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
+
+/*
+Global options:
+-h, --help          Usage help
+-o, --stdout        stdout content as string
+-p, --stdout-hex    stdout as hexa string
+-e, --stderr        stderr content as string
+-f, --stderr-hex    stderr as hexa string
+-i, --stdin         Handle first line of stdin
+-x, --exit-code     Exit code to return
+    --version       Print the command version
+*/
 
 ///
 /// write rest arguments as lines
@@ -19,6 +33,7 @@ main(List<String> arguments) async {
 
   ArgParser parser = new ArgParser(allowTrailingOptions: false);
   parser.addFlag('help', abbr: 'h', help: 'Usage help', negatable: false);
+  parser.addFlag('verbose', abbr: 'v', help: 'Verbose', negatable: false);
   parser.addOption('stdout',
       abbr: 'o', help: 'stdout content as string', defaultsTo: null);
   parser.addOption('stdout-hex',
@@ -36,6 +51,7 @@ main(List<String> arguments) async {
   ArgResults _argsResult = parser.parse(arguments);
 
   bool help = _argsResult['help'];
+  bool verbose = _argsResult['verbose'];
 
   _printUsage() {
     stdout.writeln('Echo utility');
@@ -64,7 +80,14 @@ main(List<String> arguments) async {
 
   // handle stdin if asked for it
   if (_argsResult['stdin']) {
-    stdout.write(stdin.readLineSync());
+    if (verbose) {
+      //stderr.writeln('stdin  $stdin');
+      //stderr.writeln('stdin  ${await stdin..isEmpty}');
+    }
+    String lineSync = stdin.readLineSync();
+    if (lineSync != null) {
+      stdout.write(lineSync);
+    }
   }
   // handle stdout
   String outputText = _argsResult['stdout'];

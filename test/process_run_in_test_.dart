@@ -12,7 +12,12 @@ void main() {
     print('Please enter "hi"');
     ProcessResult result = await run(
         dartExecutable, [echoScriptPath, '--stdin'],
-        connectStdin: true);
+        stdin: testStdin);
     expect(result.stdout, "hi");
+    print('Please enter "ho"');
+    result = await run(
+        dartExecutable, [echoScriptPath, '--stdin'],
+        stdin: testStdin);
+    expect(result.stdout, "ho");
   });
 }

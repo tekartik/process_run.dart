@@ -4,6 +4,7 @@
 library process_run;
 
 import 'dart:io';
+import 'dart:io' as io;
 import 'dart:convert';
 import 'dart:async';
 
@@ -90,6 +91,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     Encoding stderrEncoding: SYSTEM_ENCODING,
     bool connectStdout: false,
     bool connectStderr: false,
+    Stream<List<int>> stdin,
+    @deprecated
     bool connectStdin: false}) async {
   Process process = await Process.start(executable, arguments,
       workingDirectory: workingDirectory,
@@ -101,9 +104,17 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   StreamController<List<int>> errCtlr = new StreamController();
 
   // Connected stdin
-  if (connectStdin) {
-    process.stdin.addStream(stdin);
+  // Buggy!
+  if (stdin != null) {
+    stdin.pipe(process.stdin); //.addStream(stdin);
+  // ignore: deprecated_member_use
+  } else if (connectStdin) {
+    process.stdin.addStream(io.stdin);
+  } else {
+    // Close the input sync, we want this not interractive
+    process.stdin.close();
   }
+
 
   Future<dynamic> streamToResult(Stream<List<int>> stream, Encoding encoding) {
     if (encoding == null) {
@@ -139,5 +150,11 @@ Future<ProcessResult> run(String executable, List<String> arguments,
 
   int exitCode = await process.exitCode;
 
-  return new ProcessResult(process.pid, exitCode, await out, await err);
+  ProcessResult result = new ProcessResult(process.pid, exitCode, await out, await err);
+
+  if (stdin != null) {
+    //process.stdin.close();
+  }
+
+  return result;
 }

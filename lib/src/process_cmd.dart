@@ -18,6 +18,7 @@ class ProcessCmd {
   Encoding stderrEncoding = SYSTEM_ENCODING;
   bool connectStdout = false;
   bool connectStderr = false;
+  Stream<List<int>> stdin;
   bool connectStdin = false;
 
   ProcessCmd(this.executable, this.arguments,
@@ -27,9 +28,12 @@ class ProcessCmd {
       this.runInShell,
       this.stdoutEncoding,
       this.stderrEncoding,
+      @deprecated
+      // ignore: deprecated_member_use
       this.connectStdin,
       this.connectStdout,
-      this.connectStderr});
+      this.connectStderr,
+      this.stdin});
 
   ProcessCmd clone() => processCmd(executable, arguments,
       workingDirectory: workingDirectory,
@@ -88,7 +92,7 @@ ProcessCmd processCmd(String executable, List<String> arguments,
       runInShell: runInShell,
       stdoutEncoding: stdoutEncoding,
       stderrEncoding: stderrEncoding,
-      connectStdin: connectStdin,
+      connectStdin: connectStdin, // ignore: deprecated_member_use
       connectStdout: connectStdout,
       connectStderr: connectStderr);
 }

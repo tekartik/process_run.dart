@@ -82,3 +82,7 @@ main() async {
 
 As noted in the example, windows requires runInShell for system commands (echo, type)
 but not for regular executables (dart, git...)
+
+## Goals
+
+Currently using Process.run does not stream output which is convenient

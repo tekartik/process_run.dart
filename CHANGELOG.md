@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+* add stdin and deprecated buggy connectStdin
+
 ## 0.3.3
 
 * add argumentToString to handle basic quote or double quote

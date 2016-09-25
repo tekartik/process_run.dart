@@ -32,7 +32,6 @@ void defineTests() {
       expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
     });
-    // Skipped for SDK 1.19.0
     test('build', () async {
       // from dartdoc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdoc/.packages" "$SNAPSHOT" "$@"
 
@@ -40,6 +39,7 @@ void defineTests() {
           dartdocCmd(['--output', join(testOut, joinAll(testDescriptions))]));
       //expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
-    }, skip: "failed on SDK 1.19.0");
+      //}, skip: "failed on SDK 1.19.0"); - fixed in 1.19.1
+    });
   });
 }
