@@ -45,23 +45,28 @@ void main() {
   });
 
   group('run', () {
-    Future _runCheck(check(Result), String executable, List<String> arguments,
-        {String workingDirectory,
-        Map<String, String> environment,
-        includeParentEnvironment: true,
-        bool runInShell: false,
-        stdoutEncoding: SYSTEM_ENCODING,
-        stderrEncoding: SYSTEM_ENCODING,
-        connectStdout: false,
-        connectStderr: false,
-        connectStdin: false}) async {
-      ProcessResult result = await Process.run(executable, arguments,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment,
-          runInShell: runInShell,
-          stdoutEncoding: stdoutEncoding,
-          stderrEncoding: stderrEncoding);
+    Future _runCheck(
+      check(Result),
+      String executable,
+      List<String> arguments, {
+      String workingDirectory,
+      Map<String, String> environment,
+      includeParentEnvironment: true,
+      bool runInShell: false,
+      stdoutEncoding: SYSTEM_ENCODING,
+      stderrEncoding: SYSTEM_ENCODING,
+      StreamSink<List<int>> stdout,
+    }) async {
+      ProcessResult result = await Process.run(
+        executable,
+        arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment,
+        runInShell: runInShell,
+        stdoutEncoding: stdoutEncoding,
+        stderrEncoding: stderrEncoding,
+      );
       check(result);
       result = await run(executable, arguments,
           workingDirectory: workingDirectory,
@@ -70,10 +75,7 @@ void main() {
           runInShell: runInShell,
           stdoutEncoding: stdoutEncoding,
           stderrEncoding: stderrEncoding,
-          connectStderr: connectStderr,
-          connectStdout: connectStdout,
-          // ignore: deprecated_member_use
-          connectStdin: connectStdin);
+          stdout: stdout);
       check(result);
     }
 
@@ -84,12 +86,14 @@ void main() {
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, '');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       await _runCheck(
           checkOut, dartExecutable, [echoScriptPath, '--stdout', 'out']);
       await _runCheck(checkEmpty, dartExecutable, [echoScriptPath]);
@@ -102,12 +106,14 @@ void main() {
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, []);
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       await _runCheck(
           check123, dartExecutable, [echoScriptPath, '--stdout-hex', '010203'],
           stdoutEncoding: null);
@@ -122,15 +128,17 @@ void main() {
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, '');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       await _runCheck(
           checkErr, dartExecutable, [echoScriptPath, '--stderr', 'err'],
-          connectStdout: true);
+          stdout: stdout);
       await _runCheck(checkEmpty, dartExecutable, [echoScriptPath]);
     });
 
@@ -141,12 +149,14 @@ void main() {
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       checkEmpty(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, []);
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       await _runCheck(
           check123, dartExecutable, [echoScriptPath, '--stderr-hex', '010203'],
           stderrEncoding: null);
@@ -161,12 +171,14 @@ void main() {
         expect(result.pid, isNotNull);
         expect(result.exitCode, 123);
       }
+
       check0(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, '');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
+
       await _runCheck(
           check123, dartExecutable, [echoScriptPath, '--exit-code', '123']);
       await _runCheck(check0, dartExecutable, [echoScriptPath]);

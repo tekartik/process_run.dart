@@ -12,15 +12,15 @@ import 'process_run_test_common.dart';
 main() async {
   print('Please enter "hi"');
   ProcessResult result = await run(
-      dartExecutable, [echoScriptPath, '--stdin'],
-  //stdin: testStdin);
-      );
+    dartExecutable, [echoScriptPath, '--stdin'],
+    //stdin: testStdin);
+  );
   print('out: ${result.stdout}');
   print('Please enter "ho"');
   result = await run(
-      dartExecutable, [echoScriptPath, '--stdin'],
-  //stdin: testStdin);
-      );
+    dartExecutable, [echoScriptPath, '--stdin'],
+    //stdin: testStdin);
+  );
   print('out: ${result.stdout}');
 
   // unfortunately using testStdin hangs...

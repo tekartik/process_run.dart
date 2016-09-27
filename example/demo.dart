@@ -15,16 +15,14 @@ main() async {
   await run('echo', ['hello world'], runInShell: runInShell);
 
   // Stream the out to stdout
-  await run('echo', ['hello world'],
-      runInShell: runInShell, connectStdout: true);
+  await run('echo', ['hello world'], runInShell: runInShell, stdout: stdout);
 
   // Calling dart
   await run(dartExecutable, ['--version']);
 
   // stream the output to stderr
-  await run(dartExecutable, ['--version'], connectStderr: true);
+  await run(dartExecutable, ['--version'], stderr: stderr);
 
   // Listing global activated packages
-  await run(dartExecutable, pubArguments(['global', 'list']),
-      connectStdout: true);
+  await run(dartExecutable, pubArguments(['global', 'list']), stdout: stdout);
 }

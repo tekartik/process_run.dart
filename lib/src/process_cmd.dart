@@ -1,39 +1,50 @@
 library process_run.src.process_cmd;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:collection/collection.dart';
+
 import '../process_run.dart';
 import '../process_run.dart' as process_run;
-import 'dart:async';
 
 class ProcessCmd {
   String executable;
   List<String> arguments;
   String workingDirectory;
   Map<String, String> environment;
-  bool includeParentEnvironment = true;
-  bool runInShell = false;
-  Encoding stdoutEncoding = SYSTEM_ENCODING;
-  Encoding stderrEncoding = SYSTEM_ENCODING;
+  bool includeParentEnvironment;
+  bool runInShell;
+  Encoding stdoutEncoding;
+  Encoding stderrEncoding;
+
+  // now this is only a parameter at execution
+  @deprecated
   bool connectStdout = false;
+  @deprecated
   bool connectStderr = false;
-  Stream<List<int>> stdin;
+  @deprecated
   bool connectStdin = false;
 
-  ProcessCmd(this.executable, this.arguments,
+  ProcessCmd(
+      this.executable,
+      this.arguments,
       {this.workingDirectory,
       this.environment,
-      this.includeParentEnvironment,
-      this.runInShell,
-      this.stdoutEncoding,
-      this.stderrEncoding,
+      this.includeParentEnvironment: true,
+      this.runInShell: false,
+      this.stdoutEncoding: SYSTEM_ENCODING,
+      this.stderrEncoding: SYSTEM_ENCODING,
       @deprecated
-      // ignore: deprecated_member_use
-      this.connectStdin,
-      this.connectStdout,
-      this.connectStderr,
-      this.stdin});
+          // ignore: deprecated_member_use
+          this.connectStdin,
+      @deprecated
+          // ignore: deprecated_member_use
+          this.connectStdout,
+      @deprecated
+          // ignore: deprecated_member_use
+          this.connectStderr});
 
   ProcessCmd clone() => processCmd(executable, arguments,
       workingDirectory: workingDirectory,
@@ -42,8 +53,12 @@ class ProcessCmd {
       runInShell: runInShell,
       stdoutEncoding: stdoutEncoding,
       stderrEncoding: stderrEncoding,
+
+      // ignore: deprecated_member_use
       connectStdin: connectStdin,
+      // ignore: deprecated_member_use
       connectStdout: connectStdout,
+      // ignore: deprecated_member_use
       connectStderr: connectStderr);
 
   @override
@@ -92,8 +107,11 @@ ProcessCmd processCmd(String executable, List<String> arguments,
       runInShell: runInShell,
       stdoutEncoding: stdoutEncoding,
       stderrEncoding: stderrEncoding,
-      connectStdin: connectStdin, // ignore: deprecated_member_use
+      // ignore: deprecated_member_use
+      connectStdin: connectStdin,
+      // ignore: deprecated_member_use
       connectStdout: connectStdout,
+      // ignore: deprecated_member_use
       connectStderr: connectStderr);
 }
 

@@ -2,6 +2,7 @@ library process_run.dartbin;
 
 import 'dart:io';
 import 'package:path/path.dart';
+import 'package:process_run/src/common/dartbin.dart';
 
 String _dartExecutable;
 
@@ -52,4 +53,4 @@ List<String> dartdocArguments(List<String> args) {
 
 /// pub
 List<String> pubArguments(List<String> args) =>
-    dartbinCmdArguments('pub', args);
+    dartbinCmdArguments(kDartPub, args);

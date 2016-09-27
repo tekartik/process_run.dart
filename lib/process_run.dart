@@ -3,10 +3,13 @@
 ///
 library process_run;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:io' as io;
-import 'dart:convert';
-import 'dart:async';
+
+import 'src/common/import.dart';
+export 'src/dev_process_run.dart';
 
 ///
 /// Returns `true` if [rune] represents a whitespace character.
@@ -43,9 +46,11 @@ String argumentToString(String argument) {
   for (int rune in argument.runes) {
     if ((!hasWhitespace) && (_isWhitespace(rune))) {
       hasWhitespace = true;
-    } else if (rune == 0x0027) { // '
+    } else if (rune == 0x0027) {
+      // '
       singleQuoteCount++;
-    } else if (rune == 0x0022) { // "
+    } else if (rune == 0x0022) {
+      // "
       doubleQuoteCount++;
     }
   }
@@ -67,7 +72,6 @@ String argumentToString(String argument) {
 String argumentsToString(List<String> arguments) {
   List<String> argumentStrings = [];
   for (String argument in arguments) {
-
     argumentStrings.add(argumentToString(argument));
   }
   return argumentStrings.join(' ');
@@ -82,6 +86,9 @@ String executableArgumentsToString(String executable, List<String> arguments) {
   return sb.toString();
 }
 
+///
+/// if [commmandVerbose] or [verbose] is true, display the command.
+/// if [verbose] is true, stream stdout & stdin
 Future<ProcessResult> run(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,
@@ -89,49 +96,88 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     bool runInShell: false,
     Encoding stdoutEncoding: SYSTEM_ENCODING,
     Encoding stderrEncoding: SYSTEM_ENCODING,
-    bool connectStdout: false,
-    bool connectStderr: false,
     Stream<List<int>> stdin,
-    @deprecated
-    bool connectStdin: false}) async {
+    StreamSink<List<int>> stdout,
+    StreamSink<List<int>> stderr,
+    bool verbose,
+    bool commandVerbose,
+    @deprecated bool connectStdout: false,
+    @deprecated bool connectStderr: false,
+    @deprecated bool connectStdin: false}) async {
+  // enforce default
+  includeParentEnvironment ??= true;
+  runInShell ??= false;
+  //stdoutEncoding ??= SYSTEM_ENCODING;
+  //stderrEncoding ??= SYSTEM_ENCODING;
+
+  // compatibility
+  // ignore: deprecated_member_use
+  connectStdin ??= false;
+  // ignore: deprecated_member_use
+  connectStdout ??= false;
+  // ignore: deprecated_member_use
+  connectStderr ??= false;
+  // ignore: deprecated_member_use
+  if (connectStdin) {
+    stdin ??= io.stdin;
+  }
+  // ignore: deprecated_member_use
+  if (connectStdout) {
+    stdout ??= io.stdout;
+  }
+  // ignore: deprecated_member_use
+  if (connectStderr) {
+    stderr ??= io.stderr;
+  }
+
+  if (verbose == true) {
+    commandVerbose = true;
+    stdout ??= io.stdout;
+    stderr ??= io.stderr;
+  }
+
+  if (commandVerbose == true) {
+    (stdout ?? io.stdout).add(
+        "\$ ${executableArgumentsToString(executable, arguments)}\n".codeUnits);
+  }
+
   Process process = await Process.start(executable, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment,
       runInShell: runInShell);
 
-  StreamController<List<int>> outCtlr = new StreamController();
-  StreamController<List<int>> errCtlr = new StreamController();
+  StreamController<List<int>> outCtlr = new StreamController(sync: true);
+  StreamController<List<int>> errCtlr = new StreamController(sync: true);
 
   // Connected stdin
   // Buggy!
   if (stdin != null) {
-    stdin.pipe(process.stdin); //.addStream(stdin);
-  // ignore: deprecated_member_use
-  } else if (connectStdin) {
-    process.stdin.addStream(io.stdin);
+    //stdin.pipe(process.stdin); // this closes the stream...
+    process.stdin.addStream(stdin);
   } else {
     // Close the input sync, we want this not interractive
     process.stdin.close();
   }
 
-
-  Future<dynamic> streamToResult(Stream<List<int>> stream, Encoding encoding) {
-    if (encoding == null) {
-      List<int> list = [];
-      return stream.listen((List<int> data) {
-        list.addAll(data);
-      }).asFuture(list);
-    } else {
-      return encoding.decodeStream(stream);
+  Future<dynamic> streamToResult(
+      Stream<List<int>> stream, Encoding encoding) async {
+    List<int> list = [];
+    await for (List<int> data in stream) {
+      //devPrint('s: ${data}');
+      list.addAll(data);
     }
+    if (encoding != null) {
+      return encoding.decode(list);
+    }
+    return list;
   }
 
   var out = streamToResult(outCtlr.stream, stdoutEncoding);
   var err = streamToResult(errCtlr.stream, stderrEncoding);
 
   process.stdout.listen((List<int> d) {
-    if (connectStdout) {
+    if (stdout != null) {
       stdout.add(d);
     }
     outCtlr.add(d);
@@ -139,8 +185,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     outCtlr.close();
   });
 
-  process.stderr.listen((List<int> d) {
-    if (connectStderr) {
+  process.stderr.listen((List<int> d) async {
+    if (stderr != null) {
       stderr.add(d);
     }
     errCtlr.add(d);
@@ -150,11 +196,31 @@ Future<ProcessResult> run(String executable, List<String> arguments,
 
   int exitCode = await process.exitCode;
 
-  ProcessResult result = new ProcessResult(process.pid, exitCode, await out, await err);
+  // Notice that exitCode can complete before all of the lines of output have been
+  // processed. Also note that we do not explicitly close the process. In order
+  // to not leak resources we have to drain both the stderr and the stdout streams.
+  // To do that we set a listener (using await for) to drain the stderr stream.
+  //await process.stdout.drain();
+  //await process.stderr.drain();
+
+  ProcessResult result =
+      new ProcessResult(process.pid, exitCode, await out, await err);
 
   if (stdin != null) {
     //process.stdin.close();
   }
+
+  /*
+  // flush for consistency
+  if (stdout == io.stdout) {
+    await io.stdout.flush();
+    print("flushing out after");
+  }
+  if (stderr == io.stderr) {
+    await io.stderr.flush();
+    print("flushing err after");
+  }
+  */
 
   return result;
 }

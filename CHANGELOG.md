@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+* deprecated connectStdout and connectStrerr in ProcessCmd
+
 ## 0.4.0
 
 * add stdin and deprecated buggy connectStdin

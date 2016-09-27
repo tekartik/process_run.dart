@@ -9,9 +9,8 @@ Process run helpers for Linux/Win/Mac
 ### process_run
 
 Additional options to Process.run are
-* connecting stdin
-* connecting stdout
-* connecting sterr
+* specifying stdin
+* making it verbose
 
 ### dartbin
 

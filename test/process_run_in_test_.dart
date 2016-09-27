@@ -15,8 +15,7 @@ void main() {
         stdin: testStdin);
     expect(result.stdout, "hi");
     print('Please enter "ho"');
-    result = await run(
-        dartExecutable, [echoScriptPath, '--stdin'],
+    result = await run(dartExecutable, [echoScriptPath, '--stdin'],
         stdin: testStdin);
     expect(result.stdout, "ho");
   });
