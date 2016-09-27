@@ -3,6 +3,7 @@
 ## 0.5.0
 
 * deprecated connectStdout and connectStrerr in ProcessCmd
+* add stdin, stdout, verbose and commandVerbose parameter for run
 
 ## 0.4.0
 
