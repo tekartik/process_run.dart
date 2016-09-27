@@ -1,2 +1,2 @@
-const kDartPub = 'pub';
-const kDart = 'dart';
+const dartPubName = 'pub';
+const dartName = 'dart';

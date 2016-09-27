@@ -27,7 +27,7 @@ class _DartCmd extends ProcessCmd {
   _DartCmd(List<String> arguments) : super(dartExecutable, arguments);
 
   @override
-  String toString() => executableArgumentsToString(kDart, arguments);
+  String toString() => executableArgumentsToString(dartName, arguments);
 }
 
 class _PubCmd extends ProcessCmd {
@@ -39,7 +39,7 @@ class _PubCmd extends ProcessCmd {
 
   @override
   String toString() =>
-      executableArgumentsToString(kDartPub, _originalArguments);
+      executableArgumentsToString(dartPubName, _originalArguments);
 }
 
 /// pub

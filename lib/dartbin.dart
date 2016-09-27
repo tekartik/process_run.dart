@@ -53,4 +53,4 @@ List<String> dartdocArguments(List<String> args) {
 
 /// pub
 List<String> pubArguments(List<String> args) =>
-    dartbinCmdArguments(kDartPub, args);
+    dartbinCmdArguments(dartPubName, args);
