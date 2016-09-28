@@ -29,8 +29,7 @@ main() async {
   await runCmd(cmd, verbose: true);
   // > $ echo "new hello world"
   // > new hello world
-  await runCmd(cmd.clone()
-    ..arguments = ["new hello world"], verbose: true);
+  await runCmd(cmd.clone()..arguments = ["new hello world"], verbose: true);
 
   // Calling dart
   // > $ dart --version
@@ -40,7 +39,9 @@ main() async {
 
   // Calling dart script
   // $ dart example/my_script.dart my_first_arg my_second_arg
-  await runCmd(dartCmd(['example/my_script.dart', 'my_first_arg', 'my_second_arg']), commandVerbose: true);
+  await runCmd(
+      dartCmd(['example/my_script.dart', 'my_first_arg', 'my_second_arg']),
+      commandVerbose: true);
 
   // Calling pub
   // > $ pub --version

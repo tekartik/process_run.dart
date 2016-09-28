@@ -151,8 +151,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   } catch (e) {
     if (verbose == true) {
       io.stderr.writeln(e);
-      io.stderr.writeln(
-          "\$ ${executableArgumentsToString(executable, arguments)}");
+      io.stderr
+          .writeln("\$ ${executableArgumentsToString(executable, arguments)}");
       io.stderr.writeln("workingDirectory: $workingDirectory");
     }
     rethrow;

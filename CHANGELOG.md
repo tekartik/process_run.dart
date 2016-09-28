@@ -1,5 +1,10 @@
 # Changelog
 
+
+## pending 0.5.1
+
+* fix devRunRun
+
 ## 0.5.0
 
 * deprecated connectStdout and connectStrerr in ProcessCmd
