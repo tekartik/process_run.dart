@@ -1,8 +1,5 @@
-#!/usr/bin/env dart
-library command.example.command_demo;
-
-import 'package:process_run/cmd_run.dart';
 import 'dart:io';
+import 'package:process_run/cmd_run.dart';
 
 main() async {
   // Simple echo command
@@ -11,54 +8,47 @@ main() async {
 
   // Run the command
   ProcessCmd cmd = processCmd('echo', ['hello world'], runInShell: runInShell);
-
-  stdout.writeln("# running normally");
   await runCmd(cmd);
 
-  stdout.writeln("# running verbose");
+  // Running the command in verbose mode (i.e. display the command and stdout/stderr)
+  // > $ echo "hello world"
+  // > hello world
   await runCmd(cmd, verbose: true);
 
-  await stdout.flush();
-  stdout.writeln("# only stream output");
   // Stream the out to stdout
   await runCmd(cmd, stdout: stdout);
 
   // Calling dart
-
-  stdout.writeln("# dart --version");
   cmd = dartCmd(['--version']);
   await runCmd(cmd);
 
-  //await stdout.flush();
-  //await stderr.flush();
-  stdout.writeln("# dart --version (verbose)");
+  // clone the command to allow other modifications
+  cmd = processCmd('echo', ['hello world'], runInShell: runInShell);
+  // > $ echo "hello world"
+  // > hello world
+  await runCmd(cmd, verbose: true);
+  // > $ echo "new hello world"
+  // > new hello world
+  await runCmd(cmd.clone()
+    ..arguments = ["new hello world"], verbose: true);
+
+  // Calling dart
+  // > $ dart --version
+  // > Dart VM version: 1.19.1 (Wed Sep  7 15:59:44 2016) on "linux_x64"
   cmd = dartCmd(['--version']);
   await runCmd(cmd, verbose: true);
 
-  //await stdout.flush();
-  //await stderr.flush();
+  // Calling dart script
+  // $ dart example/my_script.dart my_first_arg my_second_arg
+  await runCmd(dartCmd(['example/my_script.dart', 'my_first_arg', 'my_second_arg']), commandVerbose: true);
 
-  stdout.writeln("# dart --version (stderr only)");
-  // stream stderr
-  // clone the command to allow other modifications
-  await runCmd(cmd, stderr: stderr);
+  // Calling pub
+  // > $ pub --version
+  // > Pub 1.19.1
+  await runCmd(pubCmd(['--version']), verbose: true);
 
-  await stdout.flush();
-  stdout.writeln("# dart --version (stdout only)");
-  // stream stdout
-  await runCmd(cmd, stdout: stdout);
-
-  // hello
-  stdout.writeln("# hello world");
-  cmd = processCmd('echo', ['hello world']);
-  await runCmd(cmd);
-
-  await runCmd(dartCmd(['--version']));
-
-  await runCmd(dartCmd(['my_script.dart', 'my_first_arg', 'my_second_arg']));
-
-  stdout.writeln("# hello world .stdout");
-  print((await run('echo', ['hello world'])).stdout);
-  print((await runCmd(dartCmd(['--version']))).stderr);
-  print((await runCmd(dartCmd(['example/command.dart', '--version']))).stdout);
+  // Listing global activated packages
+  // > $ pub global list
+  // > ...
+  await runCmd(pubCmd(['global', 'list']), verbose: true);
 }

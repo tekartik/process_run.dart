@@ -1,6 +1,3 @@
-#!/usr/bin/env dart
-library process_run.bin.demo;
-
 import 'dart:io';
 
 import 'package:process_run/process_run.dart';
@@ -24,5 +21,5 @@ main() async {
   await run(dartExecutable, ['--version'], stderr: stderr);
 
   // Listing global activated packages
-  await run(dartExecutable, pubArguments(['global', 'list']), stdout: stdout);
+  await run(dartExecutable, pubArguments(['global', 'list']), verbose: true);
 }
