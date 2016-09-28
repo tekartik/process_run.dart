@@ -141,11 +141,22 @@ Future<ProcessResult> run(String executable, List<String> arguments,
         "\$ ${executableArgumentsToString(executable, arguments)}\n".codeUnits);
   }
 
-  Process process = await Process.start(executable, arguments,
-      workingDirectory: workingDirectory,
-      environment: environment,
-      includeParentEnvironment: includeParentEnvironment,
-      runInShell: runInShell);
+  Process process;
+  try {
+    process = await Process.start(executable, arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment,
+        runInShell: runInShell);
+  } catch (e) {
+    if (verbose == true) {
+      io.stderr.writeln(e);
+      io.stderr.writeln(
+          "\$ ${executableArgumentsToString(executable, arguments)}");
+      io.stderr.writeln("workingDirectory: $workingDirectory");
+    }
+    rethrow;
+  }
 
   StreamController<List<int>> outCtlr = new StreamController(sync: true);
   StreamController<List<int>> errCtlr = new StreamController(sync: true);
