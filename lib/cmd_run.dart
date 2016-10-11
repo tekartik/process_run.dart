@@ -53,17 +53,29 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
     (stdout ?? io.stdout).add("\$ ${cmd}\n".codeUnits);
   }
 
-  return await run(
-    cmd.executable,
-    cmd.arguments,
-    workingDirectory: cmd.workingDirectory,
-    environment: cmd.environment,
-    includeParentEnvironment: cmd.includeParentEnvironment,
-    runInShell: cmd.runInShell,
-    stdoutEncoding: cmd.stdoutEncoding,
-    stderrEncoding: cmd.stderrEncoding,
-    stdin: stdin,
-    stdout: stdout,
-    stderr: stderr,
-  );
+  try {
+    return await run(
+        cmd.executable,
+        cmd.arguments,
+        workingDirectory: cmd.workingDirectory,
+        environment: cmd.environment,
+        includeParentEnvironment: cmd.includeParentEnvironment,
+        runInShell: cmd.runInShell,
+        stdoutEncoding: cmd.stdoutEncoding,
+        stderrEncoding: cmd.stderrEncoding,
+    //verbose: verbose,
+    //commandVerbose: commandVerbose,
+        stdin: stdin,
+        stdout: stdout,
+        stderr: stderr,
+        );
+  } catch (e) {
+    if (verbose == true) {
+      io.stderr.writeln(e);
+      io.stderr
+          .writeln("\$ ${cmd}");
+      io.stderr.writeln("workingDirectory: ${cmd.workingDirectory}");
+    }
+    rethrow;
+  }
 }
