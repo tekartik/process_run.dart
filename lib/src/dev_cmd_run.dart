@@ -1,5 +1,3 @@
-library process_run.src.dev_cmd_run;
-
 import 'dart:async';
 import 'dart:io';
 

@@ -1,8 +1,6 @@
 ///
 /// Helper to run a process and connect the input/output for verbosity
 ///
-library process_run;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';

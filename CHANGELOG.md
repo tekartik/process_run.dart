@@ -1,9 +1,9 @@
 # Changelog
 
 
-## pending 0.5.1
+## 0.5.1
 
-* fix devRunRun
+* fix devRun
 
 ## 0.5.0
 

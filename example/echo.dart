@@ -1,6 +1,4 @@
 #!/usr/bin/env dart
-library tekartik_process.bin.echo;
-
 import 'dart:io';
 
 import 'package:args/args.dart';

@@ -1,5 +1,3 @@
-library process_run.hex_utils;
-
 int _ACodeUnit = 'A'.codeUnitAt(0);
 int _aCodeUnit = 'a'.codeUnitAt(0);
 int _0CodeUnit = '0'.codeUnitAt(0);

@@ -1,7 +1,6 @@
 ///
 /// Command runner
 ///
-library process_run.cmd_run;
 
 import 'dart:async';
 import 'dart:io';
@@ -55,25 +54,24 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
 
   try {
     return await run(
-        cmd.executable,
-        cmd.arguments,
-        workingDirectory: cmd.workingDirectory,
-        environment: cmd.environment,
-        includeParentEnvironment: cmd.includeParentEnvironment,
-        runInShell: cmd.runInShell,
-        stdoutEncoding: cmd.stdoutEncoding,
-        stderrEncoding: cmd.stderrEncoding,
-    //verbose: verbose,
-    //commandVerbose: commandVerbose,
-        stdin: stdin,
-        stdout: stdout,
-        stderr: stderr,
-        );
+      cmd.executable,
+      cmd.arguments,
+      workingDirectory: cmd.workingDirectory,
+      environment: cmd.environment,
+      includeParentEnvironment: cmd.includeParentEnvironment,
+      runInShell: cmd.runInShell,
+      stdoutEncoding: cmd.stdoutEncoding,
+      stderrEncoding: cmd.stderrEncoding,
+      //verbose: verbose,
+      //commandVerbose: commandVerbose,
+      stdin: stdin,
+      stdout: stdout,
+      stderr: stderr,
+    );
   } catch (e) {
     if (verbose == true) {
       io.stderr.writeln(e);
-      io.stderr
-          .writeln("\$ ${cmd}");
+      io.stderr.writeln("\$ ${cmd}");
       io.stderr.writeln("workingDirectory: ${cmd.workingDirectory}");
     }
     rethrow;

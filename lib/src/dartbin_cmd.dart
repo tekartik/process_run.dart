@@ -1,5 +1,3 @@
-library process_run.src.dartbin_cmd;
-
 import '../process_run.dart';
 import 'process_cmd.dart';
 import '../dartbin.dart';

@@ -1,5 +1,4 @@
 @TestOn("vm")
-library process_run.hex_utils_test;
 
 import 'package:dev_test/test.dart';
 import '../example/hex_utils.dart';

@@ -1,7 +1,5 @@
 @TestOn("vm")
-library command.test.process_cmd_test_;
 
-import 'process_run_test_common.dart';
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart';
 import 'dart:io';
@@ -16,8 +14,7 @@ void main() {
       // $ /usr/lib/dart/bin/dart version
       // workingDirectory: /dummy
       try {
-        await runCmd(dartCmd(['version'])
-          ..workingDirectory = '/dummy');
+        await runCmd(dartCmd(['version'])..workingDirectory = '/dummy');
         fail('should fail');
       } catch (e) {
         expect(e, new isInstanceOf<ProcessException>());

@@ -1,5 +1,3 @@
-library process_run.src.process_cmd;
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';

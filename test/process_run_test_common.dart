@@ -1,5 +1,4 @@
 @TestOn("vm")
-library command.test.process_command_test;
 
 import 'package:dev_test/test.dart';
 import 'dart:mirrors';
@@ -35,7 +34,7 @@ class TestSink<T> implements StreamSink<T> {
   var _isClosed = false;
 
   Future get done => _doneCompleter.future;
-  final _doneCompleter = new Completer();
+  final _doneCompleter = new Completer<dynamic>();
 
   final Function _onDone;
 
