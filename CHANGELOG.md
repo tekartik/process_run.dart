@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.2 (temp)
+
+* fix dart2js to have a libraryRoot argument
 
 ## 0.5.1
 

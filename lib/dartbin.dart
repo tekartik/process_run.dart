@@ -16,6 +16,8 @@ String get dartExecutable {
 
 String get _dartbinDirPath => dirname(dartExecutable);
 
+String get dartSdkDirPath => dirname(_dartbinDirPath);
+
 String dartbinCmdSnapshot(String cmd) =>
     join(_dartbinDirPath, 'snapshots', '${cmd}.dart.snapshot');
 
@@ -36,8 +38,15 @@ List<String> dartanalyzerArguments(List<String> args) =>
     dartbinCmdArguments('dartanalyzer', args);
 
 /// dart2js
-List<String> dart2jsArguments(List<String> args) =>
-    dartbinCmdArguments('dart2js', args);
+/// [libraryRoot] necessary and computed if not provided
+List<String> dart2jsArguments(List<String> args, {String libraryRoot}) {
+  List<String> dart2jsArgs = new List.from(args ?? []);
+  if (libraryRoot == null) {
+    libraryRoot = dartSdkDirPath;
+  }
+  dart2jsArgs.insertAll(0, ['--library-root=${libraryRoot}']);
+  return dartbinCmdArguments('dart2js', dart2jsArgs);
+}
 
 /// dartdoc
 List<String> dartdocArguments(List<String> args) {

@@ -22,8 +22,16 @@ void main() {
 
       _expect(dartfmtCmd(['--help']), 'dartfmt');
       _expect(dartanalyzerCmd(['--help']), 'dartanalyzer');
-      _expect(dart2jsCmd(['--help']), 'dart2js');
-      //_expect(dartdocCmd(['--help']), 'dartdoc');
+      expect(dart2jsCmd(['--help']).arguments, [
+        join(dirname(dartExecutable), 'snapshots', 'dart2js.dart.snapshot'),
+        '--library-root=${dartSdkDirPath}',
+        '--help'
+      ]);
+      expect(dartdocCmd(['--help']).arguments, [
+        '--packages=${join(dartSdkDirPath, 'bin', 'snapshots', 'resources', 'dartdoc', '.packages')}',
+        join(dirname(dartExecutable), 'snapshots', 'dartdoc.dart.snapshot'),
+        '--help'
+      ]);
       _expect(pubCmd(['--help']), 'pub');
     });
 
