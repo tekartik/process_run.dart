@@ -58,6 +58,10 @@ List<String> dartdocArguments(List<String> args) {
     ]);
 }
 
+/// dartdevc
+List<String> dartdevcArguments(List<String> args) =>
+    dartbinCmdArguments('dartdevc', args);
+
 /// pub
 List<String> pubArguments(List<String> args) =>
     dartbinCmdArguments(dartPubName, args);

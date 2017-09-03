@@ -19,6 +19,9 @@ ProcessCmd dart2jsCmd(List<String> args) => dartCmd(dart2jsArguments(args));
 /// dartdoc
 ProcessCmd dartdocCmd(List<String> args) => dartCmd(dartdocArguments(args));
 
+/// dartdevc
+ProcessCmd dartdevcCmd(List<String> args) => dartCmd(dartdevcArguments(args));
+
 class _DartCmd extends ProcessCmd {
   List<String> _originalArguments;
 

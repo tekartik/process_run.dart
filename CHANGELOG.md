@@ -3,6 +3,7 @@
 ## 0.5.2 (temp)
 
 * fix dart2js to have a libraryRoot argument
+* add dartdevc
 
 ## 0.5.1
 
