@@ -2,7 +2,7 @@
 
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart' show runCmd;
-import 'package:process_run/src/process_cmd.dart';
+import 'package:process_run/process_cmd.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart';

@@ -40,7 +40,8 @@ List<String> dartanalyzerArguments(List<String> args) =>
 /// dart2js
 /// [libraryRoot] necessary and computed if not provided
 List<String> dart2jsArguments(List<String> args, {String libraryRoot}) {
-  List<String> dart2jsArgs = new List.from(args ?? []);
+  args ??= [];
+  List<String> dart2jsArgs = new List.from(args);
   if (libraryRoot == null) {
     libraryRoot = dartSdkDirPath;
   }
@@ -49,13 +50,12 @@ List<String> dart2jsArguments(List<String> args, {String libraryRoot}) {
 }
 
 /// dartdoc
-List<String> dartdocArguments(List<String> args) {
+List<String> dartdocArguments(List<String> args, {String packages}) {
   String cmd = 'dartdoc';
+  packages ??=
+      join(_dartbinDirPath, 'snapshots', 'resources', cmd, '.packages');
   return new List<String>.from(args)
-    ..insertAll(0, [
-      '--packages=${join(_dartbinDirPath, 'snapshots', 'resources', cmd, '.packages')}',
-      dartbinCmdSnapshot(cmd)
-    ]);
+    ..insertAll(0, ['--packages=${packages}', dartbinCmdSnapshot(cmd)]);
 }
 
 /// dartdevc
