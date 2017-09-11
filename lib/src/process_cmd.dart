@@ -17,9 +17,7 @@ class ProcessCmd {
   Encoding stdoutEncoding;
   Encoding stderrEncoding;
 
-  ProcessCmd(
-      this.executable,
-      this.arguments,
+  ProcessCmd(this.executable, this.arguments,
       {this.workingDirectory,
       this.environment,
       this.includeParentEnvironment: true,

@@ -142,13 +142,14 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     //stdin.pipe(process.stdin); // this closes the stream...
     stdin.listen((List<int> data) {
       process.stdin.add(data);
-    })..onDone(() {
-      process.stdin.close();
-    });
+    })
+      ..onDone(() {
+        process.stdin.close();
+      });
     // OLD 2: process.stdin.addStream(stdin);
   } else {
     // Close the input sync, we want this not interractive
-    process.stdin.close();
+    //process.stdin.close();
   }
 
   Future<dynamic> streamToResult(

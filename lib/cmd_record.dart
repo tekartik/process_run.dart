@@ -179,8 +179,11 @@ Future record(String executable, List<String> arguments,
     bool noStdOutput,
     StringSink dumpSink,
     History history,
-    Stream<List<int>> inStream}) async {
+    Stream<List<int>> inStream,
+    bool noStderr}) async {
   noStdOutput ??= false;
+  noStderr ??= false;
+
   Stream<List<int>> stdinStream = inStream ?? stdin;
   // by default record if there is an incoming stream
   recordStdin ??= inStream != null;
@@ -196,12 +199,16 @@ Future record(String executable, List<String> arguments,
     dumpSink?.writeln(item.getOutput(outPrefix));
     history?.outItems?.add(item);
   });
-  HistorySink errSink = new HistorySink(noStdOutput ? null : stderr, stopwatch);
-  errSink.stream.listen((HistoryItem item) {
-    // Output
-    dumpSink?.writeln(item.getOutput(errPrefix));
-    history?.errItems?.add(item);
-  });
+  HistorySink errSink;
+  if (!noStderr) {
+    HistorySink errSink =
+        new HistorySink(noStdOutput ? null : stderr, stopwatch);
+    errSink.stream.listen((HistoryItem item) {
+      // Output
+      dumpSink?.writeln(item.getOutput(errPrefix));
+      history?.errItems?.add(item);
+    });
+  }
 
   StreamController<List<int>> stdinController =
       new StreamController(sync: true);
@@ -246,7 +253,7 @@ Future record(String executable, List<String> arguments,
       stdin: recordStdin ? stdinController.stream : null);
 
   await outSink.close();
-  await errSink.close();
+  await errSink?.close();
   history?.result = result;
   history?.duration = stopwatch.elapsed;
 }

@@ -28,7 +28,6 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
     Stream<List<int>> stdin,
     StreamSink<List<int>> stdout,
     StreamSink<List<int>> stderr}) async {
-
   if (verbose == true) {
     stdout ??= io.stdout;
     stderr ??= io.stderr;

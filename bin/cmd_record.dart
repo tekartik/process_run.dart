@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -30,7 +31,9 @@ Global options:
 
 const String flagRunInShell = "run-in-shell";
 const String flagStdin = "stdin";
+const String flagOwnStdin = "own-stdin";
 const String flagJson = "json";
+const String flagNoStderr = "no-stderr";
 
 ///
 /// write rest arguments as lines
@@ -41,12 +44,18 @@ main(List<String> arguments) async {
   ArgParser parser = new ArgParser(allowTrailingOptions: false);
   parser.addFlag('help', abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag('verbose', abbr: 'v', help: 'Verbose', negatable: false);
+  parser.addFlag(flagNoStderr, abbr: 'n', help: 'No stderr', negatable: false);
   parser.addFlag(flagRunInShell,
       abbr: 's', help: 'RunInShell', negatable: false);
   parser.addFlag(flagJson, abbr: 'j', help: 'Save as json', negatable: false);
   parser.addFlag(flagStdin,
       abbr: 'i',
       help: 'stdin read, need CTRL-C to terminate',
+      defaultsTo: false,
+      negatable: true);
+  parser.addFlag(flagOwnStdin,
+      abbr: 'w',
+      help: 'handle stdin and forward command',
       defaultsTo: false,
       negatable: true);
   parser.addOption('exit-code', abbr: 'x', help: 'Exit code to return');
@@ -60,6 +69,8 @@ main(List<String> arguments) async {
   bool runInShell = _argResults[flagRunInShell];
   bool recordStdin = _argResults[flagStdin];
   bool json = _argResults[flagJson];
+  bool noStdErr = _argResults[flagNoStderr];
+  bool ownStdin = _argResults[flagOwnStdin];
 
   _printUsage() {
     stdout.writeln('Echo utility');
@@ -103,12 +114,30 @@ main(List<String> arguments) async {
     ioSink = new File("cmd_record.log").openWrite(mode: FileMode.WRITE);
   }
 
+  Stream<List<int>> inStream;
+  StreamController inStreamController;
+  if (ownStdin) {
+    inStreamController = new StreamController(sync: true);
+    inStream = inStreamController.stream;
+    stdin
+        .transform(UTF8.decoder)
+        .transform(new LineSplitter())
+        .listen((String line) {
+      inStreamController.add(UTF8.encode("$line\n"));
+    });
+  }
+
   await record(cmdExecutable, cmdArguments,
       runInShell: runInShell,
       recordStdin: recordStdin,
       history: history,
-      dumpSink: ioSink);
+      dumpSink: ioSink,
+      noStderr: noStdErr,
+      inStream: inStream);
 
+  if (ownStdin) {
+    inStreamController.close();
+  }
   if (verbose) {
     dump(history);
   }
