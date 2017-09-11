@@ -1,6 +1,6 @@
-import 'package:process_run/src/common/import.dart';
 @TestOn("vm")
 
+import 'package:process_run/src/common/import.dart';
 import 'process_run_test_common.dart';
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart';

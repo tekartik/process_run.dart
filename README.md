@@ -130,3 +130,17 @@ main() async {
 
 As noted in the example, windows requires `runInShell` for system commands (echo, type)
 but not for regular executables (dart, git...)
+
+## Tool
+
+    cmd_record [my_command]
+    
+### Activation
+
+#### From git repository
+
+    pub global activate -s git git://github.com/tekartik/tekartik_sc.dart
+
+#### From local path
+
+    pub global activate -s path .

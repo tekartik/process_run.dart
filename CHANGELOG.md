@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.3
+
+* Adding executable cmd_record which logs stdin/stdout/stderr
+
 ## 0.5.2
 
 * fix dart2js to have a libraryRoot argument

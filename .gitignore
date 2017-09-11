@@ -22,3 +22,5 @@ doc/api
 
 # test
 test_out
+/cmd_record.json
+/cmd_record.log

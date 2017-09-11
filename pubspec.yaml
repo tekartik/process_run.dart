@@ -15,5 +15,5 @@ dev_dependencies:
   test: any
   async: any
 
-executable:
+executables:
   cmd_record:
