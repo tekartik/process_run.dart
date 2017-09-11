@@ -17,14 +17,6 @@ class ProcessCmd {
   Encoding stdoutEncoding;
   Encoding stderrEncoding;
 
-  // now this is only a parameter at execution
-  @deprecated
-  bool connectStdout = false;
-  @deprecated
-  bool connectStderr = false;
-  @deprecated
-  bool connectStdin = false;
-
   ProcessCmd(
       this.executable,
       this.arguments,
@@ -33,16 +25,7 @@ class ProcessCmd {
       this.includeParentEnvironment: true,
       this.runInShell: false,
       this.stdoutEncoding: SYSTEM_ENCODING,
-      this.stderrEncoding: SYSTEM_ENCODING,
-      @deprecated
-          // ignore: deprecated_member_use
-          this.connectStdin,
-      @deprecated
-          // ignore: deprecated_member_use
-          this.connectStdout,
-      @deprecated
-          // ignore: deprecated_member_use
-          this.connectStderr});
+      this.stderrEncoding: SYSTEM_ENCODING});
 
   ProcessCmd clone() => processCmd(executable, arguments,
       workingDirectory: workingDirectory,
@@ -50,14 +33,7 @@ class ProcessCmd {
       includeParentEnvironment: includeParentEnvironment,
       runInShell: runInShell,
       stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding,
-
-      // ignore: deprecated_member_use
-      connectStdin: connectStdin,
-      // ignore: deprecated_member_use
-      connectStdout: connectStdout,
-      // ignore: deprecated_member_use
-      connectStderr: connectStderr);
+      stderrEncoding: stderrEncoding);
 
   @override
   int get hashCode => executable.hashCode;
@@ -82,10 +58,7 @@ class ProcessCmd {
       includeParentEnvironment: includeParentEnvironment,
       runInShell: runInShell,
       stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding,
-      connectStdin: connectStdin,
-      connectStdout: connectStdout,
-      connectStderr: connectStderr);
+      stderrEncoding: stderrEncoding);
 }
 
 ProcessCmd processCmd(String executable, List<String> arguments,
@@ -94,23 +67,14 @@ ProcessCmd processCmd(String executable, List<String> arguments,
     bool includeParentEnvironment: true,
     bool runInShell: false,
     Encoding stdoutEncoding: SYSTEM_ENCODING,
-    Encoding stderrEncoding: SYSTEM_ENCODING,
-    bool connectStdout: false,
-    bool connectStderr: false,
-    bool connectStdin: false}) {
+    Encoding stderrEncoding: SYSTEM_ENCODING}) {
   return new ProcessCmd(executable, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment,
       runInShell: runInShell,
       stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding,
-      // ignore: deprecated_member_use
-      connectStdin: connectStdin,
-      // ignore: deprecated_member_use
-      connectStdout: connectStdout,
-      // ignore: deprecated_member_use
-      connectStderr: connectStderr);
+      stderrEncoding: stderrEncoding);
 }
 
 String processResultToDebugString(ProcessResult result) {

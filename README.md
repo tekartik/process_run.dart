@@ -29,8 +29,9 @@ Helper to format dart binaries argument that works cross-platforms
 * `dartfmt`
 * `dartanalyzer`
 * `dartoc`
+* `dartdevc`
 
-### cmd_run
+### process_cmd
 
 Allow creating `ProcessCmd` object that can be run in different manner
 

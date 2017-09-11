@@ -9,13 +9,12 @@ import 'dart:io';
 void main() {
   group('runCmd', () {
     test('dartCmd', () async {
-      ProcessResult result = await runCmd(dartCmd(['version']));
-      expect(result.stderr.toLowerCase(), contains("dart"));
+      ProcessResult result = await runCmd(dartCmd([cmdRecordScriptPath, '--version']));
       expect(result.stderr.toLowerCase(), contains("version"));
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
     });
 
-    test('stdin', () async {
+    test('simple', () async {
       ProcessCmd cmd = dartCmd([echoScriptPath, '--stdin', 'in']);
       ProcessResult result = await runCmd(cmd);
       expect(result.stderr, '');

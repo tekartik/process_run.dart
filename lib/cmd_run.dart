@@ -28,24 +28,11 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
     Stream<List<int>> stdin,
     StreamSink<List<int>> stdout,
     StreamSink<List<int>> stderr}) async {
-  // compatibility 0.4.0
-  // ignore: deprecated_member_use
-  if (cmd.connectStdin == true) {
-    stdin ??= io.stdin;
-  }
-  // ignore: deprecated_member_use
-  if (cmd.connectStderr == true) {
-    stderr ??= io.stderr;
-  }
-  // ignore: deprecated_member_use
-  if (cmd.connectStdout == true) {
-    stdout ??= io.stdout;
-  }
 
   if (verbose == true) {
     stdout ??= io.stdout;
     stderr ??= io.stderr;
-    commandVerbose = true;
+    commandVerbose ??= true;
   }
 
   if (commandVerbose == true) {

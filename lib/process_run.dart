@@ -98,35 +98,12 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     StreamSink<List<int>> stdout,
     StreamSink<List<int>> stderr,
     bool verbose,
-    bool commandVerbose,
-    @deprecated bool connectStdout: false,
-    @deprecated bool connectStderr: false,
-    @deprecated bool connectStdin: false}) async {
+    bool commandVerbose}) async {
   // enforce default
   includeParentEnvironment ??= true;
   runInShell ??= false;
   //stdoutEncoding ??= SYSTEM_ENCODING;
   //stderrEncoding ??= SYSTEM_ENCODING;
-
-  // compatibility
-  // ignore: deprecated_member_use
-  connectStdin ??= false;
-  // ignore: deprecated_member_use
-  connectStdout ??= false;
-  // ignore: deprecated_member_use
-  connectStderr ??= false;
-  // ignore: deprecated_member_use
-  if (connectStdin) {
-    stdin ??= io.stdin;
-  }
-  // ignore: deprecated_member_use
-  if (connectStdout) {
-    stdout ??= io.stdout;
-  }
-  // ignore: deprecated_member_use
-  if (connectStderr) {
-    stderr ??= io.stderr;
-  }
 
   if (verbose == true) {
     commandVerbose = true;
@@ -163,7 +140,12 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   // Buggy!
   if (stdin != null) {
     //stdin.pipe(process.stdin); // this closes the stream...
-    process.stdin.addStream(stdin);
+    stdin.listen((List<int> data) {
+      process.stdin.add(data);
+    })..onDone(() {
+      process.stdin.close();
+    });
+    // OLD 2: process.stdin.addStream(stdin);
   } else {
     // Close the input sync, we want this not interractive
     process.stdin.close();
