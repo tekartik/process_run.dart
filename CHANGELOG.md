@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.5.3
+## 0.5.4
 
-* Adding executable cmd_record which logs stdin/stdout/stderr
+* Fix handling of stdin
 
 ## 0.5.2
 

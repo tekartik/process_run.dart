@@ -3,47 +3,12 @@
 import 'dart:io';
 import 'package:dev_test/test.dart';
 import 'package:process_run/dartbin.dart';
-import 'package:path/path.dart';
 import 'package:process_run/process_run.dart';
 import 'process_run_test_common.dart';
 import 'dart:async';
-import 'dart:convert';
 
 void main() {
-  group('toString', () {
-    test('argumentsToString', () {
-      expect(argumentToString(''), '""');
-      expect(argumentToString('a'), 'a');
-      expect(argumentToString(' '), '" "');
-      expect(argumentToString('\t'), '"\t"');
-      expect(argumentToString('\n'), '"\n"');
-      expect(argumentToString('\''), '"\'"');
-      expect(argumentToString('"'), '\'"\'');
-    });
-    test('argumentsToString', () {
-      expect(argumentsToString([]), '');
-      expect(argumentsToString(["a"]), 'a');
-      expect(argumentsToString(["a", "b"]), 'a b');
-      expect(argumentsToString([' ']), '" "');
-      expect(argumentsToString(['" ']), '\'" \'');
-      expect(argumentsToString(['""\'']), '"\\"\\"\'"');
-      expect(argumentsToString(['\t']), '"\t"');
-      expect(argumentsToString(['\n']), '"\n"');
-      expect(argumentsToString(['a', 'b\nc', 'd']), 'a "b\nc" d');
-    });
-
-    test('executableArgumentsToString', () {
-      expect(executableArgumentsToString('cmd', null), 'cmd');
-      expect(executableArgumentsToString('cmd', []), 'cmd');
-      expect(executableArgumentsToString('cmd', ['a']), 'cmd a');
-      expect(executableArgumentsToString('cmd', ["a", "b"]), 'cmd a b');
-      expect(executableArgumentsToString('cmd', [' ']), 'cmd " "');
-      expect(executableArgumentsToString('cmd', [' ']), 'cmd " "');
-      expect(executableArgumentsToString('cmd', ['"']), 'cmd \'"\'');
-    });
-  });
-
-  group('run', () {
+  group('echo', () {
     Future _runCheck(
       check(Result),
       String executable,
@@ -56,9 +21,7 @@ void main() {
       stderrEncoding: SYSTEM_ENCODING,
       StreamSink<List<int>> stdout,
     }) async {
-
-      ProcessResult result =
-        await Process.run(
+      ProcessResult result = await Process.run(
         executable,
         arguments,
         workingDirectory: workingDirectory,
@@ -145,15 +108,17 @@ void main() {
 
     test('stdin', () async {
       StreamController<List<int>> inCtrl = new StreamController();
-      Future<ProcessResult> processResultFuture = run(dartExecutable, [echoScriptPath, '--stdin'], stdin: inCtrl.stream);
+      Future<ProcessResult> processResultFuture = run(
+          dartExecutable, [echoScriptPath, '--stdin'],
+          stdin: inCtrl.stream);
       inCtrl.add("in".codeUnits);
       inCtrl.close();
       ProcessResult result = await processResultFuture;
 
-        expect(result.stdout, 'in');
-        expect(result.stderr, "");
-        expect(result.pid, isNotNull);
-        expect(result.exitCode, 0);
+      expect(result.stdout, 'in');
+      expect(result.stderr, "");
+      expect(result.pid, isNotNull);
+      expect(result.exitCode, 0);
     });
 
     test('stderr_bin', () async {
@@ -208,85 +173,6 @@ void main() {
 
       await _runCheck(
           check, dartExecutable, [echoScriptPath, '--exit-code', 'crash']);
-    });
-
-    test('no_argument', () async {
-      try {
-        await Process.run(dartExecutable, null);
-      } on ArgumentError catch (_) {
-        // Invalid argument(s): Arguments is not a List: null
-      }
-      try {
-        await run(dartExecutable, null);
-      } on ArgumentError catch (_) {
-        // Invalid argument(s): Arguments is not a List: null
-      }
-    });
-
-    test('invalid_executable', () async {
-      try {
-        await Process.run(dummyExecutable, []);
-      } on ProcessException catch (_) {
-        // ProcessException: No such file or directory
-      }
-
-      try {
-        await run(dummyExecutable, []);
-      } on ProcessException catch (_) {
-        // ProcessException: No such file or directory
-      }
-    });
-
-    test('system_command', () async {
-      // read pubspec.yaml
-      List<String> lines = const LineSplitter().convert(
-          await new File(join(dirname(testDir), 'pubspec.yaml'))
-              .readAsString());
-
-      check(ProcessResult result) {
-        expect(const LineSplitter().convert(result.stdout), lines);
-        expect(result.stderr, '');
-        expect(result.pid, isNotNull);
-        expect(result.exitCode, 0);
-      }
-
-      // use 'cat' on mac and linux
-      // use 'type' on windows
-
-      if (Platform.isWindows) {
-        await _runCheck(check, 'type', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir), runInShell: true);
-      } else {
-        await _runCheck(check, 'cat', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir));
-      }
-    });
-
-    test('windows_system_command', () async {
-      if (Platform.isWindows) {
-        if (Platform.isWindows) {
-          ProcessResult result;
-
-          result = await run('cmd', ['/c', 'echo', "hi"]);
-          expect(result.stdout, 'hi\r\n');
-          expect(result.stderr, '');
-          expect(result.pid, isNotNull);
-          expect(result.exitCode, 0);
-
-          await run('echo', ["hi"], runInShell: true);
-          expect(result.stdout, 'hi\r\n');
-          expect(result.stderr, '');
-          expect(result.pid, isNotNull);
-          expect(result.exitCode, 0);
-
-          // not using runInShell crashes
-          try {
-            await run('echo', ["hi"]);
-          } on ProcessException catch (_) {
-            // ProcessException: not fount
-          }
-        }
-      }
     });
   });
 }

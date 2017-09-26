@@ -15,9 +15,6 @@ class _TestUtils {
 String get testScriptPath => _TestUtils.scriptPath;
 String get testDir => dirname(testScriptPath);
 
-String get cmdRecordScriptPath =>
-    join(dirname(testDir), 'bin', 'cmd_record.dart');
-
 String get echoScriptPath => join(dirname(testDir), 'example', 'echo.dart');
 
 // does not exists

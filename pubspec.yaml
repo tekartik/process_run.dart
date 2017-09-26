@@ -1,5 +1,5 @@
 name: process_run
-version: 0.5.3
+version: 0.5.4
 description: Process run helpers for Linux/Win/Mac
 homepage: https://github.com/tekartik/process_run.dart
 author: Tekartik <dev@tekartik.com>
@@ -14,6 +14,3 @@ dev_dependencies:
   dev_test: any
   test: any
   async: any
-
-# executables:
-#  cmd_record:
