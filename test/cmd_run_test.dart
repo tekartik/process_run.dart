@@ -22,7 +22,9 @@ void main() {
       expect(result.stdout, "in\n");
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
-    }, onPlatform: {"windows": new Skip("failing")});
+    },
+        skip: true,
+        onPlatform: {"windows": new Skip("failing")}); // to investigate
 
     test('connect_stdin', () async {
       ProcessCmd cmd = dartCmd([echoScriptPath, '--stdin']);
@@ -48,7 +50,7 @@ void main() {
           "\$ dart ${echoScriptPath} --stdout out\n");
       expect(SYSTEM_ENCODING.decode(out.results[1].asValue.value), "out");
       */
-    });
+    }, skip: true); // to investigate
 
     test('connect_stdout', () async {
       ProcessCmd cmd = dartCmd([echoScriptPath, '--stdout', 'out']);
