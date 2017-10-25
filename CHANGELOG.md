@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.5 wip
+
+* when using io.stdout and io.stderr, flush them when running a command
+
 ## 0.5.4
 
 * Fix handling of stdin

@@ -202,17 +202,13 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     //process.stdin.close();
   }
 
-  /*
   // flush for consistency
   if (stdout == io.stdout) {
     await io.stdout.flush();
-    print("flushing out after");
   }
   if (stderr == io.stderr) {
     await io.stderr.flush();
-    print("flushing err after");
   }
-  */
 
   return result;
 }

@@ -10,7 +10,7 @@ import 'dart:async';
 void main() {
   group('echo', () {
     Future _runCheck(
-      check(Result),
+      check(ProcessResult result),
       String executable,
       List<String> arguments, {
       String workingDirectory,

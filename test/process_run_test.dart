@@ -45,7 +45,7 @@ void main() {
 
   group('run', () {
     Future _runCheck(
-      check(Result),
+      check(ProcessResult result),
       String executable,
       List<String> arguments, {
       String workingDirectory,
@@ -56,9 +56,7 @@ void main() {
       stderrEncoding: SYSTEM_ENCODING,
       StreamSink<List<int>> stdout,
     }) async {
-
-      ProcessResult result =
-        await Process.run(
+      ProcessResult result = await Process.run(
         executable,
         arguments,
         workingDirectory: workingDirectory,
@@ -145,15 +143,17 @@ void main() {
 
     test('stdin', () async {
       StreamController<List<int>> inCtrl = new StreamController();
-      Future<ProcessResult> processResultFuture = run(dartExecutable, [echoScriptPath, '--stdin'], stdin: inCtrl.stream);
+      Future<ProcessResult> processResultFuture = run(
+          dartExecutable, [echoScriptPath, '--stdin'],
+          stdin: inCtrl.stream);
       inCtrl.add("in".codeUnits);
       inCtrl.close();
       ProcessResult result = await processResultFuture;
 
-        expect(result.stdout, 'in');
-        expect(result.stderr, "");
-        expect(result.pid, isNotNull);
-        expect(result.exitCode, 0);
+      expect(result.stdout, 'in');
+      expect(result.stderr, "");
+      expect(result.pid, isNotNull);
+      expect(result.exitCode, 0);
     });
 
     test('stderr_bin', () async {
