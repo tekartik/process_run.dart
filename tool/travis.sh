@@ -3,10 +3,6 @@
 # Fast fail the script on failures.
 set -e
 
-dartanalyzer --fatal-warnings \
-  lib/cmd_run.dart \
-  lib/dartbin.dart \
-  lib/process_cmd.dart \
-  lib/process_run.dart
+dartanalyzer --fatal-warnings .
 
 pub run test -p vm
