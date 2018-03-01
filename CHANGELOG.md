@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.6
+
+* supports `implicit-casts: false`
+
 ## 0.5.5
 
 * when using io.stdout and io.stderr, flush them when running a command
