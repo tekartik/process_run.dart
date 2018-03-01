@@ -50,10 +50,10 @@ void main() {
       List<String> arguments, {
       String workingDirectory,
       Map<String, String> environment,
-      includeParentEnvironment: true,
+      bool includeParentEnvironment: true,
       bool runInShell: false,
-      stdoutEncoding: SYSTEM_ENCODING,
-      stderrEncoding: SYSTEM_ENCODING,
+      Encoding stdoutEncoding: SYSTEM_ENCODING,
+      Encoding stderrEncoding: SYSTEM_ENCODING,
       StreamSink<List<int>> stdout,
     }) async {
       ProcessResult result = await Process.run(
@@ -244,7 +244,7 @@ void main() {
               .readAsString());
 
       check(ProcessResult result) {
-        expect(const LineSplitter().convert(result.stdout), lines);
+        expect(const LineSplitter().convert(result.stdout.toString()), lines);
         expect(result.stderr, '');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);

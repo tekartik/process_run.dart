@@ -58,7 +58,7 @@ void main() {
             workingDirectory: dirname(testDir));
       }
       ProcessResult result = await runCmd(cmd);
-      expect(LineSplitter.split(result.stdout), lines);
+      expect(LineSplitter.split(result.stdout.toString()), lines);
       expect(result.stderr, '');
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);

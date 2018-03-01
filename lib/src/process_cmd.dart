@@ -75,13 +75,22 @@ ProcessCmd processCmd(String executable, List<String> arguments,
       stderrEncoding: stderrEncoding);
 }
 
+bool _isNotEmpty(stdout) {
+  if (stdout is List) {
+    return stdout.isNotEmpty;
+  } else if (stdout is String) {
+    return stdout.isNotEmpty;
+  }
+  return (stdout != null);
+}
+
 String processResultToDebugString(ProcessResult result) {
   StringBuffer sb = new StringBuffer();
   sb.writeln("exitCode: ${result.exitCode}");
-  if (result.stdout.isNotEmpty) {
+  if (_isNotEmpty(result.stdout)) {
     sb.writeln("out: ${result.stdout}");
   }
-  if (result.stderr.isNotEmpty) {
+  if (_isNotEmpty(result.stderr)) {
     sb.writeln("err: ${result.stderr}");
   }
   return sb.toString();

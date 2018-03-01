@@ -1,5 +1,5 @@
+import 'dart:convert';
 @TestOn("vm")
-
 import 'dart:io';
 import 'package:dev_test/test.dart';
 import 'package:process_run/dartbin.dart';
@@ -15,10 +15,10 @@ void main() {
       List<String> arguments, {
       String workingDirectory,
       Map<String, String> environment,
-      includeParentEnvironment: true,
+      bool includeParentEnvironment: true,
       bool runInShell: false,
-      stdoutEncoding: SYSTEM_ENCODING,
-      stderrEncoding: SYSTEM_ENCODING,
+      Encoding stdoutEncoding: SYSTEM_ENCODING,
+      Encoding stderrEncoding: SYSTEM_ENCODING,
       StreamSink<List<int>> stdout,
     }) async {
       ProcessResult result = await Process.run(

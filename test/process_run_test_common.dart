@@ -36,7 +36,7 @@ class TestSink<T> implements StreamSink<T> {
   Future get done => _doneCompleter.future;
   final _doneCompleter = new Completer<dynamic>();
 
-  final Function _onDone;
+  final Func0 _onDone;
 
   /// Creates a new sink.
   ///

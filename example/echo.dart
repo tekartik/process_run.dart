@@ -48,8 +48,8 @@ main(List<String> arguments) async {
 
   ArgResults _argsResult = parser.parse(arguments);
 
-  bool help = _argsResult['help'];
-  bool verbose = _argsResult['verbose'];
+  bool help = _argsResult['help'] as bool;
+  bool verbose = _argsResult['verbose'] as bool;
 
   _printUsage() {
     stdout.writeln('Echo utility');
@@ -68,7 +68,7 @@ main(List<String> arguments) async {
     return;
   }
 
-  bool displayVersion = _argsResult['version'];
+  bool displayVersion = _argsResult['version'] as bool;
 
   if (displayVersion) {
     stdout.write('${currentScriptName} version ${version}');
@@ -77,7 +77,7 @@ main(List<String> arguments) async {
   }
 
   // handle stdin if asked for it
-  if (_argsResult['stdin']) {
+  if (_argsResult['stdin'] as bool) {
     if (verbose) {
       //stderr.writeln('stdin  $stdin');
       //stderr.writeln('stdin  ${await stdin..isEmpty}');
@@ -88,20 +88,20 @@ main(List<String> arguments) async {
     }
   }
   // handle stdout
-  String outputText = _argsResult['stdout'];
+  String outputText = _argsResult['stdout'] as String;
   if (outputText != null) {
     stdout.write(outputText);
   }
-  String hexOutputText = _argsResult['stdout-hex'];
+  String hexOutputText = _argsResult['stdout-hex'] as String;
   if (hexOutputText != null) {
     stdout.add(hexToBytes(hexOutputText));
   }
   // handle stderr
-  String stderrText = _argsResult['stderr'];
+  String stderrText = _argsResult['stderr'] as String;
   if (stderrText != null) {
     stderr.write(stderrText);
   }
-  String stderrHexTest = _argsResult['stderr-hex'];
+  String stderrHexTest = _argsResult['stderr-hex'] as String;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
   }
@@ -112,7 +112,7 @@ main(List<String> arguments) async {
   }
 
   // exit code!
-  String exitCodeText = _argsResult['exit-code'];
+  String exitCodeText = _argsResult['exit-code'] as String;
   if (exitCodeText != null) {
     exit(int.parse(exitCodeText));
   }
