@@ -1,4 +1,6 @@
 @TestOn("vm")
+library process_run.dart2js_test;
+
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';

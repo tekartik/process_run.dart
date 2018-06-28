@@ -1,4 +1,5 @@
 @TestOn("vm")
+library process_run.process_run_out_test;
 
 import 'dart:io';
 import 'package:dev_test/test.dart';

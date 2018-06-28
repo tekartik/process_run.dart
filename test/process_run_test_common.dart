@@ -1,21 +1,13 @@
-@TestOn("vm")
-
 import 'package:dev_test/test.dart';
-import 'dart:mirrors';
 import 'package:path/path.dart';
 import 'dart:io';
 import 'dart:async';
 import "package:async/async.dart";
 
-class _TestUtils {
-  static final String scriptPath =
-      (reflectClass(_TestUtils).owner as LibraryMirror).uri.toFilePath();
-}
+String get projectTop => '.';
+String get testDir => join('.dart_tool', 'process_run', 'test');
 
-String get testScriptPath => _TestUtils.scriptPath;
-String get testDir => dirname(testScriptPath);
-
-String get echoScriptPath => join(dirname(testDir), 'example', 'echo.dart');
+String get echoScriptPath => join(projectTop, 'example', 'echo.dart');
 
 // does not exists
 String get dummyExecutable => join(dirname(testDir), 'example', 'dummy');

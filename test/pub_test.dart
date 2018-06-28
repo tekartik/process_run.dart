@@ -1,18 +1,18 @@
 @TestOn("vm")
+library process_run.pub_test;
+
+import 'dart:io';
 
 import 'package:dev_test/test.dart';
-import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:process_run/dartbin.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'dart:io';
 
 void main() => defineTests();
 
 void defineTests() {
   group('pub', () {
     test('help', () async {
-      ProcessResult result = await devRunCmd(pubCmd(['--help']));
+      ProcessResult result = await runCmd(pubCmd(['--help']));
       expect(result.exitCode, 0);
       // Every other commands write to stdout but dartanalyzer
       expect(result.stdout, contains("Usage: pub"));

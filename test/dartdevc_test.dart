@@ -1,27 +1,19 @@
 @TestOn("vm")
+library process_run.dartdevc_test;
+
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'dart:io';
 
-import 'dart:mirrors';
-
-String getScriptPath(Type type) =>
-    (reflectClass(type).owner as LibraryMirror).uri.toFilePath();
-
-class Script {
-  static String get path => getScriptPath(Script);
-}
-
-String projectTop = dirname(dirname(Script.path));
-String testOut = join(projectTop, 'test_out');
+import 'process_run_test_common.dart';
 
 void main() => defineTests();
 
 void defineTests() {
   group('dartdevc', () {
     test('help', () async {
-      ProcessResult result = await devRunCmd(dartdevcCmd(['--help']));
+      ProcessResult result = await runCmd(dartdevcCmd(['--help']));
       expect(result.stdout, contains("Usage: dartdevc"));
       expect(result.exitCode, 0);
     });
@@ -33,14 +25,14 @@ void defineTests() {
     test('build', () async {
       // from dartdevc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdevc/.packages" "$SNAPSHOT" "$@"
 
-      var destination = join(testOut, joinAll(testDescriptions), 'main.js');
+      var destination = join(testDir, joinAll(testDescriptions), 'main.js');
 
       // delete dir if any
       try {
         await new Directory(dirname(destination)).create(recursive: true);
       } catch (_) {}
 
-      ProcessResult result = await await runCmd(
+      ProcessResult result = await runCmd(
         dartdevcCmd(
             ['-o', destination, join(projectTop, 'test', 'data', 'main.dart')]),
         //verbose: true

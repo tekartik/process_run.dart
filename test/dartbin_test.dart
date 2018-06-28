@@ -1,10 +1,11 @@
 @TestOn("vm")
+library process_run.dartbin_test;
+
+import 'dart:io';
 
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
-import 'package:pub_semver/pub_semver.dart';
-import 'dart:io';
 
 void main() => defineTests();
 

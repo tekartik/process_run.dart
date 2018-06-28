@@ -36,10 +36,3 @@ class _DartBinCmd extends ProcessCmd {
   @override
   String toString() => executableArgumentsToString(binName, arguments);
 }
-
-class _DartCmd extends ProcessCmd {
-  _DartCmd(List<String> arguments) : super(dartExecutable, arguments);
-
-  @override
-  String toString() => executableArgumentsToString('dart', arguments);
-}

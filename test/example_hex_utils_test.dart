@@ -1,5 +1,3 @@
-@TestOn("vm")
-
 import 'package:dev_test/test.dart';
 import '../example/hex_utils.dart';
 

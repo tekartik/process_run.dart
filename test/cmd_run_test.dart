@@ -1,4 +1,5 @@
 @TestOn("vm")
+library process_run.cmd_run_test;
 
 import 'dart:io';
 
@@ -11,10 +12,11 @@ import 'process_run_test_common.dart';
 void main() {
   group('cmd_run', () {
     test('dartCmd', () async {
-      ProcessResult result = await runCmd(dartCmd(['version']));
+      ProcessResult result = await runCmd(dartCmd(['--version']));
       expect(result.stderr.toLowerCase(), contains("dart"));
       expect(result.stderr.toLowerCase(), contains("version"));
-      // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
+      expect(result.stderr, contains(Platform.version));
+      // Dart VM version: 2.0.0-dev.65.0 (Tue Jun 26 14:17:21 2018 +0200) on "linux_x64"
     });
 
     test('connect_stdin', () async {

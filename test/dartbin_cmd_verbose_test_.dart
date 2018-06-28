@@ -1,4 +1,5 @@
 @TestOn("vm")
+library process_run.dartbin_cmd_verbose_test;
 
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart' show runCmd;

@@ -1,4 +1,5 @@
 @TestOn("vm")
+library process_run.process_run_test;
 
 import 'dart:io';
 import 'package:dev_test/test.dart';
@@ -240,8 +241,7 @@ void main() {
     test('system_command', () async {
       // read pubspec.yaml
       List<String> lines = const LineSplitter().convert(
-          await new File(join(dirname(testDir), 'pubspec.yaml'))
-              .readAsString());
+          await new File(join(projectTop, 'pubspec.yaml')).readAsString());
 
       check(ProcessResult result) {
         expect(const LineSplitter().convert(result.stdout.toString()), lines);
@@ -255,10 +255,10 @@ void main() {
 
       if (Platform.isWindows) {
         await _runCheck(check, 'type', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir), runInShell: true);
+            workingDirectory: projectTop, runInShell: true);
       } else {
         await _runCheck(check, 'cat', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir));
+            workingDirectory: projectTop);
       }
     });
 

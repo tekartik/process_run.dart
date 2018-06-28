@@ -1,7 +1,8 @@
 @TestOn("vm")
+library process_run.process_cmd_test;
 
 import 'package:dev_test/test.dart';
-import 'package:process_run/cmd_run.dart' show runCmd;
+import 'package:process_run/cmd_run.dart';
 import 'package:process_run/process_cmd.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -44,19 +45,18 @@ void main() {
     test('system_command', () async {
       // read pubspec.yaml
       Iterable<String> lines = LineSplitter.split(
-          await new File(join(dirname(testDir), 'pubspec.yaml'))
-              .readAsString());
+          await new File(join(projectTop, 'pubspec.yaml')).readAsString());
 
       // use 'cat' on mac and linux
       // use 'type' on windows
       ProcessCmd cmd;
       if (Platform.isWindows) {
         cmd = processCmd('type', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir), runInShell: true);
+            workingDirectory: projectTop, runInShell: true);
       } else {
-        cmd = processCmd('cat', ['pubspec.yaml'],
-            workingDirectory: dirname(testDir));
+        cmd = processCmd('cat', ['pubspec.yaml'], workingDirectory: projectTop);
       }
+
       ProcessResult result = await runCmd(cmd);
       expect(LineSplitter.split(result.stdout.toString()), lines);
       expect(result.stderr, '');
@@ -77,8 +77,8 @@ void main() {
 
     test('processCmdToDebugString', () {
       expect(
-          LineSplitter
-              .split(processCmdToDebugString(new ProcessCmd("cmd", ['arg']))),
+          LineSplitter.split(
+              processCmdToDebugString(new ProcessCmd("cmd", ['arg']))),
           ['cmd: cmd arg']);
 
       expect(

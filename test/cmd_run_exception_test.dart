@@ -1,4 +1,5 @@
 @TestOn("vm")
+library process_run.cmd_run_exception_test;
 
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart';
@@ -17,7 +18,7 @@ void main() {
         await runCmd(dartCmd(['version'])..workingDirectory = '/dummy');
         fail('should fail');
       } catch (e) {
-        expect(e, new isInstanceOf<ProcessException>());
+        expect(e, const TypeMatcher<ProcessException>());
       }
     });
   });
