@@ -10,32 +10,6 @@ import 'package:path/path.dart';
 
 void main() {
   group('dartbin_cmd', () {
-    test('arguments', () {
-      _expect(ProcessCmd cmd, String snapshotCmd) {
-        expect(cmd.executable, dartExecutable);
-        expect(cmd.arguments, [
-          join(dirname(dartExecutable), 'snapshots',
-              '${snapshotCmd}.dart.snapshot'),
-          '--help'
-        ]);
-      }
-
-      _expect(dartfmtCmd(['--help']), 'dartfmt');
-      _expect(dartanalyzerCmd(['--help']), 'dartanalyzer');
-      _expect(dartdevcCmd(['--help']), 'dartdevc');
-      expect(dart2jsCmd(['--help']).arguments, [
-        join(dirname(dartExecutable), 'snapshots', 'dart2js.dart.snapshot'),
-        '--library-root=${dartSdkDirPath}',
-        '--help'
-      ]);
-      expect(dartdocCmd(['--help']).arguments, [
-        '--packages=${join(dartSdkDirPath, 'bin', 'snapshots', 'resources', 'dartdoc', '.packages')}',
-        join(dirname(dartExecutable), 'snapshots', 'dartdoc.dart.snapshot'),
-        '--help'
-      ]);
-      _expect(pubCmd(['--help']), 'pub');
-    });
-
     test('dartcmd_arguments', () async {
       ProcessCmd cmd = dartCmd(['--version']);
       expect(cmd.executable, dartExecutable);
@@ -57,6 +31,11 @@ void main() {
 
     test('toString', () {
       expect(pubCmd(['--help']).toString(), 'pub --help');
+      expect(dartdocCmd(['--help']).toString(), 'dartdoc --help');
+      expect(dart2jsCmd(['--help']).toString(), 'dart2js --help');
+      expect(dartdevcCmd(['--help']).toString(), 'dartdevc --help');
+      expect(dartanalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
+      expect(dartfmtCmd(['--help']).toString(), 'dartfmt --help');
       expect(dartCmd(['--help']).toString(), 'dart --help');
     });
   });

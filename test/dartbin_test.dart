@@ -10,15 +10,6 @@ void main() => defineTests();
 
 void defineTests() {
   group('dartbin', () {
-    group('arguments', () {
-      test('dartdoc', () {
-        List args = dartdocArguments([]);
-        expect(args[0], startsWith("--packages"));
-        expect(args[0], endsWith(".packages"));
-        expect(args[1], endsWith("dartdoc.dart.snapshot"));
-        expect(args.length, 2);
-      });
-    });
     group('dart', () {
       test('run', () async {
         ProcessResult result = await Process.run(dartExecutable, ['--version']);
@@ -60,74 +51,6 @@ void defineTests() {
         result = await Process.run(dartExecutable, ['--version']);
         expect(result.stdout, "");
         expect(result.stderr, contains("Dart VM"));
-      });
-
-      test('dartfmt', () async {
-        ProcessResult result =
-            await Process.run(dartExecutable, dartfmtArguments(['--help']));
-        expect(result.exitCode, 0);
-        expect(result.stdout, contains("Usage: dartfmt"));
-
-        // dartfmt has no version option yet
-        // Fixed in 1.14.0-dev.4!
-        result =
-            await Process.run(dartExecutable, dartfmtArguments(['--version']));
-        if (new Version.parse(Platform.version.split(' ').first) <
-            new Version(1, 14, 0, pre: "4")) {
-          expect(result.exitCode, 64);
-        } else {
-          // no contains the version only...expect(result.stdout, contains("dartfmt"));
-          expect(result.exitCode, 0);
-        }
-      });
-
-      test('dartanalyzer', () async {
-        ProcessResult result = await Process.run(
-            dartExecutable, dartanalyzerArguments(['--help']));
-        // Weird this is in err instead of out
-        expect(result.stderr, contains("Usage: dartanalyzer"));
-        expect(result.exitCode, 0);
-
-        result = await Process.run(
-            dartExecutable, dartanalyzerArguments(['--version']));
-        expect(result.stdout, contains("dartanalyzer"));
-        expect(result.exitCode, 0);
-      });
-
-      test('dart2js', () async {
-        ProcessResult result =
-            await Process.run(dartExecutable, dart2jsArguments(['--help']));
-        expect(result.stdout, contains("Usage: dart2js"));
-        expect(result.exitCode, 0);
-
-        result =
-            await Process.run(dartExecutable, dart2jsArguments(['--version']));
-        expect(result.stdout, contains("dart2js"));
-        expect(result.exitCode, 0);
-      });
-
-      test('dartdoc', () async {
-        ProcessResult result =
-            await Process.run(dartExecutable, dartdocArguments(['--help']));
-        expect(result.stdout, contains("Usage: dartdoc"));
-        expect(result.exitCode, 0);
-
-        result =
-            await Process.run(dartExecutable, dartdocArguments(['--version']));
-        expect(result.stdout, contains("dartdoc"));
-        expect(result.exitCode, 0);
-      });
-
-      test('pub', () async {
-        // change false to true to check that you get output
-        ProcessResult result =
-            await Process.run(dartExecutable, pubArguments(['--help']));
-        expect(result.stdout, contains("Usage: pub"));
-        expect(result.exitCode, 0);
-
-        result = await Process.run(dartExecutable, pubArguments(['--version']));
-        expect(result.stdout, contains("Pub"));
-        expect(result.exitCode, 0);
       });
     });
   });

@@ -44,9 +44,9 @@ void main() {
       TestSink<List<int>> out = new TestSink();
       result = await runCmd(cmd, verbose: true, stdout: out);
       expect(out.results.length, 2);
-      expect(SYSTEM_ENCODING.decode(out.results[0].asValue.value),
+      expect(systemEncoding.decode(out.results[0].asValue.value),
           "\$ dart ${echoScriptPath} --stdout out\n");
-      expect(SYSTEM_ENCODING.decode(out.results[1].asValue.value), "out");
+      expect(systemEncoding.decode(out.results[1].asValue.value), "out");
     });
 
     test('connect_stderr', () async {
@@ -60,7 +60,7 @@ void main() {
       TestSink<List<int>> err = new TestSink();
       result = await runCmd(cmd, stderr: err);
       expect(err.results.length, 1);
-      expect(SYSTEM_ENCODING.decode(err.results[0].asValue.value), "err");
+      expect(systemEncoding.decode(err.results[0].asValue.value), "err");
     });
   });
 }

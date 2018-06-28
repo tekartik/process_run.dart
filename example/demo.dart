@@ -19,7 +19,4 @@ main() async {
 
   // stream the output to stderr
   await run(dartExecutable, ['--version'], stderr: stderr);
-
-  // Listing global activated packages
-  await run(dartExecutable, pubArguments(['global', 'list']), verbose: true);
 }

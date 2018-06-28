@@ -22,8 +22,8 @@ class ProcessCmd {
       this.environment,
       this.includeParentEnvironment: true,
       this.runInShell: false,
-      this.stdoutEncoding: SYSTEM_ENCODING,
-      this.stderrEncoding: SYSTEM_ENCODING});
+      this.stdoutEncoding: systemEncoding,
+      this.stderrEncoding: systemEncoding});
 
   ProcessCmd clone() => processCmd(executable, arguments,
       workingDirectory: workingDirectory,
@@ -64,8 +64,8 @@ ProcessCmd processCmd(String executable, List<String> arguments,
     Map<String, String> environment,
     bool includeParentEnvironment: true,
     bool runInShell: false,
-    Encoding stdoutEncoding: SYSTEM_ENCODING,
-    Encoding stderrEncoding: SYSTEM_ENCODING}) {
+    Encoding stdoutEncoding: systemEncoding,
+    Encoding stderrEncoding: systemEncoding}) {
   return new ProcessCmd(executable, arguments,
       workingDirectory: workingDirectory,
       environment: environment,

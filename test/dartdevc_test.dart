@@ -21,7 +21,7 @@ void main() => defineTests();
 void defineTests() {
   group('dartdevc', () {
     test('help', () async {
-      ProcessResult result = await runCmd(dartdevcCmd(['--help']));
+      ProcessResult result = await devRunCmd(dartdevcCmd(['--help']));
       expect(result.stdout, contains("Usage: dartdevc"));
       expect(result.exitCode, 0);
     });

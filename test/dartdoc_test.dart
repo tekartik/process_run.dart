@@ -14,7 +14,7 @@ class Script {
 }
 
 String projectTop = dirname(dirname(Script.path));
-String testOut = join(projectTop, 'test_out');
+String testOut = join(projectTop, '.dart_tool', 'process_run', 'test');
 
 void main() => defineTests();
 
@@ -38,6 +38,6 @@ void defineTests() {
       //expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
       //}, skip: "failed on SDK 1.19.0"); - fixed in 1.19.1
-    });
+    }, timeout: new Timeout(new Duration(minutes: 2)));
   });
 }

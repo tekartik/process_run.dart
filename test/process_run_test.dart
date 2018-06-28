@@ -52,8 +52,8 @@ void main() {
       Map<String, String> environment,
       bool includeParentEnvironment: true,
       bool runInShell: false,
-      Encoding stdoutEncoding: SYSTEM_ENCODING,
-      Encoding stderrEncoding: SYSTEM_ENCODING,
+      Encoding stdoutEncoding: systemEncoding,
+      Encoding stderrEncoding: systemEncoding,
       StreamSink<List<int>> stdout,
     }) async {
       ProcessResult result = await Process.run(
