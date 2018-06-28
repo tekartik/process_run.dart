@@ -2,7 +2,7 @@ language: dart
 # with_content_shell: true
 dart:
   - stable
-  - dev
+#  - dev
 sudo: false
 before_install:
   - export DISPLAY=:99.0
