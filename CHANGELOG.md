@@ -6,6 +6,10 @@
 * add Windows support
 * add which utility
 
+## 0.6.0
+
+* dart2 support
+
 ## 0.5.6
 
 * supports `implicit-casts: false`
