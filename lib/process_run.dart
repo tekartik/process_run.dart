@@ -8,6 +8,7 @@ import 'dart:io' as io;
 
 import 'src/common/import.dart';
 export 'src/dev_process_run.dart';
+import 'package:path/path.dart';
 
 ///
 /// Returns `true` if [rune] represents a whitespace character.
@@ -77,6 +78,14 @@ String argumentsToString(List<String> arguments) {
 
 String executableArgumentsToString(String executable, List<String> arguments) {
   StringBuffer sb = new StringBuffer();
+  if (Platform.isWindows) {
+    var ext = extension(executable);
+    switch (ext) {
+      case '.exe':
+      case '.bat':
+        executable = executable.substring(0, executable.length - 4);
+    }
+  }
   sb.write(executable);
   if (arguments is List && arguments.isNotEmpty) {
     sb.write(" ${argumentsToString(arguments)}");

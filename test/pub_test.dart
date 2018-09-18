@@ -21,8 +21,9 @@ void defineTests() {
       result = await runCmd(pubCmd(['--version']));
       var version =
           new Version.parse((result.stdout as String).trim().split(" ").last);
-      expect(version, greaterThan(new Version(1, 0, 0)));
+      // 2.0.0+ now!
+      expect(version, greaterThan(new Version(1, 24, 3)));
       expect(result.exitCode, 0);
-    });
+    }, skip: Platform.isWindows);
   });
 }
