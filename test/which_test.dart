@@ -11,7 +11,7 @@ void main() {
   group('which', () {
     test('dart', () async {
       var env = {'PATH': dartSdkBinDirPath};
-      var dartExecutable = which('dart', env: env);
+      var dartExecutable = whichSync('dart', env: env);
       expect(dartExecutable, isNotNull);
       print(dartExecutable);
       var cmd = ProcessCmd(dartExecutable, ['--version']);

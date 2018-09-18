@@ -1,8 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart';
 
-String which(String command, {Map<String, String> env}) {
+Future<String> which(String command, {Map<String, String> env}) async {
+  return whichSync(command, env: env);
+}
+
+String whichSync(String command, {Map<String, String> env}) {
   // only valid for relative command
   if (isAbsolute(command)) {
     return command;

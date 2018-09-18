@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+
+* add flutter command support
+* add Windows support
+* add which utility
+
 ## 0.5.6
 
 * supports `implicit-casts: false`
