@@ -18,6 +18,6 @@ void main() {
       ProcessResult result = await runCmd(cmd);
       expect(result.stderr.toLowerCase(), contains("dart"));
       expect(result.stderr.toLowerCase(), contains("version"));
-    }, skip: !Platform.isWindows);
+    });
   });
 }

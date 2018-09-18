@@ -36,7 +36,7 @@ void main() {
     });
     test('dart_cmd', () async {
       ProcessResult result =
-          await runCmd(processCmd(dartExecutable, ['--version']));
+          await runCmd(ProcessCmd(dartExecutable, ['--version']));
       expect(result.stderr.toLowerCase(), contains("dart"));
       expect(result.stderr.toLowerCase(), contains("version"));
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
@@ -51,10 +51,10 @@ void main() {
       // use 'type' on windows
       ProcessCmd cmd;
       if (Platform.isWindows) {
-        cmd = processCmd('type', ['pubspec.yaml'],
+        cmd = ProcessCmd('type', ['pubspec.yaml'],
             workingDirectory: projectTop, runInShell: true);
       } else {
-        cmd = processCmd('cat', ['pubspec.yaml'], workingDirectory: projectTop);
+        cmd = ProcessCmd('cat', ['pubspec.yaml'], workingDirectory: projectTop);
       }
 
       ProcessResult result = await runCmd(cmd);

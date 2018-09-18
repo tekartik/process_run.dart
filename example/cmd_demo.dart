@@ -7,7 +7,7 @@ main() async {
   bool runInShell = Platform.isWindows;
 
   // Run the command
-  ProcessCmd cmd = processCmd('echo', ['hello world'], runInShell: runInShell);
+  var cmd = ProcessCmd('echo', ['hello world'], runInShell: runInShell);
   await runCmd(cmd);
 
   // Running the command in verbose mode (i.e. display the command and stdout/stderr)
@@ -23,7 +23,7 @@ main() async {
   await runCmd(cmd);
 
   // clone the command to allow other modifications
-  cmd = processCmd('echo', ['hello world'], runInShell: runInShell);
+  cmd = ProcessCmd('echo', ['hello world'], runInShell: runInShell);
   // > $ echo "hello world"
   // > hello world
   await runCmd(cmd, verbose: true);

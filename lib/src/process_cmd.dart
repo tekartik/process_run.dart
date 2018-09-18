@@ -25,7 +25,7 @@ class ProcessCmd {
       this.stdoutEncoding: systemEncoding,
       this.stderrEncoding: systemEncoding});
 
-  ProcessCmd clone() => processCmd(executable, arguments,
+  ProcessCmd clone() => ProcessCmd(executable, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment,
@@ -59,6 +59,8 @@ class ProcessCmd {
       stderrEncoding: stderrEncoding);
 }
 
+// Use ProcessCmd instead
+@deprecated
 ProcessCmd processCmd(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,

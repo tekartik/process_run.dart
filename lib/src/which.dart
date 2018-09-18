@@ -39,6 +39,15 @@ String which(String command, {Map<String, String> env}) {
         if (File(commandPath).existsSync()) {
           return commandPath;
         }
+      } else {
+        var stats = File(commandPath).statSync();
+        if (stats.type != FileSystemEntityType.notFound) {
+          if (stats.mode & 0x49 != 0) {
+            // binary 001001001
+            // executable
+            return command;
+          }
+        }
       }
     }
   }
