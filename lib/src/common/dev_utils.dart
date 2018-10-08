@@ -1,6 +1,4 @@
-/**
- * Development helpers to generate warning in code
- */
+/// Development helpers to generate warning in code
 
 void _devPrint(Object object) {
   if (_devPrintEnabled) {
@@ -26,7 +24,7 @@ int devWarning;
 _devError([Object msg = null]) {
   // one day remove the print however sometimes the error thrown is hidden
   try {
-    throw new UnsupportedError("$msg");
+    throw UnsupportedError("$msg");
   } catch (e, st) {
     if (_devPrintEnabled) {
       print("# ERROR $msg");

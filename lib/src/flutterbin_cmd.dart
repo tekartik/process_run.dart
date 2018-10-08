@@ -11,6 +11,7 @@ String get _flutterExecutableName =>
 
 bool _flutterExecutablePathSearched = false;
 String _flutterExecutablePath;
+@deprecated
 String get flutterExecutablePath {
   if (!_flutterExecutablePathSearched) {
     _flutterExecutablePath = whichSync('flutter');
@@ -21,7 +22,7 @@ String get flutterExecutablePath {
 
 /// Dart command
 ProcessCmd flutterCmd(List<String> arguments) {
-  if (flutterExecutablePath != null) {
+  if (_flutterExecutableName != null) {
     return _FlutterCmd(arguments);
   }
   return null;

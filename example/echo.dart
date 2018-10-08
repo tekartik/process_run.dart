@@ -7,7 +7,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'hex_utils.dart';
 
-Version version = new Version(0, 1, 0);
+Version version = Version(0, 1, 0);
 
 String get currentScriptName => basenameWithoutExtension(Platform.script.path);
 
@@ -29,7 +29,7 @@ Global options:
 main(List<String> arguments) async {
   //setupQuickLogging();
 
-  ArgParser parser = new ArgParser(allowTrailingOptions: false);
+  ArgParser parser = ArgParser(allowTrailingOptions: false);
   parser.addFlag('help', abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag('verbose', abbr: 'v', help: 'Verbose', negatable: false);
   parser.addOption('stdout',

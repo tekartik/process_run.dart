@@ -17,10 +17,10 @@ void main() {
       List<String> arguments, {
       String workingDirectory,
       Map<String, String> environment,
-      bool includeParentEnvironment: true,
-      bool runInShell: false,
-      Encoding stdoutEncoding: systemEncoding,
-      Encoding stderrEncoding: systemEncoding,
+      bool includeParentEnvironment = true,
+      bool runInShell = false,
+      Encoding stdoutEncoding = systemEncoding,
+      Encoding stderrEncoding = systemEncoding,
       StreamSink<List<int>> stdout,
     }) async {
       ProcessResult result = await Process.run(
@@ -109,7 +109,7 @@ void main() {
     });
 
     test('stdin', () async {
-      StreamController<List<int>> inCtrl = new StreamController();
+      StreamController<List<int>> inCtrl = StreamController();
       Future<ProcessResult> processResultFuture = run(
           dartExecutable, [echoScriptPath, '--stdin'],
           stdin: inCtrl.stream);

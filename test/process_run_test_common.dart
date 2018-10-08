@@ -26,7 +26,7 @@ class TestSink<T> implements StreamSink<T> {
   var _isClosed = false;
 
   Future get done => _doneCompleter.future;
-  final _doneCompleter = new Completer<dynamic>();
+  final _doneCompleter = Completer<dynamic>();
 
   final Func0 _onDone;
 
@@ -37,22 +37,22 @@ class TestSink<T> implements StreamSink<T> {
   TestSink({onDone()}) : _onDone = onDone ?? (() {});
 
   void add(T event) {
-    results.add(new Result<T>.value(event));
+    results.add(Result<T>.value(event));
   }
 
   void addError(error, [StackTrace stackTrace]) {
-    results.add(new Result<T>.error(error, stackTrace));
+    results.add(Result<T>.error(error, stackTrace));
   }
 
   Future addStream(Stream<T> stream) {
-    var completer = new Completer.sync();
+    var completer = Completer.sync();
     stream.listen(add, onError: addError, onDone: completer.complete);
     return completer.future;
   }
 
   Future close() {
     _isClosed = true;
-    _doneCompleter.complete(new Future.microtask(_onDone));
+    _doneCompleter.complete(Future.microtask(_onDone));
     return done;
   }
 }

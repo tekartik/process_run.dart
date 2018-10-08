@@ -21,7 +21,7 @@ void main() {
 
     test('connect_stdin', () async {
       ProcessCmd cmd = dartCmd([echoScriptPath, '--stdin']);
-      StreamController<List<int>> streamController = new StreamController();
+      StreamController<List<int>> streamController = StreamController();
 
       Future<ProcessResult> future =
           runCmd(cmd, stdin: streamController.stream);
@@ -43,7 +43,7 @@ void main() {
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
 
-      TestSink<List<int>> out = new TestSink();
+      TestSink<List<int>> out = TestSink();
       result = await runCmd(cmd, verbose: true, stdout: out);
       expect(out.results.length, 2);
       expect(systemEncoding.decode(out.results[0].asValue.value),
@@ -59,7 +59,7 @@ void main() {
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
 
-      TestSink<List<int>> err = new TestSink();
+      TestSink<List<int>> err = TestSink();
       result = await runCmd(cmd, stderr: err);
       expect(err.results.length, 1);
       expect(systemEncoding.decode(err.results[0].asValue.value), "err");

@@ -20,8 +20,8 @@ void defineTests() {
       // dartanalyzer version 2.0.0-dev.63.0
       result = await runCmd(dartanalyzerCmd(['--version']));
       var version =
-          new Version.parse((result.stdout as String).trim().split(" ").last);
-      expect(version, greaterThan(new Version(1, 0, 0)));
+          Version.parse((result.stdout as String).trim().split(" ").last);
+      expect(version, greaterThan(Version(1, 0, 0)));
       expect(result.exitCode, 0);
     });
   });

@@ -33,12 +33,11 @@ int _hex2CodeUint8(int value) {
 }
 
 String byteToHex(int value) {
-  return new String.fromCharCodes(
-      [_hex1CodeUint8(value), _hex2CodeUint8(value)]);
+  return String.fromCharCodes([_hex1CodeUint8(value), _hex2CodeUint8(value)]);
 }
 
 String bytesToHex(List<int> bytes) {
-  StringBuffer sb = new StringBuffer();
+  StringBuffer sb = StringBuffer();
   for (int byte in bytes) {
     sb.write(byteToHex(byte));
   }
@@ -47,7 +46,7 @@ String bytesToHex(List<int> bytes) {
 
 // It safely ignores non hex data so it can contain spaces or line feed
 List<int> hexToBytes(String text) {
-  List<int> bytes = new List();
+  List<int> bytes = List();
   int firstNibble = null;
 
   text.codeUnits.forEach((int charCode) {

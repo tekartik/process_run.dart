@@ -13,12 +13,12 @@ import 'package:process_run/dartbin.dart';
 void main() {
   group('process_cmd', () {
     test('simple', () {
-      ProcessCmd cmd = new ProcessCmd("a", []);
+      ProcessCmd cmd = ProcessCmd("a", []);
       expect(cmd.executable, "a");
     });
     test('equals', () {
-      ProcessCmd cmd1 = new ProcessCmd("a", []);
-      ProcessCmd cmd2 = new ProcessCmd("a", []);
+      ProcessCmd cmd1 = ProcessCmd("a", []);
+      ProcessCmd cmd2 = ProcessCmd("a", []);
       expect(cmd1, cmd2);
       cmd1.executable = "b";
       expect(cmd1, isNot(cmd2));
@@ -28,7 +28,7 @@ void main() {
       expect(cmd1, isNot(cmd2));
     });
     test('clone', () {
-      ProcessCmd cmd1 = new ProcessCmd("a", []);
+      ProcessCmd cmd1 = ProcessCmd("a", []);
       ProcessCmd cmd2 = cmd1.clone();
       expect(cmd1, cmd2);
       cmd1.executable = "b";
@@ -45,7 +45,7 @@ void main() {
     test('system_command', () async {
       // read pubspec.yaml
       Iterable<String> lines = LineSplitter.split(
-          await new File(join(projectTop, 'pubspec.yaml')).readAsString());
+          await File(join(projectTop, 'pubspec.yaml')).readAsString());
 
       // use 'cat' on mac and linux
       // use 'type' on windows
@@ -66,24 +66,24 @@ void main() {
 
     test('processResultToDebugString', () {
       expect(
-          LineSplitter.split(processResultToDebugString(
-              new ProcessResult(1, 0, "out", "err"))),
+          LineSplitter.split(
+              processResultToDebugString(ProcessResult(1, 0, "out", "err"))),
           ['exitCode: 0', 'out: out', 'err: err']);
       expect(
           LineSplitter.split(processResultToDebugString(
-              new ProcessResult(2, 1, "testout", "testerr"))),
+              ProcessResult(2, 1, "testout", "testerr"))),
           ['exitCode: 1', 'out: testout', 'err: testerr']);
     });
 
     test('processCmdToDebugString', () {
       expect(
           LineSplitter.split(
-              processCmdToDebugString(new ProcessCmd("cmd", ['arg']))),
+              processCmdToDebugString(ProcessCmd("cmd", ['arg']))),
           ['cmd: cmd arg']);
 
       expect(
           LineSplitter.split(processCmdToDebugString(
-              new ProcessCmd("cmd", ['arg'])..workingDirectory = "dir")),
+              ProcessCmd("cmd", ['arg'])..workingDirectory = "dir")),
           ['dir: dir', 'cmd: cmd arg']);
     });
   });

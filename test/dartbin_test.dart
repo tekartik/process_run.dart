@@ -22,8 +22,7 @@ void defineTests() {
       test('dartExecutable_path', () {
         expect(isAbsolute(dartExecutable), isTrue);
         expect(
-            new Directory(join(dirname(dartExecutable), 'snapshots'))
-                .existsSync(),
+            Directory(join(dirname(dartExecutable), 'snapshots')).existsSync(),
             isTrue);
       });
 

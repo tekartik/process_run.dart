@@ -19,8 +19,8 @@ void defineTests() {
 
       // The raw version is displayed
       result = await runCmd(dartfmtCmd(['--version']));
-      var version = new Version.parse((result.stdout as String).trim());
-      expect(version, greaterThan(new Version(1, 0, 0)));
+      var version = Version.parse((result.stdout as String).trim());
+      expect(version, greaterThan(Version(1, 0, 0)));
       expect(result.exitCode, 0);
     });
   });

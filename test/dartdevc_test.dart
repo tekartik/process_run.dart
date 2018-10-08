@@ -29,7 +29,7 @@ void defineTests() {
 
       // delete dir if any
       try {
-        await new Directory(dirname(destination)).create(recursive: true);
+        await Directory(dirname(destination)).create(recursive: true);
       } catch (_) {}
 
       ProcessResult result = await runCmd(

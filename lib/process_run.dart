@@ -77,7 +77,7 @@ String argumentsToString(List<String> arguments) {
 }
 
 String executableArgumentsToString(String executable, List<String> arguments) {
-  StringBuffer sb = new StringBuffer();
+  StringBuffer sb = StringBuffer();
   if (Platform.isWindows) {
     var ext = extension(executable);
     switch (ext) {
@@ -99,10 +99,10 @@ String executableArgumentsToString(String executable, List<String> arguments) {
 Future<ProcessResult> run(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,
-    bool includeParentEnvironment: true,
-    bool runInShell: false,
-    Encoding stdoutEncoding: systemEncoding,
-    Encoding stderrEncoding: systemEncoding,
+    bool includeParentEnvironment = true,
+    bool runInShell = false,
+    Encoding stdoutEncoding = systemEncoding,
+    Encoding stderrEncoding = systemEncoding,
     Stream<List<int>> stdin,
     StreamSink<List<int>> stdout,
     StreamSink<List<int>> stderr,
@@ -142,8 +142,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     rethrow;
   }
 
-  StreamController<List<int>> outCtlr = new StreamController(sync: true);
-  StreamController<List<int>> errCtlr = new StreamController(sync: true);
+  StreamController<List<int>> outCtlr = StreamController(sync: true);
+  StreamController<List<int>> errCtlr = StreamController(sync: true);
 
   // Connected stdin
   // Buggy!
@@ -205,7 +205,7 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   //await process.stderr.drain();
 
   ProcessResult result =
-      new ProcessResult(process.pid, exitCode, await out, await err);
+      ProcessResult(process.pid, exitCode, await out, await err);
 
   if (stdin != null) {
     //process.stdin.close();

@@ -51,10 +51,10 @@ void main() {
       List<String> arguments, {
       String workingDirectory,
       Map<String, String> environment,
-      bool includeParentEnvironment: true,
-      bool runInShell: false,
-      Encoding stdoutEncoding: systemEncoding,
-      Encoding stderrEncoding: systemEncoding,
+      bool includeParentEnvironment = true,
+      bool runInShell = false,
+      Encoding stdoutEncoding = systemEncoding,
+      Encoding stderrEncoding = systemEncoding,
       StreamSink<List<int>> stdout,
     }) async {
       ProcessResult result = await Process.run(
@@ -143,7 +143,7 @@ void main() {
     });
 
     test('stdin', () async {
-      StreamController<List<int>> inCtrl = new StreamController();
+      StreamController<List<int>> inCtrl = StreamController();
       Future<ProcessResult> processResultFuture = run(
           dartExecutable, [echoScriptPath, '--stdin'],
           stdin: inCtrl.stream);
@@ -240,8 +240,8 @@ void main() {
 
     test('system_command', () async {
       // read pubspec.yaml
-      List<String> lines = const LineSplitter().convert(
-          await new File(join(projectTop, 'pubspec.yaml')).readAsString());
+      List<String> lines = const LineSplitter()
+          .convert(await File(join(projectTop, 'pubspec.yaml')).readAsString());
 
       check(ProcessResult result) {
         expect(const LineSplitter().convert(result.stdout.toString()), lines);

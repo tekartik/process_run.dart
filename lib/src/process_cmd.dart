@@ -20,10 +20,10 @@ class ProcessCmd {
   ProcessCmd(this.executable, this.arguments,
       {this.workingDirectory,
       this.environment,
-      this.includeParentEnvironment: true,
-      this.runInShell: false,
-      this.stdoutEncoding: systemEncoding,
-      this.stderrEncoding: systemEncoding});
+      this.includeParentEnvironment = true,
+      this.runInShell = false,
+      this.stdoutEncoding = systemEncoding,
+      this.stderrEncoding = systemEncoding});
 
   ProcessCmd clone() => ProcessCmd(executable, arguments,
       workingDirectory: workingDirectory,
@@ -64,11 +64,11 @@ class ProcessCmd {
 ProcessCmd processCmd(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,
-    bool includeParentEnvironment: true,
-    bool runInShell: false,
-    Encoding stdoutEncoding: systemEncoding,
-    Encoding stderrEncoding: systemEncoding}) {
-  return new ProcessCmd(executable, arguments,
+    bool includeParentEnvironment = true,
+    bool runInShell = false,
+    Encoding stdoutEncoding = systemEncoding,
+    Encoding stderrEncoding = systemEncoding}) {
+  return ProcessCmd(executable, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment,
@@ -87,7 +87,7 @@ bool _isNotEmpty(stdout) {
 }
 
 String processResultToDebugString(ProcessResult result) {
-  StringBuffer sb = new StringBuffer();
+  StringBuffer sb = StringBuffer();
   sb.writeln("exitCode: ${result.exitCode}");
   if (_isNotEmpty(result.stdout)) {
     sb.writeln("out: ${result.stdout}");
@@ -99,7 +99,7 @@ String processResultToDebugString(ProcessResult result) {
 }
 
 String processCmdToDebugString(ProcessCmd cmd) {
-  StringBuffer sb = new StringBuffer();
+  StringBuffer sb = StringBuffer();
   if (cmd.workingDirectory != null) {
     sb.writeln("dir: ${cmd.workingDirectory}");
   }
