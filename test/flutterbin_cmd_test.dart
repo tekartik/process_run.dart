@@ -9,11 +9,10 @@ import 'package:process_run/src/process_cmd.dart';
 
 void main() {
   group('flutterbin_cmd', () {
-    // ignore: deprecated_member_use
-    if (flutterExecutablePath != null) {
+    if (isFlutterSupported) {
       test('version', () async {
         //print(flutterExecutablePath);
-        ProcessCmd cmd = flutterCmd(['--version']);
+        ProcessCmd cmd = FlutterCmd(['--version']);
         // expect(cmd.executable, flutterExecutablePath);
         expect(cmd.arguments, ['--version']);
         ProcessResult result = await runCmd(cmd);

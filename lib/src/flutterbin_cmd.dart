@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:process_run/src/which.dart';
-
 import '../process_run.dart';
 import 'process_cmd.dart';
 
@@ -20,7 +19,6 @@ String get flutterExecutablePath {
   return _flutterExecutablePath;
 }
 
-/// Dart command
 @deprecated
 ProcessCmd flutterCmd(List<String> arguments) {
   if (_flutterExecutableName != null) {
@@ -29,8 +27,14 @@ ProcessCmd flutterCmd(List<String> arguments) {
   return null;
 }
 
-// Somehow flutter requires runInShell on Linux
+bool _isFlutterSupported;
+bool get isFlutterSupported =>
+    _isFlutterSupported ??= whichSync('flutter') != null;
+
+///
+/// build a flutter command
 class FlutterCmd extends ProcessCmd {
+  // Somehow flutter requires runInShell on Linux, does not hurt on windows
   FlutterCmd(List<String> arguments)
       : super(_flutterExecutableName, arguments, runInShell: true);
 
