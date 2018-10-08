@@ -21,16 +21,18 @@ String get flutterExecutablePath {
 }
 
 /// Dart command
+@deprecated
 ProcessCmd flutterCmd(List<String> arguments) {
   if (_flutterExecutableName != null) {
-    return _FlutterCmd(arguments);
+    return FlutterCmd(arguments);
   }
   return null;
 }
 
-class _FlutterCmd extends ProcessCmd {
-  _FlutterCmd(List<String> arguments)
-      : super(_flutterExecutableName, arguments);
+// Somehow flutter requires runInShell on Linux
+class FlutterCmd extends ProcessCmd {
+  FlutterCmd(List<String> arguments)
+      : super(_flutterExecutableName, arguments, runInShell: true);
 
   @override
   String toString() => executableArgumentsToString('flutter', arguments);
