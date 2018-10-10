@@ -4,6 +4,7 @@
 
 * Deprecate old commands helper dartCmd, pubCmd... to use constructors instead
   (DartCmd, PubCmd...)
+* Add webdev and pbr command 
 
 ## 0.7.0
 
