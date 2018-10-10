@@ -85,3 +85,23 @@ class _DartBinCmd extends ProcessCmd {
   @override
   String toString() => executableArgumentsToString(binName, arguments);
 }
+
+class PubRunCmd extends PubCmd {
+  final String _command;
+  final List<String> _arguments;
+  PubRunCmd(this._command, this._arguments)
+      : super(['run', _command]..addAll(_arguments));
+
+  @override
+  String toString() => executableArgumentsToString(_command, _arguments);
+}
+
+class PubGlobalRunCmd extends PubCmd {
+  final String _command;
+  final List<String> _arguments;
+  PubGlobalRunCmd(this._command, this._arguments)
+      : super(['global', 'run', _command]..addAll(_arguments));
+
+  @override
+  String toString() => executableArgumentsToString(_command, _arguments);
+}
