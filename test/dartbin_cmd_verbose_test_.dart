@@ -8,13 +8,13 @@ import 'package:process_run/src/dartbin_cmd.dart';
 void main() {
   group('dartbin_cmd_verbose', () {
     test('all', () async {
-      expect((await runCmd(dartfmtCmd(['--help']), verbose: true)).exitCode, 0);
+      expect((await runCmd(DartFmtCmd(['--help']), verbose: true)).exitCode, 0);
       expect(
-          (await runCmd(dartanalyzerCmd(['--help']), verbose: true)).exitCode,
+          (await runCmd(DartAnalyzerCmd(['--help']), verbose: true)).exitCode,
           0);
-      expect((await runCmd(dart2jsCmd(['--help']), verbose: true)).exitCode, 0);
-      expect((await runCmd(dartdocCmd(['--help']), verbose: true)).exitCode, 0);
-      expect((await runCmd(pubCmd(['--help']), verbose: true)).exitCode, 0);
+      expect((await runCmd(Dart2JsCmd(['--help']), verbose: true)).exitCode, 0);
+      expect((await runCmd(DartDocCmd(['--help']), verbose: true)).exitCode, 0);
+      expect((await runCmd(PubCmd(['--help']), verbose: true)).exitCode, 0);
     });
   });
 }

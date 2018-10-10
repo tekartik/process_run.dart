@@ -23,12 +23,12 @@ void main() => defineTests();
 void defineTests() {
   group('dart2js', () {
     test('help', () async {
-      ProcessResult result = await runCmd(dart2jsCmd(['--help']));
+      ProcessResult result = await runCmd(Dart2JsCmd(['--help']));
       expect(result.stdout, contains("Usage: dart2js"));
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await await runCmd(dart2jsCmd(['--version']));
+      ProcessResult result = await await runCmd(Dart2JsCmd(['--version']));
       expect(result.stdout, contains("dart2js"));
       expect(result.exitCode, 0);
     });
@@ -43,7 +43,7 @@ void defineTests() {
       } catch (_) {}
 
       ProcessResult result = await await runCmd(
-        dart2jsCmd(
+        Dart2JsCmd(
             ['-o', destination, join(projectTop, 'test', 'data', 'main.dart')]),
         //verbose: true
       );

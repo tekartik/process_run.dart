@@ -1,23 +1,12 @@
-import 'dart:io';
-
+import 'package:process_run/src/utils.dart';
 import 'package:process_run/src/which.dart';
 import '../process_run.dart';
 import 'process_cmd.dart';
 
-String __flutterExecutableName;
-String get _flutterExecutableName =>
-    __flutterExecutableName ??= Platform.isWindows ? 'flutter.bat' : 'flutter';
+String get _flutterExecutableName => getShellCmdBinFileName('flutter');
 
-bool _flutterExecutablePathSearched = false;
-String _flutterExecutablePath;
 @deprecated
-String get flutterExecutablePath {
-  if (!_flutterExecutablePathSearched) {
-    _flutterExecutablePath = whichSync('flutter');
-    _flutterExecutablePathSearched = true;
-  }
-  return _flutterExecutablePath;
-}
+String get flutterExecutablePath => whichSync('flutter');
 
 @deprecated
 ProcessCmd flutterCmd(List<String> arguments) {

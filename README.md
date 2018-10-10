@@ -61,7 +61,7 @@ main() async {
   await runCmd(cmd, stdout: stdout);
 
   // Calling dart
-  cmd = dartCmd(['--version']);
+  cmd = DartCmd(['--version']);
   await runCmd(cmd);
 
   // clone the command to allow other modifications
@@ -77,22 +77,22 @@ main() async {
   // Calling dart
   // > $ dart --version
   // > Dart VM version: 1.19.1 (Wed Sep  7 15:59:44 2016) on "linux_x64"
-  cmd = dartCmd(['--version']);
+  cmd = DartCmd(['--version']);
   await runCmd(cmd, verbose: true);
 
   // Calling dart script
   // $ dart example/my_script.dart my_first_arg my_second_arg
-  await runCmd(dartCmd(['example/my_script.dart', 'my_first_arg', 'my_second_arg']), commandVerbose: true);
+  await runCmd(DartCmd(['example/my_script.dart', 'my_first_arg', 'my_second_arg']), commandVerbose: true);
 
   // Calling pub
   // > $ pub --version
   // > Pub 1.19.1
-  await runCmd(pubCmd(['--version']), verbose: true);
+  await runCmd(PubCmd(['--version']), verbose: true);
 
   // Listing global activated packages
   // > $ pub global list
   // > ...
-  await runCmd(pubCmd(['global', 'list']), verbose: true);
+  await runCmd(PubCmd(['global', 'list']), verbose: true);
 }
 ````
 

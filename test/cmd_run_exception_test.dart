@@ -15,7 +15,7 @@ void main() {
       // $ /usr/lib/dart/bin/dart version
       // workingDirectory: /dummy
       try {
-        await runCmd(dartCmd(['version'])..workingDirectory = '/dummy');
+        await runCmd(DartCmd(['version'])..workingDirectory = '/dummy');
         fail('should fail');
       } catch (e) {
         expect(e, const TypeMatcher<ProcessException>());

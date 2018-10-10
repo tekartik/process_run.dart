@@ -23,12 +23,12 @@ void main() => defineTests();
 void defineTests() {
   group('dartdoc', () {
     test('help', () async {
-      ProcessResult result = await runCmd(dartdocCmd(['--help']));
+      ProcessResult result = await runCmd(DartDocCmd(['--help']));
       expect(result.stdout, contains("Usage: dartdoc"));
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await await runCmd(dartdocCmd(['--version']));
+      ProcessResult result = await await runCmd(DartDocCmd(['--version']));
       expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
     });
@@ -36,7 +36,7 @@ void defineTests() {
       // from dartdoc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdoc/.packages" "$SNAPSHOT" "$@"
 
       ProcessResult result = await await runCmd(
-          dartdocCmd(['--output', join(testOut, joinAll(testDescriptions))]));
+          DartDocCmd(['--output', join(testOut, joinAll(testDescriptions))]));
       //expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
       //}, skip: "failed on SDK 1.19.0"); - fixed in 1.19.1

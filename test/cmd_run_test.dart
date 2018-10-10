@@ -11,8 +11,8 @@ import 'process_run_test_common.dart';
 
 void main() {
   group('cmd_run', () {
-    test('dartCmd', () async {
-      ProcessResult result = await runCmd(dartCmd(['--version']));
+    test('DartCmd', () async {
+      ProcessResult result = await runCmd(DartCmd(['--version']));
       expect(result.stderr.toLowerCase(), contains("dart"));
       expect(result.stderr.toLowerCase(), contains("version"));
       expect(result.stderr, contains(Platform.version));
@@ -20,7 +20,7 @@ void main() {
     });
 
     test('connect_stdin', () async {
-      ProcessCmd cmd = dartCmd([echoScriptPath, '--stdin']);
+      ProcessCmd cmd = DartCmd([echoScriptPath, '--stdin']);
       StreamController<List<int>> streamController = StreamController();
 
       Future<ProcessResult> future =
@@ -36,7 +36,7 @@ void main() {
     }); // to investigate
 
     test('connect_stdout', () async {
-      ProcessCmd cmd = dartCmd([echoScriptPath, '--stdout', 'out']);
+      ProcessCmd cmd = DartCmd([echoScriptPath, '--stdout', 'out']);
       ProcessResult result = await runCmd(cmd);
       expect(result.stderr, '');
       expect(result.stdout, "out");
@@ -52,7 +52,7 @@ void main() {
     });
 
     test('connect_stderr', () async {
-      ProcessCmd cmd = dartCmd([echoScriptPath, '--stderr', 'err']);
+      ProcessCmd cmd = DartCmd([echoScriptPath, '--stderr', 'err']);
       ProcessResult result = await runCmd(cmd);
       expect(result.stderr, 'err');
       expect(result.stdout, '');

@@ -12,13 +12,13 @@ void main() => defineTests();
 void defineTests() {
   group('pub', () {
     test('help', () async {
-      ProcessResult result = await runCmd(pubCmd(['--help']));
+      ProcessResult result = await runCmd(PubCmd(['--help']));
       expect(result.exitCode, 0);
       // Every other commands write to stdout but dartanalyzer
       expect(result.stdout, contains("Usage: pub"));
 
       // dartanalyzer version 2.0.0-dev.63.0
-      result = await runCmd(pubCmd(['--version']));
+      result = await runCmd(PubCmd(['--version']));
       var version =
           Version.parse((result.stdout as String).trim().split(" ").last);
       // 2.0.0+ now!

@@ -13,12 +13,12 @@ void main() => defineTests();
 void defineTests() {
   group('dartdevc', () {
     test('help', () async {
-      ProcessResult result = await runCmd(dartdevcCmd(['--help']));
+      ProcessResult result = await runCmd(DartDevcCmd(['--help']));
       expect(result.stdout, contains("Usage: dartdevc"));
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await await runCmd(dartdevcCmd(['--version']));
+      ProcessResult result = await await runCmd(DartDevcCmd(['--version']));
       expect(result.stdout, contains("dartdevc"));
       expect(result.exitCode, 0);
     });
@@ -33,7 +33,7 @@ void defineTests() {
       } catch (_) {}
 
       ProcessResult result = await runCmd(
-        dartdevcCmd(
+        DartDevcCmd(
             ['-o', destination, join(projectTop, 'test', 'data', 'main.dart')]),
         //verbose: true
       );

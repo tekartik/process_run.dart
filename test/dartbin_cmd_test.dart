@@ -12,7 +12,7 @@ import 'package:process_run/src/process_cmd.dart';
 void main() {
   group('dartbin_cmd', () {
     test('dartcmd_arguments', () async {
-      ProcessCmd cmd = dartCmd(['--version']);
+      ProcessCmd cmd = DartCmd(['--version']);
       expect(cmd.executable, dartExecutable);
       expect(cmd.arguments, ['--version']);
       ProcessResult result = await runCmd(cmd);
@@ -21,23 +21,24 @@ void main() {
       // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
     });
     test('others', () async {
-      expect((await runCmd(dartCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(dartfmtCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(dartanalyzerCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(dart2jsCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(dartdocCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(dartdevcCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(pubCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(DartCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(DartFmtCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(DartAnalyzerCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(Dart2JsCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(DartDocCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(PubCmd(['--help']))).exitCode, 0);
+      expect((await runCmd(DartDevkCmd(['--help']))).exitCode, 0);
     });
 
     test('toString', () {
-      expect(pubCmd(['--help']).toString(), 'pub --help');
-      expect(dartdocCmd(['--help']).toString(), 'dartdoc --help');
-      expect(dart2jsCmd(['--help']).toString(), 'dart2js --help');
-      expect(dartdevcCmd(['--help']).toString(), 'dartdevc --help');
-      expect(dartanalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
-      expect(dartfmtCmd(['--help']).toString(), 'dartfmt --help');
-      expect(dartCmd(['--help']).toString(), 'dart --help');
+      expect(PubCmd(['--help']).toString(), 'pub --help');
+      expect(DartDocCmd(['--help']).toString(), 'dartdoc --help');
+      expect(Dart2JsCmd(['--help']).toString(), 'dart2js --help');
+      expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
+      expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
+      expect(DartFmtCmd(['--help']).toString(), 'dartfmt --help');
+      expect(DartCmd(['--help']).toString(), 'dart --help');
     });
   });
 }

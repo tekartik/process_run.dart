@@ -12,13 +12,13 @@ void main() => defineTests();
 void defineTests() {
   group('dartanalyzer', () {
     test('help', () async {
-      ProcessResult result = await runCmd(dartanalyzerCmd(['--help']));
+      ProcessResult result = await runCmd(DartAnalyzerCmd(['--help']));
       expect(result.exitCode, 0);
       // Every other commands write to stdout but dartanalyzer
       expect(result.stderr, contains("Usage: dartanalyzer"));
 
       // dartanalyzer version 2.0.0-dev.63.0
-      result = await runCmd(dartanalyzerCmd(['--version']));
+      result = await runCmd(DartAnalyzerCmd(['--version']));
       var version =
           Version.parse((result.stdout as String).trim().split(" ").last);
       expect(version, greaterThan(Version(1, 0, 0)));
