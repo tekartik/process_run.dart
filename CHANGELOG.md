@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0
+
+* Deprecate old commands helper dartCmd, pubCmd... to use constructors instead
+  (DartCmd, PubCmd...)
+
 ## 0.7.0
 
 * add flutter command support
