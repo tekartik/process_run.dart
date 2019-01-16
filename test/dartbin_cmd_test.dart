@@ -28,7 +28,7 @@ void main() {
       expect((await runCmd(DartDocCmd(['--help']))).exitCode, 0);
       expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
       expect((await runCmd(PubCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(DartDevkCmd(['--help']))).exitCode, 0);
+      //expect((await runCmd(DartDevkCmd(['--help']))).exitCode, 0);
     });
 
     test('toString', () {

@@ -24,7 +24,7 @@ void defineTests() {
   group('dartdoc', () {
     test('help', () async {
       ProcessResult result = await runCmd(DartDocCmd(['--help']));
-      expect(result.stdout, contains("Usage: dartdoc"));
+      expect(result.stdout, contains("--version"));
       expect(result.exitCode, 0);
     });
     test('version', () async {

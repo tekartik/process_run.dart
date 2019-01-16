@@ -17,8 +17,9 @@ void defineTests() {
       // Every other commands write to stdout but dartanalyzer
       expect(result.stdout, contains("Usage: pub"));
 
-      // dartanalyzer version 2.0.0-dev.63.0
-      result = await runCmd(PubCmd(['--version']));
+      // pub version
+      result =
+          await runCmd(PubCmd(['--version'])..includeParentEnvironment = false);
       var version =
           Version.parse((result.stdout as String).trim().split(" ").last);
       // 2.0.0+ now!
