@@ -1,14 +1,16 @@
 @TestOn("vm")
 library process_run.process_run_test;
 
-import 'dart:io';
-import 'package:dev_test/test.dart';
-import 'package:process_run/dartbin.dart';
-import 'package:path/path.dart';
-import 'package:process_run/process_run.dart';
-import 'process_run_test_common.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:dev_test/test.dart';
+import 'package:path/path.dart';
+import 'package:process_run/dartbin.dart';
+import 'package:process_run/process_run.dart';
+
+import 'process_run_test_common.dart';
 
 void main() {
   group('toString', () {
@@ -80,14 +82,14 @@ void main() {
     }
 
     test('stdout', () async {
-      checkOut(ProcessResult result) {
+      void checkOut(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, "out");
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
 
-      checkEmpty(ProcessResult result) {
+      void checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, '');
         expect(result.pid, isNotNull);
@@ -100,14 +102,14 @@ void main() {
     });
 
     test('stdout_bin', () async {
-      check123(ProcessResult result) {
+      void check123(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, [1, 2, 3]);
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
 
-      checkEmpty(ProcessResult result) {
+      void checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, []);
         expect(result.pid, isNotNull);
@@ -122,14 +124,14 @@ void main() {
     });
 
     test('stderr', () async {
-      checkErr(ProcessResult result) {
+      void checkErr(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, "err");
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
 
-      checkEmpty(ProcessResult result) {
+      void checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, '');
         expect(result.pid, isNotNull);
@@ -158,14 +160,14 @@ void main() {
     });
 
     test('stderr_bin', () async {
-      check123(ProcessResult result) {
+      void check123(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, [1, 2, 3]);
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
 
-      checkEmpty(ProcessResult result) {
+      void checkEmpty(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, []);
         expect(result.pid, isNotNull);
@@ -180,14 +182,14 @@ void main() {
     });
 
     test('exitCode', () async {
-      check123(ProcessResult result) {
+      void check123(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, '');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 123);
       }
 
-      check0(ProcessResult result) {
+      void check0(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, '');
         expect(result.pid, isNotNull);
@@ -200,7 +202,7 @@ void main() {
     });
 
     test('crash', () async {
-      check(ProcessResult result) {
+      void check(ProcessResult result) {
         expect(result.stdout, '');
         expect(result.stderr, isNotEmpty);
         expect(result.pid, isNotNull);
@@ -243,7 +245,7 @@ void main() {
       List<String> lines = const LineSplitter()
           .convert(await File(join(projectTop, 'pubspec.yaml')).readAsString());
 
-      check(ProcessResult result) {
+      void check(ProcessResult result) {
         expect(const LineSplitter().convert(result.stdout.toString()), lines);
         expect(result.stderr, '');
         expect(result.pid, isNotNull);

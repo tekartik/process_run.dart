@@ -1,6 +1,7 @@
 @TestOn("vm")
 library process_run.process_run_in_test2_;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dev_test/test.dart';
@@ -9,7 +10,7 @@ import 'package:process_run/process_run.dart';
 
 import 'process_run_test_common.dart';
 
-main() async {
+Future main() async {
   print('Please enter "hi"');
   ProcessResult result = await run(
     dartExecutable, [echoScriptPath, '--stdin'],

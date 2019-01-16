@@ -6,9 +6,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:io' as io;
 
-import 'src/common/import.dart';
-export 'src/dev_process_run.dart';
 import 'package:path/path.dart';
+
+import 'src/common/import.dart';
+
+export 'src/dev_process_run.dart';
+
+/// Helper to run a process and connect the input/output for verbosity
+///
 
 ///
 /// Returns `true` if [rune] represents a whitespace character.
@@ -39,7 +44,7 @@ String argumentToString(String argument) {
   bool hasWhitespace = false;
   int singleQuoteCount = 0;
   int doubleQuoteCount = 0;
-  if (argument.length == 0) {
+  if (argument.isEmpty) {
     return '""';
   }
   for (int rune in argument.runes) {

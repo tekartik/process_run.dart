@@ -1,10 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+
+import "package:async/async.dart";
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
-import 'dart:io';
-import 'dart:async';
-import "package:async/async.dart";
 
 String get projectTop => '.';
+
 String get testDir => join('.dart_tool', 'process_run', 'test');
 
 String get echoScriptPath => join(projectTop, 'example', 'echo.dart');
@@ -25,6 +27,7 @@ class TestSink<T> implements StreamSink<T> {
   bool get isClosed => _isClosed;
   var _isClosed = false;
 
+  @override
   Future get done => _doneCompleter.future;
   final _doneCompleter = Completer<dynamic>();
 
@@ -36,20 +39,24 @@ class TestSink<T> implements StreamSink<T> {
   /// is piped to the [done] future.
   TestSink({onDone()}) : _onDone = onDone ?? (() {});
 
+  @override
   void add(T event) {
     results.add(Result<T>.value(event));
   }
 
+  @override
   void addError(error, [StackTrace stackTrace]) {
     results.add(Result<T>.error(error, stackTrace));
   }
 
+  @override
   Future addStream(Stream<T> stream) {
     var completer = Completer.sync();
     stream.listen(add, onError: addError, onDone: completer.complete);
     return completer.future;
   }
 
+  @override
   Future close() {
     _isClosed = true;
     _doneCompleter.complete(Future.microtask(_onDone));

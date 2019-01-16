@@ -1,10 +1,11 @@
 @TestOn("vm")
 library process_run.dartdevc_test;
 
+import 'dart:io';
+
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'dart:io';
 
 import 'process_run_test_common.dart';
 
@@ -18,7 +19,7 @@ void defineTests() {
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await await runCmd(DartDevcCmd(['--version']));
+      ProcessResult result = await runCmd(DartDevcCmd(['--version']));
       expect(result.stdout, contains("dartdevc"));
       expect(result.exitCode, 0);
     });

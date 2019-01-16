@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/src/utils.dart';
 
-import '../process_run.dart';
-import 'process_cmd.dart';
 import '../dartbin.dart';
+import '../process_run.dart';
 import 'common/import.dart';
+import 'process_cmd.dart';
 
 String dartBinFileName = 'dart${Platform.isWindows ? '.exe' : ''}';
 
@@ -79,6 +79,7 @@ class DartDevkCmd extends _DartBinCmd {
 
 class _DartBinCmd extends ProcessCmd {
   final String binName;
+
   _DartBinCmd(this.binName, List<String> arguments)
       : super(join(dartSdkBinDirPath, binName), arguments);
 
@@ -89,6 +90,7 @@ class _DartBinCmd extends ProcessCmd {
 class PubRunCmd extends PubCmd {
   final String _command;
   final List<String> _arguments;
+
   PubRunCmd(this._command, this._arguments)
       : super(['run', _command]..addAll(_arguments));
 
@@ -99,6 +101,7 @@ class PubRunCmd extends PubCmd {
 class PubGlobalRunCmd extends PubCmd {
   final String _command;
   final List<String> _arguments;
+
   PubGlobalRunCmd(this._command, this._arguments)
       : super(['global', 'run', _command]..addAll(_arguments));
 

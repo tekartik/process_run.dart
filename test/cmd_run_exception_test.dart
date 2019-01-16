@@ -1,9 +1,10 @@
 @TestOn("vm")
 library process_run.cmd_run_exception_test;
 
+import 'dart:io';
+
 import 'package:dev_test/test.dart';
 import 'package:process_run/cmd_run.dart';
-import 'dart:io';
 
 void main() {
   group('runCmdException', () {

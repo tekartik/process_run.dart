@@ -1,4 +1,5 @@
 #!/usr/bin/env dart
+import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -26,7 +27,7 @@ Global options:
 ///
 /// write rest arguments as lines
 ///
-main(List<String> arguments) async {
+Future main(List<String> arguments) async {
   //setupQuickLogging();
 
   ArgParser parser = ArgParser(allowTrailingOptions: false);
@@ -51,7 +52,7 @@ main(List<String> arguments) async {
   bool help = _argsResult['help'] as bool;
   bool verbose = _argsResult['verbose'] as bool;
 
-  _printUsage() {
+  void _printUsage() {
     stdout.writeln('Echo utility');
     stdout.writeln();
     stdout.writeln('Usage: ${currentScriptName} <command> [<arguments>]');

@@ -1,7 +1,7 @@
 import 'package:dev_test/test.dart';
 import '../example/hex_utils.dart';
 
-main() {
+void main() {
   group('hex utils', () {
     test('byteToHex', () {
       expect(byteToHex(0), '00');

@@ -1,12 +1,12 @@
 @TestOn("vm")
 library process_run.dart2js_test;
 
+import 'dart:io';
+import 'dart:mirrors';
+
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'dart:io';
-
-import 'dart:mirrors';
 
 String getScriptPath(Type type) =>
     (reflectClass(type).owner as LibraryMirror).uri.toFilePath();
@@ -28,7 +28,7 @@ void defineTests() {
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await await runCmd(Dart2JsCmd(['--version']));
+      ProcessResult result = await runCmd(Dart2JsCmd(['--version']));
       expect(result.stdout, contains("dart2js"));
       expect(result.exitCode, 0);
     });
@@ -42,7 +42,7 @@ void defineTests() {
         await Directory(dirname(destination)).create(recursive: true);
       } catch (_) {}
 
-      ProcessResult result = await await runCmd(
+      ProcessResult result = await runCmd(
         Dart2JsCmd(
             ['-o', destination, join(projectTop, 'test', 'data', 'main.dart')]),
         //verbose: true

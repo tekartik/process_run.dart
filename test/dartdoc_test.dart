@@ -1,12 +1,12 @@
 @TestOn("vm")
 library process_run.dartdoc_test;
 
+import 'dart:io';
+import 'dart:mirrors';
+
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'dart:io';
-
-import 'dart:mirrors';
 
 String getScriptPath(Type type) =>
     (reflectClass(type).owner as LibraryMirror).uri.toFilePath();
@@ -28,14 +28,14 @@ void defineTests() {
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await await runCmd(DartDocCmd(['--version']));
+      ProcessResult result = await runCmd(DartDocCmd(['--version']));
       expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
     });
     test('build', () async {
       // from dartdoc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdoc/.packages" "$SNAPSHOT" "$@"
 
-      ProcessResult result = await await runCmd(
+      ProcessResult result = await runCmd(
           DartDocCmd(['--output', join(testOut, joinAll(testDescriptions))]));
       //expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);

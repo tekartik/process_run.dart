@@ -1,14 +1,16 @@
 @TestOn("vm")
 library process_run.process_cmd_test;
 
-import 'package:dev_test/test.dart';
-import 'package:process_run/cmd_run.dart';
-import 'package:process_run/process_cmd.dart';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
-import 'process_run_test_common.dart';
+import 'package:process_run/cmd_run.dart';
 import 'package:process_run/dartbin.dart';
+import 'package:process_run/process_cmd.dart';
+
+import 'process_run_test_common.dart';
 
 void main() {
   group('process_cmd', () {
