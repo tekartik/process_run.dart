@@ -12,6 +12,7 @@ dependencies:
   collection: '>=1.14.10 <3.0.0'
 
 dev_dependencies:
+  pedantic: '>=1.4.0'
   pub_semver: any
   args: any
   dev_test: any

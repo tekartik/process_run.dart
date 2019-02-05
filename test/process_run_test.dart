@@ -150,7 +150,7 @@ void main() {
           dartExecutable, [echoScriptPath, '--stdin'],
           stdin: inCtrl.stream);
       inCtrl.add("in".codeUnits);
-      inCtrl.close();
+      await inCtrl.close();
       ProcessResult result = await processResultFuture;
 
       expect(result.stdout, 'in');

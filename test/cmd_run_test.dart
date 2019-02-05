@@ -27,7 +27,7 @@ void main() {
           runCmd(cmd, stdin: streamController.stream);
 
       streamController.add("in".codeUnits);
-      streamController.close();
+      await streamController.close();
       ProcessResult result = await future;
       expect(result.stderr, '');
       expect(result.stdout, "in");
