@@ -29,7 +29,7 @@ String whichSync(String command, {Map<String, String> env}) {
     // Add current directory
     paths.add(Directory.current.path);
     for (var path in paths) {
-      var commandPath = join(path, command);
+      var commandPath = absolute(normalize(join(path, command)));
 
       if (isWindows) {
         if (winExeExtensions != null) {
@@ -50,7 +50,7 @@ String whichSync(String command, {Map<String, String> env}) {
           if (stats.mode & 0x49 != 0) {
             // binary 001001001
             // executable
-            return command;
+            return commandPath;
           }
         }
       }

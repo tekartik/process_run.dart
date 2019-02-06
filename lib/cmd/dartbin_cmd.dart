@@ -2,4 +2,4 @@
 @deprecated
 library process_run.cmd.dartbin_cmd.deprecated;
 
-export '../src/dartbin_cmd.dart';
+export 'package:process_run/src/dartbin_cmd.dart';

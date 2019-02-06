@@ -2,4 +2,4 @@
 @deprecated
 library process_run.cmd.process_cmd.deprecated;
 
-export '../src/process_cmd.dart';
+export 'package:process_run/src/process_cmd.dart';

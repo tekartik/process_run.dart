@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0
+
+* fix: which now returns the full path on linux
+
 ## 0.8.0
 
 * Deprecate old commands helper dartCmd, pubCmd... to use constructors instead

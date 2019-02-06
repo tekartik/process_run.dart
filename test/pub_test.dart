@@ -4,7 +4,10 @@ library process_run.pub_test;
 import 'dart:io';
 
 import 'package:dev_test/test.dart';
+import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/src/shell.dart';
+import 'package:process_run/which.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 void main() => defineTests();
@@ -26,5 +29,13 @@ void defineTests() {
       expect(version, greaterThan(Version(1, 24, 3)));
       expect(result.exitCode, 0);
     }, skip: Platform.isWindows);
+
+    test('which', () {
+      var whichPub = whichSync('pub');
+      // might not be in path during the test
+      if (whichPub != null) {
+        expect(basename(whichPub), getBashOrBatExecutableFilename('pub'));
+      }
+    });
   });
 }

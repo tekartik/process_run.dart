@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/src/utils.dart';
 
-import '../dartbin.dart';
-import '../process_run.dart';
+import 'package:process_run/dartbin.dart';
+import 'package:process_run/process_run.dart';
 import 'common/import.dart';
 import 'process_cmd.dart';
 

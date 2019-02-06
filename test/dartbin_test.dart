@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
+import 'package:process_run/src/shell.dart';
+import 'package:process_run/which.dart';
 
 void main() => defineTests();
 
@@ -37,6 +39,14 @@ void defineTests() {
           fail("should fail");
         } on ArgumentError catch (_) {}
       });
+    });
+
+    test('which', () {
+      var whichDart = whichSync('dart');
+      // might not be in path during the test
+      if (whichDart != null) {
+        expect(basename(whichDart), getBashOrExeExecutableFilename('dart'));
+      }
     });
 
     group('help', () {

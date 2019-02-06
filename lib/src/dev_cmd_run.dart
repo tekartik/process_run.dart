@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../cmd_run.dart';
+import 'package:process_run/cmd_run.dart';
 
 @deprecated
 Future<ProcessResult> devRunCmd(ProcessCmd cmd,
