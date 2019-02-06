@@ -1,6 +1,6 @@
 # process_run.dart
 
-Process run helpers for Linux/Win/Mac
+Process run helpers for Linux/Win/Mac, which like feature
 
 [![Build Status](https://travis-ci.org/tekartik/process_run.dart.svg?branch=master)](https://travis-ci.org/tekartik/process_run.dart)
 
@@ -34,6 +34,16 @@ Helper to format dart binaries argument that works cross-platforms
 ### process_cmd
 
 Allow creating `ProcessCmd` object that can be run in different manner
+
+### which
+
+Like unix `which`, it searches for installed executables
+
+```dart
+var flutterExectutable = whichSync('flutter');
+var firebaseExectutable = whichSync('firebase');
+
+```
 
 ### Sample usage
 
