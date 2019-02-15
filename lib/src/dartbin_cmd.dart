@@ -32,6 +32,9 @@ ProcessCmd dartdevcCmd(List<String> args) => DartDevcCmd(args);
 ProcessCmd pubCmd(List<String> args) => PubCmd(args);
 
 /// Call dart executable
+///
+/// To prevent 'Observatory server failed to start after 1 tries' when
+/// running from an idea use: includeParentEnvironment = false
 class DartCmd extends _DartBinCmd {
   DartCmd(List<String> arguments) : super(dartBinFileName, arguments);
 }
