@@ -59,7 +59,7 @@ Future main(List<String> arguments) async {
     stdout.writeln('Usage: ${currentScriptName} <command> [<arguments>]');
     stdout.writeln();
     stdout.writeln('Example: ${currentScriptName} -o "Hello world"');
-    stdout.writeln('will display "Hellow world"');
+    stdout.writeln('will display "Hello world"');
     stdout.writeln();
     stdout.writeln("Global options:");
     stdout.writeln(parser.usage);

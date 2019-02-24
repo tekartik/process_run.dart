@@ -67,6 +67,9 @@ class Shell {
   final bool _verbose;
   final bool _commandVerbose;
 
+  /// Parent shell for pushd/popd
+  Shell _parentShell;
+
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
   /// Unless specified [runInShell] will be false. However on windows, it will
@@ -97,6 +100,52 @@ class Shell {
         _stderr = stderr,
         _verbose = verbose ?? true,
         _commandVerbose = commandVerbose ?? verbose ?? true;
+
+  /// Create a new shell
+  Shell clone(
+      {bool throwOnError,
+      String workingDirectory,
+      Map<String, String> environment,
+      bool includeParentEnvironment,
+      bool runInShell,
+      Encoding stdoutEncoding,
+      Encoding stderrEncoding,
+      Stream<List<int>> stdin,
+      StreamSink<List<int>> stdout,
+      StreamSink<List<int>> stderr,
+      bool verbose,
+      bool commandVerbose}) {
+    return Shell(
+        verbose: verbose ?? _verbose,
+        environment: environment ?? _environment,
+        runInShell: runInShell ?? _runInShell,
+        commandVerbose: commandVerbose ?? _commandVerbose,
+        includeParentEnvironment:
+            includeParentEnvironment ?? _includeParentEnvironment,
+        stderr: stderr ?? _stderr,
+        stderrEncoding: stderrEncoding ?? _stderrEncoding,
+        stdin: stdin ?? _stdin,
+        stdout: stdout ?? _stdout,
+        stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
+        throwOnError: throwOnError ?? _throwOnError,
+        workingDirectory: workingDirectory ?? _workingDirectory);
+  }
+
+  /// Create new shell at the given path
+  Shell cd(String path) {
+    if (isRelative(path)) {
+      path = join(_workingDirectory ?? Directory.current.path, path);
+    }
+    return clone(workingDirectory: path);
+  }
+
+  /// Create a new shell at the given path, allowing popd on it
+  Shell pushd(String path) => cd(path).._parentShell = this;
+
+  /// Pop the current directory to get the previous shell
+  Shell popd() => _parentShell ?? this;
+
+  /// Create a new shell pushing a new path
 
   /// Run on or multiple commands
   /// Commands can be splitted by line

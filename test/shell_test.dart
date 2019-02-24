@@ -48,6 +48,41 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       expect(results.first.exitCode, 0);
     });
 
+    test('cd', () async {
+      var shell = Shell(verbose: true);
+
+      var results = await shell.run('dart test/src/current_dir.dart');
+
+      expect(results[0].stdout.toString().trim(), Directory.current.path);
+
+      results = await shell.cd('test/src').run('''
+dart current_dir.dart
+''');
+      expect(results[0].stdout.toString().trim(),
+          join(Directory.current.path, 'test', 'src'));
+    });
+
+    test('pushd', () async {
+      var shell = Shell(verbose: true);
+
+      var results = await shell.run('dart test/src/current_dir.dart');
+      expect(results[0].stdout.toString().trim(), Directory.current.path);
+
+      shell = shell.pushd('test/src');
+      results = await shell.run('dart current_dir.dart');
+      expect(results[0].stdout.toString().trim(),
+          join(Directory.current.path, 'test', 'src'));
+
+      // pop once
+      shell = shell.popd();
+      results = await shell.run('dart test/src/current_dir.dart');
+      expect(results[0].stdout.toString().trim(), Directory.current.path);
+
+      // pop once
+      shell = shell.popd();
+      results = await shell.run('dart test/src/current_dir.dart');
+      expect(results[0].stdout.toString().trim(), Directory.current.path);
+    });
     test('dart_no_path', () async {
       var environment = Map<String, String>.from(shellEnvironment)
         ..remove('PATH');
