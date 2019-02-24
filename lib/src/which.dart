@@ -7,7 +7,9 @@ Future<String> which(String command, {Map<String, String> env}) async {
   return whichSync(command, env: env);
 }
 
-String whichSync(String command, {Map<String, String> env}) {
+/// Find the command according to the [paths] or env variables (`PATH`)
+String whichSync(String command,
+    {Map<String, String> env, List<String> paths}) {
   // only valid for relative command
   if (isAbsolute(command)) {
     return command;
@@ -17,7 +19,12 @@ String whichSync(String command, {Map<String, String> env}) {
 
   var pathSeparator = isWindows ? ';' : ':';
 
-  var paths = env['PATH']?.split(pathSeparator);
+  paths ??= <String>[];
+
+  var envPaths = env['PATH']?.split(pathSeparator);
+  if (envPaths != null) {
+    paths.addAll(envPaths);
+  }
 
   List<String> winExeExtensions;
   if (isWindows) {
@@ -47,6 +54,7 @@ String whichSync(String command, {Map<String, String> env}) {
       } else {
         var stats = File(commandPath).statSync();
         if (stats.type != FileSystemEntityType.notFound) {
+          // Check executable permission
           if (stats.mode & 0x49 != 0) {
             // binary 001001001
             // executable

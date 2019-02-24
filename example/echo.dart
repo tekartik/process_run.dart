@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:path/path.dart';
+import 'package:process_run/src/common/import.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'hex_utils.dart';

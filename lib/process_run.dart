@@ -39,7 +39,9 @@ bool _isWhitespace(int rune) => ((rune >= 0x0009 && rune <= 0x000D) ||
     rune == 0x3000 ||
     rune == 0xFEFF);
 
-// argument must not be null
+/// Use to safely enclose an argument if needed
+///
+/// argument must not be null
 String argumentToString(String argument) {
   bool hasWhitespace = false;
   int singleQuoteCount = 0;
@@ -73,6 +75,7 @@ String argumentToString(String argument) {
   return argument;
 }
 
+/// Convert multiple arguments to string than can be used in a terminal
 String argumentsToString(List<String> arguments) {
   List<String> argumentStrings = [];
   for (String argument in arguments) {
@@ -81,6 +84,7 @@ String argumentsToString(List<String> arguments) {
   return argumentStrings.join(' ');
 }
 
+/// Convenient way to display a command
 String executableArgumentsToString(String executable, List<String> arguments) {
   StringBuffer sb = StringBuffer();
   if (Platform.isWindows) {
@@ -88,6 +92,8 @@ String executableArgumentsToString(String executable, List<String> arguments) {
     switch (ext) {
       case '.exe':
       case '.bat':
+      case '.cmd':
+      case '.com':
         executable = executable.substring(0, executable.length - 4);
     }
   }

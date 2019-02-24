@@ -45,6 +45,21 @@ var firebaseExectutable = whichSync('firebase');
 
 ```
 
+### Shell
+
+Allows to run script
+
+```dart
+final shell = Shell(verbose: false);
+await shell.run('''
+
+# This is a comment
+echo Hello world
+firebase --version
+
+''');
+```
+
 ### Sample usage
 
 #### Using ProcessCmd
