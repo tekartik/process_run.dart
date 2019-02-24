@@ -5,7 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
@@ -237,6 +237,44 @@ void main() {
         await run(dummyExecutable, []);
       } on ProcessException catch (_) {
         // ProcessException: No such file or directory
+      }
+    });
+
+    test('invalid_command', () async {
+      try {
+        await Process.run(dummyCommand, []);
+      } on ProcessException catch (_) {
+        // ProcessException: No such file or directory
+      }
+
+      try {
+        await run(dummyCommand, []);
+      } on ProcessException catch (_) {
+        // ProcessException: No such file or directory
+      }
+    });
+
+    test('echo', () async {
+      // Fortunately this work on all platform
+      var result = await run('echo', ['value']);
+      expect(result.exitCode, 0);
+      expect(result.stdout.toString().trim(), 'value');
+    });
+
+    test('dart', () async {
+      var result = await run('dart', ['--version']);
+      expect(result.exitCode, 0);
+    });
+
+    test('relative', () async {
+      if (Platform.isWindows) {
+        var result = await run(join('test', 'src', 'current_dir.bat'), []);
+        expect(result.exitCode, 0);
+        expect(result.stdout.toString().trim(), Directory.current.path);
+      } else {
+        var result = await run(join('test', 'src', 'current_dir'), []);
+        expect(result.exitCode, 0);
+        expect(result.stdout.toString().trim(), Directory.current.path);
       }
     });
 

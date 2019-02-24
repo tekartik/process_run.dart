@@ -4,7 +4,7 @@ library process_run.dartdoc_test;
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 
@@ -36,7 +36,7 @@ void defineTests() {
       // from dartdoc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdoc/.packages" "$SNAPSHOT" "$@"
 
       ProcessResult result = await runCmd(
-          DartDocCmd(['--output', join(testOut, joinAll(testDescriptions))]));
+          DartDocCmd(['--output', join(testOut, 'dartdoc_build')]));
       //expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
       //}, skip: "failed on SDK 1.19.0"); - fixed in 1.19.1

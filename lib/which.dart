@@ -1,1 +1,1 @@
-export 'src/which.dart';
+export 'src/which.dart' show which, whichSync;

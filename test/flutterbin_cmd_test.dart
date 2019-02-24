@@ -3,11 +3,11 @@ library process_run.flutterbin_cmd_test;
 
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/process_cmd.dart';
-import 'package:process_run/src/shell.dart';
+import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/which.dart';
 
 void main() {

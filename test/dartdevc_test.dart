@@ -3,7 +3,7 @@ library process_run.dartdevc_test;
 
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 
@@ -26,7 +26,7 @@ void defineTests() {
     test('build', () async {
       // from dartdevc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdevc/.packages" "$SNAPSHOT" "$@"
 
-      var destination = join(testDir, joinAll(testDescriptions), 'main.js');
+      var destination = join(testDir, 'dartdevc_build', 'main.js');
 
       // delete dir if any
       try {

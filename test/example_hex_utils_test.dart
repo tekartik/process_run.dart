@@ -1,4 +1,4 @@
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 // Warning relative to example here
 import '../example/hex_utils.dart';
 

@@ -3,7 +3,7 @@ library process_run.dartbin_cmd_test;
 
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/src/dartbin_cmd.dart';

@@ -2,7 +2,7 @@
 library process_run.process_run_out_test;
 
 import 'dart:io';
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
 import 'process_run_test_common.dart';

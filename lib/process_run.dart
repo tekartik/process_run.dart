@@ -7,10 +7,15 @@ import 'dart:io';
 import 'dart:io' as io;
 
 import 'package:path/path.dart';
+import 'package:process_run/src/shell_utils.dart' as utils;
+import 'package:process_run/src/user_config.dart';
 
 import 'src/common/import.dart';
 
 export 'src/dev_process_run.dart';
+
+/// Helper to run a process and connect the input/output for verbosity
+///
 
 /// Helper to run a process and connect the input/output for verbosity
 ///
@@ -39,7 +44,9 @@ bool _isWhitespace(int rune) => ((rune >= 0x0009 && rune <= 0x000D) ||
     rune == 0x3000 ||
     rune == 0xFEFF);
 
-// argument must not be null
+/// Use to safely enclose an argument if needed
+///
+/// argument must not be null
 String argumentToString(String argument) {
   bool hasWhitespace = false;
   int singleQuoteCount = 0;
@@ -73,6 +80,7 @@ String argumentToString(String argument) {
   return argument;
 }
 
+/// Convert multiple arguments to string than can be used in a terminal
 String argumentsToString(List<String> arguments) {
   List<String> argumentStrings = [];
   for (String argument in arguments) {
@@ -81,6 +89,7 @@ String argumentsToString(List<String> arguments) {
   return argumentStrings.join(' ');
 }
 
+/// Convenient way to display a command
 String executableArgumentsToString(String executable, List<String> arguments) {
   StringBuffer sb = StringBuffer();
   if (Platform.isWindows) {
@@ -88,6 +97,8 @@ String executableArgumentsToString(String executable, List<String> arguments) {
     switch (ext) {
       case '.exe':
       case '.bat':
+      case '.cmd':
+      case '.com':
         executable = executable.substring(0, executable.length - 4);
     }
   }
@@ -105,7 +116,7 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,
     bool includeParentEnvironment = true,
-    bool runInShell = false,
+    bool runInShell,
     Encoding stdoutEncoding = systemEncoding,
     Encoding stderrEncoding = systemEncoding,
     Stream<List<int>> stdin,
@@ -115,7 +126,6 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     bool commandVerbose}) async {
   // enforce default
   includeParentEnvironment ??= true;
-  runInShell ??= false;
   //stdoutEncoding ??= SYSTEM_ENCODING;
   //stderrEncoding ??= SYSTEM_ENCODING;
 
@@ -130,6 +140,27 @@ Future<ProcessResult> run(String executable, List<String> arguments,
         "\$ ${executableArgumentsToString(executable, arguments)}\n".codeUnits);
   }
 
+  // Filter out environment
+  // to remove vm_services
+  if (includeParentEnvironment != false) {
+    if (environment == null) {
+      environment = utils.shellEnvironment;
+    }
+    includeParentEnvironment = false;
+  }
+
+  // Fix runInShell on windows
+  runInShell = utils.fixRunInShell(runInShell, executable);
+
+  // Default is the full command
+  String executableShortName = executable;
+  // Find executable if needed, i.e. if it is only a name
+  if (basename(executable) == executable) {
+    executableShortName = executable;
+    // Try to find it in path or use it as is
+    executable = utils.findExecutableSync(executable, userPaths) ?? executable;
+  }
+
   Process process;
   try {
     process = await Process.start(executable, arguments,
@@ -140,8 +171,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   } catch (e) {
     if (verbose == true) {
       io.stderr.writeln(e);
-      io.stderr
-          .writeln("\$ ${executableArgumentsToString(executable, arguments)}");
+      io.stderr.writeln(
+          "\$ ${executableArgumentsToString(executableShortName, arguments)}");
       io.stderr.writeln("workingDirectory: $workingDirectory");
     }
     rethrow;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+* fear: add Shell class
+
 ## 0.9.0
 
 * fix: which now returns the full path on linux

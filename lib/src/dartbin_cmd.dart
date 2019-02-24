@@ -75,6 +75,7 @@ class PubCmd extends _DartBinCmd {
       : super(getShellCmdBinFileName('pub'), arguments);
 }
 
+@deprecated
 class DartDevkCmd extends _DartBinCmd {
   DartDevkCmd(List<String> arguments)
       : super(getShellCmdBinFileName('dartdevk'), arguments);

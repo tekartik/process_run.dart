@@ -3,7 +3,7 @@ library process_run.dartfmt_test;
 
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
 
 void main() => defineTests();

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:path/path.dart';
+import 'package:process_run/src/common/import.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'hex_utils.dart';
@@ -58,7 +59,7 @@ Future main(List<String> arguments) async {
     stdout.writeln('Usage: ${currentScriptName} <command> [<arguments>]');
     stdout.writeln();
     stdout.writeln('Example: ${currentScriptName} -o "Hello world"');
-    stdout.writeln('will display "Hellow world"');
+    stdout.writeln('will display "Hello world"');
     stdout.writeln();
     stdout.writeln("Global options:");
     stdout.writeln(parser.usage);

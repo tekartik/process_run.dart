@@ -45,6 +45,23 @@ var firebaseExectutable = whichSync('firebase');
 
 ```
 
+### Shell
+
+Allows to run script from Mac/Windows/Linux
+
+```dart
+final shell = Shell();
+await shell.run('''
+
+# This is a comment
+echo Hello world
+firebase --version
+
+''');
+```
+
+More information [on shell here](https://github.com/tekartik/process_run/blob/master/doc/shell.md)
+
 ### Sample usage
 
 #### Using ProcessCmd

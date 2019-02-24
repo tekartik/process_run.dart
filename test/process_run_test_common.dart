@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import "package:async/async.dart";
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 
 String get projectTop => '.';
@@ -13,6 +13,8 @@ String get echoScriptPath => join(projectTop, 'example', 'echo.dart');
 
 // does not exists
 String get dummyExecutable => join(dirname(testDir), 'example', 'dummy');
+
+final String dummyCommand = '_tekartik_process_run_dummy';
 
 Stream<List<int>> testStdin = stdin.asBroadcastStream();
 
