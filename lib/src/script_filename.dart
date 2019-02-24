@@ -12,5 +12,5 @@ String getBashOrCmdExecutableFilename(String command) {
 
 /// 'dart' => 'dart.exe' (windows) or dart'
 String getBashOrExeExecutableFilename(String command) {
-  return Platform.isWindows ? '$command.cmd' : command;
+  return Platform.isWindows ? '$command.exe' : command;
 }
