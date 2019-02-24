@@ -81,7 +81,7 @@ pub --version
 ''');
 ```
 
-More information [on shell here](hhttps://github.com/tekartik/process_run.dart/blob/master/doc/shell.md)
+More information [on shell here](https://github.com/tekartik/process_run.dart/blob/master/doc/shell.md)
 
 ### Additional features
 
