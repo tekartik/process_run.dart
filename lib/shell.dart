@@ -10,7 +10,7 @@ import 'package:process_run/which.dart';
 import 'package:yaml/yaml.dart';
 
 export 'package:process_run/src/shell_utils.dart'
-    show userHomePath, userAppDataPath, shellArgument;
+    show userHomePath, userAppDataPath, shellArgument, shellEnvironment;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
@@ -134,6 +134,9 @@ class Shell {
       }
     } catch (_) {}
 
+    // Add dart path so that dart commands always work!
+    paths.add(dartSdkBinDirPath);
+
     var processResults = <ProcessResult>[];
     for (var command in commands) {
       var parts = shellSplit(command);
@@ -141,14 +144,14 @@ class Shell {
       var arguments = parts.sublist(1);
       var executableFullPath = whichSync(parts[0], paths: paths) ?? executable;
 
-      var processCmd =
-          _ProcessCmd(executable, arguments, executableShortName: executable)
-            ..runInShell = _runInShell
-            ..environment = _environment
-            ..includeParentEnvironment = _includeParentEnvironment
-            ..stderrEncoding = _stderrEncoding
-            ..stdoutEncoding = _stdoutEncoding
-            ..workingDirectory = _workingDirectory;
+      var processCmd = _ProcessCmd(executableFullPath, arguments,
+          executableShortName: executable)
+        ..runInShell = _runInShell
+        ..environment = _environment
+        ..includeParentEnvironment = _includeParentEnvironment
+        ..stderrEncoding = _stderrEncoding
+        ..stdoutEncoding = _stdoutEncoding
+        ..workingDirectory = _workingDirectory;
       try {
         var processResult = await runCmd(processCmd,
             verbose: _verbose,

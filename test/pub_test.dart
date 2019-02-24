@@ -21,8 +21,7 @@ void defineTests() {
       expect(result.stdout, contains("Usage: pub"));
 
       // pub version
-      result =
-          await runCmd(PubCmd(['--version']));
+      result = await runCmd(PubCmd(['--version']));
 
       var version =
           Version.parse((result.stdout as String).trim().split(" ").last);

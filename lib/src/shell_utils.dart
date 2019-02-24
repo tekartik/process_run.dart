@@ -74,9 +74,11 @@ String shellArgument(String argument) => argumentToString(argument);
 /// Environment without debug VM_OPTIONS
 ///
 /// Instead replace with an optional TEKARTIK_DART_VM_OPTIONS
-Map<String, String> get environment => environmentFilterOutVmOptions(Platform.environment);
+Map<String, String> get shellEnvironment =>
+    environmentFilterOutVmOptions(Platform.environment);
 
-Map<String, String> environmentFilterOutVmOptions(Map<String, String> platformEnvironment) {
+Map<String, String> environmentFilterOutVmOptions(
+    Map<String, String> platformEnvironment) {
   Map<String, String> environment;
   var vmOptions = platformEnvironment['DART_VM_OPTIONS'];
   if (vmOptions != null) {
@@ -93,11 +95,15 @@ Map<String, String> environmentFilterOutVmOptions(Map<String, String> platformEn
 
 const windowsDefaultPathExt = <String>['.exe', '.bat', '.cmd', '.com'];
 List<String> _windowsPathExts;
+
 /// Default extension for PATHEXT on Windows
-List<String> get windowsPathExts => _windowsPathExts ??= environmentGetWindowsPathExt(Platform.environment) ?? windowsDefaultPathExt;
+List<String> get windowsPathExts => _windowsPathExts ??=
+    environmentGetWindowsPathExt(Platform.environment) ?? windowsDefaultPathExt;
 const String windowsPathSeparator = ';';
 
-List<String> environmentGetWindowsPathExt(Map<String, String> platformEnvironment) => environment['PATHEXT']?.split(windowsPathSeparator);
+List<String> environmentGetWindowsPathExt(
+        Map<String, String> platformEnvironment) =>
+    shellEnvironment['PATHEXT']?.split(windowsPathSeparator);
 
 /// fix runInShell for Windows
 bool fixRunInShell(bool runInShell, String executable) {
@@ -114,7 +120,9 @@ bool fixRunInShell(bool runInShell, String executable) {
 }
 
 /// Use io package shellSplit implementation
-List<String> shellSplit(String command) => io.shellSplit(command.replaceAll(r'\', r'\\'));
+List<String> shellSplit(String command) =>
+    io.shellSplit(command.replaceAll(r'\', r'\\'));
 
 /// Inverse of shell split
-String shellJoin(List<String> parts) => parts.map((part) => shellArgument(part)).join(' ');
+String shellJoin(List<String> parts) =>
+    parts.map((part) => shellArgument(part)).join(' ');

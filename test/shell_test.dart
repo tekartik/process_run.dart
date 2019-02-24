@@ -46,7 +46,24 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       var results = await shell.run('''dart --version''');
       expect(results.length, 1);
       expect(results.first.exitCode, 0);
+    });
 
+    test('dart_no_path', () async {
+      var environment = Map<String, String>.from(shellEnvironment)
+        ..remove('PATH');
+      var shell = Shell(environment: environment, verbose: true);
+      var results = await shell.run('''dart --version''');
+      expect(results.length, 1);
+      expect(results.first.exitCode, 0);
+    });
+
+    test('pub_no_path', () async {
+      var environment = Map<String, String>.from(shellEnvironment)
+        ..remove('PATH');
+      var shell = Shell(environment: environment, verbose: true);
+      var results = await shell.run('''pub --version''');
+      expect(results.length, 1);
+      expect(results.first.exitCode, 0);
     });
 
     test('escape backslash', () async {
