@@ -8,9 +8,9 @@ Future main() async {
 dartanalyzer --fatal-warnings --fatal-infos example lib tool test
 
 # Run tests
-pub run test -p vm
+pub run test -p vm -r expanded
 
 # Run tests using build_runner
-pub run build_runner test
+pub run build_runner test -- -p vm -r expanded
 ''');
 }
