@@ -1,6 +1,6 @@
-# process_run.dart
+# process_run
 
-Process run helpers for Linux/Win/Mac, which like feature
+Process run helpers for Linux/Win/Mac.
 
 [![Build Status](https://travis-ci.org/tekartik/process_run.dart.svg?branch=master)](https://travis-ci.org/tekartik/process_run.dart)
 
@@ -16,7 +16,7 @@ script can be called consistently on Mac/Windows/Linux
 
 ## Usage
 
-### process_run
+### run
 
 Additional options to `Process.run` are
 * specifying stdin
@@ -26,10 +26,26 @@ Additional feature
 * It tries to resolve simple command like `dart`, `firebase`, `flutter`, or any script available on the user path
   on any Platform.
 
+```dart
+import 'package:process_run/process_run.dart';
+```
+
+Display dart version and the command executed:
+
+```dart
+await run('dart', ['--version'], verbose: true);
+```
+
 
 ### which
 
 Like unix `which`, it searches for installed executables
+
+```dart
+import 'package:process_run/which.dart';
+```
+
+Find `flutter` and `firebase` executables:
 
 ```dart
 var flutterExectutable = whichSync('flutter');
@@ -37,10 +53,16 @@ var firebaseExectutable = whichSync('firebase');
 
 ```
 
-### Shell
+### shell
 
 
 Allows to run script from Mac/Windows/Linux in a portable way. Empty lines are added for lisibility
+
+```dart
+import 'package:process_run/shell.dart';
+```
+
+Run a simple script:
 
 ```dart
 var shell = Shell();
@@ -59,9 +81,9 @@ pub --version
 ''');
 ```
 
-More information [on shell here](https://github.com/tekartik/process_run/blob/master/doc/shell.md)
+More information [on shell here](hhttps://github.com/tekartik/process_run.dart/blob/master/doc/shell.md)
 
 ### Additional features
 
-Addtional features info are [available here](https://github.com/tekartik/process_run/blob/master/doc/more.md)
+Addtional features and information are [available here](https://github.com/tekartik/process_run.dart/blob/master/doc/more.md)
 
