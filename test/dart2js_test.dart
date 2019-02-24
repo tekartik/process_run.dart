@@ -4,7 +4,7 @@ library process_run.dart2js_test;
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 
@@ -35,7 +35,7 @@ void defineTests() {
     test('build', () async {
       // from dart2js: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dart2js/.packages" "$SNAPSHOT" "$@"
 
-      var destination = join(testOut, joinAll(testDescriptions), 'main.js');
+      var destination = join(testOut, 'dart2js_build', 'main.js');
 
       // delete dir if any
       try {

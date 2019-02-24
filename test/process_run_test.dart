@@ -271,6 +271,10 @@ void main() {
         var result = await run(join('test', 'src', 'current_dir.bat'), []);
         expect(result.exitCode, 0);
         expect(result.stdout.toString().trim(), Directory.current.path);
+      } else {
+        var result = await run(join('test', 'src', 'current_dir'), []);
+        expect(result.exitCode, 0);
+        expect(result.stdout.toString().trim(), Directory.current.path);
       }
     });
 

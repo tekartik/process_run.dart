@@ -4,7 +4,7 @@ library process_run.process_run_in_test2_;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
 

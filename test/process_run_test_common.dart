@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import "package:async/async.dart";
-import 'package:dev_test/test.dart';
+import 'package:test/test.dart';
 import 'package:path/path.dart';
 
 String get projectTop => '.';

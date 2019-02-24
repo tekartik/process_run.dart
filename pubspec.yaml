@@ -18,7 +18,6 @@ dev_dependencies:
   pedantic: '>=1.4.0'
   pub_semver: any
   args: any
-  dev_test: any
   test: '>=1.2.0'
   async: any
   build_runner: '>=0.9.0'

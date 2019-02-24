@@ -1,3 +1,4 @@
+import 'package:process_run/dartbin.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:test/test.dart';
 
@@ -33,6 +34,7 @@ void main() {
     expect(shellSplit('"Hello  world"'), ['Hello  world']);
     expect(shellSplit("'Hello  world'"), ['Hello  world']);
   });
+
   test('shellJoin', () {
     void _test(String command, {String expected}) {
       var parts = shellSplit(command);
@@ -45,5 +47,13 @@ void main() {
     _test(r'\');
     _test('"foo bar"');
     _test("'foo bar'", expected: '"foo bar"');
+  });
+
+  test('no_env', () {
+    expect(findExecutableSync('dart', []), isNull);
+    expect(findExecutableSync('pub', []), isNull);
+
+    expect(findExecutableSync('dart', [dartSdkBinDirPath]), dartExecutable);
+    expect(findExecutableSync('pub', [dartSdkBinDirPath]), isNotNull);
   });
 }
