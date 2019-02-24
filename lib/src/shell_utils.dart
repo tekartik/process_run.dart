@@ -104,7 +104,10 @@ const String windowsPathSeparator = ';';
 
 List<String> environmentGetWindowsPathExt(
         Map<String, String> platformEnvironment) =>
-    shellEnvironment['PATHEXT']?.split(windowsPathSeparator);
+    shellEnvironment['PATHEXT']
+        ?.split(windowsPathSeparator)
+        ?.map((ext) => ext.toLowerCase())
+        ?.toList(growable: false);
 
 /// fix runInShell for Windows
 bool fixRunInShell(bool runInShell, String executable) {
@@ -137,7 +140,7 @@ String findExecutableSync(String command, List<String> paths) {
       for (var ext in windowsPathExts) {
         var commandPathWithExt = '$commandPath$ext';
         if (File(commandPathWithExt).existsSync()) {
-          return commandPathWithExt;
+          return normalize(commandPathWithExt);
         }
       }
       // Try without extension
