@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.9.1
+## 0.10.0
 
-* fear: add Shell class
+* feat: add Shell class and features
+* try to resolve single command everywhere
 
 ## 0.9.0
 
