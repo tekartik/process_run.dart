@@ -6,10 +6,12 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
+bool debug = false;
+
 void main() {
   group('Shell', () {
     test('arguments', () async {
-      var shell = Shell(verbose: true);
+      var shell = Shell(verbose: debug);
       var text = 'Hello  world';
       var results = await shell.run('''
 # this will print 'Helloworld'
@@ -29,7 +31,7 @@ dart example/echo.dart -o ${shellArgument(text)}
     });
 
     test('backslash', () async {
-      var shell = Shell(verbose: true);
+      var shell = Shell(verbose: debug);
       var weirdText = r'a/\b c/\d';
       var results = await shell.run('''
 dart example/echo.dart -o $weirdText
@@ -42,14 +44,14 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       expect(results.length, 2);
     });
     test('dart', () async {
-      var shell = Shell(verbose: true);
+      var shell = Shell(verbose: debug);
       var results = await shell.run('''dart --version''');
       expect(results.length, 1);
       expect(results.first.exitCode, 0);
     });
 
     test('cd', () async {
-      var shell = Shell(verbose: true);
+      var shell = Shell(verbose: debug);
 
       var results = await shell.run('dart test/src/current_dir.dart');
 
@@ -63,7 +65,7 @@ dart current_dir.dart
     });
 
     test('pushd', () async {
-      var shell = Shell(verbose: true);
+      var shell = Shell(verbose: debug);
 
       var results = await shell.run('dart test/src/current_dir.dart');
       expect(results[0].stdout.toString().trim(), Directory.current.path);
@@ -86,7 +88,7 @@ dart current_dir.dart
     test('dart_no_path', () async {
       var environment = Map<String, String>.from(shellEnvironment)
         ..remove('PATH');
-      var shell = Shell(environment: environment, verbose: true);
+      var shell = Shell(environment: environment, verbose: debug);
       var results = await shell.run('''dart --version''');
       expect(results.length, 1);
       expect(results.first.exitCode, 0);
@@ -95,14 +97,14 @@ dart current_dir.dart
     test('pub_no_path', () async {
       var environment = Map<String, String>.from(shellEnvironment)
         ..remove('PATH');
-      var shell = Shell(environment: environment, verbose: true);
+      var shell = Shell(environment: environment, verbose: debug);
       var results = await shell.run('''pub --version''');
       expect(results.length, 1);
       expect(results.first.exitCode, 0);
     });
 
     test('escape backslash', () async {
-      var shell = Shell(verbose: true);
+      var shell = Shell(verbose: debug);
       var results = await shell.run('''echo "\\"''');
       expect(results[0].stdout.toString().trim(), '\\');
     });
@@ -123,7 +125,7 @@ _tekartik_dummy_app_that_does_not_exits
   });
 
   Future _testCommand(String command) async {
-    var shell = Shell();
+    var shell = Shell(verbose: debug);
     try {
       await shell.run(command);
     } on ShellException catch (_) {

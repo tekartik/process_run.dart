@@ -172,8 +172,8 @@ class Shell {
       if (command.startsWith('#')) {
         if (_commentVerbose) {
           stdout.writeln(command);
-          continue;
         }
+        continue;
       }
       var parts = shellSplit(command);
       var executable = parts[0];
