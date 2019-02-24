@@ -47,10 +47,10 @@ var firebaseExectutable = whichSync('firebase');
 
 ### Shell
 
-Allows to run script
+Allows to run script from Mac/Windows/Linux
 
 ```dart
-final shell = Shell(verbose: false);
+final shell = Shell();
 await shell.run('''
 
 # This is a comment
@@ -59,6 +59,8 @@ firebase --version
 
 ''');
 ```
+
+More information [on shell here](https://github.com/tekartik/process_run/blob/master/doc/shell.md)
 
 ### Sample usage
 

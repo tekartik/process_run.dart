@@ -7,10 +7,14 @@ import 'dart:io';
 import 'dart:io' as io;
 
 import 'package:path/path.dart';
+import 'package:process_run/src/shell_utils.dart' as utils;
 
 import 'src/common/import.dart';
 
 export 'src/dev_process_run.dart';
+
+/// Helper to run a process and connect the input/output for verbosity
+///
 
 /// Helper to run a process and connect the input/output for verbosity
 ///
@@ -111,7 +115,7 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,
     bool includeParentEnvironment = true,
-    bool runInShell = false,
+    bool runInShell,
     Encoding stdoutEncoding = systemEncoding,
     Encoding stderrEncoding = systemEncoding,
     Stream<List<int>> stdin,
@@ -121,7 +125,6 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     bool commandVerbose}) async {
   // enforce default
   includeParentEnvironment ??= true;
-  runInShell ??= false;
   //stdoutEncoding ??= SYSTEM_ENCODING;
   //stderrEncoding ??= SYSTEM_ENCODING;
 
@@ -136,6 +139,17 @@ Future<ProcessResult> run(String executable, List<String> arguments,
         "\$ ${executableArgumentsToString(executable, arguments)}\n".codeUnits);
   }
 
+  // Filter out environment
+  // to remove vm_services
+  if (includeParentEnvironment != false) {
+    if (environment == null) {
+      environment = utils.environment;
+    }
+    includeParentEnvironment = false;
+  }
+
+  // Fix runInShell on windows
+  runInShell = utils.fixRunInShell(runInShell, executable);
   Process process;
   try {
     process = await Process.start(executable, arguments,

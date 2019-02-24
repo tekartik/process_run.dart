@@ -2,15 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:io' as io;
 
-import 'package:io/io.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:process_run/shell/src/shell_utils.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/which.dart';
 import 'package:yaml/yaml.dart';
 
-export 'package:process_run/shell/src/shell_utils.dart'
+export 'package:process_run/src/shell_utils.dart'
     show userHomePath, userAppDataPath, shellArgument;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
@@ -25,12 +24,15 @@ class ShellException implements Exception {
 
 // Simplify toString to avoid the full path got with which
 class _ProcessCmd extends ProcessCmd {
-  _ProcessCmd(
-      {String executable, List<String> arguments, String executableFullPath})
-      : super(executableFullPath, arguments);
+  final String executableShortName;
+
+  _ProcessCmd(String executable, List<String> arguments,
+      {this.executableShortName})
+      : super(executable, arguments);
 
   @override
-  String toString() => executableArgumentsToString(executable, arguments);
+  String toString() =>
+      executableArgumentsToString(executableShortName, arguments);
 }
 
 /// Multiplatform Shell utility to run a script with multiple commands.
@@ -66,12 +68,15 @@ class Shell {
   final bool _commandVerbose;
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
+  ///
+  /// Unless specified [runInShell] will be false. However on windows, it will
+  /// default to true for non .exe files
   Shell(
       {bool throwOnError = true,
       String workingDirectory,
       Map<String, String> environment,
       bool includeParentEnvironment = true,
-      bool runInShell = false,
+      bool runInShell,
       Encoding stdoutEncoding = systemEncoding,
       Encoding stderrEncoding = systemEncoding,
       Stream<List<int>> stdin,
@@ -84,7 +89,7 @@ class Shell {
         _workingDirectory = workingDirectory,
         _environment = environment,
         _includeParentEnvironment = includeParentEnvironment ?? true,
-        _runInShell = runInShell ?? false,
+        _runInShell = runInShell,
         _stdoutEncoding = stdoutEncoding ?? systemEncoding,
         _stderrEncoding = stderrEncoding ?? systemEncoding,
         _stdin = stdin,
@@ -136,16 +141,14 @@ class Shell {
       var arguments = parts.sublist(1);
       var executableFullPath = whichSync(parts[0], paths: paths) ?? executable;
 
-      var processCmd = _ProcessCmd(
-          executableFullPath: executableFullPath,
-          executable: executable,
-          arguments: arguments)
-        ..runInShell = _runInShell
-        ..environment = _environment
-        ..includeParentEnvironment = _includeParentEnvironment
-        ..stderrEncoding = _stderrEncoding
-        ..stdoutEncoding = _stdoutEncoding
-        ..workingDirectory = _workingDirectory;
+      var processCmd =
+          _ProcessCmd(executable, arguments, executableShortName: executable)
+            ..runInShell = _runInShell
+            ..environment = _environment
+            ..includeParentEnvironment = _includeParentEnvironment
+            ..stderrEncoding = _stderrEncoding
+            ..stdoutEncoding = _stdoutEncoding
+            ..workingDirectory = _workingDirectory;
       try {
         var processResult = await runCmd(processCmd,
             verbose: _verbose,

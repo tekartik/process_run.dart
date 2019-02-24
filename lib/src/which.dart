@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/src/shell_utils.dart';
 
 Future<String> which(String command, {Map<String, String> env}) async {
   return whichSync(command, env: env);
@@ -26,12 +27,6 @@ String whichSync(String command,
     paths.addAll(envPaths);
   }
 
-  List<String> winExeExtensions;
-  if (isWindows) {
-    winExeExtensions =
-        (env['PATHEXT'] ?? '.exe;.bat;.cmd;.com')?.split(pathSeparator);
-  }
-
   if (paths != null) {
     // Add current directory
     paths.add(Directory.current.path);
@@ -39,12 +34,10 @@ String whichSync(String command,
       var commandPath = absolute(normalize(join(path, command)));
 
       if (isWindows) {
-        if (winExeExtensions != null) {
-          for (var ext in winExeExtensions) {
-            var commandPathWithExt = '$commandPath$ext';
-            if (File(commandPathWithExt).existsSync()) {
-              return commandPathWithExt;
-            }
+        for (var ext in windowsPathExts) {
+          var commandPathWithExt = '$commandPath$ext';
+          if (File(commandPathWithExt).existsSync()) {
+            return commandPathWithExt;
           }
         }
         // Try without extension

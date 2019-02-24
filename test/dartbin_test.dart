@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:dev_test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
-import 'package:process_run/src/shell.dart';
+import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/which.dart';
 
 void main() => defineTests();

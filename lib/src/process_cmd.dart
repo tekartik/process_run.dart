@@ -21,7 +21,7 @@ class ProcessCmd {
       {this.workingDirectory,
       this.environment,
       this.includeParentEnvironment = true,
-      this.runInShell = false,
+      this.runInShell,
       this.stdoutEncoding = systemEncoding,
       this.stderrEncoding = systemEncoding});
 
@@ -65,7 +65,7 @@ ProcessCmd processCmd(String executable, List<String> arguments,
     {String workingDirectory,
     Map<String, String> environment,
     bool includeParentEnvironment = true,
-    bool runInShell = false,
+    bool runInShell,
     Encoding stdoutEncoding = systemEncoding,
     Encoding stderrEncoding = systemEncoding}) {
   return ProcessCmd(executable, arguments,
