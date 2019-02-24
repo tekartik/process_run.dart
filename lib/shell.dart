@@ -6,8 +6,6 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
-import 'package:process_run/which.dart';
-import 'package:yaml/yaml.dart';
 
 export 'package:process_run/src/shell_utils.dart'
     show userHomePath, userAppDataPath, shellArgument, shellEnvironment;
@@ -66,14 +64,26 @@ class Shell {
   final StreamSink<List<int>> _stderr;
   final bool _verbose;
   final bool _commandVerbose;
+  final bool _commentVerbose;
 
   /// Parent shell for pushd/popd
   Shell _parentShell;
+
+  /// Get it only once
+  List<String> _userPathsCache;
+
+  /// Resolve environment
+  List<String> get _userPaths =>
+      _userPathsCache ??= getEnvironmentPaths(_environment ??
+          (_includeParentEnvironment != false ? null : <String, String>{}));
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
   /// Unless specified [runInShell] will be false. However on windows, it will
   /// default to true for non .exe files
+  ///
+  /// if [verbose] is not false or [commentVerbose] is true, it will display the
+  /// comments as well
   Shell(
       {bool throwOnError = true,
       String workingDirectory,
@@ -87,7 +97,9 @@ class Shell {
       StreamSink<List<int>> stderr,
       bool verbose = true,
       // Default to true
-      bool commandVerbose})
+      bool commandVerbose,
+      // Default to true if verbose is true
+      bool commentVerbose})
       : _throwOnError = throwOnError ?? true,
         _workingDirectory = workingDirectory,
         _environment = environment,
@@ -99,7 +111,8 @@ class Shell {
         _stdout = stdout,
         _stderr = stderr,
         _verbose = verbose ?? true,
-        _commandVerbose = commandVerbose ?? verbose ?? true;
+        _commandVerbose = commandVerbose ?? verbose ?? true,
+        _commentVerbose = commentVerbose ?? (verbose != false);
 
   /// Create a new shell
   Shell clone(
@@ -153,45 +166,20 @@ class Shell {
   Future<List<ProcessResult>> run(String script) async {
     var commands = scriptToCommands(script);
 
-    var paths = <String>[];
-
-    try {
-      // Look for any config file in ~/tekartik/process_run/env.yaml
-      var userConfig = loadYaml(await File(
-              join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml'))
-          .readAsString());
-
-      // Handle added path
-      // can be
-      //
-      // path:~/bin
-      //
-      // or
-      //
-      // path:
-      //   - ~/bin
-      //   - ~/Android/Sdk/tools/bin
-      //
-
-      var path = userConfig['path'];
-      if (path is List) {
-        paths.addAll(path
-            .map((path) => expandPath(path.toString()))
-            .toList(growable: false));
-      } else if (path is String) {
-        paths.add(expandPath(path.toString()));
-      }
-    } catch (_) {}
-
-    // Add dart path so that dart commands always work!
-    paths.add(dartSdkBinDirPath);
-
     var processResults = <ProcessResult>[];
     for (var command in commands) {
+      // Display the comments
+      if (command.startsWith('#')) {
+        if (_commentVerbose) {
+          stdout.writeln(command);
+          continue;
+        }
+      }
       var parts = shellSplit(command);
       var executable = parts[0];
       var arguments = parts.sublist(1);
-      var executableFullPath = whichSync(parts[0], paths: paths) ?? executable;
+      var executableFullPath =
+          findExecutableSync(command, _userPaths) ?? executable;
 
       var processCmd = _ProcessCmd(executableFullPath, arguments,
           executableShortName: executable)

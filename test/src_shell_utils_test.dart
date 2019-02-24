@@ -5,7 +5,8 @@ void main() {
   test('scriptToCommands', () {
     expect(scriptToCommands(''), []);
     expect(scriptToCommands('\\'), ['\\']);
-    expect(scriptToCommands(' e\n#\n # comment\nf \n '), ['e', 'f']);
+    expect(scriptToCommands(' e\n#\n # comment\nf \n '),
+        ['e', '#', '# comment', 'f']);
   });
 
   test('environmentFilterOutVmOptions', () {

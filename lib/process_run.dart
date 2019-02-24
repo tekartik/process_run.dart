@@ -8,6 +8,7 @@ import 'dart:io' as io;
 
 import 'package:path/path.dart';
 import 'package:process_run/src/shell_utils.dart' as utils;
+import 'package:process_run/src/user_config.dart';
 
 import 'src/common/import.dart';
 
@@ -150,6 +151,16 @@ Future<ProcessResult> run(String executable, List<String> arguments,
 
   // Fix runInShell on windows
   runInShell = utils.fixRunInShell(runInShell, executable);
+
+  // Default is the full command
+  String executableShortName = executable;
+  // Find executable if needed, i.e. if it is only a name
+  if (basename(executable) == executable) {
+    executableShortName = executable;
+    // Try to find it in path or use it as is
+    executable = utils.findExecutableSync(executable, userPaths) ?? executable;
+  }
+
   Process process;
   try {
     process = await Process.start(executable, arguments,
@@ -160,8 +171,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   } catch (e) {
     if (verbose == true) {
       io.stderr.writeln(e);
-      io.stderr
-          .writeln("\$ ${executableArgumentsToString(executable, arguments)}");
+      io.stderr.writeln(
+          "\$ ${executableArgumentsToString(executableShortName, arguments)}");
       io.stderr.writeln("workingDirectory: $workingDirectory");
     }
     rethrow;

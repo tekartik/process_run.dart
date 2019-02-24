@@ -14,6 +14,13 @@ void main() => defineTests();
 void defineTests() {
   group('dartbin', () {
     group('dart', () {
+      test('run_dart', () async {
+        ProcessResult result = await Process.run('dart', ['--version']);
+        expect(result.stderr.toLowerCase(), contains("dart"));
+        expect(result.stderr.toLowerCase(), contains("version"));
+        // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
+      });
+
       test('run', () async {
         ProcessResult result = await Process.run(dartExecutable, ['--version']);
         expect(result.stderr.toLowerCase(), contains("dart"));

@@ -1,22 +1,44 @@
-### Shell
+# Shell
 
-Allows to run script from Mac/Windows/Linux in a portable way
+Allows to run script from Mac/Windows/Linux in a portable way. Empty lines are added for lisibility
 
 ```dart
-final shell = Shell();
+var shell = Shell();
+
 await shell.run('''
 
-# This is a comment
-echo Hello world
-firebase --version
+# Display some text
+echo Hello
+
+# Display dart version
+dart --version
+
+# Display pub version
+pub --version
 
 ''');
 ```
 
-More information [on shell here](https://github.com/tekartik/process_run/blob/master/doc/shell.md)
+the command will be looked in the system paths (`PATH` variable).
 
-## Exception
+### Changing directory
 
-### echo
+You can pushd/popd a directory
 
-that is actually the command that requires a shell on windows, this is supported for convenience
+```dart
+shell = shell.pushd('example');
+
+await shell.run('''
+
+# Listing directory in the example folder
+dir
+
+''');
+shell = shell.popd();
+```
+
+
+### Adding system path
+
+If somehow you cannot modify the system path, it will look for any path defined in
+ `~/.config/tekartik/process_run/env.yaml` on Mac/Linux or `%APPDATA%\tekartik\process_run\env.yaml` on Windows.

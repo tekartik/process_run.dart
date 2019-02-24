@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:io/io.dart' as io;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:io/io.dart' as io;
 
 /// Convert a script to multiple commands
 List<String> scriptToCommands(String script) {
@@ -13,7 +14,7 @@ List<String> scriptToCommands(String script) {
     line = line.trim();
     if (line.isNotEmpty) {
       if (line.startsWith('#')) {
-        // Comment
+        commands.add(line);
       } else {
         // append to previous
         if (currentCommand != null) {
@@ -126,3 +127,55 @@ List<String> shellSplit(String command) =>
 /// Inverse of shell split
 String shellJoin(List<String> parts) =>
     parts.map((part) => shellArgument(part)).join(' ');
+
+/// Find command in path
+String findExecutableSync(String command, List<String> paths) {
+  for (var path in paths) {
+    var commandPath = absolute(normalize(join(path, command)));
+
+    if (Platform.isWindows) {
+      for (var ext in windowsPathExts) {
+        var commandPathWithExt = '$commandPath$ext';
+        if (File(commandPathWithExt).existsSync()) {
+          return commandPathWithExt;
+        }
+      }
+      // Try without extension
+      if (File(commandPath).existsSync()) {
+        return commandPath;
+      }
+    } else {
+      var stats = File(commandPath).statSync();
+      if (stats.type != FileSystemEntityType.notFound) {
+        // Check executable permission
+        if (stats.mode & 0x49 != 0) {
+          // binary 001001001
+          // executable
+          return commandPath;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+List<String> _platformEnvironmentPaths;
+
+/// Get platform environment path
+List<String> get platformEnvironmentPaths =>
+    _platformEnvironmentPaths ??= _getEnvironmentPaths(Platform.environment);
+
+List<String> getEnvironmentPaths([Map<String, String> environment]) {
+  if (environment == null) {
+    return platformEnvironmentPaths;
+  }
+  return _getEnvironmentPaths(environment);
+}
+
+/// No io dependency here.
+///
+/// Never null
+List<String> _getEnvironmentPaths(Map<String, String> environment) =>
+    (environment ?? <String, String>{})['PATH']
+        ?.split(Platform.isWindows ? ';' : ':') ??
+    <String>[];

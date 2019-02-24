@@ -12,7 +12,7 @@ void main() {
   group('which', () {
     test('dart', () async {
       var env = {'PATH': dartSdkBinDirPath};
-      var dartExecutable = whichSync('dart', env: env);
+      var dartExecutable = whichSync('dart', environment: env);
       expect(dartExecutable, isNotNull);
       print(dartExecutable);
       var cmd = ProcessCmd(dartExecutable, ['--version']);
@@ -22,16 +22,17 @@ void main() {
     });
 
     test('no_env', () {
-      var dartExecutableFilename = whichSync('dart', env: <String, String>{});
+      var dartExecutableFilename =
+          whichSync('dart', environment: <String, String>{});
       expect(dartExecutableFilename, isNull);
-      expect(whichSync('pub', env: <String, String>{}), isNull);
+      expect(whichSync('pub', environment: <String, String>{}), isNull);
 
       dartExecutableFilename = whichSync('dart',
-          env: <String, String>{}, paths: [dirname(dartExecutable)]);
+          environment: <String, String>{'PATH': dirname(dartExecutable)});
       expect(dartExecutableFilename, isNotNull);
       expect(
           whichSync('pub',
-              env: <String, String>{}, paths: [dirname(dartExecutable)]),
+              environment: <String, String>{'PATH': dirname(dartExecutable)}),
           isNotNull);
     });
 
