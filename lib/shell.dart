@@ -144,10 +144,17 @@ class Shell {
         workingDirectory: workingDirectory ?? _workingDirectory);
   }
 
+  /// non null
+  String get _workingDirectoryPath =>
+      _workingDirectory ?? Directory.current.path;
+
   /// Create new shell at the given path
   Shell cd(String path) {
     if (isRelative(path)) {
-      path = join(_workingDirectory ?? Directory.current.path, path);
+      path = join(_workingDirectoryPath, path);
+    }
+    if (_commandVerbose) {
+      streamSinkWriteln(_stdout ?? stdout, '\$ cd $path');
     }
     return clone(workingDirectory: path);
   }
@@ -156,7 +163,13 @@ class Shell {
   Shell pushd(String path) => cd(path).._parentShell = this;
 
   /// Pop the current directory to get the previous shell
-  Shell popd() => _parentShell ?? this;
+  /// returns null if nothing in the stack
+  Shell popd() {
+    if (_parentShell != null && _commandVerbose) {
+      stdout.writeln('\$ cd ${_parentShell._workingDirectoryPath}');
+    }
+    return _parentShell;
+  }
 
   /// Create a new shell pushing a new path
 

@@ -136,8 +136,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   }
 
   if (commandVerbose == true) {
-    (stdout ?? io.stdout).add(
-        "\$ ${executableArgumentsToString(executable, arguments)}\n".codeUnits);
+    utils.streamSinkWriteln(stdout ?? io.stdout,
+        "\$ ${executableArgumentsToString(executable, arguments)}");
   }
 
   // Filter out environment

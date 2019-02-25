@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:io/io.dart' as io;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/src/common/import.dart';
 
 /// Convert a script to multiple commands
 List<String> scriptToCommands(String script) {
@@ -182,3 +183,11 @@ List<String> _getEnvironmentPaths(Map<String, String> environment) =>
     (environment ?? <String, String>{})['PATH']
         ?.split(Platform.isWindows ? ';' : ':') ??
     <String>[];
+
+/// Write a string line to the ouput
+void streamSinkWriteln(StreamSink<List<int>> sink, String message) =>
+    streamSinkWrite(sink, "${message}\n");
+
+/// Write a string to a to sink
+void streamSinkWrite(StreamSink<List<int>> sink, String message) =>
+    sink.add(message.codeUnits);

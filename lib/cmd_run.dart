@@ -6,6 +6,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:io' as io;
 
+import 'package:process_run/src/shell_utils.dart';
+
 import 'process_run.dart';
 import 'src/process_cmd.dart';
 
@@ -41,7 +43,7 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
   }
 
   if (commandVerbose == true) {
-    (stdout ?? io.stdout).add("\$ ${cmd}\n".codeUnits);
+    streamSinkWriteln(stdout ?? io.stdout, "\$ ${cmd}");
   }
 
   try {

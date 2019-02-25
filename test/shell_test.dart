@@ -6,6 +6,9 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
+@deprecated
+bool devTrue = true;
+// bool debug = devTrue;
 bool debug = false;
 
 void main() {
@@ -81,9 +84,7 @@ dart current_dir.dart
       expect(results[0].stdout.toString().trim(), Directory.current.path);
 
       // pop once
-      shell = shell.popd();
-      results = await shell.run('dart test/src/current_dir.dart');
-      expect(results[0].stdout.toString().trim(), Directory.current.path);
+      expect(shell.popd(), isNull);
     });
     test('dart_no_path', () async {
       var environment = Map<String, String>.from(shellEnvironment)
