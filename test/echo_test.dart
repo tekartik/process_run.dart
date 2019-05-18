@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:process_run/src/common/import.dart';
 import 'package:test/test.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
@@ -87,6 +88,28 @@ void main() {
           stdoutEncoding: null);
       await _runCheck(checkEmpty, dartExecutable, [echoScriptPath],
           stdoutEncoding: null);
+    });
+
+    group('stdout_env', () {
+      test('var', () async {
+        var result =
+            await run(dartExecutable, [echoScriptPath, '--stdout-env', 'PATH']);
+        //devPrint(result.stdout.toString());
+        expect(result.stdout.toString().trim(), isNotEmpty);
+
+        result = await run(dartExecutable, [
+          echoScriptPath,
+          '--stdout-env',
+          '__dummy_that_will_never_exists__'
+        ]);
+        //devPrint(result.stdout.toString());
+        expect(result.stdout.toString().trim(), isEmpty);
+
+        result = await run(
+            dartExecutable, [echoScriptPath, '--stdout-env', '__CUSTOM'],
+            environment: <String, String>{'__CUSTOM': '12345'});
+        expect(result.stdout.toString().trim(), '12345');
+      });
     });
 
     test('stderr', () async {

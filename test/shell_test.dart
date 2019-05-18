@@ -96,9 +96,10 @@ dart current_dir.dart
     });
 
     test('pub_no_path', () async {
+      print(userPaths);
       var environment = Map<String, String>.from(shellEnvironment)
         ..remove('PATH');
-      var shell = Shell(environment: environment, verbose: debug);
+      var shell = Shell(environment: environment, verbose: false);
       var results = await shell.run('''pub --version''');
       expect(results.length, 1);
       expect(results.first.exitCode, 0);

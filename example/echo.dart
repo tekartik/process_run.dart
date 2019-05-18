@@ -38,6 +38,8 @@ Future main(List<String> arguments) async {
       abbr: 'o', help: 'stdout content as string', defaultsTo: null);
   parser.addOption('stdout-hex',
       abbr: 'p', help: 'stdout as hexa string', defaultsTo: null);
+  parser.addOption('stdout-env',
+      abbr: 'r', help: 'echo env variable to stdout', defaultsTo: null);
   parser.addOption('stderr',
       abbr: 'e', help: 'stderr content as string', defaultsTo: null);
   parser.addOption('stderr-hex',
@@ -106,6 +108,11 @@ Future main(List<String> arguments) async {
   String stderrHexTest = _argsResult['stderr-hex'] as String;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
+  }
+
+  String envVar = _argsResult['stdout-env'] as String;
+  if (envVar != null) {
+    stdout.write(Platform.environment[envVar] ?? '');
   }
 
   // handle the rest, default to output

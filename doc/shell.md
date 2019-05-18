@@ -42,3 +42,5 @@ shell = shell.popd();
 
 If somehow you cannot modify the system path, it will look for any path defined in
  `~/.config/tekartik/process_run/env.yaml` on Mac/Linux or `%APPDATA%\tekartik\process_run\env.yaml` on Windows.
+ 
+ See [User configuration file](user_config.md) documentation.

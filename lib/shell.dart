@@ -9,6 +9,8 @@ import 'package:process_run/src/shell_utils.dart';
 
 export 'package:process_run/src/shell_utils.dart'
     show userHomePath, userAppDataPath, shellArgument, shellEnvironment;
+export 'package:process_run/src/user_config.dart'
+    show userPaths, userEnvironment;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
@@ -35,7 +37,7 @@ class _ProcessCmd extends ProcessCmd {
 
 /// Multiplatform Shell utility to run a script with multiple commands.
 ///
-/// Extra path can be loaded using ~/.config/tekartik/process_run/env.yaml
+/// Extra path/env can be loaded using ~/.config/tekartik/process_run/env.yaml
 ///
 /// ```
 /// path: ~/bin
@@ -47,6 +49,9 @@ class _ProcessCmd extends ProcessCmd {
 /// path:
 ///   - ~/bin
 ///   - ~/Android/Sdk/tools/bin
+/// env:
+///   ANDROID_TOP: ~/Android
+///   FIREBASE_TOP: ~/.firebase
 /// ```
 ///
 /// A list of ProcessResult is returned

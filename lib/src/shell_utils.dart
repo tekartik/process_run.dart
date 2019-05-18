@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:io/io.dart' as io;
+import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 
 /// Convert a script to multiple commands
@@ -39,11 +41,13 @@ String _userAppDataPath;
 ///
 /// On windows, it is read from the `APPDATA` environment variable. Otherwise
 /// it is the `~/.config` folder
-String get userAppDataPath =>
-    _userAppDataPath ??
-    () {
+String get userAppDataPath => _userAppDataPath ??= () {
+      var override = shellEnvironment[userAppDataPathEnvKey];
+      if (override != null) {
+        return override;
+      }
       if (Platform.isWindows) {
-        return Platform.environment['APPDATA'];
+        return shellEnvironment['APPDATA'];
       }
       return null;
     }() ??
@@ -55,9 +59,10 @@ String _userHomePath;
 ///
 /// Usually read from the `HOME` environment variable or `USERPROFILE` on
 /// Windows.
-String get userHomePath => _userHomePath ??= Platform.environment['HOME'] ??
-    Platform.environment['USERPROFILE'] ??
-    () {}();
+String get userHomePath =>
+    _userHomePath ??= shellEnvironment[userHomePathEnvKey] ??
+        shellEnvironment['HOME'] ??
+        shellEnvironment['USERPROFILE'];
 
 /// Expand home if needed
 String expandPath(String path) {
@@ -73,12 +78,23 @@ String expandPath(String path) {
 /// Use to safely enclose an argument if needed
 String shellArgument(String argument) => argumentToString(argument);
 
-/// Environment without debug VM_OPTIONS
+/// Cached shell environment
+Map<String, String> _shellEnvironment;
+
+/// Environment without debug VM_OPTIONS and without any user overrides
 ///
 /// Instead replace with an optional TEKARTIK_DART_VM_OPTIONS
 Map<String, String> get shellEnvironment =>
-    environmentFilterOutVmOptions(Platform.environment);
+    _shellEnvironment ??= environmentFilterOutVmOptions(Platform.environment);
 
+@protected
+set shellEnvironment(Map<String, String> environment) {
+  _userAppDataPath = null;
+  _userHomePath = null;
+  _shellEnvironment = environment;
+}
+
+/// Raw overriden environment
 Map<String, String> environmentFilterOutVmOptions(
     Map<String, String> platformEnvironment) {
   Map<String, String> environment;
@@ -100,7 +116,7 @@ List<String> _windowsPathExts;
 
 /// Default extension for PATHEXT on Windows
 List<String> get windowsPathExts => _windowsPathExts ??=
-    environmentGetWindowsPathExt(Platform.environment) ?? windowsDefaultPathExt;
+    environmentGetWindowsPathExt(shellEnvironment) ?? windowsDefaultPathExt;
 const String windowsPathSeparator = ';';
 
 List<String> environmentGetWindowsPathExt(
@@ -167,7 +183,7 @@ List<String> _platformEnvironmentPaths;
 
 /// Get platform environment path
 List<String> get platformEnvironmentPaths =>
-    _platformEnvironmentPaths ??= _getEnvironmentPaths(Platform.environment);
+    _platformEnvironmentPaths ??= _getEnvironmentPaths(shellEnvironment);
 
 List<String> getEnvironmentPaths([Map<String, String> environment]) {
   if (environment == null) {
