@@ -2,10 +2,12 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/user_config.dart';
+import 'package:process_run/which.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -53,10 +55,9 @@ void main() {
         var:
           _TEKARTIK_PROCESS_RUN_TEST: 1
         ''');
-        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
-          ..addAll(Platform.environment);
+        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
-        expect(userPaths, ['test']);
+        expect(userPaths, ['test', dartSdkBinDirPath]);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '1');
 
         resetUserConfig();
@@ -69,11 +70,37 @@ void main() {
         var:
           - _TEKARTIK_PROCESS_RUN_TEST: '~'
         ''');
+        shellEnvironment = <String, String>{
+          userEnvFilePathEnvKey: filePath,
+          userHomePathEnvKey: '/home/user'
+        };
+        // expect(getUserEnvFilePath(shellEnvironment), filePath);
+        expect(userPaths,
+            ['test', join(userHomePath, 'test2'), dartSdkBinDirPath]);
+        expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
+
+        resetUserConfig();
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
           ..addAll(Platform.environment);
-        // expect(getUserEnvFilePath(shellEnvironment), filePath);
-        expect(userPaths, ['test', join(userHomePath, 'test2')]);
+        expect(userPaths, containsAll(['test', join(userHomePath, 'test2')]));
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
+      } finally {
+        shellEnvironment = null;
+      }
+    });
+
+    test('missing user override for dart and dart binaries', () async {
+      try {
+        var filePath = join('.dart_tool', 'process_run', 'test', 'user_env',
+            '_dummy_that_will_never_exists_env.yaml');
+        resetUserConfig();
+
+        // empty environment
+        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
+
+        var dartBinDir = dirname(dartExecutable);
+        expect(userPaths, [dartBinDir]);
+        expect(dirname(await which('dart')), dartBinDir);
       } finally {
         shellEnvironment = null;
       }
@@ -94,14 +121,16 @@ void main() {
           ..addAll(Platform.environment);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '1');
 
-        var result = (await run('dart example/echo.dart --stdout-env PATH'))
-            .first
-            .stdout
-            .toString()
-            .trim();
+        var shell = Shell(verbose: false);
+        var result =
+            (await shell.run('dart example/echo.dart --stdout-env PATH'))
+                .first
+                .stdout
+                .toString()
+                .trim();
         expect(result, isNotEmpty);
 
-        result = (await run(
+        result = (await shell.run(
                 'dart example/echo.dart --stdout-env _dummy_that_will_never_exist'))
             .first
             .stdout
@@ -109,7 +138,7 @@ void main() {
             .trim();
         expect(result, isEmpty);
 
-        result = (await run(
+        result = (await shell.run(
                 'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
             .first
             .stdout
@@ -117,19 +146,20 @@ void main() {
             .trim();
         expect(result, isEmpty);
 
-        result = (await run(
-                'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-                environment: userEnvironment))
+        shell = Shell(verbose: false, environment: userEnvironment);
+        result = (await shell.run(
+                'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
             .first
             .stdout
             .toString()
             .trim();
         expect(result, '1');
-        result = (await run(
-                'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-                environment: <String, String>{
-              '_TEKARTIK_PROCESS_RUN_TEST': '78910'
-            }))
+        shell = Shell(verbose: false, environment: <String, String>{
+          '_TEKARTIK_PROCESS_RUN_TEST': '78910'
+        });
+        result = (await shell.run(
+          'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+        ))
             .first
             .stdout
             .toString()

@@ -42,7 +42,7 @@ List<String> get userPaths => userConfig.paths;
 /// It can be overriden to include user defined variables loaded from
 /// ~/.config/tekartik/process_run/env.yam
 ///
-/// [userEnvironment] must be explicitely used as it could contain sensitive
+/// [userEnvironment] must be explicitly used as it could contain sensitive
 /// information.
 ///
 Map<String, String> get userEnvironment => userConfig.vars;
@@ -88,12 +88,6 @@ UserConfig getUserConfig(Map<String, String> environment) {
         paths.add(expandPath(path.toString()));
       }
 
-      // Add dart path so that dart commands always work!
-      paths.add(dartSdkBinDirPath);
-
-      // Add from environment
-      paths.addAll(getEnvironmentPaths(environment));
-
       // Handle variable like
       //
       // var:
@@ -129,6 +123,13 @@ UserConfig getUserConfig(Map<String, String> environment) {
       }
     }
   } catch (_) {}
+
+  // Add dart path so that dart commands always work!
+  paths.add(dartSdkBinDirPath);
+
+  // Add from environment
+  paths.addAll(getEnvironmentPaths(environment));
+
   return UserConfig()
     ..paths = paths
     ..vars = userEnvironment;

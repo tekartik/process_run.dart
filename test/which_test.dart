@@ -35,6 +35,13 @@ void main() {
           Platform.isWindows ? 'current_dir.bat' : 'current_dir');
     });
 
+    test('dart_env', () {
+      var empty = <String, String>{};
+
+      // We can always find dart and pub
+      expect(whichSync('dart', environment: empty), dartExecutable);
+    });
+
     test('echo', () async {
       if (Platform.isWindows) {
         expect(whichSync('echo'), isNull);
