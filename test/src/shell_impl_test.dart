@@ -44,6 +44,9 @@ void main() {
       }
     });
 
+    String getTestAbsPath() => Platform.isWindows ? r'C:\temp' : '/temp';
+    String getTestHomeRelPath() => Platform.isWindows ? r'~\temp' : '~/temp';
+
     test('userEnvironment', () async {
       try {
         var filePath =
@@ -66,23 +69,23 @@ void main() {
         
         path:
           - test
-          - '~/test2'
+          - '${getTestHomeRelPath()}'
         var:
           - _TEKARTIK_PROCESS_RUN_TEST: '~'
         ''');
         shellEnvironment = <String, String>{
           userEnvFilePathEnvKey: filePath,
-          userHomePathEnvKey: '/home/user'
+          userHomePathEnvKey: getTestAbsPath()
         };
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
-        expect(userPaths,
-            ['test', join(userHomePath, 'test2'), dartSdkBinDirPath]);
+        expect(
+            userPaths, ['test', join(userHomePath, 'temp'), dartSdkBinDirPath]);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
 
         resetUserConfig();
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
           ..addAll(Platform.environment);
-        expect(userPaths, containsAll(['test', join(userHomePath, 'test2')]));
+        expect(userPaths, containsAll(['test', join(userHomePath, 'temp')]));
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
       } finally {
         shellEnvironment = null;
