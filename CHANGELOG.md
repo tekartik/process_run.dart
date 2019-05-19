@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.1
+
+* add `userPaths` and `userEnvironment` access and allow overriding for finding executable and passing env variable
+to calleed
+* 
 ## 0.10.0
 
 * feat: add Shell class and features
