@@ -17,7 +17,8 @@ void main() {
           'dart example/echo.dart ${shellArgument(userEnvironment.toString())}',
           verbose: false);
 
-      expect(userEnvironment.length, greaterThan(shellEnvironment.length));
+      expect(userEnvironment.length,
+          greaterThanOrEqualTo(shellEnvironment.length));
     });
     test('shellEnvironment', () async {
       await run(
