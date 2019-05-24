@@ -178,11 +178,15 @@ class Shell {
     return _parentShell;
   }
 
-  /// Create a new shell pushing a new path
-
-  /// Run on or multiple commands
-  /// Commands can be splitted by line
-  /// Commands can be on multiple line if ending with ' ^' or ' \'
+  ///
+  /// Run one or multiple plain text command(s).
+  ///
+  /// Commands can be splitted by line.
+  ///
+  /// Commands can be on multiple line if ending with ' ^' or ' \'.
+  ///
+  /// Returns a list of executed command line results.
+  ///
   Future<List<ProcessResult>> run(String script) async {
     var commands = scriptToCommands(script);
 

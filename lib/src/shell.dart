@@ -5,7 +5,24 @@ import 'package:process_run/shell.dart';
 
 import 'common/import.dart';
 
-/// Run a command in the current working directory
+///
+/// Run one or multiple plain text command(s).
+///
+/// Commands can be splitted by line.
+///
+/// Commands can be on multiple line if ending with ' ^' or ' \'.
+///
+/// Returns a list of executed command line results.
+///
+///
+/// ```dart
+/// await run('flutter build');
+/// await run('dart --version');
+/// await run('''
+///  dart --version
+///  git status
+/// ''');
+/// ```
 Future<List<ProcessResult>> run(String script,
     {bool throwOnError = true,
     String workingDirectory,
