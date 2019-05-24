@@ -103,7 +103,7 @@ class Shell {
       bool verbose = true,
       // Default to true
       bool commandVerbose,
-      // Default to true if verbose is true
+      // Default to false
       bool commentVerbose})
       : _throwOnError = throwOnError ?? true,
         _workingDirectory = workingDirectory,
@@ -117,7 +117,7 @@ class Shell {
         _stderr = stderr,
         _verbose = verbose ?? true,
         _commandVerbose = commandVerbose ?? verbose ?? true,
-        _commentVerbose = commentVerbose ?? (verbose != false);
+        _commentVerbose = commentVerbose ?? false;
 
   /// Create a new shell
   Shell clone(
@@ -132,12 +132,14 @@ class Shell {
       StreamSink<List<int>> stdout,
       StreamSink<List<int>> stderr,
       bool verbose,
-      bool commandVerbose}) {
+      bool commandVerbose,
+      bool commentVerbose}) {
     return Shell(
         verbose: verbose ?? _verbose,
         environment: environment ?? _environment,
         runInShell: runInShell ?? _runInShell,
         commandVerbose: commandVerbose ?? _commandVerbose,
+        commentVerbose: commentVerbose ?? _commentVerbose,
         includeParentEnvironment:
             includeParentEnvironment ?? _includeParentEnvironment,
         stderr: stderr ?? _stderr,
@@ -187,7 +189,7 @@ class Shell {
     var processResults = <ProcessResult>[];
     for (var command in commands) {
       // Display the comments
-      if (command.startsWith('#')) {
+      if (isLineComment(command)) {
         if (_commentVerbose) {
           stdout.writeln(command);
         }

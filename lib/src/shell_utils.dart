@@ -8,6 +8,27 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 
+/// True if the line is a comment.
+///
+/// line must have been trimmed before
+bool isLineComment(String line) {
+  return line.startsWith('#') ||
+      line.startsWith('// ') ||
+      line.startsWith('/// ') ||
+      (line == '//') ||
+      (line == '///');
+}
+
+/// True if the line is to be continue.
+///
+/// line must have been trimmed before
+bool isLineToBeContinued(String line) {
+  return line.endsWith(' ^') ||
+      line.endsWith(r' \') ||
+      (line == '^') ||
+      (line == '\\');
+}
+
 /// Convert a script to multiple commands
 List<String> scriptToCommands(String script) {
   var commands = <String>[];
@@ -16,14 +37,14 @@ List<String> scriptToCommands(String script) {
   for (var line in LineSplitter.split(script)) {
     line = line.trim();
     if (line.isNotEmpty) {
-      if (line.startsWith('#')) {
+      if (isLineComment(line)) {
         commands.add(line);
       } else {
         // append to previous
         if (currentCommand != null) {
           line = currentCommand + line;
         }
-        if (line.endsWith(' ^') || line.endsWith(r' \')) {
+        if (isLineToBeContinued(line)) {
           // remove ending character
           currentCommand = line.substring(0, line.length - 1);
         } else {

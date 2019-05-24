@@ -5,9 +5,35 @@ import 'package:test/test.dart';
 void main() {
   test('scriptToCommands', () {
     expect(scriptToCommands(''), []);
-    expect(scriptToCommands('\\'), ['\\']);
+    // expect(scriptToCommands('\\'), ['\\']);
     expect(scriptToCommands(' e\n#\n # comment\nf \n '),
         ['e', '#', '# comment', 'f']);
+  });
+
+  test('isLineToBeContinued', () {
+    expect(isLineToBeContinued(''), isFalse);
+    expect(isLineToBeContinued('\\'), isTrue);
+    expect(isLineToBeContinued('^'), isTrue);
+    expect(isLineToBeContinued('\\'), isTrue);
+    expect(isLineToBeContinued('a^'), isFalse);
+    expect(isLineToBeContinued(' ^'), isTrue);
+    expect(isLineToBeContinued('a ^'), isTrue);
+    expect(isLineToBeContinued(' \\'), isTrue);
+    expect(isLineToBeContinued('a\\'), isFalse);
+    expect(isLineToBeContinued('a \\'), isTrue);
+  });
+
+  test('isLineComment', () {
+    expect(isLineComment(''), isFalse);
+    expect(isLineComment('a'), isFalse);
+    expect(isLineComment('\\'), isFalse);
+    expect(isLineComment('//'), isTrue);
+    expect(isLineComment('//a'), isFalse);
+    expect(isLineComment('// '), isTrue);
+    expect(isLineComment('///'), isTrue);
+    expect(isLineComment('///a'), isFalse);
+    expect(isLineComment('/// '), isTrue);
+    expect(isLineComment('#a'), isTrue);
   });
 
   test('environmentFilterOutVmOptions', () {
