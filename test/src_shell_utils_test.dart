@@ -59,6 +59,18 @@ void main() {
     expect(shellSplit('Hello  world'), ['Hello', 'world']);
     expect(shellSplit('"Hello  world"'), ['Hello  world']);
     expect(shellSplit("'Hello  world'"), ['Hello  world']);
+    expect(
+        shellSplit(
+            'curl --location --request POST "https://postman-echo.com/post" --data "This is expected to be sent back as part of response body."'),
+        [
+          'curl',
+          '--location',
+          '--request',
+          'POST',
+          'https://postman-echo.com/post',
+          '--data',
+          'This is expected to be sent back as part of response body.'
+        ]);
   });
 
   test('shellJoin', () {

@@ -13,11 +13,11 @@ dependencies:
   io: '>=0.3.0 <2.0.0'
   yaml: '>=2.0.0 < 4.0.0'
   meta: '>=1.1.0 < 3.0.0'
+  args: any
 
 dev_dependencies:
   pedantic: '>=1.4.0'
   pub_semver: any
-  args: any
   test: '>=1.2.0'
   async: any
   build_runner: '>=0.9.0'
