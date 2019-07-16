@@ -7,11 +7,11 @@ import 'package:args/args.dart';
 import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/user_config.dart';
 import 'package:process_run/which.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:process_run/src/user_config.dart';
 
-Version version = Version(0, 1, 0);
+Version version = Version(0, 1, 1);
 
 const flagHelp = 'help';
 const flagVerbose = 'verbose';
@@ -72,7 +72,7 @@ Future main(List<String> arguments) async {
   }
 
   // quick debug:
-  /*devWarning;
+  /*
   verbose = devWarning(true);
   await editEnv(editParser, results.command);
   return;
@@ -135,8 +135,8 @@ Future editEnv(ArgParser parser, ArgResults results) async {
       sampleFileContent =
           const LineSplitter().convert(sampleFileContent).join('\r\n');
     }
-    await Directory(basename(envFilePath)).create(recursive: true);
-    await envFile.writeAsString(sampleFileContent);
+    await Directory(dirname(envFilePath)).create(recursive: true);
+    await envFile.writeAsString(sampleFileContent, flush: true);
   }
   if (Platform.isLinux) {
     if (await which('gedit') != null) {
@@ -145,10 +145,18 @@ Future editEnv(ArgParser parser, ArgResults results) async {
     }
   } else if (Platform.isWindows) {
     if (await which('notepad') != null) {
-      const LineSplitter().convert(sampleFileContent).join('\r\n');
       await run('notepad ${shellArgument(envFilePath)}');
       return;
     }
+  } else if (Platform.isMacOS) {
+    if (await which('open') != null) {
+      await run('open -a TextEdit ${shellArgument(envFilePath)}');
+      return;
+    }
+  }
+  if (await which('vi') != null) {
+    await run('vi ${shellArgument(envFilePath)}');
+    return;
   }
   print('no editor found');
 }
