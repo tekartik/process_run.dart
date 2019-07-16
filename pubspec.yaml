@@ -1,5 +1,5 @@
 name: process_run
-version: 0.10.1
+version: 0.10.2
 description: Process run helpers for Linux/Win/Mac and which like feature for finding executables.
 homepage: https://github.com/tekartik/process_run.dart
 author: Tekartik <dev@tekartik.com>
@@ -13,11 +13,11 @@ dependencies:
   io: '>=0.3.0 <2.0.0'
   yaml: '>=2.0.0 < 4.0.0'
   meta: '>=1.1.0 < 3.0.0'
-  args: any
+  args: '>=1.5.0 < 3.0.0'
+  pub_semver: '>=1.4.0 < 3.0.0'
 
 dev_dependencies:
   pedantic: '>=1.4.0'
-  pub_semver: any
   test: '>=1.2.0'
   async: any
   build_runner: '>=0.9.0'

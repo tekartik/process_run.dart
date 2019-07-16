@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.2
+
+* add `shell` binary allowing editing the environment file on MacOS/Windows and Linux
+
 ## 0.10.1
 
 * add `userPaths` and `userEnvironment` access and allow overriding for finding executable and passing env variable

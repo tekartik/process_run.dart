@@ -11,6 +11,13 @@ YAML format located
 
 You might want to get a password to use as a parameter and have a path available to find the proper executables.
 
+Experimental: You can edit the environment file on Mac/Linux/Windows using the following
+command:
+
+```
+pub run process_run:shell edit-env
+```
+
 ## Add a binary path
 
 `env.yaml`:
