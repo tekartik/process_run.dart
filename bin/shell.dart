@@ -1,5 +1,6 @@
 #!/usr/bin/env dart
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -41,7 +42,7 @@ Future main(List<String> arguments) async {
   verbose = results[flagVerbose] as bool;
 
   void _printUsage() {
-    stdout.writeln('*** ubuntu only for now ***');
+    stdout.writeln('*** ubuntu/windows only for now ***');
     stdout.writeln('Process run shell configuration utility');
     stdout.writeln();
     stdout.writeln('Usage: pub run process_run:shell <command> [<arguments>]');
@@ -71,8 +72,11 @@ Future main(List<String> arguments) async {
   }
 
   // quick debug:
-  // await editEnv();
-  // return;
+  /*devWarning;
+  verbose = devWarning(true);
+  await editEnv(editParser, results.command);
+  return;
+   */
 
   if (results.command == null) {
     _printUsage();
@@ -86,7 +90,7 @@ Future main(List<String> arguments) async {
 
 /// pub run process_run:shell edit-env
 Future editEnv(ArgParser parser, ArgResults results) async {
-  bool help = results[flagHelp] as bool;
+  bool help = results == null ? false : results[flagHelp] as bool;
 
   void _printUsage() {
     stdout.writeln('Edit the environment file');
@@ -127,12 +131,22 @@ Future editEnv(ArgParser parser, ArgResults results) async {
 ''';
   var envFile = File(envFilePath);
   if (!envFile.existsSync()) {
+    if (Platform.isWindows) {
+      sampleFileContent =
+          const LineSplitter().convert(sampleFileContent).join('\r\n');
+    }
     await Directory(basename(envFilePath)).create(recursive: true);
     await envFile.writeAsString(sampleFileContent);
   }
   if (Platform.isLinux) {
     if (await which('gedit') != null) {
       await run('gedit ${shellArgument(envFilePath)}');
+      return;
+    }
+  } else if (Platform.isWindows) {
+    if (await which('notepad') != null) {
+      const LineSplitter().convert(sampleFileContent).join('\r\n');
+      await run('notepad ${shellArgument(envFilePath)}');
       return;
     }
   }

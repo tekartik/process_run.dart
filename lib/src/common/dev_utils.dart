@@ -19,7 +19,7 @@ void devPrint(Object object) {
 }
 
 @deprecated
-int devWarning;
+T devWarning<T>([T t]) => t;
 
 void _devError([Object msg]) {
   // one day remove the print however sometimes the error thrown is hidden
