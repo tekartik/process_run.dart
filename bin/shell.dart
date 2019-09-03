@@ -107,7 +107,7 @@ Future editEnv(ArgParser parser, ArgResults results) async {
     return;
   }
 
-  var envFilePath = getUserEnvFilePath(shellEnvironment);
+  var envFilePath = getUserEnvFilePath();
 
   if (verbose) {
     print('envFilePath: $envFilePath');

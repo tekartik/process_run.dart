@@ -147,9 +147,26 @@ void main() {
             .stdout
             .toString()
             .trim();
-        expect(result, isEmpty);
+        // Default environment is user environment
+        expect(result, '1');
 
+        shell = Shell(verbose: false, environment: platformEnvironment);
+        result = (await shell.run(
+                'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
+            .first
+            .stdout
+            .toString()
+            .trim();
+        expect(result, isEmpty);
         shell = Shell(verbose: false, environment: userEnvironment);
+        result = (await shell.run(
+                'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
+            .first
+            .stdout
+            .toString()
+            .trim();
+        expect(result, '1');
+        shell = Shell(verbose: false, environment: shellEnvironment);
         result = (await shell.run(
                 'dart example/echo.dart --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
             .first
@@ -170,6 +187,21 @@ void main() {
         expect(result, '78910');
       } finally {
         shellEnvironment = null;
+      }
+    });
+
+    test('environment', () async {
+      expect(shellEnvironment, userEnvironment);
+      userConfig = UserConfig()..vars = <String, String>{'test': '1'};
+      expect(userEnvironment, {'test': '1'});
+      expect(shellEnvironment, {'test': '1'});
+      expect(platformEnvironment, isNot({'test': '1'}));
+      //TODO test on other platform
+      if (Platform.isLinux) {
+        var out = (await Shell(verbose: false).run('env'))
+            .map((result) => result?.stdout?.toString())
+            .join('\n');
+        expect(out, contains('test=1'));
       }
     });
   });

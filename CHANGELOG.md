@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.3
+
+* now the userEnvironment is used by default in shell. Use platformEnvironment for the raw environment.
+
 ## 0.10.2
 
 * add `shell` binary allowing editing the environment file on MacOS/Windows and Linux

@@ -144,7 +144,7 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   // to remove vm_services
   if (includeParentEnvironment != false) {
     if (environment == null) {
-      environment = utils.shellEnvironment;
+      environment = userEnvironment;
     }
     includeParentEnvironment = false;
   }

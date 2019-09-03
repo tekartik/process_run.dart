@@ -8,7 +8,12 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
 
 export 'package:process_run/src/shell_utils.dart'
-    show userHomePath, userAppDataPath, shellArgument, shellEnvironment;
+    show
+        userHomePath,
+        userAppDataPath,
+        shellArgument,
+        shellEnvironment,
+        platformEnvironment;
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment;
 

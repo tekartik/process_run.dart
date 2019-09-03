@@ -19,6 +19,8 @@ void main() {
 
       expect(userEnvironment.length,
           greaterThanOrEqualTo(shellEnvironment.length));
+      expect(userEnvironment.length,
+          greaterThanOrEqualTo(platformEnvironment.length));
     });
     test('shellEnvironment', () async {
       await run(

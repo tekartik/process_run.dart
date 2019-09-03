@@ -13,6 +13,9 @@ import 'common/import.dart';
 class UserConfig {
   Map<String, String> vars;
   List<String> paths;
+
+  @override
+  String toString() => '${vars?.length} vars ${paths?.length} paths';
 }
 
 UserConfig _userConfig;
@@ -21,6 +24,10 @@ UserConfig get userConfig =>
     () {
       return getUserConfig(null);
     }();
+
+/// Dev only
+@protected
+set userConfig(UserConfig userConfig) => _userConfig = userConfig;
 
 ///
 /// Get the list of user paths used to resolve binaries location.
@@ -58,7 +65,7 @@ UserConfig getUserConfig(Map<String, String> environment) {
   var paths = <String>[];
   var userEnvironment = <String, String>{};
 
-  environment ??= shellEnvironment;
+  environment ??= platformEnvironment;
 
   // Include shell environment
   userEnvironment.addAll(environment);
@@ -140,7 +147,7 @@ List<String> getUserPaths(Map<String, String> environment) =>
     getUserConfig(environment).paths;
 
 /// Get the user env file path
-String getUserEnvFilePath(Map<String, String> environment) {
-  return (environment ?? shellEnvironment)[userEnvFilePathEnvKey] ??
+String getUserEnvFilePath([Map<String, String> environment]) {
+  return (environment ?? platformEnvironment)[userEnvFilePathEnvKey] ??
       join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml');
 }
