@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.10.3
+## 0.10.3-dev.1
 
 * now the userEnvironment is used by default in shell. Use platformEnvironment for the raw environment.
+* add shell run command to run a command with user loaded vars and paths
 
 ## 0.10.2
 
