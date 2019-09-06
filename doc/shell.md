@@ -54,3 +54,10 @@ If somehow you cannot modify the system path, it will look for any path (last) d
  `~/.config/tekartik/process_run/env.yaml` on Mac/Linux or `%APPDATA%\tekartik\process_run\env.yaml` on Windows.
  
  See [User configuration file](user_config.md) documentation.
+ 
+### Command line
+
+$ pub global active process_run
+$ alias ds='pub global run process_run:shell'
+ 
+ 

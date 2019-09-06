@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:yaml/yaml.dart';
@@ -60,6 +61,101 @@ void resetUserConfig() {
   _userConfig = null;
 }
 
+class EnvFileConfig {
+  final String fileContent;
+  // hopefully a map
+  final dynamic yaml;
+  final List<String> paths;
+  final Map<String, String> vars;
+
+  EnvFileConfig(this.fileContent, this.yaml, this.paths, this.vars);
+
+  Map<String, dynamic> toDebugMap() =>
+      <String, dynamic>{'paths': paths, 'vars': vars};
+  @override
+  String toString() => toDebugMap().toString();
+}
+
+/// Never null, all members can be null
+EnvFileConfig loadFromPath(String path) {
+  var paths = <String>[];
+  var fileVars = <String, String>{};
+  dynamic yaml;
+  String fileContent;
+  try {
+    // Look for any config file in ~/tekartik/process_run/env.yaml
+    try {
+      fileContent = File(path).readAsStringSync();
+    } catch (e) {
+      if (verbose) {
+        stderr.writeln('error reading env file $path $e');
+      }
+    }
+    if (fileContent != null) {
+      yaml = loadYaml(fileContent);
+      // devPrint('yaml: $yaml');
+      if (yaml is Map) {
+        // Handle added path
+        // can be
+        //
+        // path:~/bin
+        //
+        // or
+        //
+        // path:
+        //   - ~/bin
+        //   - ~/Android/Sdk/tools/bin
+        //
+
+        // Add current dart path
+        var path = yaml['path'] ?? yaml['paths'];
+        if (path is List) {
+          paths.addAll(path.map((path) => expandPath(path.toString())));
+        } else if (path is String) {
+          paths.add(expandPath(path.toString()));
+        }
+
+        // Handle variable like
+        //
+        // var:
+        //   ANDROID_TOP: /home/user/Android
+        //   FIREBASE_TOP: /home/user/.firebase
+        void _add(String key, String value) {
+          // devPrint('$key: $value');
+          if (key != null) {
+            fileVars[key] = value;
+          }
+        }
+
+        var vars = yaml['var'] ?? yaml['vars'];
+        if (vars is List) {
+          vars.forEach((item) {
+            if (item is Map) {
+              if (item.isNotEmpty) {
+                var entry = item.entries.first;
+                var key = entry.key?.toString();
+                var value = entry.value?.toString();
+                _add(key, value);
+              }
+            } else {
+              // devPrint(item.runtimeType);
+            }
+            // devPrint(item);
+          });
+        }
+        if (vars is Map) {
+          vars.forEach((key, value) {
+            _add(key?.toString(), value?.toString());
+          });
+        }
+      }
+    }
+  } catch (e) {
+    stderr.writeln('error reading yaml $e');
+  }
+  return EnvFileConfig(fileContent, yaml, paths, fileVars);
+}
+
 /// Get config map
 UserConfig getUserConfig(Map<String, String> environment) {
   var paths = <String>[];
@@ -70,72 +166,33 @@ UserConfig getUserConfig(Map<String, String> environment) {
   // Include shell environment
   userEnvironment.addAll(environment);
 
-  try {
-    // Look for any config file in ~/tekartik/process_run/env.yaml
-    var userConfig =
-        loadYaml(File(getUserEnvFilePath(environment)).readAsStringSync());
-    if (userConfig is Map) {
-      // Handle added path
-      // can be
-      //
-      // path:~/bin
-      //
-      // or
-      //
-      // path:
-      //   - ~/bin
-      //   - ~/Android/Sdk/tools/bin
-      //
-
-      // Add current dart path
-      var path = userConfig['path'];
-      if (path is List) {
-        paths.addAll(path.map((path) => expandPath(path.toString())));
-      } else if (path is String) {
-        paths.add(expandPath(path.toString()));
-      }
-
-      // Handle variable like
-      //
-      // var:
-      //   ANDROID_TOP: /home/user/Android
-      //   FIREBASE_TOP: /home/user/.firebase
-      void _add(key, value) {
-        // devPrint('$key: $value');
-        if (key != null) {
-          userEnvironment[key?.toString()] = value?.toString() ?? '';
-        }
-      }
-
-      var vars = userConfig['var'];
-      if (vars is List) {
-        vars.forEach((item) {
-          if (item is Map) {
-            if (item.isNotEmpty) {
-              var entry = item.entries.first;
-              var key = entry.key;
-              var value = entry.value;
-              _add(key, value);
-            }
-          } else {
-            // devPrint(item.runtimeType);
-          }
-          // devPrint(item);
-        });
-      }
-      if (vars is Map) {
-        vars.forEach((key, value) {
-          _add(key, value);
-        });
-      }
+  void addConfig(String path) {
+    var config = loadFromPath(path);
+    // devPrint('adding config: $config');
+    if (config.paths != null) {
+      paths.addAll(config.paths);
     }
-  } catch (_) {}
+    config.vars?.forEach((key, value) {
+      userEnvironment[key] = value ?? '';
+    });
+  }
+
+  // Add user config
+  addConfig(getUserEnvFilePath(environment));
+  // Add local config
+  addConfig(getLocalEnvFilePath());
 
   // Add dart path so that dart commands always work!
   paths.add(dartSdkBinDirPath);
 
   // Add from environment
   paths.addAll(getEnvironmentPaths(environment));
+
+  // Set env PATH from path
+  //TODO test on other platform
+  if (Platform.isLinux) {
+    userEnvironment['PATH'] = paths?.join(':');
+  }
 
   return UserConfig()
     ..paths = paths
@@ -151,3 +208,7 @@ String getUserEnvFilePath([Map<String, String> environment]) {
   return (environment ?? platformEnvironment)[userEnvFilePathEnvKey] ??
       join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml');
 }
+
+/// Get the local env file path
+String getLocalEnvFilePath() => join(
+    Directory.current?.path ?? '.', '.dart_tool', 'process_run', 'env.yaml');

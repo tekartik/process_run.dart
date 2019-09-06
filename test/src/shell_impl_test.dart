@@ -6,6 +6,7 @@ import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/common/constant.dart';
+import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 import 'package:process_run/which.dart';
 import 'package:test/test.dart';
@@ -190,7 +191,7 @@ void main() {
       }
     });
 
-    test('environment', () async {
+    test('environment_vars', () async {
       expect(shellEnvironment, userEnvironment);
       userConfig = UserConfig()..vars = <String, String>{'test': '1'};
       expect(userEnvironment, {'test': '1'});
@@ -203,6 +204,10 @@ void main() {
             .join('\n');
         expect(out, contains('test=1'));
       }
+    });
+
+    test('getUserPaths', () async {
+      expect(getUserPaths(userEnvironment), contains(dartSdkBinDirPath));
     });
   });
 }
