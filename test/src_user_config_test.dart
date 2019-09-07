@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/constant.dart';
+import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/user_config.dart';
 import 'package:test/test.dart';
 
@@ -31,6 +32,83 @@ void main() {
             .join(Platform.isWindows ? ';' : ':')
       });
       expect(userConfig.paths, ['my_path', dartSdkBinDirPath]);
+    });
+
+    test('userLoadConfigFile', () async {
+      userConfig = UserConfig();
+
+      //print(a);
+      var path = join('test', 'data', 'test_env1.yaml');
+      userLoadEnvFile(path);
+      expect(userConfig.vars, {'test': '1', 'PATH': 'my_path'});
+      expect(userConfig.paths, ['my_path']);
+      userLoadEnvFile(path);
+      // pointing out current bad (or expected hehavior when loading multiple files
+      // TODO fix by compating the first items
+      expect(userConfig.vars, {'test': '1', 'PATH': 'my_path'});
+      expect(userConfig.paths, ['my_path']);
+    });
+
+    test('userLoadConfigMap', () async {
+      userConfig = UserConfig();
+
+      //print(a);
+      userLoadConfigMap({
+        'vars': {'test': '1'}
+      });
+      expect(userConfig.vars, {'test': '1', 'PATH': ''});
+      expect(userConfig.paths, []);
+      userLoadConfigMap({
+        'path': ['my_path']
+      });
+      expect(userConfig.vars, {'test': '1', 'PATH': 'my_path'});
+      expect(userConfig.paths, ['my_path']);
+    });
+
+    test('userLoadConfigMap(path)', () async {
+      userConfig = UserConfig();
+
+      userLoadConfigMap({
+        'path': ['my_path']
+      });
+      expect(userConfig.vars, {'PATH': 'my_path'});
+      expect(userConfig.paths, ['my_path']);
+      userLoadConfigMap({
+        'path': ['my_path']
+      });
+      expect(userConfig.vars, {'PATH': 'my_path'});
+      expect(userConfig.paths, ['my_path']);
+      userLoadConfigMap({
+        'path': ['other_path']
+      });
+      expect(userConfig.vars, {
+        'PATH': ['other_path', 'my_path'].join(envPathSeparator)
+      });
+      expect(userConfig.paths, ['other_path', 'my_path']);
+      userLoadConfigMap({
+        'path': ['other_path']
+      });
+      expect(userConfig.vars, {
+        'PATH': ['other_path', 'my_path'].join(envPathSeparator)
+      });
+      expect(userConfig.paths, ['other_path', 'my_path']);
+      userLoadConfigMap({'path': []});
+      expect(userConfig.vars, {
+        'PATH': ['other_path', 'my_path'].join(envPathSeparator)
+      });
+      expect(userConfig.paths, ['other_path', 'my_path']);
+      userLoadConfigMap({
+        'path': ['my_path']
+      });
+      expect(userConfig.paths, ['my_path', 'other_path', 'my_path']);
+    });
+
+    test('loadFromMap', () async {
+      var config = loadFromMap({
+        'var': {'test': 1}
+      });
+      expect(config.paths, []);
+      expect(config.vars, {'test': '1'});
     });
   });
 }

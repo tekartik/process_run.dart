@@ -193,7 +193,7 @@ void main() {
 
     test('environment_vars', () async {
       expect(shellEnvironment, userEnvironment);
-      userConfig = UserConfig()..vars = <String, String>{'test': '1'};
+      userConfig = UserConfig(vars: <String, String>{'test': '1'});
       expect(userEnvironment, {'test': '1'});
       expect(shellEnvironment, {'test': '1'});
       expect(platformEnvironment, isNot({'test': '1'}));

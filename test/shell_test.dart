@@ -161,4 +161,25 @@ _tekartik_dummy_app_that_does_not_exits
       expect(userAppDataPath, join(Platform.environment['HOME'], '.config'));
     }
   });
+
+  test('userLoadEnvFile', () async {
+    //print(a);
+    var path = join('test', 'data', 'test_env1.yaml');
+    userLoadEnvFile(path);
+    expect(userEnvironment['test'], '1');
+    expect(userPaths, contains('my_path'));
+    path = join('test', 'data', 'test_env_dummy_file.yaml');
+    userLoadEnvFile(path);
+    expect(userEnvironment['test'], '1');
+    expect(userPaths, contains('my_path'));
+  });
+
+  test('userLoadEnv', () async {
+    userLoadEnv(vars: {'test': '1'}, paths: ['my_path']);
+    expect(userEnvironment['test'], '1');
+    expect(userPaths, contains('my_path'));
+    userLoadEnv();
+    expect(userEnvironment['test'], '1');
+    expect(userPaths, contains('my_path'));
+  });
 }

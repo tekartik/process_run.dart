@@ -15,7 +15,7 @@ export 'package:process_run/src/shell_utils.dart'
         shellEnvironment,
         platformEnvironment;
 export 'package:process_run/src/user_config.dart'
-    show userPaths, userEnvironment;
+    show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
