@@ -189,10 +189,7 @@ UserConfig getUserConfig(Map<String, String> environment) {
   paths.addAll(getEnvironmentPaths(environment));
 
   // Set env PATH from path
-  //TODO test on other platform
-  if (Platform.isLinux) {
-    userEnvironment['PATH'] = paths?.join(':');
-  }
+  userEnvironment[envPathKey] = paths?.join(envPathSeparator);
 
   return UserConfig()
     ..paths = paths

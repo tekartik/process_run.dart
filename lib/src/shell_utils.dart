@@ -145,12 +145,16 @@ List<String> _windowsPathExts;
 /// Default extension for PATHEXT on Windows
 List<String> get windowsPathExts => _windowsPathExts ??=
     environmentGetWindowsPathExt(platformEnvironment) ?? windowsDefaultPathExt;
-const String windowsPathSeparator = ';';
+const String windowsEnvPathSeparator = ';';
+const String posixEnvPathSeparator = ':';
+const envPathKey = 'PATH';
+String get envPathSeparator =>
+    Platform.isWindows ? windowsEnvPathSeparator : posixEnvPathSeparator;
 
 List<String> environmentGetWindowsPathExt(
         Map<String, String> platformEnvironment) =>
     platformEnvironment['PATHEXT']
-        ?.split(windowsPathSeparator)
+        ?.split(windowsEnvPathSeparator)
         ?.map((ext) => ext.toLowerCase())
         ?.toList(growable: false);
 
@@ -178,28 +182,30 @@ String shellJoin(List<String> parts) =>
 
 /// Find command in path
 String findExecutableSync(String command, List<String> paths) {
-  for (var path in paths) {
-    var commandPath = absolute(normalize(join(path, command)));
+  if (paths != null) {
+    for (var path in paths) {
+      var commandPath = absolute(normalize(join(path, command)));
 
-    if (Platform.isWindows) {
-      for (var ext in windowsPathExts) {
-        var commandPathWithExt = '$commandPath$ext';
-        if (File(commandPathWithExt).existsSync()) {
-          return normalize(commandPathWithExt);
+      if (Platform.isWindows) {
+        for (var ext in windowsPathExts) {
+          var commandPathWithExt = '$commandPath$ext';
+          if (File(commandPathWithExt).existsSync()) {
+            return normalize(commandPathWithExt);
+          }
         }
-      }
-      // Try without extension
-      if (File(commandPath).existsSync()) {
-        return commandPath;
-      }
-    } else {
-      var stats = File(commandPath).statSync();
-      if (stats.type != FileSystemEntityType.notFound) {
-        // Check executable permission
-        if (stats.mode & 0x49 != 0) {
-          // binary 001001001
-          // executable
+        // Try without extension
+        if (File(commandPath).existsSync()) {
           return commandPath;
+        }
+      } else {
+        var stats = File(commandPath).statSync();
+        if (stats.type != FileSystemEntityType.notFound) {
+          // Check executable permission
+          if (stats.mode & 0x49 != 0) {
+            // binary 001001001
+            // executable
+            return commandPath;
+          }
         }
       }
     }
@@ -224,8 +230,7 @@ List<String> getEnvironmentPaths([Map<String, String> environment]) {
 ///
 /// Never null
 List<String> _getEnvironmentPaths(Map<String, String> environment) =>
-    (environment ?? <String, String>{})['PATH']
-        ?.split(Platform.isWindows ? ';' : ':') ??
+    (environment ?? <String, String>{})[envPathKey]?.split(envPathSeparator) ??
     <String>[];
 
 /// Write a string line to the ouput

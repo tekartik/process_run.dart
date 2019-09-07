@@ -203,6 +203,12 @@ void main() {
             .map((result) => result?.stdout?.toString())
             .join('\n');
         expect(out, contains('test=1'));
+      } else if (Platform.isWindows) {
+        //TODO test on other platform
+        var out = (await Shell(verbose: false).run('echo test=%test%'))
+            .map((result) => result?.stdout?.toString())
+            .join('\n');
+        expect(out, contains('test=1'));
       }
     });
 
