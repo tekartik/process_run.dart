@@ -1,5 +1,5 @@
 name: process_run
-version: 0.10.3-dev.1
+version: 0.10.3
 description: Process run helpers for Linux/Win/Mac and which like feature for finding executables.
 homepage: https://github.com/tekartik/process_run.dart
 author: Tekartik <dev@tekartik.com>
