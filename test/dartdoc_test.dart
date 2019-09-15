@@ -4,9 +4,9 @@ library process_run.dartdoc_test;
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:test/test.dart';
 
 String getScriptPath(Type type) =>
     (reflectClass(type).owner as LibraryMirror).uri.toFilePath();
@@ -40,6 +40,6 @@ void defineTests() {
       //expect(result.stdout, contains("dartdoc"));
       expect(result.exitCode, 0);
       //}, skip: "failed on SDK 1.19.0"); - fixed in 1.19.1
-    }, timeout: Timeout(Duration(minutes: 2)));
+    }, timeout: const Timeout(Duration(minutes: 2)));
   });
 }
