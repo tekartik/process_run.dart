@@ -19,7 +19,7 @@ Allow creating `ProcessCmd` object that can be run in different manner
 
 #### Using ProcessCmd
 
-````
+````dart
 import 'dart:io';
 import 'package:process_run/cmd_run.dart';
 
@@ -78,7 +78,7 @@ main() async {
 
 #### Low level
 
-````
+````dart
 import 'dart:io';
 
 import 'package:process_run/process_run.dart';
