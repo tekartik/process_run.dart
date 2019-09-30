@@ -5,16 +5,19 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
 
-@deprecated
-bool devTrue = true;
-// bool debug = devTrue;
-bool debug = false;
+/// Truncate at max element.
+String stringTruncate(String text, int len) {
+  if (text == null || text.length <= len) {
+    return text;
+  }
+  return text.substring(0, len);
+}
 
 void main() {
   group('Shell', () {
     test('userEnvironment', () async {
       await run(
-          'dart example/echo.dart ${shellArgument(userEnvironment.toString())}',
+          'dart example/echo.dart ${shellArgument(stringTruncate(userEnvironment.toString(), 1500))}',
           verbose: false);
 
       expect(userEnvironment.length,
@@ -24,7 +27,7 @@ void main() {
     });
     test('shellEnvironment', () async {
       await run(
-          'dart example/echo.dart ${shellArgument(shellEnvironment.toString())}',
+          'dart example/echo.dart ${shellArgument(stringTruncate(shellEnvironment.toString(), 1500))}',
           verbose: false);
     });
   });
