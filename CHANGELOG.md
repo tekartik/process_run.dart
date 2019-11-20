@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.4-dev.1
+## 0.10.4
 
 * Android support
 
