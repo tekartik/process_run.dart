@@ -269,7 +269,9 @@ List<String> getUserPaths(Map<String, String> environment) =>
 /// Get the user env file path
 String getUserEnvFilePath([Map<String, String> environment]) {
   return (environment ?? platformEnvironment)[userEnvFilePathEnvKey] ??
-      join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml');
+      (userAppDataPath == null
+          ? null
+          : join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml'));
 }
 
 /// Get the local env file path

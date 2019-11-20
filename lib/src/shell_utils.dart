@@ -73,7 +73,7 @@ String get userAppDataPath => _userAppDataPath ??= () {
       }
       return null;
     }() ??
-    join(userHomePath, '.config');
+    (userHomePath == null ? null : join(userHomePath, '.config'));
 
 String _userHomePath;
 
@@ -148,6 +148,7 @@ List<String> get windowsPathExts => _windowsPathExts ??=
 const String windowsEnvPathSeparator = ';';
 const String posixEnvPathSeparator = ':';
 const envPathKey = 'PATH';
+
 String get envPathSeparator =>
     Platform.isWindows ? windowsEnvPathSeparator : posixEnvPathSeparator;
 

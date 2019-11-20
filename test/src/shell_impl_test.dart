@@ -45,6 +45,22 @@ void main() {
       }
     });
 
+    test('null HOME', () async {
+      try {
+        var env = Map<String, String>.from(shellEnvironment)
+          ..remove('HOME')
+          ..remove('USERPROFILE')
+          ..remove('APPDATA');
+        shellEnvironment = env;
+        expect(userHomePath, isNull);
+        expect(userAppDataPath, isNull);
+        expect((await run('echo "Hello world"')).first.stdout.toString().trim(),
+            'Hello world');
+      } finally {
+        shellEnvironment = null;
+      }
+    });
+
     String getTestAbsPath() => Platform.isWindows ? r'C:\temp' : '/temp';
     String getTestHomeRelPath() => Platform.isWindows ? r'~\temp' : '~/temp';
 
