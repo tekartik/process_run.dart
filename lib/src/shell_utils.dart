@@ -37,20 +37,31 @@ List<String> scriptToCommands(String script) {
   String currentCommand;
   for (var line in LineSplitter.split(script)) {
     line = line.trim();
+
+    void _addAndClearCurrent(String command) {
+      commands.add(command);
+      currentCommand = null;
+    }
+
     if (line.isNotEmpty) {
       if (isLineComment(line)) {
         commands.add(line);
       } else {
         // append to previous
         if (currentCommand != null) {
-          line = currentCommand + line;
+          line = '$currentCommand $line';
         }
         if (isLineToBeContinued(line)) {
           // remove ending character
-          currentCommand = line.substring(0, line.length - 1);
+          currentCommand = line.substring(0, line.length - 1).trim();
         } else {
-          commands.add(line);
+          _addAndClearCurrent(line);
         }
+      }
+    } else {
+      // terminate current
+      if (currentCommand != null) {
+        _addAndClearCurrent(currentCommand);
       }
     }
   }

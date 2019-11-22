@@ -94,4 +94,24 @@ void main() {
     expect(findExecutableSync('dart', [dartSdkBinDirPath]), dartExecutable);
     expect(findExecutableSync('pub', [dartSdkBinDirPath]), isNotNull);
   });
+
+  test('various', () {
+    expect(scriptToCommands('''
+     a ^
+     
+     b
+    '''), ['a', 'b']);
+    expect(scriptToCommands('''
+     a ^
+     b
+     
+     c
+    '''), ['a b', 'c']);
+    expect(scriptToCommands('''
+a ^
+ "b" ^
+ "c" d
+e
+    '''), ['a "b" "c" d', 'e']);
+  });
 }
