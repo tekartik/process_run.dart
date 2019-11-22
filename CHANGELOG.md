@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.10.4
+## 0.10.4+1
 
 * Android support
+* Fix shell run commands un multiple lines
 
 ## 0.10.3
 
