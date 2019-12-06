@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.process_run_out_test;
 
 import 'dart:io';
@@ -10,11 +10,11 @@ import 'process_run_test_common.dart';
 void main() {
   test('connect_stdout', () async {
     await stdout.flush();
-    ProcessResult result = await run(
+    final result = await run(
         dartExecutable, [echoScriptPath, '--stdout', 'out'],
         stdout: stdout);
     expect(result.stderr, '');
-    expect(result.stdout, "out");
+    expect(result.stdout, 'out');
     expect(result.pid, isNotNull);
     expect(result.exitCode, 0);
     await stdout.flush();
@@ -22,11 +22,11 @@ void main() {
 
   test('connect_stderr', () async {
     await stderr.flush();
-    ProcessResult result = await run(
+    final result = await run(
         dartExecutable, [echoScriptPath, '--stderr', 'err'],
         stderr: stderr);
     expect(result.stdout, '');
-    expect(result.stderr, "err");
+    expect(result.stderr, 'err');
     expect(result.pid, isNotNull);
     expect(result.exitCode, 0);
     await stderr.flush();

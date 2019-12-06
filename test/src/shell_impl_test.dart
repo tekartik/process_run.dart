@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 import 'dart:io';
 
 import 'package:path/path.dart';
@@ -54,7 +54,7 @@ void main() {
         shellEnvironment = env;
         expect(userHomePath, isNull);
         expect(userAppDataPath, isNull);
-        expect((await run('echo "Hello world"')).first.stdout.toString().trim(),
+        expect((await run("echo 'Hello world'")).first.stdout.toString().trim(),
             'Hello world');
       } finally {
         shellEnvironment = null;

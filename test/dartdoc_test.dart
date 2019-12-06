@@ -1,7 +1,6 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.dartdoc_test;
 
-import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:path/path.dart';
@@ -23,23 +22,23 @@ void main() => defineTests();
 void defineTests() {
   group('dartdoc', () {
     test('help', () async {
-      ProcessResult result = await runCmd(DartDocCmd(['--help']));
-      expect(result.stdout, contains("--version"));
+      final result = await runCmd(DartDocCmd(['--help']));
+      expect(result.stdout, contains('--version'));
       expect(result.exitCode, 0);
     });
     test('version', () async {
-      ProcessResult result = await runCmd(DartDocCmd(['--version']));
-      expect(result.stdout, contains("dartdoc"));
+      final result = await runCmd(DartDocCmd(['--version']));
+      expect(result.stdout, contains('dartdoc'));
       expect(result.exitCode, 0);
     });
     test('build', () async {
-      // from dartdoc: exec "$DART" --packages="$BIN_DIR/snapshots/resources/dartdoc/.packages" "$SNAPSHOT" "$@"
+      // from dartdoc: exec '$DART' --packages='$BIN_DIR/snapshots/resources/dartdoc/.packages' '$SNAPSHOT' '$@'
 
-      ProcessResult result = await runCmd(
+      final result = await runCmd(
           DartDocCmd(['--output', join(testOut, 'dartdoc_build')]));
-      //expect(result.stdout, contains("dartdoc"));
+      //expect(result.stdout, contains('dartdoc'));
       expect(result.exitCode, 0);
-      //}, skip: "failed on SDK 1.19.0"); - fixed in 1.19.1
+      //}, skip: 'failed on SDK 1.19.0'); - fixed in 1.19.1
     }, timeout: const Timeout(Duration(minutes: 2)));
   });
 }

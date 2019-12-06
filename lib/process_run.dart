@@ -48,13 +48,13 @@ bool _isWhitespace(int rune) => ((rune >= 0x0009 && rune <= 0x000D) ||
 ///
 /// argument must not be null
 String argumentToString(String argument) {
-  bool hasWhitespace = false;
-  int singleQuoteCount = 0;
-  int doubleQuoteCount = 0;
+  var hasWhitespace = false;
+  var singleQuoteCount = 0;
+  var doubleQuoteCount = 0;
   if (argument.isEmpty) {
     return '""';
   }
-  for (int rune in argument.runes) {
+  for (final rune in argument.runes) {
     if ((!hasWhitespace) && (_isWhitespace(rune))) {
       hasWhitespace = true;
     } else if (rune == 0x0027) {
@@ -82,8 +82,8 @@ String argumentToString(String argument) {
 
 /// Convert multiple arguments to string than can be used in a terminal
 String argumentsToString(List<String> arguments) {
-  List<String> argumentStrings = [];
-  for (String argument in arguments) {
+  final argumentStrings = <String>[];
+  for (final argument in arguments) {
     argumentStrings.add(argumentToString(argument));
   }
   return argumentStrings.join(' ');
@@ -91,7 +91,7 @@ String argumentsToString(List<String> arguments) {
 
 /// Convenient way to display a command
 String executableArgumentsToString(String executable, List<String> arguments) {
-  StringBuffer sb = StringBuffer();
+  final sb = StringBuffer();
   if (Platform.isWindows) {
     var ext = extension(executable);
     switch (ext) {
@@ -104,7 +104,7 @@ String executableArgumentsToString(String executable, List<String> arguments) {
   }
   sb.write(executable);
   if (arguments is List && arguments.isNotEmpty) {
-    sb.write(" ${argumentsToString(arguments)}");
+    sb.write(' ${argumentsToString(arguments)}');
   }
   return sb.toString();
 }
@@ -137,15 +137,14 @@ Future<ProcessResult> run(String executable, List<String> arguments,
 
   if (commandVerbose == true) {
     utils.streamSinkWriteln(stdout ?? io.stdout,
-        "\$ ${executableArgumentsToString(executable, arguments)}");
+        '\$ ${executableArgumentsToString(executable, arguments)}');
   }
 
   // Filter out environment
   // to remove vm_services
   if (includeParentEnvironment != false) {
-    if (environment == null) {
-      environment = userEnvironment;
-    }
+    environment ??= userEnvironment;
+
     includeParentEnvironment = false;
   }
 
@@ -153,10 +152,9 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   runInShell = utils.fixRunInShell(runInShell, executable);
 
   // Default is the full command
-  String executableShortName = executable;
+  var executableShortName = executable;
   // Find executable if needed, i.e. if it is only a name
   if (basename(executable) == executable) {
-    executableShortName = executable;
     // Try to find it in path or use it as is
     executable = utils.findExecutableSync(executable, userPaths) ?? executable;
   }
@@ -172,14 +170,14 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     if (verbose == true) {
       io.stderr.writeln(e);
       io.stderr.writeln(
-          "\$ ${executableArgumentsToString(executableShortName, arguments)}");
-      io.stderr.writeln("workingDirectory: $workingDirectory");
+          '\$ ${executableArgumentsToString(executableShortName, arguments)}');
+      io.stderr.writeln('workingDirectory: $workingDirectory');
     }
     rethrow;
   }
 
-  StreamController<List<int>> outCtlr = StreamController(sync: true);
-  StreamController<List<int>> errCtlr = StreamController(sync: true);
+  final outCtlr = StreamController<List<int>>(sync: true);
+  final errCtlr = StreamController<List<int>>(sync: true);
 
   // Connected stdin
   // Buggy!
@@ -199,8 +197,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
 
   Future<dynamic> streamToResult(
       Stream<List<int>> stream, Encoding encoding) async {
-    List<int> list = [];
-    await for (List<int> data in stream) {
+    final list = <int>[];
+    await for (final data in stream) {
       //devPrint('s: ${data}');
       list.addAll(data);
     }
@@ -231,7 +229,7 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     errCtlr.close();
   });
 
-  int exitCode = await process.exitCode;
+  final exitCode = await process.exitCode;
 
   // Notice that exitCode can complete before all of the lines of output have been
   // processed. Also note that we do not explicitly close the process. In order
@@ -240,8 +238,7 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   //await process.stdout.drain();
   //await process.stderr.drain();
 
-  ProcessResult result =
-      ProcessResult(process.pid, exitCode, await out, await err);
+  final result = ProcessResult(process.pid, exitCode, await out, await err);
 
   if (stdin != null) {
     //process.stdin.close();

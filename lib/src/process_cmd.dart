@@ -87,23 +87,23 @@ bool _isNotEmpty(stdout) {
 }
 
 String processResultToDebugString(ProcessResult result) {
-  StringBuffer sb = StringBuffer();
-  sb.writeln("exitCode: ${result.exitCode}");
+  final sb = StringBuffer();
+  sb.writeln('exitCode: ${result.exitCode}');
   if (_isNotEmpty(result.stdout)) {
-    sb.writeln("out: ${result.stdout}");
+    sb.writeln('out: ${result.stdout}');
   }
   if (_isNotEmpty(result.stderr)) {
-    sb.writeln("err: ${result.stderr}");
+    sb.writeln('err: ${result.stderr}');
   }
   return sb.toString();
 }
 
 String processCmdToDebugString(ProcessCmd cmd) {
-  StringBuffer sb = StringBuffer();
+  final sb = StringBuffer();
   if (cmd.workingDirectory != null) {
-    sb.writeln("dir: ${cmd.workingDirectory}");
+    sb.writeln('dir: ${cmd.workingDirectory}');
   }
-  sb.writeln("cmd: ${cmd}");
+  sb.writeln('cmd: ${cmd}');
 
   return sb.toString();
 }

@@ -1,19 +1,17 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.dartfmt_test;
 
-import 'dart:io';
-
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:test/test.dart';
 
 void main() => defineTests();
 
 void defineTests() {
   group('pbr', () {
     test('help', () async {
-      ProcessResult result = await runCmd(PbrCmd(['--help']));
+      final result = await runCmd(PbrCmd(['--help']));
       expect(result.exitCode, 0);
-      expect(result.stdout, contains("Usage: build_runner"));
+      expect(result.stdout, contains('Usage: build_runner'));
 
       /*
       this does not work when ran from IDE

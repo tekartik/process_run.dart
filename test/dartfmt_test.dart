@@ -1,21 +1,19 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.dartfmt_test;
 
-import 'dart:io';
-
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:test/test.dart';
 
 void main() => defineTests();
 
 void defineTests() {
   group('dartfmt', () {
     test('help', () async {
-      ProcessResult result = await runCmd(DartFmtCmd(['--help']));
+      var result = await runCmd(DartFmtCmd(['--help']));
       expect(result.exitCode, 0);
-      expect(result.stdout, contains("Usage:"));
-      expect(result.stdout, contains("dartfmt"));
+      expect(result.stdout, contains('Usage:'));
+      expect(result.stdout, contains('dartfmt'));
 
       // The raw version is displayed
       result = await runCmd(DartFmtCmd(['--version']));

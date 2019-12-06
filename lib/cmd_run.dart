@@ -43,7 +43,7 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
   }
 
   if (commandVerbose == true) {
-    streamSinkWriteln(stdout ?? io.stdout, "\$ ${cmd}");
+    streamSinkWriteln(stdout ?? io.stdout, '\$ ${cmd}');
   }
 
   try {
@@ -65,8 +65,8 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
   } catch (e) {
     if (verbose == true) {
       io.stderr.writeln(e);
-      io.stderr.writeln("\$ ${cmd}");
-      io.stderr.writeln("workingDirectory: ${cmd.workingDirectory}");
+      io.stderr.writeln('\$ ${cmd}');
+      io.stderr.writeln('workingDirectory: ${cmd.workingDirectory}');
     }
     rethrow;
   }

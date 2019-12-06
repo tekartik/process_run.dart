@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.test.shell_run_test;
 
 import 'package:process_run/shell.dart';

@@ -1,13 +1,11 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.dartbin_cmd_test;
 
-import 'dart:io';
-
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/src/dartbin_cmd.dart';
 import 'package:process_run/src/process_cmd.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('dartbin_cmd', () {
@@ -15,10 +13,10 @@ void main() {
       ProcessCmd cmd = DartCmd(['--version']);
       expect(cmd.executable, dartExecutable);
       expect(cmd.arguments, ['--version']);
-      ProcessResult result = await runCmd(cmd);
-      expect(result.stderr.toLowerCase(), contains("dart"));
-      expect(result.stderr.toLowerCase(), contains("version"));
-      // "Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on "linux_x64"\n"
+      final result = await runCmd(cmd);
+      expect(result.stderr.toLowerCase(), contains('dart'));
+      expect(result.stderr.toLowerCase(), contains('version'));
+      // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
     });
     test('others', () async {
       expect((await runCmd(DartCmd(['--help']))).exitCode, 0);

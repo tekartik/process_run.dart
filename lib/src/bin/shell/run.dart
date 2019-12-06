@@ -11,7 +11,7 @@ import 'package:process_run/src/user_config.dart';
 
 /// pub run process_run:shell edit-env
 Future shellRun(ArgParser parser, ArgResults results) async {
-  bool help = results == null ? false : results[flagHelp] as bool;
+  final help = results == null ? false : results[flagHelp] as bool;
 
   void _printUsage() {
     stdout.writeln('Run a command');
@@ -19,14 +19,14 @@ Future shellRun(ArgParser parser, ArgResults results) async {
     stdout.writeln('Usage: pub run process_run:shell run <command>');
     stdout.writeln(
         '  command being a command line as a single argument, examples:');
-    stdout.writeln('  - "firebase deploy"');
+    stdout.writeln("  - 'firebase deploy'");
     stdout.writeln('  - script.bat');
     stdout.writeln('  - script.sh');
     stdout.writeln('');
     stdout.writeln('Get information about the added path(s) and var(s)');
     stdout.writeln('  pub run process_run:shell run --version');
 
-    stdout.writeln("Options:");
+    stdout.writeln('Options:');
     stdout.writeln(parser.usage);
     stdout.writeln();
   }
@@ -46,7 +46,7 @@ Future shellRun(ArgParser parser, ArgResults results) async {
     command = prefix0.argumentsToString(commands);
   }
 
-  bool displayInfo = results[flagInfo] as bool;
+  final displayInfo = results[flagInfo] as bool;
   if (displayInfo) {
     void displayInfo(String title, String path) {
       var config = loadFromPath(path);

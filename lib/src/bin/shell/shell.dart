@@ -28,7 +28,7 @@ bool verbose = false;
 Future main(List<String> arguments) async {
   //setupQuickLogging();
 
-  ArgParser parser = ArgParser(allowTrailingOptions: false);
+  final parser = ArgParser(allowTrailingOptions: false);
   var editParser = parser.addCommand(commandEdit);
   var runParser = parser.addCommand(commandRun);
   parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
@@ -58,7 +58,7 @@ Future main(List<String> arguments) async {
 
   final results = parser.parse(arguments);
 
-  bool help = results[flagHelp] as bool;
+  final help = results[flagHelp] as bool;
   verbose = results[flagVerbose] as bool;
 
   void _printUsage() {
@@ -70,13 +70,13 @@ Future main(List<String> arguments) async {
     stdout.writeln('Example: pub run process_run:shell edit-env');
     stdout.writeln('will open the env file using gedit');
     stdout.writeln();
-    stdout.writeln("Global options:");
+    stdout.writeln('Global options:');
     stdout.writeln(parser.usage);
     stdout.writeln();
-    stdout.writeln("Available commands:");
-    stdout.writeln("  edit-env    Edit environment file");
+    stdout.writeln('Available commands:');
+    stdout.writeln('  edit-env    Edit environment file');
     stdout.writeln(
-        "  run         Run a command with user and local env path and vars");
+        '  run         Run a command with user and local env path and vars');
     stdout.writeln();
   }
 
@@ -85,7 +85,7 @@ Future main(List<String> arguments) async {
     return;
   }
 
-  bool displayVersion = results[flagVersion] as bool;
+  final displayVersion = results[flagVersion] as bool;
 
   if (displayVersion) {
     stdout.writeln('version: ${version}');
@@ -104,7 +104,7 @@ Future main(List<String> arguments) async {
     return;
   }
 
-  String commandName = results.command.name;
+  final commandName = results.command.name;
   if (commandName == commandEdit) {
     await editEnv(editParser, results.command);
   } else if (commandName == commandRun) {

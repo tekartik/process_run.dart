@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.echo_test;
 
 import 'dart:async';
@@ -15,7 +15,7 @@ import 'process_run_test_common.dart';
 void main() {
   group('echo', () {
     Future _runCheck(
-      check(ProcessResult result),
+      Function(ProcessResult result) check,
       String executable,
       List<String> arguments, {
       String workingDirectory,
@@ -26,7 +26,7 @@ void main() {
       Encoding stderrEncoding = systemEncoding,
       StreamSink<List<int>> stdout,
     }) async {
-      ProcessResult result = await Process.run(
+      var result = await Process.run(
         executable,
         arguments,
         workingDirectory: workingDirectory,
@@ -51,7 +51,7 @@ void main() {
     test('stdout', () async {
       void checkOut(ProcessResult result) {
         expect(result.stderr, '');
-        expect(result.stdout, "out");
+        expect(result.stdout, 'out');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
@@ -115,7 +115,7 @@ void main() {
     test('stderr', () async {
       void checkErr(ProcessResult result) {
         expect(result.stdout, '');
-        expect(result.stderr, "err");
+        expect(result.stderr, 'err');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
@@ -134,16 +134,16 @@ void main() {
     });
 
     test('stdin', () async {
-      StreamController<List<int>> inCtrl = StreamController();
-      Future<ProcessResult> processResultFuture = run(
+      final inCtrl = StreamController<List<int>>();
+      final processResultFuture = run(
           dartExecutable, [echoScriptPath, '--stdin'],
           stdin: inCtrl.stream);
-      inCtrl.add("in".codeUnits);
+      inCtrl.add('in'.codeUnits);
       await inCtrl.close();
-      ProcessResult result = await processResultFuture;
+      final result = await processResultFuture;
 
       expect(result.stdout, 'in');
-      expect(result.stderr, "");
+      expect(result.stderr, '');
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
     });

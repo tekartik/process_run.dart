@@ -31,7 +31,7 @@ Global options:
 Future main(List<String> arguments) async {
   //setupQuickLogging();
 
-  ArgParser parser = ArgParser(allowTrailingOptions: false);
+  final parser = ArgParser(allowTrailingOptions: false);
   parser.addFlag('help', abbr: 'h', help: 'Usage help', negatable: false);
   parser.addFlag('verbose', abbr: 'v', help: 'Verbose', negatable: false);
   parser.addOption('stdout',
@@ -50,20 +50,20 @@ Future main(List<String> arguments) async {
   parser.addFlag('version',
       help: 'Print the command version', negatable: false);
 
-  ArgResults _argsResult = parser.parse(arguments);
+  final _argsResult = parser.parse(arguments);
 
-  bool help = _argsResult['help'] as bool;
-  bool verbose = _argsResult['verbose'] as bool;
+  final help = _argsResult['help'] as bool;
+  final verbose = _argsResult['verbose'] as bool;
 
   void _printUsage() {
     stdout.writeln('Echo utility');
     stdout.writeln();
     stdout.writeln('Usage: ${currentScriptName} <command> [<arguments>]');
     stdout.writeln();
-    stdout.writeln('Example: ${currentScriptName} -o "Hello world"');
-    stdout.writeln('will display "Hello world"');
+    stdout.writeln("Example: ${currentScriptName} -o 'Hello world'");
+    stdout.writeln("will display 'Hello world'");
     stdout.writeln();
-    stdout.writeln("Global options:");
+    stdout.writeln('Global options:');
     stdout.writeln(parser.usage);
   }
 
@@ -72,7 +72,7 @@ Future main(List<String> arguments) async {
     return;
   }
 
-  bool displayVersion = _argsResult['version'] as bool;
+  final displayVersion = _argsResult['version'] as bool;
 
   if (displayVersion) {
     stdout.write('${currentScriptName} version ${version}');
@@ -86,42 +86,42 @@ Future main(List<String> arguments) async {
       //stderr.writeln('stdin  $stdin');
       //stderr.writeln('stdin  ${await stdin..isEmpty}');
     }
-    String lineSync = stdin.readLineSync();
+    final lineSync = stdin.readLineSync();
     if (lineSync != null) {
       stdout.write(lineSync);
     }
   }
   // handle stdout
-  String outputText = _argsResult['stdout'] as String;
+  final outputText = _argsResult['stdout'] as String;
   if (outputText != null) {
     stdout.write(outputText);
   }
-  String hexOutputText = _argsResult['stdout-hex'] as String;
+  final hexOutputText = _argsResult['stdout-hex'] as String;
   if (hexOutputText != null) {
     stdout.add(hexToBytes(hexOutputText));
   }
   // handle stderr
-  String stderrText = _argsResult['stderr'] as String;
+  final stderrText = _argsResult['stderr'] as String;
   if (stderrText != null) {
     stderr.write(stderrText);
   }
-  String stderrHexTest = _argsResult['stderr-hex'] as String;
+  final stderrHexTest = _argsResult['stderr-hex'] as String;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
   }
 
-  String envVar = _argsResult['stdout-env'] as String;
+  final envVar = _argsResult['stdout-env'] as String;
   if (envVar != null) {
     stdout.write(Platform.environment[envVar] ?? '');
   }
 
   // handle the rest, default to output
-  for (String rest in _argsResult.rest) {
+  for (final rest in _argsResult.rest) {
     stdout.writeln(rest);
   }
 
   // exit code!
-  String exitCodeText = _argsResult['exit-code'] as String;
+  final exitCodeText = _argsResult['exit-code'] as String;
   if (exitCodeText != null) {
     exit(int.parse(exitCodeText));
   }

@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.doc_test;
 
 import 'package:test/test.dart';

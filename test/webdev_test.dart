@@ -1,11 +1,10 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.dartfmt_test;
 
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:test/test.dart';
 
 void main() => defineTests();
 
@@ -22,9 +21,9 @@ void defineTests() {
       await runCmd(PubCmd(['global', 'activate', 'webdev']));
     });
     test('help', () async {
-      ProcessResult result = await runCmd(WebDevCmd(['--help']));
+      final result = await runCmd(WebDevCmd(['--help']));
       expect(result.exitCode, 0);
-      expect(result.stdout, contains("Usage: webdev"));
+      expect(result.stdout, contains('Usage: webdev'));
 
       /*
       this does not work when ran from IDE

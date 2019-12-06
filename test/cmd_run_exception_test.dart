@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.cmd_run_exception_test;
 
 import 'dart:io';

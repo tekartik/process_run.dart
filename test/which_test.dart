@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.which_test;
 
 import 'dart:io';
@@ -16,9 +16,9 @@ void main() {
       expect(dartExecutable, isNotNull);
       print(dartExecutable);
       var cmd = ProcessCmd(dartExecutable, ['--version']);
-      ProcessResult result = await runCmd(cmd);
-      expect(result.stderr.toLowerCase(), contains("dart"));
-      expect(result.stderr.toLowerCase(), contains("version"));
+      final result = await runCmd(cmd);
+      expect(result.stderr.toLowerCase(), contains('dart'));
+      expect(result.stderr.toLowerCase(), contains('version'));
     });
 
     test('no_env', () {

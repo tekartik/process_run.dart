@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 library process_run.process_run_test;
 
 import 'dart:async';
@@ -25,8 +25,8 @@ void main() {
     });
     test('argumentsToString', () {
       expect(argumentsToString([]), '');
-      expect(argumentsToString(["a"]), 'a');
-      expect(argumentsToString(["a", "b"]), 'a b');
+      expect(argumentsToString(['a']), 'a');
+      expect(argumentsToString(['a', 'b']), 'a b');
       expect(argumentsToString([' ']), '" "');
       expect(argumentsToString(['" ']), '\'" \'');
       expect(argumentsToString(['""\'']), '"\\"\\"\'"');
@@ -39,7 +39,7 @@ void main() {
       expect(executableArgumentsToString('cmd', null), 'cmd');
       expect(executableArgumentsToString('cmd', []), 'cmd');
       expect(executableArgumentsToString('cmd', ['a']), 'cmd a');
-      expect(executableArgumentsToString('cmd', ["a", "b"]), 'cmd a b');
+      expect(executableArgumentsToString('cmd', ['a', 'b']), 'cmd a b');
       expect(executableArgumentsToString('cmd', [' ']), 'cmd " "');
       expect(executableArgumentsToString('cmd', [' ']), 'cmd " "');
       expect(executableArgumentsToString('cmd', ['"']), 'cmd \'"\'');
@@ -48,7 +48,7 @@ void main() {
 
   group('run', () {
     Future _runCheck(
-      check(ProcessResult result),
+      Function(ProcessResult result) check,
       String executable,
       List<String> arguments, {
       String workingDirectory,
@@ -59,7 +59,7 @@ void main() {
       Encoding stderrEncoding = systemEncoding,
       StreamSink<List<int>> stdout,
     }) async {
-      ProcessResult result = await Process.run(
+      var result = await Process.run(
         executable,
         arguments,
         workingDirectory: workingDirectory,
@@ -84,7 +84,7 @@ void main() {
     test('stdout', () async {
       void checkOut(ProcessResult result) {
         expect(result.stderr, '');
-        expect(result.stdout, "out");
+        expect(result.stdout, 'out');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
@@ -126,7 +126,7 @@ void main() {
     test('stderr', () async {
       void checkErr(ProcessResult result) {
         expect(result.stdout, '');
-        expect(result.stderr, "err");
+        expect(result.stderr, 'err');
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
@@ -145,16 +145,16 @@ void main() {
     });
 
     test('stdin', () async {
-      StreamController<List<int>> inCtrl = StreamController();
-      Future<ProcessResult> processResultFuture = run(
+      final inCtrl = StreamController<List<int>>();
+      final processResultFuture = run(
           dartExecutable, [echoScriptPath, '--stdin'],
           stdin: inCtrl.stream);
-      inCtrl.add("in".codeUnits);
+      inCtrl.add('in'.codeUnits);
       await inCtrl.close();
-      ProcessResult result = await processResultFuture;
+      final result = await processResultFuture;
 
       expect(result.stdout, 'in');
-      expect(result.stderr, "");
+      expect(result.stderr, '');
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
     });
@@ -280,7 +280,7 @@ void main() {
 
     test('system_command', () async {
       // read pubspec.yaml
-      List<String> lines = const LineSplitter()
+      final lines = const LineSplitter()
           .convert(await File(join(projectTop, 'pubspec.yaml')).readAsString());
 
       void check(ProcessResult result) {
@@ -307,13 +307,13 @@ void main() {
         if (Platform.isWindows) {
           ProcessResult result;
 
-          result = await run('cmd', ['/c', 'echo', "hi"]);
+          result = await run('cmd', ['/c', 'echo', 'hi']);
           expect(result.stdout, 'hi\r\n');
           expect(result.stderr, '');
           expect(result.pid, isNotNull);
           expect(result.exitCode, 0);
 
-          await run('echo', ["hi"], runInShell: true);
+          await run('echo', ['hi'], runInShell: true);
           expect(result.stdout, 'hi\r\n');
           expect(result.stderr, '');
           expect(result.pid, isNotNull);
@@ -321,7 +321,7 @@ void main() {
 
           // not using runInShell crashes
           try {
-            await run('echo', ["hi"]);
+            await run('echo', ['hi']);
           } on ProcessException catch (_) {
             // ProcessException: not fount
           }

@@ -13,15 +13,15 @@ void main() {
     });
 
     test('hexToBytes_1byte', () {
-      for (int i = 0; i < 256; i++) {
-        List<int> bytes = hexToBytes(byteToHex(i));
+      for (var i = 0; i < 256; i++) {
+        final bytes = hexToBytes(byteToHex(i));
         expect(bytes.length, 1);
         expect(bytes[0], i);
       }
     });
 
     test('hexToBytes', () {
-      expect(hexToBytes("01 83 3d 79"), [0x01, 0x83, 0x3d, 0x79]);
+      expect(hexToBytes('01 83 3d 79'), [0x01, 0x83, 0x3d, 0x79]);
     });
 
     test('bytesToHex', () {

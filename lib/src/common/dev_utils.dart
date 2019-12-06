@@ -24,10 +24,10 @@ T devWarning<T>([T t]) => t;
 void _devError([Object msg]) {
   // one day remove the print however sometimes the error thrown is hidden
   try {
-    throw UnsupportedError("$msg");
+    throw UnsupportedError('$msg');
   } catch (e, st) {
     if (_devPrintEnabled) {
-      print("# ERROR $msg");
+      print('# ERROR $msg');
       print(st);
     }
     rethrow;

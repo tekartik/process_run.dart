@@ -12,14 +12,14 @@ import 'package:process_run/which.dart';
 
 /// pub run process_run:shell edit-env
 Future editEnv(ArgParser parser, ArgResults results) async {
-  bool help = results == null ? false : results[flagHelp] as bool;
+  final help = results == null ? false : results[flagHelp] as bool;
 
   void _printUsage() {
     stdout.writeln('Edit the environment file');
     stdout.writeln();
     stdout.writeln('Usage: pub run process_run:shell edit-env [<arguments>]');
     stdout.writeln();
-    stdout.writeln("Options:");
+    stdout.writeln('Options:');
     stdout.writeln(parser.usage);
     stdout.writeln();
   }
@@ -30,7 +30,7 @@ Future editEnv(ArgParser parser, ArgResults results) async {
   }
 
   final user = results[flagUser] as bool;
-  bool local = !user;
+  final local = !user;
 
   var envFilePath = local ? getLocalEnvFilePath() : getUserEnvFilePath();
 
@@ -39,11 +39,11 @@ Future editEnv(ArgParser parser, ArgResults results) async {
   }
 
   var label = local ? 'local' : 'user';
-  bool delete = results[flagDelete] as bool;
+  final delete = results[flagDelete] as bool;
   if (delete) {
     stdout.writeln('Confirm that you want to delete file ($label) [Y]');
     stdout.writeln('  $envFilePath');
-    String input = stdin.readLineSync();
+    final input = stdin.readLineSync();
     if (input.toLowerCase() == 'y') {
       try {
         await File(envFilePath).delete();
@@ -53,7 +53,7 @@ Future editEnv(ArgParser parser, ArgResults results) async {
     return;
   }
 
-  bool displayInfo = results[flagInfo] as bool;
+  final displayInfo = results[flagInfo] as bool;
   if (displayInfo) {
     void displayInfo(String title, String path) {
       var config = loadFromPath(path);

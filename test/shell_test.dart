@@ -1,4 +1,4 @@
-@TestOn("vm")
+@TestOn('vm')
 import 'dart:io';
 
 import 'package:path/path.dart';
@@ -21,7 +21,7 @@ void main() {
 dart example/echo.dart -o Hello  world
 dart example/echo.dart -o $text
 # this will print 'Hello  world'
-dart example/echo.dart -o "Hello  world"
+dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o ${shellArgument(text)}
 ''');

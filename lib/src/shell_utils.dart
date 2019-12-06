@@ -247,7 +247,7 @@ List<String> _getEnvironmentPaths(Map<String, String> environment) =>
 
 /// Write a string line to the ouput
 void streamSinkWriteln(StreamSink<List<int>> sink, String message) =>
-    streamSinkWrite(sink, "${message}\n");
+    streamSinkWrite(sink, '${message}\n');
 
 /// Write a string to a to sink
 void streamSinkWrite(StreamSink<List<int>> sink, String message) =>

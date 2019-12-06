@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import "package:async/async.dart";
+import 'package:async/async.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart';
 
@@ -39,7 +39,7 @@ class TestSink<T> implements StreamSink<T> {
   ///
   /// If [onDone] is passed, it's called when the user calls [close]. Its result
   /// is piped to the [done] future.
-  TestSink({onDone()}) : _onDone = onDone ?? (() {});
+  TestSink({Function() onDone}) : _onDone = onDone ?? (() {});
 
   @override
   void add(T event) {

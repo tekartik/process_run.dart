@@ -41,10 +41,10 @@ Future<Version> getFlutterVersion() async {
   var cmd = FlutterCmd(['--version']);
   var output = LineSplitter.split((await runCmd(cmd)).stdout.toString())
       .join(' ')
-      .split(" ")
+      .split(' ')
       .map((word) => word?.trim())
       .where((word) => word?.isNotEmpty ?? false);
-  bool foundFlutter = false;
+  var foundFlutter = false;
   try {
     for (var word in output) {
       if (foundFlutter) {
