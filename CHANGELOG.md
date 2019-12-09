@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.5
+
+* User pedantic 1.9
+
 ## 0.10.4+1
 
 * Android support
