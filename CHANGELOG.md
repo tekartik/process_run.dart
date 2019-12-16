@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.10.5
+## 0.10.6-dev.1
 
+* Add `getDartBinVersion`, `getFlutterBinVersion` and `getPackageVersion`
 * User pedantic 1.9
 
 ## 0.10.4+1
