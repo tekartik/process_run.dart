@@ -3,12 +3,17 @@ library process_run.dartbin_cmd_test;
 
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/dartbin.dart';
-import 'package:process_run/src/dartbin_cmd.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/process_cmd.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('dartbin_cmd', () {
+    test('api', () {
+      // ignore: unnecessary_statements
+      getDartBinVersion;
+    });
     test('dartcmd_arguments', () async {
       ProcessCmd cmd = DartCmd(['--version']);
       expect(cmd.executable, dartExecutable);
@@ -37,6 +42,35 @@ void main() {
       expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
       expect(DartFmtCmd(['--help']).toString(), 'dartfmt --help');
       expect(DartCmd(['--help']).toString(), 'dart --help');
+    });
+
+    test('platform_version', () {
+      expect(dartVersion, greaterThan(Version(2, 0, 0)));
+    });
+    test('get version', () async {
+      var version = await getDartBinVersion();
+      // Always present
+      expect(version, greaterThan(Version(2, 0, 0)));
+    });
+
+    test('missing dart', () async {
+      // ignore: deprecated_member_use_from_same_package
+      flutterExecutablePath = null;
+      shellEnvironment = <String, String>{};
+      try {
+        var version = await getDartBinVersion();
+        // Always present
+        expect(version, greaterThan(Version(2, 0, 0)));
+      } finally {
+        // ignore: deprecated_member_use_from_same_package
+        flutterExecutablePath = null;
+        shellEnvironment = null;
+      }
+      // Always present
+      var version = await getDartBinVersion();
+      if (version != null) {
+        expect(version, greaterThan(Version(2, 0, 0)));
+      }
     });
   });
 }

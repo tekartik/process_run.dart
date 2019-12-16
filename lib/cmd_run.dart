@@ -14,7 +14,7 @@ import 'src/process_cmd.dart';
 export 'dartbin.dart';
 export 'process_run.dart';
 export 'src/build_runner.dart';
-export 'src/dartbin_cmd.dart';
+export 'src/dartbin_cmd.dart' hide parsePlatformVersion;
 export 'src/dev_cmd_run.dart';
 export 'src/flutterbin_cmd.dart';
 export 'src/process_cmd.dart';

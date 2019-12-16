@@ -13,6 +13,9 @@ String _flutterExecutablePath;
 String get flutterExecutablePath =>
     _flutterExecutablePath ??= whichSync('flutter');
 
+/// Test only
+@deprecated
+set flutterExecutablePath(String path) => _flutterExecutablePath = '';
 @deprecated
 ProcessCmd flutterCmd(List<String> arguments) => FlutterCmd(arguments);
 
@@ -31,24 +34,40 @@ class FlutterCmd extends ProcessCmd {
   String toString() => executableArgumentsToString('flutter', arguments);
 }
 
-/// Parse flutter version
-Future<Version> getFlutterVersion() async {
+// to deprecate
+Future<Version> getFlutterVersion() => getFlutterBinVersion();
+
+/// Get flutter version.
+///
+/// Returns null if flutter cannot be found in the path
+Future<Version> getFlutterBinVersion() async {
   // $ flutter --version
   // Flutter 1.7.8+hotfix.4 • channel stable • https://github.com/flutter/flutter.git
   // Framework • revision 20e59316b8 (8 weeks ago) • 2019-07-18 20:04:33 -0700
   // Engine • revision fee001c93f
   // Tools • Dart 2.4.0
   var cmd = FlutterCmd(['--version']);
-  var output = LineSplitter.split((await runCmd(cmd)).stdout.toString())
+  // Take from stderr first
+  var resultOutput = (await runCmd(cmd)).stderr.toString().trim();
+  if (resultOutput.isEmpty) {
+    resultOutput = (await runCmd(cmd)).stdout.toString().trim();
+  }
+  var output = LineSplitter.split(resultOutput)
       .join(' ')
       .split(' ')
       .map((word) => word?.trim())
       .where((word) => word?.isNotEmpty ?? false);
+  // Take the first version string after flutter
   var foundFlutter = false;
   try {
     for (var word in output) {
       if (foundFlutter) {
-        return Version.parse(word);
+        try {
+          var version = Version.parse(word);
+          if (version != null) {
+            return version;
+          }
+        } catch (_) {}
       }
       if (word.toLowerCase().contains('flutter')) {
         foundFlutter = true;

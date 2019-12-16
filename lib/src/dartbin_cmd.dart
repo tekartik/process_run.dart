@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/utils.dart';
 
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'common/import.dart';
 import 'process_cmd.dart';
 
@@ -111,4 +114,42 @@ class PubGlobalRunCmd extends PubCmd {
 
   @override
   String toString() => executableArgumentsToString(_command, _arguments);
+}
+
+Version parsePlatformVersion(String text) {
+  return Version.parse(text.split(' ').first);
+}
+
+/// Parse flutter version
+Future<Version> getDartBinVersion() async {
+  // $ dart --version
+  // Linux: Dart VM version: 2.7.0 (Unknown timestamp) on "linux_x64"
+  var cmd = DartCmd(['--version']);
+  // Take from stderr first
+  var resultOutput = (await runCmd(cmd)).stderr.toString().trim();
+  if (resultOutput.isEmpty) {
+    resultOutput = (await runCmd(cmd)).stdout.toString().trim();
+  }
+  var output = LineSplitter.split(resultOutput)
+      .join(' ')
+      .split(' ')
+      .map((word) => word?.trim())
+      .where((word) => word?.isNotEmpty ?? false);
+  var foundDart = false;
+  try {
+    for (var word in output) {
+      if (foundDart) {
+        try {
+          var version = Version.parse(word);
+          if (version != null) {
+            return version;
+          }
+        } catch (_) {}
+      }
+      if (word.toLowerCase().contains('dart')) {
+        foundDart = true;
+      }
+    }
+  } catch (_) {}
+  return null;
 }

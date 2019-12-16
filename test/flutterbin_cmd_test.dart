@@ -3,6 +3,7 @@ library process_run.flutterbin_cmd_test;
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/process_cmd.dart';
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/which.dart';
@@ -11,6 +12,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('flutterbin_cmd', () {
+    test('api', () {
+      // ignore: unnecessary_statements
+      getFlutterBinVersion;
+    });
     test('run_version', () async {
       //print(flutterExecutablePath);
       ProcessCmd cmd = FlutterCmd(['--version']);
@@ -20,16 +25,32 @@ void main() {
       expect(result.stdout.toLowerCase(), contains('dart'));
       expect(result.stdout.toLowerCase(), contains('revision'));
       expect(result.stdout.toLowerCase(), contains('flutter'));
-    });
+    }, skip: !isFlutterSupportedSync);
 
     test('get version', () async {
       var version = await getFlutterVersion();
-      expect(version, greaterThan(Version(1, 5, 0)));
+      if (version != null) {
+        expect(version, greaterThan(Version(1, 5, 0)));
+      }
+    });
+
+    test('missing flutter', () async {
+      // ignore: deprecated_member_use_from_same_package
+      flutterExecutablePath = null;
+      shellEnvironment = <String, String>{};
+      try {
+        var version = await getFlutterBinVersion();
+        expect(version, isNull);
+      } finally {
+        // ignore: deprecated_member_use_from_same_package
+        flutterExecutablePath = null;
+        shellEnvironment = null;
+      }
     });
 
     test('which', () {
       expect(basename(whichSync('flutter')),
           getBashOrBatExecutableFilename('flutter'));
-    });
-  }, skip: !isFlutterSupportedSync);
+    }, skip: !isFlutterSupportedSync);
+  });
 }
