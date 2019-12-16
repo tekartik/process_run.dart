@@ -171,7 +171,8 @@ Future<ProcessResult> run(String executable, List<String> arguments,
       io.stderr.writeln(e);
       io.stderr.writeln(
           '\$ ${executableArgumentsToString(executableShortName, arguments)}');
-      io.stderr.writeln('workingDirectory: $workingDirectory');
+      io.stderr.writeln(
+          'workingDirectory: ${workingDirectory ?? Directory.current?.path}');
     }
     rethrow;
   }

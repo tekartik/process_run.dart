@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:process_run/cmd_run.dart';
-import 'package:process_run/process_run.dart';
+import 'package:process_run/process_run.dart' hide run;
+import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/which.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -46,20 +46,21 @@ Future<Version> getFlutterBinVersion() async {
   // Framework • revision 20e59316b8 (8 weeks ago) • 2019-07-18 20:04:33 -0700
   // Engine • revision fee001c93f
   // Tools • Dart 2.4.0
-  var cmd = FlutterCmd(['--version']);
-  // Take from stderr first
-  var resultOutput = (await runCmd(cmd)).stderr.toString().trim();
-  if (resultOutput.isEmpty) {
-    resultOutput = (await runCmd(cmd)).stdout.toString().trim();
-  }
-  var output = LineSplitter.split(resultOutput)
-      .join(' ')
-      .split(' ')
-      .map((word) => word?.trim())
-      .where((word) => word?.isNotEmpty ?? false);
-  // Take the first version string after flutter
-  var foundFlutter = false;
   try {
+    var results = await run('flutter --version');
+    // Take from stderr first
+    var resultOutput = results.first.stderr.toString().trim();
+    if (resultOutput.isEmpty) {
+      resultOutput = results.first.stdout.toString().trim();
+    }
+    var output = LineSplitter.split(resultOutput)
+        .join(' ')
+        .split(' ')
+        .map((word) => word?.trim())
+        .where((word) => word?.isNotEmpty ?? false);
+    // Take the first version string after flutter
+    var foundFlutter = false;
+
     for (var word in output) {
       if (foundFlutter) {
         try {

@@ -66,7 +66,8 @@ Future<ProcessResult> runCmd(ProcessCmd cmd,
     if (verbose == true) {
       io.stderr.writeln(e);
       io.stderr.writeln('\$ ${cmd}');
-      io.stderr.writeln('workingDirectory: ${cmd.workingDirectory}');
+      io.stderr.writeln(
+          'workingDirectory: ${cmd.workingDirectory ?? Directory.current?.path}');
     }
     rethrow;
   }

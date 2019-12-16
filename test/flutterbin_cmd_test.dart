@@ -28,7 +28,7 @@ void main() {
     }, skip: !isFlutterSupportedSync);
 
     test('get version', () async {
-      var version = await getFlutterVersion();
+      var version = await getFlutterBinVersion();
       if (version != null) {
         expect(version, greaterThan(Version(1, 5, 0)));
       }

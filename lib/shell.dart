@@ -238,10 +238,17 @@ class Shell {
           stderr.add(utf8.encode('\n'));
         }
 
+        var workingDirectory =
+            processCmd.workingDirectory ?? Directory.current.path;
+
         _writeln();
-        _writeln('''
+        if (!File(workingDirectory).existsSync()) {
+          _writeln('Missing working directory $workingDirectory');
+        } else {
+          _writeln('''
   Check that ${executableFullPath} exists
     command: ${processCmd}''');
+        }
         _writeln();
 
         throw ShellException(e?.toString());
