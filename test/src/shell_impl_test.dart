@@ -54,8 +54,9 @@ void main() {
         shellEnvironment = env;
         expect(userHomePath, isNull);
         expect(userAppDataPath, isNull);
+        // echo differs on windows
         expect((await run("echo 'Hello world'")).first.stdout.toString().trim(),
-            'Hello world');
+            Platform.isWindows ? '"Hello world"' : 'Hello world');
       } finally {
         shellEnvironment = null;
       }
