@@ -32,6 +32,15 @@ A script is composed of 1 or multiple lines. Each line becomes a command:
 - Each command must evaluate to one executable (i.e. no loop, pipe, redirection, bach/powershell specific features).
 - Each first word of the line is the executable whose path is resolved using the `which` command. 
 
+If you have spaces in one argument, it must be escaped using double quotes or the `shellArgument` method:
+
+```dart
+import 'package:process_run/shell_run.dart';
+
+await run('echo "Hello world"');
+await run('echo ${shellArgument('Hello world')}');
+```
+
 ### Changing directory
 
 You can pushd/popd a directory
