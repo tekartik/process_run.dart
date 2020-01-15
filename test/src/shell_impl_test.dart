@@ -78,7 +78,12 @@ void main() {
         ''');
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
-        expect(userPaths, ['test', dartSdkBinDirPath]);
+        expect(userPaths, [
+          'test',
+          if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+            getFlutterAncestorPath(dartSdkBinDirPath),
+          dartSdkBinDirPath,
+        ]);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '1');
 
         resetUserConfig();
@@ -96,8 +101,13 @@ void main() {
           userHomePathEnvKey: getTestAbsPath()
         };
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
-        expect(
-            userPaths, ['test', join(userHomePath, 'temp'), dartSdkBinDirPath]);
+        expect(userPaths, [
+          'test',
+          join(userHomePath, 'temp'),
+          if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+            getFlutterAncestorPath(dartSdkBinDirPath),
+          dartSdkBinDirPath
+        ]);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
 
         resetUserConfig();
@@ -120,7 +130,11 @@ void main() {
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
 
         var dartBinDir = dirname(dartExecutable);
-        expect(userPaths, [dartBinDir]);
+        expect(userPaths, [
+          if (getFlutterAncestorPath(dartBinDir) != null)
+            getFlutterAncestorPath(dartBinDir),
+          dartBinDir,
+        ]);
         expect(dirname(await which('dart')), dartBinDir);
       } finally {
         shellEnvironment = null;

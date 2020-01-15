@@ -29,7 +29,7 @@ void main() {
       expect((await runCmd(DartAnalyzerCmd(['--help']))).exitCode, 0);
       expect((await runCmd(Dart2JsCmd(['--help']))).exitCode, 0);
       expect((await runCmd(DartDocCmd(['--help']))).exitCode, 0);
-      expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
+      // expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
       expect((await runCmd(PubCmd(['--help']))).exitCode, 0);
       //expect((await runCmd(DartDevkCmd(['--help']))).exitCode, 0);
     });
@@ -38,7 +38,7 @@ void main() {
       expect(PubCmd(['--help']).toString(), 'pub --help');
       expect(DartDocCmd(['--help']).toString(), 'dartdoc --help');
       expect(Dart2JsCmd(['--help']).toString(), 'dart2js --help');
-      expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
+      // expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
       expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
       expect(DartFmtCmd(['--help']).toString(), 'dartfmt --help');
       expect(DartCmd(['--help']).toString(), 'dart --help');

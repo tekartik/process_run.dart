@@ -16,9 +16,17 @@ void main() {
           getUserConfig(<String, String>{userEnvFilePathEnvKey: path});
       expect(userConfig.vars, {
         'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path,
-        'PATH': '${dartSdkBinDirPath}'
+        'PATH': [
+          if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+            getFlutterAncestorPath(dartSdkBinDirPath),
+          dartSdkBinDirPath
+        ].join(Platform.isWindows ? ';' : ':')
       });
-      expect(userConfig.paths, [dartSdkBinDirPath]);
+      expect(userConfig.paths, [
+        if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+          getFlutterAncestorPath(dartSdkBinDirPath),
+        dartSdkBinDirPath
+      ]);
     });
     test('simple', () async {
       //print(a);
@@ -28,10 +36,19 @@ void main() {
       expect(userConfig.vars, {
         'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path,
         'test': '1',
-        'PATH': ['my_path', '${dartSdkBinDirPath}']
-            .join(Platform.isWindows ? ';' : ':')
+        'PATH': [
+          'my_path',
+          if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+            getFlutterAncestorPath(dartSdkBinDirPath),
+          dartSdkBinDirPath
+        ].join(Platform.isWindows ? ';' : ':')
       });
-      expect(userConfig.paths, ['my_path', dartSdkBinDirPath]);
+      expect(userConfig.paths, [
+        'my_path',
+        if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+          getFlutterAncestorPath(dartSdkBinDirPath),
+        dartSdkBinDirPath
+      ]);
     });
 
     test('userLoadConfigFile', () async {
@@ -109,6 +126,15 @@ void main() {
       });
       expect(config.paths, []);
       expect(config.vars, {'test': '1'});
+    });
+
+    test('flutter ancestor', () async {
+      expect(getFlutterAncestorPath(join('bin', 'cache', 'dart-sdk', 'bin')),
+          'bin');
+      expect(
+          getFlutterAncestorPath(
+              join('flutter', 'bin', 'cache', 'dart-sdk', 'bin')),
+          join('flutter', 'bin'));
     });
   });
 }

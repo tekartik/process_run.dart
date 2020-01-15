@@ -224,6 +224,26 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   userConfig = UserConfig(vars: vars, paths: paths);
 }
 
+/// Returns the matching flutter ancestor if any
+String getFlutterAncestorPath(String dartSdkBinDirPath) {
+  try {
+    var parent = dartSdkBinDirPath;
+    if (basename(parent) == 'bin') {
+      parent = dirname(parent);
+      if (basename(parent) == 'dart-sdk') {
+        parent = dirname(parent);
+        if (basename(parent) == 'cache') {
+          parent = dirname(parent);
+          if (basename(parent) == 'bin') {
+            return parent;
+          }
+        }
+      }
+    }
+  } catch (_) {}
+  return null;
+}
+
 /// Get config map
 UserConfig getUserConfig(Map<String, String> environment) {
   var paths = <String>[];
@@ -250,8 +270,17 @@ UserConfig getUserConfig(Map<String, String> environment) {
   // Add local config
   addConfig(getLocalEnvFilePath());
 
+  var dartBinPath = dartSdkBinDirPath;
+
+  // Add flutter path if path matches:
+  // /flutter/bin/cache/dart-sdk/bin
+  var flutterBinPath = getFlutterAncestorPath(dartBinPath);
+  if (flutterBinPath != null) {
+    paths.add(flutterBinPath);
+  }
+
   // Add dart path so that dart commands always work!
-  paths.add(dartSdkBinDirPath);
+  paths.add(dartBinPath);
 
   // Add from environment
   paths.addAll(getEnvironmentPaths(environment));
