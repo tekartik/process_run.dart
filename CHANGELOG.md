@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.10.6
+## 0.10.6+1
 
 * Add `getDartBinVersion`, `getFlutterBinVersion` and `getPackageVersion`
 * User pedantic 1.9
+* Find flutter bin compared to running dart sdk
 
 ## 0.10.4+1
 
