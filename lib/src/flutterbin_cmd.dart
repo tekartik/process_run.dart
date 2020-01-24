@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:meta/meta.dart';
 import 'package:process_run/process_run.dart' hide run;
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/which.dart';
@@ -56,12 +55,14 @@ Future<String> getFlutterBinChannel() async =>
     (await getFlutterBinInfo())?.channel;
 
 FlutterBinInfo _flutterBinInfo;
+
 Future<FlutterBinInfo> getFlutterBinInfo() async =>
     _flutterBinInfo ??= await _getFlutterBinInfo();
 
 /// Parse flutter information
 abstract class FlutterBinInfo {
   String get channel;
+
   Version get version;
 
   /// First line is sufficient
