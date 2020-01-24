@@ -25,6 +25,16 @@ void main() {
       expect(result.stdout.toLowerCase(), contains('dart'));
       expect(result.stdout.toLowerCase(), contains('revision'));
       expect(result.stdout.toLowerCase(), contains('flutter'));
+
+      // Whatever ship stable
+      expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));
+      expect(await getFlutterBinChannel(), isNotNull);
+    }, skip: !isFlutterSupportedSync);
+
+    test('version & channel', () async {
+      // Whatever ship stable
+      expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));
+      expect(await getFlutterBinChannel(), isNotNull);
     }, skip: !isFlutterSupportedSync);
 
     test('get version', () async {
