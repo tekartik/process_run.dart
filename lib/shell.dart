@@ -171,6 +171,9 @@ class Shell {
     return clone(workingDirectory: path);
   }
 
+  /// Get the shell path, using workingDurectory or current directory if null.
+  String get path => _workingDirectoryPath;
+
   /// Create a new shell at the given path, allowing popd on it
   Shell pushd(String path) => cd(path).._parentShell = this;
 

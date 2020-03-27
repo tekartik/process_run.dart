@@ -67,6 +67,12 @@ dart current_dir.dart
           join(Directory.current.path, 'test', 'src'));
     });
 
+    test('path', () {
+      var shell = Shell();
+      expect(shell.path, isNotEmpty);
+      shell = shell.pushd('test');
+      expect(basename(shell.path), 'test');
+    });
     test('pushd', () async {
       var shell = Shell(verbose: debug);
 

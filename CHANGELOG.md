@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.8
+
+* Add `Shell.path` property
+
 ## 0.10.7
 
 * Add `getDartBinVersion`, `getFlutterBinVersion`, `getFlutterBinChannel` and `getPackageVersion`
