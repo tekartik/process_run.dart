@@ -120,6 +120,21 @@ Version parsePlatformVersion(String text) {
   return Version.parse(text.split(' ').first);
 }
 
+/// Parse the text from Platform.version
+String parsePlatformChannel(String text) {
+  //  // 2.8.0-dev.18.0.flutter-eea9717938 (be) (Wed Apr 1 08:55:31 2020 +0000) on "linux_x64"
+  var parts = text.split(' ');
+  if (parts.length > 1) {
+    var channelText = parts[1];
+    if (channelText.toLowerCase().contains('dev')) {
+      return dartChannelDev;
+    } else if (channelText.toLowerCase().contains('beta')) {
+      return dartChannelBeta;
+    }
+  }
+  return dartChannelStable;
+}
+
 /// Parse flutter version
 Future<Version> getDartBinVersion() async {
   // $ dart --version

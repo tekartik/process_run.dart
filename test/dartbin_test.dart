@@ -3,6 +3,7 @@ library process_run.dartbin_test;
 
 import 'dart:io';
 
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
@@ -69,6 +70,25 @@ void defineTests() {
         expect(result.stdout, '');
         expect(result.stderr, contains('Dart VM'));
       });
+    });
+
+    test('dartVersion', () {
+      expect(dartVersion, greaterThan(Version(2, 5, 0)));
+    });
+
+    test('dartChannel', () {
+      // "TRAVIS_DART_VERSION": "stable"
+      // print(Platform.version);
+      expect(dartChannel, isNotNull);
+      if (Platform.environment['TRAVIS_DART_VERSION'] == 'stable') {
+        expect(dartChannel, dartChannelStable);
+      }
+      if (Platform.environment['TRAVIS_DART_VERSION'] == 'beta') {
+        expect(dartChannel, dartChannelBeta);
+      }
+      if (Platform.environment['TRAVIS_DART_VERSION'] == 'dev') {
+        expect(dartChannel, dartChannelDev);
+      }
     });
   });
 }

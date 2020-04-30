@@ -6,6 +6,14 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
+export 'package:process_run/dartbin.dart'
+    show dartVersion, dartChannel, dartExecutable;
+export 'package:process_run/src/flutterbin_cmd.dart'
+    show
+        getFlutterBinVersion,
+        getFlutterBinChannel,
+        isFlutterSupported,
+        isFlutterSupportedSync;
 
 export 'package:process_run/src/shell_utils.dart'
     show

@@ -20,3 +20,18 @@ Version _dartVersion;
 /// Current dart platform version
 Version get dartVersion =>
     _dartVersion ??= parsePlatformVersion(Platform.version);
+
+String _dartChannel;
+
+/// Current dart platform channel
+String get dartChannel =>
+    _dartChannel ??= parsePlatformChannel(Platform.version);
+
+/// Stable channel.
+String dartChannelStable = 'stable';
+
+/// Beta channel.
+String dartChannelBeta = 'beta';
+
+/// Dev channel.
+String dartChannelDev = 'dev';

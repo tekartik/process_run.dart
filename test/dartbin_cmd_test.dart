@@ -44,9 +44,6 @@ void main() {
       expect(DartCmd(['--help']).toString(), 'dart --help');
     });
 
-    test('platform_version', () {
-      expect(dartVersion, greaterThan(Version(2, 0, 0)));
-    });
     test('get version', () async {
       var version = await getDartBinVersion();
       // Always present

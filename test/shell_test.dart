@@ -2,7 +2,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
@@ -13,6 +12,16 @@ bool debug = false;
 
 void main() {
   group('Shell', () {
+    test('public', () {
+      // ignore: unnecessary_statements
+      getFlutterBinVersion;
+      // ignore: unnecessary_statements
+      getFlutterBinChannel;
+      isFlutterSupported;
+      isFlutterSupportedSync;
+      dartVersion;
+      dartChannel;
+    });
     test('arguments', () async {
       var shell = Shell(verbose: debug);
       var text = 'Hello  world';
@@ -188,4 +197,9 @@ _tekartik_dummy_app_that_does_not_exits
     expect(userEnvironment['test'], '1');
     expect(userPaths, contains('my_path'));
   });
+
+  test('flutter', () async {
+    expect(await getFlutterBinVersion(), isNotNull);
+    expect(await getFlutterBinChannel(), isNotNull);
+  }, skip: !isFlutterSupportedSync);
 }

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:process_run/shell.dart';
 
 Future main() async {
   var shell = Shell();
 
+  print(Platform.version);
   await shell.run('''
 # Analyze code
 dartanalyzer --fatal-warnings --fatal-infos example lib tool test

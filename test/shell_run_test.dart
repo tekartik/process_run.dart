@@ -3,7 +3,6 @@ library process_run.test.shell_run_test;
 
 import 'dart:io';
 
-import 'package:process_run/shell.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
 
@@ -16,7 +15,17 @@ String stringTruncate(String text, int len) {
 }
 
 void main() {
-  group('Shell', () {
+  group('shell_run', () {
+    test('public', () {
+      // ignore: unnecessary_statements
+      getFlutterBinVersion;
+      // ignore: unnecessary_statements
+      getFlutterBinChannel;
+      isFlutterSupported;
+      isFlutterSupportedSync;
+      dartVersion;
+      dartChannel;
+    });
     test('userEnvironment', () async {
       await run(
           'dart example/echo.dart ${shellArgument(stringTruncate(userEnvironment.toString(), 1500))}',
