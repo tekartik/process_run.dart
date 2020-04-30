@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.9-dev.1
+
+* Add `dartChannel`
+
 ## 0.10.8
 
 * Add `Shell.path` property
