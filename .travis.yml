@@ -6,4 +6,4 @@ dart:
 script: dart tool/travis.dart
 matrix:
   allow_failures:
-    - dart: dev
+    # - dart: dev
