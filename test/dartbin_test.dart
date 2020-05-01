@@ -38,7 +38,12 @@ void defineTests() {
 
       test('dart_empty_param', () async {
         final result = await Process.run(dartExecutable, []);
-        expect(result.exitCode, 255);
+        if (dartVersion > Version(2, 9, 0, pre: '0')) {
+          expect(result.exitCode, 0);
+        } else {
+          // pre 2.9 behavior
+          expect(result.exitCode, 255);
+        }
       });
 
       test('dart_null_param', () async {
@@ -61,9 +66,16 @@ void defineTests() {
       test('dart', () async {
         var result = await Process.run(dartExecutable, ['--help']);
         expect(result.exitCode, 0);
-        // help is on stderr
-        expect(result.stdout, '');
-        expect(result.stderr, contains('Usage: dart '));
+        if (dartVersion > Version(2, 9, 0, pre: '0')) {
+          // help is on stdout
+          expect(result.stdout, contains('Usage: dart '));
+          expect(result.stderr, '');
+        } else {
+          // Pre 2.9
+          // help is on stderr
+          expect(result.stdout, '');
+          expect(result.stderr, contains('Usage: dart '));
+        }
 
         // Version is on stderr
         result = await Process.run(dartExecutable, ['--version']);
