@@ -28,10 +28,13 @@ String get dartChannel =>
     _dartChannel ??= parsePlatformChannel(Platform.version);
 
 /// Stable channel.
-String dartChannelStable = 'stable';
+const dartChannelStable = 'stable';
 
 /// Beta channel.
-String dartChannelBeta = 'beta';
+const dartChannelBeta = 'beta';
 
 /// Dev channel.
-String dartChannelDev = 'dev';
+const dartChannelDev = 'dev';
+
+/// Master channel.
+const dartChannelMaster = 'master';
