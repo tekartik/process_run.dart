@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.9+1
+## 0.10.9+2
 
 * Add `dartChannel`
 

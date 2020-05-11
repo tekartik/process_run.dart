@@ -2,6 +2,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
@@ -21,6 +22,14 @@ void main() {
       isFlutterSupportedSync;
       dartVersion;
       dartChannel;
+      // ignore: unnecessary_statements
+      dartChannelStable;
+      // ignore: unnecessary_statements
+      dartChannelBeta;
+      // ignore: unnecessary_statements
+      dartChannelDev;
+      // ignore: unnecessary_statements
+      dartChannelMaster;
     });
     test('arguments', () async {
       var shell = Shell(verbose: debug);
