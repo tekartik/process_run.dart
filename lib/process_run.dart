@@ -182,9 +182,10 @@ Future<ProcessResult> run(String executable, List<String> arguments,
 
   // Connected stdin
   // Buggy!
+  StreamSubscription stdinSubscription;
   if (stdin != null) {
     //stdin.pipe(process.stdin); // this closes the stream...
-    stdin.listen((List<int> data) {
+    stdinSubscription = stdin.listen((List<int> data) {
       process.stdin.add(data);
     })
       ..onDone(() {
@@ -231,6 +232,11 @@ Future<ProcessResult> run(String executable, List<String> arguments,
   });
 
   final exitCode = await process.exitCode;
+
+  /// Cancel input sink
+  if (stdinSubscription != null) {
+    await stdinSubscription.cancel();
+  }
 
   // Notice that exitCode can complete before all of the lines of output have been
   // processed. Also note that we do not explicitly close the process. In order

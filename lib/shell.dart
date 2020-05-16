@@ -6,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
+
 export 'package:process_run/dartbin.dart'
     show dartVersion, dartChannel, dartExecutable;
 export 'package:process_run/src/flutterbin_cmd.dart'
@@ -14,7 +15,6 @@ export 'package:process_run/src/flutterbin_cmd.dart'
         getFlutterBinChannel,
         isFlutterSupported,
         isFlutterSupportedSync;
-
 export 'package:process_run/src/shell_utils.dart'
     show
         userHomePath,
@@ -24,6 +24,8 @@ export 'package:process_run/src/shell_utils.dart'
         platformEnvironment;
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;
+
+export 'src/prompt.dart' show promptConfirm;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {

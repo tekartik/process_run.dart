@@ -83,6 +83,7 @@ Future main(List<String> arguments) async {
 
   // handle stdin if asked for it
   if (_argsResult['stdin'] as bool) {
+    // devPrint('reading stdin $stdin');
     if (verbose) {
       //stderr.writeln('stdin  $stdin');
       //stderr.writeln('stdin  ${await stdin..isEmpty}');
