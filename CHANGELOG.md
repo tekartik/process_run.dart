@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.10
+
+* Add `prompt`, `promptTerminate`, `promptConfirm` to `shell.dart`. Export `sharedStdIn` from package `io`
+
 ## 0.10.9+2
 
 * Add `dartChannel`
