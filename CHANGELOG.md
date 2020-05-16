@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.10
+## 0.10.10+1
 
 * Add `prompt`, `promptTerminate`, `promptConfirm` to `shell.dart`. Export `sharedStdIn` from package `io`
 

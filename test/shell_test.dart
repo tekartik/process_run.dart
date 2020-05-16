@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/prompt.dart';
 import 'package:test/test.dart';
 
 @deprecated
