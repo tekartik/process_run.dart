@@ -1,3 +1,17 @@
+/// {@canonicalFor prompt.prompt}
+/// {@canonicalFor prompt.promptConfirm}
+/// {@canonicalFor prompt.promptTerminate}
+/// {@canonicalFor shell_utils.shellArgument}
+/// {@canonicalFor user_config.userLoadEnv}
+/// {@canonicalFor user_config.userLoadEnvFile}
+/// {@canonicalFor shell_utils.platformEnvironment}
+/// {@canonicalFor shell_utils.shellEnvironment}
+/// {@canonicalFor shell_utils.userAppDataPath}
+/// {@canonicalFor user_config.userEnvironment}
+/// {@canonicalFor shell_utils.userHomePath}
+/// {@canonicalFor user_config.userPaths}
+library process_run.shell;
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:io' as io;
@@ -9,12 +23,6 @@ import 'package:process_run/src/shell_utils.dart';
 
 export 'package:process_run/dartbin.dart'
     show dartVersion, dartChannel, dartExecutable;
-export 'package:process_run/src/flutterbin_cmd.dart'
-    show
-        getFlutterBinVersion,
-        getFlutterBinChannel,
-        isFlutterSupported,
-        isFlutterSupportedSync;
 export 'package:process_run/src/shell_utils.dart'
     show
         userHomePath,
@@ -25,6 +33,13 @@ export 'package:process_run/src/shell_utils.dart'
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;
 
+export 'dartbin.dart'
+    show
+        getFlutterBinVersion,
+        getFlutterBinChannel,
+        isFlutterSupported,
+        isFlutterSupportedSync;
+export 'src/process_cmd.dart';
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true

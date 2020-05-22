@@ -12,17 +12,17 @@ import 'process_run.dart';
 import 'src/process_cmd.dart';
 
 export 'dartbin.dart';
+export 'dartbin.dart'
+    show
+        getFlutterBinVersion,
+        getFlutterBinChannel,
+        isFlutterSupported,
+        isFlutterSupportedSync;
 export 'process_run.dart';
 export 'src/build_runner.dart';
 export 'src/dartbin_cmd.dart' hide parsePlatformVersion;
 export 'src/dev_cmd_run.dart';
-export 'src/flutterbin_cmd.dart'
-    show
-        getFlutterBinVersion,
-        flutterExecutablePath,
-        FlutterCmd,
-        isFlutterSupported,
-        isFlutterSupportedSync;
+export 'src/flutterbin_cmd.dart' show flutterExecutablePath, FlutterCmd;
 export 'src/process_cmd.dart';
 export 'src/webdev.dart';
 
@@ -33,8 +33,8 @@ export 'src/webdev.dart';
 /// Execute a predefined ProcessCmd command
 ///
 /// if [commandVerbose] is true, it writes the command line executed preceeded by $ to stdout. It streams
-/// stdout if [stdoutVerbose] is true and stderr if [stderrVerbose] is true.
-/// [verbose] is a shortcut for specifying true for [commandVerbose], [stdoutVerbose], [stderrVerbose]
+/// stdout/error if [verbose] is true.
+/// [verbose] implies [commandVerbose]
 ///
 Future<ProcessResult> runCmd(ProcessCmd cmd,
     {bool verbose,
