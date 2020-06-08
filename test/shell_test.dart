@@ -183,6 +183,24 @@ _tekartik_dummy_app_that_does_not_exits
     await _testCommand('echo Hello world'); // alias to Write-Output
   });
 
+  test('pipe', () async {
+    var dir = join('.dart_tool', 'process_run', 'test');
+    await Directory(dir).create(recursive: true);
+    var file = File(join(dir, 'echo.output'));
+    var shell = Shell();
+
+    // Write to file
+    await file.writeAsString(
+        (await shell.run('echo Hello world')).first.stdout.toString());
+
+    // Append to file
+    await file.writeAsString(
+        (await shell.run('echo Hello world')).first.stdout.toString(),
+        mode: FileMode.append);
+
+    expect(await file.readAsString(), 'Hello world\nHello world\n');
+  });
+
   test('user', () {
     if (Platform.isWindows) {
       expect(userHomePath, Platform.environment['USERPROFILE']);

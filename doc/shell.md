@@ -29,7 +29,7 @@ A script is composed of 1 or multiple lines. Each line becomes a command:
 - A line starting with `#` will be ignored. `//` and `///` comments are also supported
 - A line ending with ` ^` (a space and the `^` character) or ` \\` (a space and one backslash) continue on the next
     line.
-- Each command must evaluate to one executable (i.e. no loop, pipe, redirection, bach/powershell specific features).
+- Each command must evaluate to one executable (i.e. no loop, pipe, redirection, bash/powershell specific features).
 - Each first word of the line is the executable whose path is resolved using the `which` command. 
 
 If you have spaces in one argument, it must be escaped using double quotes or the `shellArgument` method:
