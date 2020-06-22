@@ -257,7 +257,7 @@ class Shell {
         processResults.add(processResult);
         if (_throwOnError && processResult.exitCode != 0) {
           throw ShellException(
-              '${processCmd} exitCode ${processResult.exitCode}');
+              '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}');
         }
       } on ProcessException catch (e) {
         var stderr = _stderr ?? io.stderr;
@@ -270,7 +270,7 @@ class Shell {
             processCmd.workingDirectory ?? Directory.current.path;
 
         _writeln();
-        if (!File(workingDirectory).existsSync()) {
+        if (!Directory(workingDirectory).existsSync()) {
           _writeln('Missing working directory $workingDirectory');
         } else {
           _writeln('''
@@ -279,7 +279,8 @@ class Shell {
         }
         _writeln();
 
-        throw ShellException(e?.toString());
+        throw ShellException(
+            '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}');
       }
     }
 

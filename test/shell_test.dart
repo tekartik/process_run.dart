@@ -232,6 +232,22 @@ _tekartik_dummy_app_that_does_not_exits
     expect(userPaths, contains('my_path'));
   });
 
+  test('ShellException bad command', () async {
+    var shell = Shell();
+    try {
+      await shell.run('dummy_command_that_does_not_exist');
+    } on ShellException catch (e) {
+      expect(e.message.contains('workingDirectory'), isTrue);
+    }
+  });
+  test('ShellException bad directory', () async {
+    var shell = Shell(workingDirectory: 'dummy_directory_that_does_not_exist');
+    try {
+      await shell.run('dart --version');
+    } on ShellException catch (e) {
+      expect(e.message.contains('workingDirectory'), isTrue);
+    }
+  });
   test('flutter', () async {
     expect(await getFlutterBinVersion(), isNotNull);
     expect(await getFlutterBinChannel(), isNotNull);

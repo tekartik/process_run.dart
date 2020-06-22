@@ -1,5 +1,4 @@
 #!/usr/bin/env dart
-
 import 'dart:async';
 import 'dart:io';
 
