@@ -19,7 +19,10 @@ void defineTests() {
         final result = await Process.run('dart', ['--version']);
         expect(result.stderr.toLowerCase(), contains('dart'));
         expect(result.stderr.toLowerCase(), contains('version'));
+        // Before 2.9.0
         // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
+        // After 2.9.0
+        // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"
       });
 
       test('run', () async {
@@ -80,7 +83,12 @@ void defineTests() {
         // Version is on stderr
         result = await Process.run(dartExecutable, ['--version']);
         expect(result.stdout, '');
-        expect(result.stderr, contains('Dart VM'));
+        if (dartVersion > Version(2, 9, 0, pre: '0')) {
+          // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"\n'
+          expect(result.stderr, contains('Dart SDK'));
+        } else {
+          expect(result.stderr, contains('Dart VM'));
+        }
       });
     });
 
