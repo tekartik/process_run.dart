@@ -41,8 +41,12 @@ void defineTests() {
 
       test('dart_empty_param', () async {
         final result = await Process.run(dartExecutable, []);
-        if (dartVersion > Version(2, 9, 0, pre: '0')) {
-          expect(result.exitCode, 0);
+        if (dartVersion > Version(2, 10, 0, pre: '1')) {
+          // Not yet in 2.9.0-21
+          // Ok in 2.10.0-1.0.dev
+          expect(result.exitCode, 0,
+              reason:
+                  'dartVersion empty param not exitcode 0 yet in $dartVersion, exit code 255 in <=2.9.0 to check');
         } else {
           // pre 2.9 behavior
           expect(result.exitCode, 255);
