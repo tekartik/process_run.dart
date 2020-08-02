@@ -3,12 +3,12 @@ library process_run.dartbin_test;
 
 import 'dart:io';
 
-import 'package:pub_semver/pub_semver.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/which.dart';
+import 'package:pub_semver/pub_semver.dart';
+import 'package:test/test.dart';
 
 void main() => defineTests();
 
@@ -73,25 +73,30 @@ void defineTests() {
       test('dart', () async {
         var result = await Process.run(dartExecutable, ['--help']);
         expect(result.exitCode, 0);
-        if (dartVersion > Version(2, 9, 0, pre: '0')) {
+        var minVersion = Version(2, 10, 0, pre: '1');
+        var reason = 'Version output now on stdout since $minVersion';
+        if (dartVersion >= minVersion) {
           // help is on stdout
-          expect(result.stdout, contains('Usage: dart '));
-          expect(result.stderr, '');
+          expect(result.stdout, contains('Usage: dart '), reason: reason);
+          expect(result.stderr, '', reason: reason);
         } else {
           // Pre 2.9
           // help is on stderr
-          expect(result.stdout, '');
-          expect(result.stderr, contains('Usage: dart '));
+          expect(result.stdout, '', reason: reason);
+          expect(result.stderr, contains('Usage: dart '), reason: reason);
         }
 
         // Version is on stderr
         result = await Process.run(dartExecutable, ['--version']);
         expect(result.stdout, '');
-        if (dartVersion > Version(2, 9, 0, pre: '0')) {
+        minVersion = Version(2, 9, 0, pre: '1');
+        reason =
+            'Output changed from VM to SDK since $minVersion err: ${result.stderr}';
+        if (dartVersion >= minVersion) {
           // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"\n'
-          expect(result.stderr, contains('Dart SDK'));
+          expect(result.stderr, contains('Dart SDK'), reason: reason);
         } else {
-          expect(result.stderr, contains('Dart VM'));
+          expect(result.stderr, contains('Dart VM'), reason: reason);
         }
       });
     });
