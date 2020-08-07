@@ -130,12 +130,12 @@ void main() {
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
 
         var dartBinDir = dirname(dartExecutable);
+        var flutterDir = getFlutterAncestorPath(dartSdkBinDirPath);
         expect(userPaths, [
-          if (getFlutterAncestorPath(dartBinDir) != null)
-            getFlutterAncestorPath(dartBinDir),
+          if (flutterDir != null) flutterDir,
           dartBinDir,
         ]);
-        expect(dirname(await which('dart')), dartBinDir);
+        expect(dirname(await which('dart')), flutterDir ?? dartBinDir);
       } finally {
         shellEnvironment = null;
       }

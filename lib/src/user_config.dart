@@ -8,6 +8,7 @@ import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/constant.dart';
+import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:yaml/yaml.dart';
 
@@ -239,6 +240,15 @@ String getFlutterAncestorPath(String dartSdkBinDirPath) {
           }
         }
       }
+    }
+  } catch (_) {}
+
+  // Second test, check if flutter is at path in this case
+  // dart sdk comes from flutter dart path
+  try {
+    if (File(join(dartSdkBinDirPath, getBashOrBatExecutableFilename('flutter')))
+        .existsSync()) {
+      return dartSdkBinDirPath;
     }
   } catch (_) {}
   return null;

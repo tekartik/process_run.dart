@@ -1,11 +1,14 @@
 @TestOn('vm')
 library process_run.flutterbin_cmd_test;
 
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/process_cmd.dart';
 import 'package:process_run/src/script_filename.dart';
+import 'package:process_run/src/user_config.dart';
 import 'package:process_run/which.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
@@ -57,6 +60,14 @@ void main() {
         shellEnvironment = null;
       }
     });
+
+    test('dart', () async {
+      var flutterDir = dirname(await which('flutter'));
+      // New in 2.9
+      expect(File(join(flutterDir, 'dart')).existsSync(), isTrue);
+      getFlutterAncestorPath(flutterDir);
+      expect(getFlutterAncestorPath(flutterDir), flutterDir);
+    }, skip: !isFlutterSupportedSync);
 
     test('which', () {
       expect(basename(whichSync('flutter')),

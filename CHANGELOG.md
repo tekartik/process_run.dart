@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.10.10+2
+## 0.10.11
+
+* Handle dart bin resolution next to flutter for SDK 2.9+
+
+## 0.10.10
 
 * Add `prompt`, `promptTerminate`, `promptConfirm` to `shell.dart`. Export `sharedStdIn` from package `io`
 
