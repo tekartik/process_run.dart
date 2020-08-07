@@ -44,9 +44,10 @@ export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
+  final ProcessResult result;
   final String message;
 
-  ShellException(this.message);
+  ShellException(this.message, this.result);
 
   @override
   String toString() => 'ShellException($message)';
@@ -236,54 +237,68 @@ class Shell {
       var parts = shellSplit(command);
       var executable = parts[0];
       var arguments = parts.sublist(1);
-      var executableFullPath =
-          findExecutableSync(command, _userPaths) ?? executable;
-
-      var processCmd = _ProcessCmd(executableFullPath, arguments,
-          executableShortName: executable)
-        ..runInShell = _runInShell
-        ..environment = _environment
-        ..includeParentEnvironment = _includeParentEnvironment
-        ..stderrEncoding = _stderrEncoding
-        ..stdoutEncoding = _stdoutEncoding
-        ..workingDirectory = _workingDirectory;
-      try {
-        var processResult = await runCmd(processCmd,
-            verbose: _verbose,
-            commandVerbose: _commandVerbose,
-            stderr: _stderr,
-            stdin: _stdin,
-            stdout: _stdout);
-        processResults.add(processResult);
-        if (_throwOnError && processResult.exitCode != 0) {
-          throw ShellException(
-              '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}');
-        }
-      } on ProcessException catch (e) {
-        var stderr = _stderr ?? io.stderr;
-        void _writeln([String msg]) {
-          stderr.add(utf8.encode(msg ?? ''));
-          stderr.add(utf8.encode('\n'));
-        }
-
-        var workingDirectory =
-            processCmd.workingDirectory ?? Directory.current.path;
-
-        _writeln();
-        if (!Directory(workingDirectory).existsSync()) {
-          _writeln('Missing working directory $workingDirectory');
-        } else {
-          _writeln('''
-  Check that ${executableFullPath} exists
-    command: ${processCmd}''');
-        }
-        _writeln();
-
-        throw ShellException(
-            '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}');
-      }
+      var processResult = await runExecutableArguments(executable, arguments);
+      processResults.add(processResult);
     }
 
     return processResults;
+  }
+
+  /// Run a single [executable] with [arguments], resolving the [executable] if needed.
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  Future<ProcessResult> runExecutableArguments(
+      String executable, List<String> arguments) async {
+    ProcessResult processResult;
+    var executableFullPath =
+        findExecutableSync(executable, _userPaths) ?? executable;
+
+    var processCmd = _ProcessCmd(executableFullPath, arguments,
+        executableShortName: executable)
+      ..runInShell = _runInShell
+      ..environment = _environment
+      ..includeParentEnvironment = _includeParentEnvironment
+      ..stderrEncoding = _stderrEncoding
+      ..stdoutEncoding = _stdoutEncoding
+      ..workingDirectory = _workingDirectory;
+    try {
+      processResult = await runCmd(processCmd,
+          verbose: _verbose,
+          commandVerbose: _commandVerbose,
+          stderr: _stderr,
+          stdin: _stdin,
+          stdout: _stdout);
+
+      if (_throwOnError && processResult.exitCode != 0) {
+        throw ShellException(
+            '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}',
+            processResult);
+      }
+    } on ProcessException catch (e) {
+      var stderr = _stderr ?? io.stderr;
+      void _writeln([String msg]) {
+        stderr.add(utf8.encode(msg ?? ''));
+        stderr.add(utf8.encode('\n'));
+      }
+
+      var workingDirectory =
+          processCmd.workingDirectory ?? Directory.current.path;
+
+      _writeln();
+      if (!Directory(workingDirectory).existsSync()) {
+        _writeln('Missing working directory $workingDirectory');
+      } else {
+        _writeln('''
+  Check that ${executableFullPath} exists
+    command: ${processCmd}''');
+      }
+      _writeln();
+
+      throw ShellException(
+          '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}',
+          null);
+    }
+
+    return processResult;
   }
 }

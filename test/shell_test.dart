@@ -78,6 +78,21 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       expect(results.first.exitCode, 0);
     });
 
+    test('dart runExecutableArguments', () async {
+      var shell = Shell(verbose: debug);
+      var result = await shell.runExecutableArguments('dart', ['--version']);
+      expect(result.exitCode, 0);
+    });
+    test('dart runExecutableArguments bad arg', () async {
+      var shell = Shell(verbose: debug);
+      try {
+        await shell.runExecutableArguments('dart', ['--bad-arg']);
+        fail('shoud fail');
+      } on ShellException catch (e) {
+        expect(e.result.exitCode, 255);
+      }
+    });
+
     test('cd', () async {
       var shell = Shell(verbose: debug);
 
