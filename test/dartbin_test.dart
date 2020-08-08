@@ -4,10 +4,13 @@ library process_run.dartbin_test;
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:process_run/cmd_run.dart' show flutterExecutablePath;
 import 'package:process_run/dartbin.dart';
+import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/dartbin_impl.dart'
     show
         debugDartExecutableForceWhich,
+        findFlutterDartExecutableSync,
         resolveDartExecutable,
         resolvedDartExecutable;
 import 'package:process_run/src/script_filename.dart';
@@ -42,6 +45,20 @@ void defineTests() {
         expect(
             Directory(join(dirname(dartExecutable), 'snapshots')).existsSync(),
             isTrue);
+      });
+
+      test('flutterDart', () async {
+        if (isFlutterSupportedSync) {
+          try {
+            expect(
+                dirname(findFlutterDartExecutableSync(
+                    dirname(flutterExecutablePath))),
+                endsWith(join('cache', 'dart-sdk', 'bin')));
+          } finally {
+            resolvedDartExecutable = null;
+            debugDartExecutableForceWhich = false;
+          }
+        }
       });
 
       test('dart_empty_param', () async {
@@ -86,11 +103,41 @@ void defineTests() {
           print(e);
         }
         expect(resolveDartExecutable(), isNotNull);
-        expect(resolveDartExecutable(), await which('dart'));
+        expect(await which('dart'), isNotNull);
+        // expect(resolveDartExecutable(), await which('dart'));
       } finally {
         resolvedDartExecutable = null;
+        debugDartExecutableForceWhich = false;
         expect(resolveDartExecutable(), isNotNull);
-        expect(resolveDartExecutable(), await which('dart'));
+        expect(await which('dart'), isNotNull);
+        // expect(resolveDartExecutable(), await which('dart'));
+      }
+    });
+
+    test('flutter resolveDartExecutable', () async {
+      if (isFlutterSupportedSync) {
+        try {
+          debugDartExecutableForceWhich = true;
+
+          resolvedDartExecutable = null;
+          expect(
+              dirname(resolveDartExecutable(environment: <String, String>{
+                'PATH': dirname(flutterExecutablePath)
+              })),
+              endsWith(join('cache', 'dart-sdk', 'bin')));
+
+          expect(resolveDartExecutable(), isNotNull);
+
+          // Dart from flutter
+          if (dirname(dartExecutable)
+              .contains(dirname(flutterExecutablePath))) {
+            expect(
+                dartSdkBinDirPath, endsWith(join('cache', 'dart-sdk', 'bin')));
+          }
+        } finally {
+          resolvedDartExecutable = null;
+          expect(resolveDartExecutable(), isNotNull);
+        }
       }
     });
 
