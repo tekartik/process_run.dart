@@ -213,7 +213,9 @@ _tekartik_dummy_app_that_does_not_exits
         (await shell.run('echo Hello world')).first.stdout.toString(),
         mode: FileMode.append);
 
-    expect(await file.readAsString(), 'Hello world\nHello world\n');
+    var separator = Platform.isWindows ? '\r\n' : '\n';
+    expect(await file.readAsString(),
+        'Hello world${separator}Hello world$separator');
   });
 
   test('user', () {
