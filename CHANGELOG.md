@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.10.12
+## 0.10.12+1
 
-* Handle dart bin resolution next to flutter for SDK 2.9+
+* Handle dart/pub binary path resolution next to flutter for SDK 2.9+
 * Add `Shell.runExecutableArguments`
 
 ## 0.10.10
