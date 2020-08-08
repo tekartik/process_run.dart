@@ -3,6 +3,7 @@ library process_run.test.shell_run_test;
 
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
 
@@ -59,6 +60,14 @@ void main() {
         stdout.writeln('stderr: ${result.stderr.toString().trim()}');
         stdout.writeln('exitCode: ${result.exitCode}');
       }
+    });
+    test('dart2native', () async {
+      var bin = 'build/native/info.exe';
+      await Directory(dirname(bin)).create(recursive: true);
+      await run('''
+  dart2native example/info.dart -o $bin
+  $bin
+  ''');
     });
   });
 }

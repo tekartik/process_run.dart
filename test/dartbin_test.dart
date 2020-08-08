@@ -5,6 +5,11 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
+import 'package:process_run/src/dartbin_impl.dart'
+    show
+        debugDartExecutableForceWhich,
+        resolveDartExecutable,
+        resolvedDartExecutable;
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/which.dart';
 import 'package:pub_semver/pub_semver.dart';
@@ -66,6 +71,26 @@ void defineTests() {
       // might not be in path during the test
       if (whichDart != null) {
         expect(basename(whichDart), getBashOrExeExecutableFilename('dart'));
+      }
+    });
+
+    test('resolveDartExecutable', () async {
+      try {
+        debugDartExecutableForceWhich = true;
+
+        try {
+          resolvedDartExecutable = null;
+          expect(
+              resolveDartExecutable(environment: <String, String>{}), isNull);
+        } catch (e) {
+          print(e);
+        }
+        expect(resolveDartExecutable(), isNotNull);
+        expect(resolveDartExecutable(), await which('dart'));
+      } finally {
+        resolvedDartExecutable = null;
+        expect(resolveDartExecutable(), isNotNull);
+        expect(resolveDartExecutable(), await which('dart'));
       }
     });
 

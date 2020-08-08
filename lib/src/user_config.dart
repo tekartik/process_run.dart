@@ -280,17 +280,18 @@ UserConfig getUserConfig(Map<String, String> environment) {
   // Add local config
   addConfig(getLocalEnvFilePath());
 
-  var dartBinPath = dartSdkBinDirPath;
+  if (dartExecutable != null) {
+    var dartBinPath = dartSdkBinDirPath;
 
-  // Add flutter path if path matches:
-  // /flutter/bin/cache/dart-sdk/bin
-  var flutterBinPath = getFlutterAncestorPath(dartBinPath);
-  if (flutterBinPath != null) {
-    paths.add(flutterBinPath);
+    // Add flutter path if path matches:
+    // /flutter/bin/cache/dart-sdk/bin
+    var flutterBinPath = getFlutterAncestorPath(dartBinPath);
+    if (flutterBinPath != null) {
+      paths.add(flutterBinPath);
+    }
+    // Add dart path so that dart commands always work!
+    paths.add(dartBinPath);
   }
-
-  // Add dart path so that dart commands always work!
-  paths.add(dartBinPath);
 
   // Add from environment
   paths.addAll(getEnvironmentPaths(environment));

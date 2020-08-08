@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/src/dartbin_cmd.dart';
+import 'package:process_run/src/dartbin_impl.dart';
 import 'package:pub_semver/pub_semver.dart';
-
-String _dartExecutable;
 
 ///
 /// Get dart vm either from executable or using the which command
 ///
-String get dartExecutable => _dartExecutable ??= Platform.resolvedExecutable;
+String get dartExecutable => resolvedDartExecutable;
 
 String get dartSdkBinDirPath => dirname(dartExecutable);
 
