@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.10.12+1
+## 0.10.12+2
 
 * Handle dart/pub binary path resolution next to flutter for SDK 2.9+
 * Add `Shell.runExecutableArguments`
+* Fix: `runInShell` no longer forced to true on Windows for executable with `.exe` extension
 
 ## 0.10.10
 
