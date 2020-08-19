@@ -92,7 +92,7 @@ String argumentsToString(List<String> arguments) {
 /// Convenient way to display a command
 String executableArgumentsToString(String executable, List<String> arguments) {
   final sb = StringBuffer();
-  if (Platform.isWindows) {
+  if (Platform.isWindows && (basename(executable) == executable)) {
     var ext = extension(executable);
     switch (ext) {
       case '.exe':
@@ -148,16 +148,17 @@ Future<ProcessResult> run(String executable, List<String> arguments,
     includeParentEnvironment = false;
   }
 
-  // Fix runInShell on windows
-  runInShell = utils.fixRunInShell(runInShell, executable);
-
   // Default is the full command
   var executableShortName = executable;
+
   // Find executable if needed, i.e. if it is only a name
   if (basename(executable) == executable) {
     // Try to find it in path or use it as is
     executable = utils.findExecutableSync(executable, userPaths) ?? executable;
   }
+
+  // Fix runInShell on windows (force run in shell for non-.exe)
+  runInShell = utils.fixRunInShell(runInShell, executable);
 
   Process process;
   try {
