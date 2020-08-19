@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:async/async.dart';
+import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart';
 
@@ -63,5 +64,20 @@ class TestSink<T> implements StreamSink<T> {
     _isClosed = true;
     _doneCompleter.complete(Future.microtask(_onDone));
     return done;
+  }
+}
+
+final basicScriptExecutableExtension = Platform.isWindows ? '.bat' : '';
+
+// Create a basic echo executable
+Future createEchoExecutable(String path) async {
+  try {
+    await Directory(dirname(path)).create(recursive: true);
+  } catch (_) {}
+  var fullPath = '$path$basicScriptExecutableExtension';
+  await File(fullPath)
+      .writeAsString(Platform.isWindows ? '@echo Hello' : 'echo Hello');
+  if (Platform.isLinux || Platform.isMacOS) {
+    await Shell().run('chmod +x ${shellArgument(fullPath)}');
   }
 }

@@ -5,6 +5,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:process_run/shell.dart';
+import 'package:process_run/src/shell_utils.dart'
+    show envPathKey, envPathSeparator;
 import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
@@ -302,6 +305,44 @@ void main() {
       }
     });
 
+    test('space in binary', () async {
+      var path = '.dart_tool/process_run/test/space in binary';
+      await createEchoExecutable(path);
+      var env = Map<String, String>.from(platformEnvironment);
+      env[envPathKey] = '${dirname(path)}${envPathSeparator}${env[envPathKey]}';
+      print(env[envPathKey]);
+      var result = await run(
+          'space in binary$basicScriptExecutableExtension', [],
+          environment: env);
+      expect(result.stdout.toString().trim(), 'Hello');
+
+      expect(
+          (await Shell(environment: env, verbose: false)
+                  .run('${shellArgument('space in binary')}'))
+              .first
+              .stdout
+              .toString()
+              .trim(),
+          'Hello');
+    });
+    test('space in path', () async {
+      var path = '.dart_tool/process_run/test/space in path/binary';
+      await createEchoExecutable(path);
+      var env = Map<String, String>.from(platformEnvironment);
+      env[envPathKey] = '${dirname(path)}${envPathSeparator}${env[envPathKey]}';
+      print(env[envPathKey]);
+      var result = await run('binary$basicScriptExecutableExtension', [],
+          environment: env);
+      expect(result.stdout.toString().trim(), 'Hello');
+
+      expect(
+          (await Shell(environment: env, verbose: false).run('binary'))
+              .first
+              .stdout
+              .toString()
+              .trim(),
+          'Hello');
+    });
     test('windows_system_command', () async {
       if (Platform.isWindows) {
         if (Platform.isWindows) {
