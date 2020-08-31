@@ -20,6 +20,7 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/user_config.dart';
 
 export 'package:process_run/dartbin.dart'
     show dartVersion, dartChannel, dartExecutable;
@@ -110,7 +111,7 @@ class Shell {
 
   /// Resolve environment
   List<String> get _userPaths =>
-      _userPathsCache ??= getEnvironmentPaths(_environment ??
+      _userPathsCache ??= getUserPaths(_environment ??
           (_includeParentEnvironment != false ? null : <String, String>{}));
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error

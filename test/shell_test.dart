@@ -265,7 +265,35 @@ _tekartik_dummy_app_that_does_not_exits
       expect(e.message.contains('workingDirectory'), isTrue);
     }
   });
-  test('flutter', () async {
+  test('User path', () async {
+    // TODO test on other platform
+    if (Platform.isLinux) {
+      var environment = {
+        'PATH': '${absolute('test/src')}:${platformEnvironment['PATH']}'
+      };
+      print(environment);
+      var shell =
+          Shell(environment: environment, includeParentEnvironment: false);
+      await shell.run('current_dir');
+    }
+  });
+  test('flutter_resolve', () async {
+    // Edge case finding flutter from dart
+    if (Platform.isLinux) {
+      var paths = platformEnvironment['PATH'].split(':')
+        ..removeWhere((element) => element.endsWith('flutter/bin'));
+
+      paths.insert(0, dartSdkBinDirPath);
+      print(paths);
+      var environment = {'PATH': '${paths.join(':')}'};
+      print(environment);
+      var shell =
+          Shell(environment: environment, includeParentEnvironment: false);
+      await shell.run('flutter --version');
+    }
+  }, skip: !isFlutterSupportedSync);
+
+  test('flutter info', () async {
     expect(await getFlutterBinVersion(), isNotNull);
     expect(await getFlutterBinChannel(), isNotNull);
   }, skip: !isFlutterSupportedSync);
