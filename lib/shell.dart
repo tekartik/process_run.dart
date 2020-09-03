@@ -22,6 +22,8 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/user_config.dart';
 
+// We reuse io sharedStdIn definition.
+export 'package:io/io.dart' show sharedStdIn;
 export 'package:process_run/dartbin.dart'
     show dartVersion, dartChannel, dartExecutable;
 export 'package:process_run/src/shell_utils.dart'
@@ -42,6 +44,8 @@ export 'dartbin.dart'
         isFlutterSupportedSync;
 export 'src/process_cmd.dart';
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
+export 'src/shell.dart' show run;
+export 'utils/process_result_extension.dart' show ProcessRunProcessResultsExt;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {

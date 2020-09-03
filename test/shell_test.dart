@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 
 @deprecated
 bool devTrue = true;
-// bool debug = devTrue;
+//bool debug = devTrue;
 bool debug = false;
 
 void main() {
@@ -38,6 +38,7 @@ void main() {
       // ignore: unnecessary_statements
       promptTerminate;
     });
+
     test('arguments', () async {
       var shell = Shell(verbose: debug);
       var text = 'Hello  world';
@@ -56,6 +57,35 @@ dart example/echo.dart -o ${shellArgument(text)}
       expect(results[3].stdout.toString().trim(), 'Hello  world');
       expect(results[4].stdout.toString().trim(), 'Hello  world');
       expect(results.length, 5);
+    });
+
+    test('outLines, errLines', () async {
+      var shell = Shell(verbose: debug, runInShell: true);
+
+      var results = await shell.run('dart example/echo.dart -o Hello');
+      //TODO test other platforms
+      if (Platform.isLinux) {
+        expect(results.outLines, ['Hello']);
+        expect(results.errLines, ['']);
+      }
+      results = await shell.run('dart example/echo.dart -e Hello');
+      //TODO test other platforms
+      if (Platform.isLinux) {
+        expect(results.outLines, ['']);
+        expect(results.errLines, ['Hello']);
+      }
+      results = await shell.run('''
+# This is a 2 commands file
+
+dart example/echo.dart -e Hello
+
+dart example/echo.dart -o World
+''');
+      //TODO test other platforms
+      if (Platform.isLinux) {
+        expect(results.outLines, ['', 'Hello']);
+        expect(results.errLines, ['World', '']);
+      }
     });
 
     test('backslash', () async {

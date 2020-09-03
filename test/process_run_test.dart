@@ -5,7 +5,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:process_run/shell.dart';
+import 'package:process_run/shell.dart'
+    show platformEnvironment, Shell, shellArgument;
 import 'package:process_run/src/shell_utils.dart'
     show envPathKey, envPathSeparator;
 import 'package:test/test.dart';

@@ -1,5 +1,2 @@
-// We reuse io sharedStdIn definition.
-export 'package:io/io.dart' show sharedStdIn;
-
+/// Deprecated in 1.0.0. Prefer using shell in the future
 export 'shell.dart';
-export 'src/shell.dart' show run;
