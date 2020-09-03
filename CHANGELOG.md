@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0-dev.1
+
+* More stuff in process_run: run, outLines and errLines on List<ProcessResult>
+
 ## 0.10.12+3
 
 * Handle dart/pub binary path resolution next to flutter for SDK 2.9+

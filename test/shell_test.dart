@@ -77,14 +77,14 @@ dart example/echo.dart -o ${shellArgument(text)}
       results = await shell.run('''
 # This is a 2 commands file
 
-dart example/echo.dart -e Hello
+dart example/echo.dart -o Hello
 
-dart example/echo.dart -o World
+dart example/echo.dart -e World
 ''');
       //TODO test other platforms
       if (Platform.isLinux) {
-        expect(results.outLines, ['', 'Hello']);
-        expect(results.errLines, ['World', '']);
+        expect(results.outLines, ['Hello', '']);
+        expect(results.errLines, ['', 'World']);
       }
     });
 

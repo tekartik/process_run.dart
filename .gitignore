@@ -30,3 +30,6 @@ test_out
 
 # Local files
 .local/
+
+# Added when testing fkytter
+.flutter*
