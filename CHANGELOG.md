@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0+1
+## 0.11.0+2
 
 * More stuff in process_run: run, outLines and errLines on List<ProcessResult>
 
