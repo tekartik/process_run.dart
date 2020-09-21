@@ -1,12 +1,15 @@
-import 'dart:convert';
 @TestOn('vm')
+library process_run.test.shell_test;
+
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
-import '../example/hex_utils.dart';
+
+import 'hex_utils.dart';
 
 @deprecated
 bool devTrue = true;
