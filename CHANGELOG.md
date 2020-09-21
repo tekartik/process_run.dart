@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0-dev.1
+## 0.11.0
 
 * More stuff in process_run: run, outLines and errLines on List<ProcessResult>
 
