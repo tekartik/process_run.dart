@@ -1,3 +1,4 @@
+import 'dart:convert';
 @TestOn('vm')
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
+import '../example/hex_utils.dart';
 
 @deprecated
 bool devTrue = true;
@@ -62,16 +64,17 @@ dart example/echo.dart -o ${shellArgument(text)}
     test('outLines, errLines', () async {
       var shell = Shell(verbose: debug, runInShell: true);
 
-      var results = await shell.run('dart example/echo.dart -o Hello');
+      var results = await shell.run(
+          'dart example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
       //TODO test other platforms
       if (Platform.isLinux) {
-        expect(results.outLines, ['Hello']);
-        expect(results.errLines, ['']);
+        expect(results.outLines, ['Hello', 'World']);
+        expect(results.errLines, []);
       }
       results = await shell.run('dart example/echo.dart -e Hello');
       //TODO test other platforms
       if (Platform.isLinux) {
-        expect(results.outLines, ['']);
+        expect(results.outLines, []);
         expect(results.errLines, ['Hello']);
       }
       results = await shell.run('''
@@ -83,8 +86,8 @@ dart example/echo.dart -e World
 ''');
       //TODO test other platforms
       if (Platform.isLinux) {
-        expect(results.outLines, ['Hello', '']);
-        expect(results.errLines, ['', 'World']);
+        expect(results.outLines, ['Hello']);
+        expect(results.errLines, ['World']);
       }
     });
 
