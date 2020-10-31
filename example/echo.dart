@@ -47,14 +47,24 @@ Future main(List<String> arguments) async {
       abbr: 'f', help: 'stderr as hexa string', defaultsTo: null);
   parser.addFlag('stdin',
       abbr: 'i', help: 'Handle first line of stdin', negatable: false);
+  parser.addOption('wait', help: 'Wait milliseconds');
   parser.addOption('exit-code', abbr: 'x', help: 'Exit code to return');
   parser.addFlag('version',
       help: 'Print the command version', negatable: false);
 
   final _argsResult = parser.parse(arguments);
 
+  int parseInt(dynamic value) {
+    return int.tryParse(value?.toString() ?? '');
+  }
+
   final help = _argsResult['help'] as bool;
   final verbose = _argsResult['verbose'] as bool;
+  final wait = parseInt(_argsResult['wait']);
+
+  if (wait != null) {
+    await Future.delayed(Duration(milliseconds: wait));
+  }
 
   void _printUsage() {
     stdout.writeln('Echo utility');

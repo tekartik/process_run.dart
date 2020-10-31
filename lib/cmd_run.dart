@@ -1,14 +1,11 @@
 ///
 /// Command runner
 ///
-
 import 'dart:async';
 import 'dart:io';
-import 'dart:io' as io;
 
-import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/process_run.dart';
 
-import 'process_run.dart';
 import 'src/process_cmd.dart';
 
 export 'dartbin.dart';
@@ -37,44 +34,14 @@ export 'src/webdev.dart';
 /// [verbose] implies [commandVerbose]
 ///
 Future<ProcessResult> runCmd(ProcessCmd cmd,
-    {bool verbose,
-    bool commandVerbose,
-    Stream<List<int>> stdin,
-    StreamSink<List<int>> stdout,
-    StreamSink<List<int>> stderr}) async {
-  if (verbose == true) {
-    stdout ??= io.stdout;
-    stderr ??= io.stderr;
-    commandVerbose ??= true;
-  }
-
-  if (commandVerbose == true) {
-    streamSinkWriteln(stdout ?? io.stdout, '\$ ${cmd}');
-  }
-
-  try {
-    return await run(
-      cmd.executable,
-      cmd.arguments,
-      workingDirectory: cmd.workingDirectory,
-      environment: cmd.environment,
-      includeParentEnvironment: cmd.includeParentEnvironment,
-      runInShell: cmd.runInShell,
-      stdoutEncoding: cmd.stdoutEncoding,
-      stderrEncoding: cmd.stderrEncoding,
-      //verbose: verbose,
-      //commandVerbose: commandVerbose,
-      stdin: stdin,
-      stdout: stdout,
-      stderr: stderr,
-    );
-  } catch (e) {
-    if (verbose == true) {
-      io.stderr.writeln(e);
-      io.stderr.writeln('\$ ${cmd}');
-      io.stderr.writeln(
-          'workingDirectory: ${cmd.workingDirectory ?? Directory.current?.path}');
-    }
-    rethrow;
-  }
-}
+        {bool verbose,
+        bool commandVerbose,
+        Stream<List<int>> stdin,
+        StreamSink<List<int>> stdout,
+        StreamSink<List<int>> stderr}) =>
+    processCmdRun(cmd,
+        verbose: verbose,
+        commandVerbose: commandVerbose,
+        stdin: stdin,
+        stdout: stdout,
+        stderr: stderr);

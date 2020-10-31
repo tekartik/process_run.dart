@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:io' as io;
+import 'package:synchronized/synchronized.dart';
+import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
-
+import 'package:process_run/src/process_run.dart';
+import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/user_config.dart';
+import 'package:path/path.dart';
 import 'common/import.dart';
 
 ///
@@ -23,22 +28,25 @@ import 'common/import.dart';
 ///  git status
 /// ''');
 /// ```
-Future<List<ProcessResult>> run(String script,
-    {bool throwOnError = true,
-    String workingDirectory,
-    Map<String, String> environment,
-    bool includeParentEnvironment = true,
-    bool runInShell,
-    Encoding stdoutEncoding = systemEncoding,
-    Encoding stderrEncoding = systemEncoding,
-    Stream<List<int>> stdin,
-    StreamSink<List<int>> stdout,
-    StreamSink<List<int>> stderr,
-    bool verbose = true,
-    // Default to true
-    bool commandVerbose,
-    // Default to true if verbose is true
-    bool commentVerbose}) {
+Future<List<ProcessResult>> run(
+  String script, {
+  bool throwOnError = true,
+  String workingDirectory,
+  Map<String, String> environment,
+  bool includeParentEnvironment = true,
+  bool runInShell,
+  Encoding stdoutEncoding = systemEncoding,
+  Encoding stderrEncoding = systemEncoding,
+  Stream<List<int>> stdin,
+  StreamSink<List<int>> stdout,
+  StreamSink<List<int>> stderr,
+  bool verbose = true,
+
+  // Default to true
+  bool commandVerbose,
+  // Default to true if verbose is true
+  bool commentVerbose,
+}) {
   return Shell(
           throwOnError: throwOnError,
           workingDirectory: workingDirectory,
@@ -54,4 +62,352 @@ Future<List<ProcessResult>> run(String script,
           commandVerbose: commandVerbose,
           commentVerbose: commentVerbose)
       .run(script);
+}
+
+/// Multiplatform Shell utility to run a script with multiple commands.
+///
+/// Extra path/env can be loaded using ~/.config/tekartik/process_run/env.yaml
+///
+/// ```
+/// path: ~/bin
+/// ```
+///
+/// or
+///
+/// ```
+/// path:
+///   - ~/bin
+///   - ~/Android/Sdk/tools/bin
+/// env:
+///   ANDROID_TOP: ~/Android
+///   FIREBASE_TOP: ~/.firebase
+/// ```
+///
+/// A list of ProcessResult is returned
+///
+class Shell {
+  final bool _throwOnError;
+  final String _workingDirectory;
+  final Map<String, String> _environment;
+  final bool _includeParentEnvironment;
+  final bool _runInShell;
+  final Encoding _stdoutEncoding;
+  final Encoding _stderrEncoding;
+  final Stream<List<int>> _stdin;
+  final StreamSink<List<int>> _stdout;
+  final StreamSink<List<int>> _stderr;
+  final bool _verbose;
+  final bool _commandVerbose;
+  final bool _commentVerbose;
+
+  /// Incremental internal runId
+  var _runId = 0;
+
+  /// Killed runId. would kill any process with a lower run id
+  var _killedRunId = 0;
+
+  /// Current kill process signal
+  ProcessSignal _killedProcessSignal;
+
+  /// Current child process running.
+  Process _currentProcess;
+
+  ProcessCmd _currentProcessCmd;
+  int _currentProcessRunId;
+
+  /// Parent shell for pushd/popd
+  Shell _parentShell;
+
+  /// Get it only once
+  List<String> _userPathsCache;
+
+  /// Resolve environment
+  List<String> get _userPaths =>
+      _userPathsCache ??= getUserPaths(_environment ??
+          (_includeParentEnvironment != false ? null : <String, String>{}));
+
+  /// [throwOnError] means that if an exit code is not 0, it will throw an error
+  ///
+  /// Unless specified [runInShell] will be false. However on windows, it will
+  /// default to true for non .exe files
+  ///
+  /// if [verbose] is not false or [commentVerbose] is true, it will display the
+  /// comments as well
+  Shell(
+      {bool throwOnError = true,
+      String workingDirectory,
+      Map<String, String> environment,
+      bool includeParentEnvironment = true,
+      bool runInShell,
+      Encoding stdoutEncoding = systemEncoding,
+      Encoding stderrEncoding = systemEncoding,
+      Stream<List<int>> stdin,
+      StreamSink<List<int>> stdout,
+      StreamSink<List<int>> stderr,
+      bool verbose = true,
+      // Default to true
+      bool commandVerbose,
+      // Default to false
+      bool commentVerbose})
+      : _throwOnError = throwOnError ?? true,
+        _workingDirectory = workingDirectory,
+        _environment = environment,
+        _includeParentEnvironment = includeParentEnvironment ?? true,
+        _runInShell = runInShell,
+        _stdoutEncoding = stdoutEncoding ?? systemEncoding,
+        _stderrEncoding = stderrEncoding ?? systemEncoding,
+        _stdin = stdin,
+        _stdout = stdout,
+        _stderr = stderr,
+        _verbose = verbose ?? true,
+        _commandVerbose = commandVerbose ?? verbose ?? true,
+        _commentVerbose = commentVerbose ?? false;
+
+  /// Create a new shell
+  Shell clone(
+      {bool throwOnError,
+      String workingDirectory,
+      Map<String, String> environment,
+      bool includeParentEnvironment,
+      bool runInShell,
+      Encoding stdoutEncoding,
+      Encoding stderrEncoding,
+      Stream<List<int>> stdin,
+      StreamSink<List<int>> stdout,
+      StreamSink<List<int>> stderr,
+      bool verbose,
+      bool commandVerbose,
+      bool commentVerbose}) {
+    return Shell(
+        verbose: verbose ?? _verbose,
+        environment: environment ?? _environment,
+        runInShell: runInShell ?? _runInShell,
+        commandVerbose: commandVerbose ?? _commandVerbose,
+        commentVerbose: commentVerbose ?? _commentVerbose,
+        includeParentEnvironment:
+            includeParentEnvironment ?? _includeParentEnvironment,
+        stderr: stderr ?? _stderr,
+        stderrEncoding: stderrEncoding ?? _stderrEncoding,
+        stdin: stdin ?? _stdin,
+        stdout: stdout ?? _stdout,
+        stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
+        throwOnError: throwOnError ?? _throwOnError,
+        workingDirectory: workingDirectory ?? _workingDirectory);
+  }
+
+  /// non null
+  String get _workingDirectoryPath =>
+      _workingDirectory ?? Directory.current.path;
+
+  /// Create new shell at the given path
+  Shell cd(String path) {
+    if (isRelative(path)) {
+      path = join(_workingDirectoryPath, path);
+    }
+    if (_commandVerbose) {
+      streamSinkWriteln(_stdout ?? stdout, '\$ cd $path');
+    }
+    return clone(workingDirectory: path);
+  }
+
+  /// Get the shell path, using workingDurectory or current directory if null.
+  String get path => _workingDirectoryPath;
+
+  /// Create a new shell at the given path, allowing popd on it
+  Shell pushd(String path) => cd(path).._parentShell = this;
+
+  /// Pop the current directory to get the previous shell
+  /// returns null if nothing in the stack
+  Shell popd() {
+    if (_parentShell != null && _commandVerbose) {
+      stdout.writeln('\$ cd ${_parentShell._workingDirectoryPath}');
+    }
+    return _parentShell;
+  }
+
+  /// Kills the current running process.
+  ///
+  /// Returns `true` if the signal is successfully delivered to the process.
+  /// Otherwise the signal could not be sent, usually meaning,
+  /// that the process is already dead.
+  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
+    // Picked the current 'timstamp' of the run killed
+    _killedRunId = _runId;
+    _killedProcessSignal = signal;
+    return _kill();
+  }
+
+  bool _kill() {
+    if (_currentProcess != null) {
+      io.stderr.writeln('killing $_killedRunId, ${_currentProcessToString()}');
+      var result = _currentProcess?.kill(_killedProcessSignal);
+      _currentProcess = null;
+      return result;
+    } else {
+      io.stderr.writeln('Killing $_killedRunId');
+      return false;
+    }
+  }
+
+  ///
+  /// Run one or multiple plain text command(s).
+  ///
+  /// Commands can be splitted by line.
+  ///
+  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
+  /// must be escaped too so you might have to enter \\).
+  ///
+  /// Returns a list of executed command line results.
+  ///
+  Future<List<ProcessResult>> run(String script) {
+    // devPrint('Running $script');
+    return _runLocked((runId) async {
+      var commands = scriptToCommands(script);
+
+      var processResults = <ProcessResult>[];
+      for (var command in commands) {
+        if (_killedRunId >= runId) {
+          throw ShellException('Script was killed', null);
+        }
+        // Display the comments
+        if (isLineComment(command)) {
+          if (_commentVerbose) {
+            stdout.writeln(command);
+          }
+          continue;
+        }
+        var parts = shellSplit(command);
+        var executable = parts[0];
+        var arguments = parts.sublist(1);
+        var processResult =
+            await _lockedRunExecutableArguments(runId, executable, arguments);
+        processResults.add(processResult);
+      }
+
+      return processResults;
+    });
+  }
+
+  final _runLock = Lock();
+
+  /// Run a single [executable] with [arguments], resolving the [executable] if needed.
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  Future<ProcessResult> runExecutableArguments(
+      String executable, List<String> arguments) async {
+    return _runLocked((runId) async {
+      return _lockedRunExecutableArguments(runId, executable, arguments);
+    });
+  }
+
+  Future<T> _runLocked<T>(FutureOr<T> Function(int runId) action) {
+    // devPrint('Previous: ${_currentProcessToString()}');
+    var runId = ++_runId;
+    return _runLock.synchronized(() async {
+      // devPrint('Running $runId');
+      return action(runId);
+    });
+  }
+
+  String _currentProcessToString() {
+    return 'runId:$_currentProcessRunId${_currentProcess == null ? '' : ', process: ${_currentProcess?.pid}: $_currentProcessRunId ${_currentProcessCmd}'}';
+  }
+
+  /// Run a single [executable] with [arguments], resolving the [executable] if needed.
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  Future<ProcessResult> _lockedRunExecutableArguments(
+      int runId, String executable, List<String> arguments) async {
+    try {
+      ProcessResult processResult;
+      var executableFullPath =
+          findExecutableSync(executable, _userPaths) ?? executable;
+
+      var processCmd = _ProcessCmd(executableFullPath, arguments,
+          executableShortName: executable)
+        ..runInShell = _runInShell
+        ..environment = _environment
+        ..includeParentEnvironment = _includeParentEnvironment
+        ..stderrEncoding = _stderrEncoding
+        ..stdoutEncoding = _stdoutEncoding
+        ..workingDirectory = _workingDirectory;
+      try {
+        // devPrint('Before $processCmd');
+        processResult = await processCmdRun(processCmd,
+            verbose: _verbose,
+            commandVerbose: _commandVerbose,
+            stderr: _stderr,
+            stdin: _stdin,
+            stdout: _stdout, onProcess: (process) {
+          _currentProcess = process;
+          _currentProcessCmd = processCmd;
+          _currentProcessRunId = runId;
+          if (_killedRunId >= _runId) {
+            // devPrint('shell was killed');
+            _kill();
+            return;
+          }
+
+          // devPrint('onProcess ${_currentProcessToString()}');
+        });
+        // devPrint('After $processCmd');
+        if (_throwOnError && processResult.exitCode != 0) {
+          throw ShellException(
+              '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}',
+              processResult);
+        }
+      } on ProcessException catch (e) {
+        var stderr = _stderr ?? io.stderr;
+        void _writeln([String msg]) {
+          stderr.add(utf8.encode(msg ?? ''));
+          stderr.add(utf8.encode('\n'));
+        }
+
+        var workingDirectory =
+            processCmd.workingDirectory ?? Directory.current.path;
+
+        _writeln();
+        if (!Directory(workingDirectory).existsSync()) {
+          _writeln('Missing working directory $workingDirectory');
+        } else {
+          _writeln('''
+  Check that ${executableFullPath} exists
+    command: ${processCmd}''');
+        }
+        _writeln();
+
+        throw ShellException(
+            '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}',
+            null);
+      }
+
+      return processResult;
+    } finally {
+      _currentProcess = null;
+    }
+  }
+}
+
+// Simplify toString to avoid the full path got with which
+class _ProcessCmd extends ProcessCmd {
+  final String executableShortName;
+
+  _ProcessCmd(String executable, List<String> arguments,
+      {this.executableShortName})
+      : super(executable, arguments);
+
+  @override
+  String toString() =>
+      executableArgumentsToString(executableShortName, arguments);
+}
+
+/// Exception thrown in exitCode != 0 and throwOnError is true
+class ShellException implements Exception {
+  final ProcessResult result;
+  final String message;
+
+  ShellException(this.message, this.result);
+
+  @override
+  String toString() => 'ShellException($message)';
 }

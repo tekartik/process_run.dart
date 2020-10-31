@@ -69,4 +69,23 @@ If somehow you cannot modify the system path, it will look for any path (last) d
 $ pub global active process_run
 $ alias ds='pub global run process_run:shell'
  
- 
+### Helper
+
+`ShellLinesController` allows listeninging line from a command line script.
+
+```dart
+var controller = ShellLinesController();
+var shell = Shell(stdout: controller.sink, verbose: false);
+controller.stream.listen((event) {
+  // Handle output
+
+  // ...
+  // If needed kill the shell
+  shell.kill();
+});
+try {
+  await shell.run('dart echo.dart some_text');
+} on ShellException catch (_) {
+  // We might get a shell exception
+}
+```

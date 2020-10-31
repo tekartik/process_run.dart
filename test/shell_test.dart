@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/common/import.dart';
 import 'package:test/test.dart';
 
 import 'hex_utils.dart';
@@ -42,6 +43,23 @@ void main() {
       prompt;
       // ignore: unnecessary_statements
       promptTerminate;
+
+      // ignore: unnecessary_statements
+      ShellException;
+      // ignore: unnecessary_statements
+      ShellLinesController;
+      // ignore: unnecessary_statements
+      which;
+      // ignore: unnecessary_statements
+      whichSync;
+      // ignore: unnecessary_cast
+      (null as Process)?.outLines;
+      // ignore: unnecessary_cast
+      (null as Process)?.errLines;
+      // ignore: unnecessary_cast
+      (null as List<ProcessResult>)?.outLines;
+      // ignore: unnecessary_cast
+      (null as List<ProcessResult>)?.errLines;
     });
 
     test('arguments', () async {
@@ -127,6 +145,68 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       } on ShellException catch (e) {
         expect(e.result.exitCode, 255);
       }
+    });
+    test('kill', () async {
+      var shell = Shell().cd('example');
+      Future future;
+      try {
+        future = shell.run('dart echo.dart --wait 3000');
+        await future.timeout(const Duration(milliseconds: 2000));
+        fail('should fail');
+      } on TimeoutException catch (_) {
+        // 1: TimeoutException after 0:00:02.000000: Future not completed
+        shell.kill();
+        //devPrint('1: $e');
+      }
+      try {
+        await future;
+        fail('should fail');
+      } on ShellException catch (_) {
+        // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+        // devPrint('2: $e');
+      }
+
+      try {
+        var future = shell.run('dart echo.dart --wait 10000');
+        await Future.delayed(const Duration(milliseconds: 3000));
+        shell.kill();
+        await future.timeout(const Duration(milliseconds: 8000));
+        fail('should fail');
+      } on ShellException catch (_) {
+        // devPrint('3: $e');
+      }
+
+      try {
+        // Killing before calling
+        future = shell
+            .run('dart echo.dart --wait 9000')
+            .timeout(const Duration(milliseconds: 7000));
+        shell.kill();
+        await future;
+        fail('should fail');
+      } on ShellException catch (_) {
+        // devPrint('3: $e');
+      }
+    });
+
+    test('Shell Lines Controller', () async {
+      var linesController = ShellLinesController();
+      var shell =
+          Shell(stdout: linesController.sink, verbose: false).cd('example');
+      await shell.run('dart echo.dart some_text');
+      linesController.close();
+      expect(await linesController.stream.toList(), ['some_text']);
+
+      linesController = ShellLinesController();
+      shell = Shell(stdout: linesController.sink, verbose: false).cd('example');
+      await shell.run('dart echo.dart some_text1');
+      await shell.run('''
+      dart echo.dart some_text2
+      dart echo.dart some_text3
+      ''');
+      linesController.close();
+      expect(await linesController.stream.toList(),
+          ['some_text1', 'some_text2', 'some_text3']);
     });
 
     test('cd', () async {
