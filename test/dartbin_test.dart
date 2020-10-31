@@ -87,7 +87,12 @@ void defineTests() {
       var whichDart = whichSync('dart');
       // might not be in path during the test
       if (whichDart != null) {
-        expect(basename(whichDart), getBashOrExeExecutableFilename('dart'));
+        if (Platform.isWindows) {
+          expect(['dart.exe', 'dart.bat'],
+              contains(basename(whichDart).toLowerCase()));
+        } else {
+          expect(basename(whichDart), getBashOrExeExecutableFilename('dart'));
+        }
       }
     });
 
