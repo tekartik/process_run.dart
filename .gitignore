@@ -5,6 +5,7 @@
 build/
 packages
 .packages
+.dart/
 
 # webstorm
 .idea/

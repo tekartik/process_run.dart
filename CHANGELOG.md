@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.1
+
+* Add `ShellLinesController` utility
+* Export `which` from `shell` and utilities.
+* Test on all platforms using GitHub actions.
+
 ## 0.11.0+2
 
 * More stuff in process_run: run, outLines and errLines on List<ProcessResult>
