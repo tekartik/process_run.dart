@@ -10,6 +10,7 @@ import 'package:process_run/src/user_config.dart';
 import 'package:path/path.dart';
 import 'common/import.dart';
 
+var shellDebug = false; // devWarning(true); // false
 ///
 /// Run one or multiple plain text command(s).
 ///
@@ -231,7 +232,7 @@ class Shell {
   /// Otherwise the signal could not be sent, usually meaning,
   /// that the process is already dead.
   bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
-    // Picked the current 'timstamp' of the run killed
+    // Picked the current 'timestamp' of the run killed
     _killedRunId = _runId;
     _killedProcessSignal = signal;
     return _kill();
@@ -241,8 +242,11 @@ class Shell {
     if (_currentProcess != null) {
       io.stderr.writeln('killing $_killedRunId, ${_currentProcessToString()}');
       var result = _currentProcess?.kill(_killedProcessSignal);
-      _currentProcess = null;
+      _clearPreviousContext();
       return result;
+    } else if (_currentProcessResultCompleter != null) {
+      _clearPreviousContext();
+      return false;
     } else {
       io.stderr.writeln('Killing $_killedRunId');
       return false;
@@ -313,75 +317,125 @@ class Shell {
     return 'runId:$_currentProcessRunId${_currentProcess == null ? '' : ', process: ${_currentProcess?.pid}: $_currentProcessRunId ${_currentProcessCmd}'}';
   }
 
+  Completer<ProcessResult> _currentProcessResultCompleter;
+
+  void _clearPreviousContext() {
+    if (shellDebug) {
+      print(
+          'Clear previous context ${_currentProcessResultCompleter?.isCompleted}');
+    }
+    if (!(_currentProcessResultCompleter?.isCompleted ?? true)) {
+      _currentProcessResultCompleter
+          .completeError(ShellException('Killed by framework', null));
+    }
+    _currentProcessResultCompleter = null;
+  }
+
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
   /// Returns a process result (or throw if specified in the shell).
   Future<ProcessResult> _lockedRunExecutableArguments(
-      int runId, String executable, List<String> arguments) async {
+      int runId, String executable, List<String> arguments) {
     try {
-      ProcessResult processResult;
-      var executableFullPath =
-          findExecutableSync(executable, _userPaths) ?? executable;
+      _clearPreviousContext();
+      var completer =
+          _currentProcessResultCompleter = Completer<ProcessResult>();
 
-      var processCmd = _ProcessCmd(executableFullPath, arguments,
-          executableShortName: executable)
-        ..runInShell = _runInShell
-        ..environment = _environment
-        ..includeParentEnvironment = _includeParentEnvironment
-        ..stderrEncoding = _stderrEncoding
-        ..stdoutEncoding = _stdoutEncoding
-        ..workingDirectory = _workingDirectory;
-      try {
-        // devPrint('Before $processCmd');
-        processResult = await processCmdRun(processCmd,
-            verbose: _verbose,
-            commandVerbose: _commandVerbose,
-            stderr: _stderr,
-            stdin: _stdin,
-            stdout: _stdout, onProcess: (process) {
-          _currentProcess = process;
-          _currentProcessCmd = processCmd;
-          _currentProcessRunId = runId;
-          if (_killedRunId >= _runId) {
-            // devPrint('shell was killed');
-            _kill();
-            return;
+      Future<ProcessResult> run() async {
+        ProcessResult processResult;
+
+        var executableFullPath =
+            findExecutableSync(executable, _userPaths) ?? executable;
+
+        var processCmd = _ProcessCmd(executableFullPath, arguments,
+            executableShortName: executable)
+          ..runInShell = _runInShell
+          ..environment = _environment
+          ..includeParentEnvironment = _includeParentEnvironment
+          ..stderrEncoding = _stderrEncoding
+          ..stdoutEncoding = _stdoutEncoding
+          ..workingDirectory = _workingDirectory;
+        try {
+          if (shellDebug) {
+            print('$_runId: Before $processCmd');
+          }
+          try {
+            processResult = await processCmdRun(processCmd,
+                verbose: _verbose,
+                commandVerbose: _commandVerbose,
+                stderr: _stderr,
+                stdin: _stdin,
+                stdout: _stdout, onProcess: (process) {
+              _currentProcess = process;
+              _currentProcessCmd = processCmd;
+              _currentProcessRunId = runId;
+              if (shellDebug) {
+                print('onProcess ${_currentProcessToString()}');
+              }
+              if (_killedRunId >= _runId) {
+                if (shellDebug) {
+                  print('shell was killed');
+                }
+                _kill();
+                return;
+              }
+            });
+          } finally {
+            if (shellDebug) {
+              print(
+                  '$_runId: After $processCmd exitCode ${processResult?.exitCode}');
+            }
+          }
+          // devPrint('After $processCmd');
+          if (_throwOnError && processResult.exitCode != 0) {
+            throw ShellException(
+                '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}',
+                processResult);
+          }
+        } on ProcessException catch (e) {
+          var stderr = _stderr ?? io.stderr;
+          void _writeln([String msg]) {
+            stderr.add(utf8.encode(msg ?? ''));
+            stderr.add(utf8.encode('\n'));
           }
 
-          // devPrint('onProcess ${_currentProcessToString()}');
-        });
-        // devPrint('After $processCmd');
-        if (_throwOnError && processResult.exitCode != 0) {
-          throw ShellException(
-              '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}',
-              processResult);
-        }
-      } on ProcessException catch (e) {
-        var stderr = _stderr ?? io.stderr;
-        void _writeln([String msg]) {
-          stderr.add(utf8.encode(msg ?? ''));
-          stderr.add(utf8.encode('\n'));
-        }
+          var workingDirectory =
+              processCmd.workingDirectory ?? Directory.current.path;
 
-        var workingDirectory =
-            processCmd.workingDirectory ?? Directory.current.path;
-
-        _writeln();
-        if (!Directory(workingDirectory).existsSync()) {
-          _writeln('Missing working directory $workingDirectory');
-        } else {
-          _writeln('''
+          _writeln();
+          if (!Directory(workingDirectory).existsSync()) {
+            _writeln('Missing working directory $workingDirectory');
+          } else {
+            _writeln('''
   Check that ${executableFullPath} exists
     command: ${processCmd}''');
-        }
-        _writeln();
+          }
+          _writeln();
 
-        throw ShellException(
-            '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}',
-            null);
+          throw ShellException(
+              '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}',
+              null);
+        }
+
+        return processResult;
       }
 
-      return processResult;
+      run().then((value) {
+        if (shellDebug) {
+          print('$runId: done');
+        }
+        if (!completer.isCompleted) {
+          completer.complete(value);
+        }
+      }).catchError((e) {
+        if (shellDebug) {
+          print('$runId: error');
+        }
+        if (!completer.isCompleted) {
+          completer.completeError(e);
+        }
+      });
+      return completer.future;
     } finally {
       _currentProcess = null;
     }

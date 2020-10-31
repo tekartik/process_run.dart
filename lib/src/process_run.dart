@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/process_run.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/shell.dart';
 import 'package:process_run/src/shell_utils.dart' as utils;
 import 'package:process_run/src/shell_utils.dart';
 import 'common/import.dart';
@@ -72,8 +73,22 @@ Future<ProcessResult> runExecutableArguments(
         environment: environment,
         includeParentEnvironment: includeParentEnvironment,
         runInShell: runInShell);
+    if (shellDebug) {
+      print('process: ${process.pid}');
+    }
     if (onProcess != null) {
       onProcess(process);
+    }
+    if (shellDebug) {
+      // ignore: unawaited_futures
+      () async {
+        try {
+          var exitCode = await process.exitCode;
+          print('process: ${process.pid} exitCode $exitCode');
+        } catch (e) {
+          print('process: ${process.pid} Error $e waiting exit code');
+        }
+      }();
     }
   } catch (e) {
     if (verbose == true) {

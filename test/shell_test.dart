@@ -146,48 +146,85 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         expect(e.result.exitCode, 255);
       }
     });
-    test('kill', () async {
-      var shell = Shell().cd('example');
-      Future future;
-      try {
-        future = shell.run('dart echo.dart --wait 3000');
-        await future.timeout(const Duration(milliseconds: 2000));
-        fail('should fail');
-      } on TimeoutException catch (_) {
-        // 1: TimeoutException after 0:00:02.000000: Future not completed
-        shell.kill();
-        //devPrint('1: $e');
-      }
-      try {
-        await future;
-        fail('should fail');
-      } on ShellException catch (_) {
-        // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
-        // devPrint('2: $e');
-      }
 
+    test('kill simple', () async {
       try {
-        var future = shell.run('dart echo.dart --wait 10000');
-        await Future.delayed(const Duration(milliseconds: 3000));
-        shell.kill();
-        await future.timeout(const Duration(milliseconds: 8000));
-        fail('should fail');
-      } on ShellException catch (_) {
-        // devPrint('3: $e');
+        await () async {
+          var shell = Shell().cd('example');
+          Future future;
+          try {
+            future = shell.run('dart echo.dart --wait 30000');
+            await future.timeout(const Duration(milliseconds: 15000));
+            fail('should fail');
+          } on TimeoutException catch (_) {
+            // 1: TimeoutException after 0:00:02.000000: Future not completed
+            //devPrint('1: $e');
+          }
+          try {
+            shell.kill();
+            await future;
+            fail('should fail');
+          } on ShellException catch (_) {
+            // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+            // devPrint('2: $_');
+          }
+        }()
+            .timeout(const Duration(seconds: 30));
+      } on TimeoutException catch (e) {
+        stderr.writeln('TimeOutException $e');
+        stderr.writeln('Allowed: could happen on CI');
       }
+    }, timeout: const Timeout(Duration(seconds: 50)));
+    test('kill complex', () async {
+      try {
+        await () async {
+          var shell = Shell().cd('example');
+          Future future;
+          try {
+            future = shell.run('dart echo.dart --wait 3000');
+            await future.timeout(const Duration(milliseconds: 2000));
+            fail('should fail');
+          } on TimeoutException catch (_) {
+            // 1: TimeoutException after 0:00:02.000000: Future not completed
+            shell.kill();
+            //devPrint('1: $e');
+          }
+          try {
+            await future;
+            fail('should fail');
+          } on ShellException catch (_) {
+            // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+            // devPrint('2: $e');
+          }
 
-      try {
-        // Killing before calling
-        future = shell
-            .run('dart echo.dart --wait 9000')
-            .timeout(const Duration(milliseconds: 7000));
-        shell.kill();
-        await future;
-        fail('should fail');
-      } on ShellException catch (_) {
-        // devPrint('3: $e');
+          try {
+            var future = shell.run('dart echo.dart --wait 10000');
+            await Future.delayed(const Duration(milliseconds: 3000));
+            shell.kill();
+            await future.timeout(const Duration(milliseconds: 8000));
+            fail('should fail');
+          } on ShellException catch (_) {
+            // devPrint('3: $e');
+          }
+
+          try {
+            // Killing before calling
+            future = shell
+                .run('dart echo.dart --wait 9000')
+                .timeout(const Duration(milliseconds: 7000));
+            shell.kill();
+            await future;
+            fail('should fail');
+          } on ShellException catch (_) {
+            // devPrint('3: $e');
+          }
+        }()
+            .timeout(const Duration(seconds: 40));
+      } on TimeoutException catch (e) {
+        stderr.writeln('TimeOutException $e');
+        stderr.writeln('Allowed: could happen on CI');
       }
-    });
+    }, timeout: const Timeout(Duration(seconds: 10)));
 
     test('Shell Lines Controller', () async {
       var linesController = ShellLinesController();
