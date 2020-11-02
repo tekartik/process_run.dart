@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2-dev.1
+
+* Add `ShellEnvironment` utility, allowing adding vars and path
+
 ## 0.11.1
 
 * Add `ShellLinesController` utility

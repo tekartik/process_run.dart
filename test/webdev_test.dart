@@ -34,5 +34,7 @@ void defineTests() {
       expect(result.exitCode, 0);
       */
     });
-  });
+  },
+      // Setup (webdev) could be long
+      timeout: const Timeout(Duration(seconds: 300)));
 }

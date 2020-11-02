@@ -12,6 +12,8 @@ import 'package:process_run/process_run.dart';
 
 import 'process_run_test_common.dart';
 
+var echo = 'dart run example/echo.dart';
+
 void main() {
   group('echo', () {
     Future _runCheck(

@@ -11,9 +11,9 @@ import 'package:process_run/src/user_config.dart';
 import 'package:process_run/which.dart';
 import 'package:test/test.dart';
 
-void main() {
-  var echo = 'dart run example/echo.dart';
+import '../echo_test.dart';
 
+void main() {
   group('Shell', () {
     test('user', () {
       if (Platform.isWindows) {
@@ -189,7 +189,10 @@ void main() {
         // Default environment is user environment
         expect(result, '1');
 
-        shell = Shell(verbose: false, environment: platformEnvironment);
+        shell = Shell(
+            verbose: false,
+            environment: platformEnvironment,
+            includeParentEnvironment: false);
         result =
             (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
                 .first
@@ -197,7 +200,10 @@ void main() {
                 .toString()
                 .trim();
         expect(result, isEmpty);
-        shell = Shell(verbose: false, environment: userEnvironment);
+        shell = Shell(
+            verbose: false,
+            environment: userEnvironment,
+            includeParentEnvironment: false);
         result =
             (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
                 .first
@@ -205,7 +211,10 @@ void main() {
                 .toString()
                 .trim();
         expect(result, '1');
-        shell = Shell(verbose: false, environment: shellEnvironment);
+        shell = Shell(
+            verbose: false,
+            environment: shellEnvironment,
+            includeParentEnvironment: false);
         result =
             (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
                 .first
@@ -238,6 +247,11 @@ void main() {
     });
 
     test('environment_vars', () async {
+      String linuxEnvCommand;
+
+      if (Platform.isLinux) {
+        linuxEnvCommand = shellArgument(whichSync('env'));
+      }
       expect(shellEnvironment, userEnvironment);
       userConfig = UserConfig(vars: <String, String>{'test': '1'});
       expect(userEnvironment, {'test': '1'});
@@ -245,7 +259,7 @@ void main() {
       expect(platformEnvironment, isNot({'test': '1'}));
       //TODO test on other platform
       if (Platform.isLinux) {
-        var out = (await Shell(verbose: false).run('env'))
+        var out = (await Shell(verbose: false).run('$linuxEnvCommand'))
             .map((result) => result?.stdout?.toString())
             .join('\n');
         expect(out, contains('test=1'));

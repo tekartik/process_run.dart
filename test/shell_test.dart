@@ -444,7 +444,10 @@ _tekartik_dummy_app_that_does_not_exits
           Shell(environment: environment, includeParentEnvironment: false);
       await shell.run('flutter --version');
     }
-  }, skip: !isFlutterSupportedSync);
+  },
+      // skip: !isFlutterSupportedSync ||
+      skip: true);
+  // This is plain wrong now...assumed dart below flutter which will no longer be the case
 
   test('flutter info', () async {
     expect(await getFlutterBinVersion(), isNotNull);

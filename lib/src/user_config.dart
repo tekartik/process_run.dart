@@ -64,7 +64,9 @@ List<String> get userPaths => userConfig.paths;
 /// [userEnvironment] must be explicitly used as it could contain sensitive
 /// information.
 ///
-Map<String, String> get userEnvironment => userConfig.vars;
+Map<String, String> get userEnvironment => ShellEnvironment.empty()
+  ..vars.addAll(userConfig.vars)
+  ..paths.addAll(userConfig.paths);
 
 // Test only
 @protected

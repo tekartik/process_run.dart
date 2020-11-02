@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:io/io.dart' as io;
-import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
@@ -126,7 +125,7 @@ Map<String, String> _platformEnvironment;
 Map<String, String> get platformEnvironment => _platformEnvironment ??=
     environmentFilterOutVmOptions(Platform.environment);
 
-@protected
+/// Warning, change the shell environment for the next run commands.
 set shellEnvironment(Map<String, String> environment) {
   _userAppDataPath = null;
   _userHomePath = null;

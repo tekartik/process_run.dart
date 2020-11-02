@@ -1,10 +1,12 @@
 #!/usr/bin/env dart
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:path/path.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -48,6 +50,8 @@ Future main(List<String> arguments) async {
   parser.addFlag('stdin',
       abbr: 'i', help: 'Handle first line of stdin', negatable: false);
   parser.addOption('wait', help: 'Wait milliseconds');
+  parser.addFlag('all-env',
+      help: 'Display all environment (vars and paths) in json pretty print');
   parser.addOption('exit-code', abbr: 'x', help: 'Exit code to return');
   parser.addFlag('version',
       help: 'Print the command version', negatable: false);
@@ -125,6 +129,12 @@ Future main(List<String> arguments) async {
   final envVar = _argsResult['stdout-env'] as String;
   if (envVar != null) {
     stdout.write(Platform.environment[envVar] ?? '');
+  }
+
+  if (_argsResult['all-env'] as bool) {
+    var env = ShellEnvironment(environment: Platform.environment);
+    stdout.writeln(const JsonEncoder.withIndent('  ')
+        .convert({'vars': env.vars, 'paths': env.paths}));
   }
 
   // handle the rest, default to output

@@ -46,13 +46,10 @@ Future<ProcessResult> runExecutableArguments(
         '\$ ${executableArgumentsToString(executable, arguments)}');
   }
 
-  // Filter out environment
-  // to remove vm_services
-  if (includeParentEnvironment != false) {
-    environment ??= userEnvironment;
-
-    includeParentEnvironment = false;
-  }
+  // Build our environment
+  var shellEnvironment = ShellEnvironment.full(
+      environment: environment,
+      includeParentEnvironment: includeParentEnvironment);
 
   // Default is the full command
   var executableShortName = executable;
@@ -60,7 +57,8 @@ Future<ProcessResult> runExecutableArguments(
   // Find executable if needed, i.e. if it is only a name
   if (basename(executable) == executable) {
     // Try to find it in path or use it as is
-    executable = utils.findExecutableSync(executable, userPaths) ?? executable;
+    executable = utils.findExecutableSync(executable, shellEnvironment.paths) ??
+        executable;
   }
 
   // Fix runInShell on windows (force run in shell for non-.exe)
@@ -70,8 +68,8 @@ Future<ProcessResult> runExecutableArguments(
   try {
     process = await Process.start(executable, arguments,
         workingDirectory: workingDirectory,
-        environment: environment,
-        includeParentEnvironment: includeParentEnvironment,
+        environment: shellEnvironment,
+        includeParentEnvironment: false,
         runInShell: runInShell);
     if (shellDebug) {
       print('process: ${process.pid}');

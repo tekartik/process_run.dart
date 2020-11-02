@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:io' as io;
-import 'package:synchronized/synchronized.dart';
+
+import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell_utils.dart';
-import 'package:process_run/src/user_config.dart';
-import 'package:path/path.dart';
+import 'package:synchronized/synchronized.dart';
+
 import 'common/import.dart';
 
 var shellDebug = false; // devWarning(true); // false
@@ -89,8 +90,7 @@ Future<List<ProcessResult>> run(
 class Shell {
   final bool _throwOnError;
   final String _workingDirectory;
-  final Map<String, String> _environment;
-  final bool _includeParentEnvironment;
+  ShellEnvironment _environment;
   final bool _runInShell;
   final Encoding _stdoutEncoding;
   final Encoding _stderrEncoding;
@@ -124,8 +124,7 @@ class Shell {
 
   /// Resolve environment
   List<String> get _userPaths =>
-      _userPathsCache ??= getUserPaths(_environment ??
-          (_includeParentEnvironment != false ? null : <String, String>{}));
+      _userPathsCache ??= List.from(_environment.paths);
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
@@ -152,8 +151,6 @@ class Shell {
       bool commentVerbose})
       : _throwOnError = throwOnError ?? true,
         _workingDirectory = workingDirectory,
-        _environment = environment,
-        _includeParentEnvironment = includeParentEnvironment ?? true,
         _runInShell = runInShell,
         _stdoutEncoding = stdoutEncoding ?? systemEncoding,
         _stderrEncoding = stderrEncoding ?? systemEncoding,
@@ -162,14 +159,23 @@ class Shell {
         _stderr = stderr,
         _verbose = verbose ?? true,
         _commandVerbose = commandVerbose ?? verbose ?? true,
-        _commentVerbose = commentVerbose ?? false;
+        _commentVerbose = commentVerbose ?? false {
+    // Fix environment right away
+    _environment = ShellEnvironment.full(
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment);
+  }
 
   /// Create a new shell
   Shell clone(
       {bool throwOnError,
       String workingDirectory,
-      Map<String, String> environment,
-      bool includeParentEnvironment,
+      // Don't change environment
+      @deprecated
+          Map<String, String> environment,
+      @deprecated
+          // Don't change includeParentEnvironment
+          bool includeParentEnvironment,
       bool runInShell,
       Encoding stdoutEncoding,
       Encoding stderrEncoding,
@@ -181,12 +187,11 @@ class Shell {
       bool commentVerbose}) {
     return Shell(
         verbose: verbose ?? _verbose,
-        environment: environment ?? _environment,
+        environment: _environment,
         runInShell: runInShell ?? _runInShell,
         commandVerbose: commandVerbose ?? _commandVerbose,
         commentVerbose: commentVerbose ?? _commentVerbose,
-        includeParentEnvironment:
-            includeParentEnvironment ?? _includeParentEnvironment,
+        includeParentEnvironment: false,
         stderr: stderr ?? _stderr,
         stderrEncoding: stderrEncoding ?? _stderrEncoding,
         stdin: stdin ?? _stdin,
@@ -351,7 +356,7 @@ class Shell {
             executableShortName: executable)
           ..runInShell = _runInShell
           ..environment = _environment
-          ..includeParentEnvironment = _includeParentEnvironment
+          ..includeParentEnvironment = false
           ..stderrEncoding = _stderrEncoding
           ..stdoutEncoding = _stdoutEncoding
           ..workingDirectory = _workingDirectory;
