@@ -4,12 +4,15 @@ import 'package:process_run/src/bin/shell/env_var_dump.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 
+import 'env_var_set.dart';
+
 class ShellEnvVarCommand extends ShellCommand {
   ShellEnvVarCommand()
       : super(
             name: 'var',
             description: 'Manipulate local and global env variables') {
     addCommand(ShellEnvVarDumpCommand());
+    addCommand(ShellEnvVarSetCommand());
   }
 }
 

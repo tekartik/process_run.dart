@@ -6,16 +6,16 @@ import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 
-class ShellEnvAliasSetCommand extends ShellEnvCommandBase {
-  ShellEnvAliasSetCommand()
+class ShellEnvVarSetCommand extends ShellEnvCommandBase {
+  ShellEnvVarSetCommand()
       : super(
-          name: 'Set',
-          description: 'Set process_run alias',
+          name: 'set',
+          description: 'Set environment variable',
         );
 
   @override
   void printUsage() {
-    stdout.writeln('ds env alias set <name> <command with space>');
+    stdout.writeln('ds env var set <name> <command with space>');
     super.printUsage();
   }
 
@@ -27,25 +27,25 @@ class ShellEnvAliasSetCommand extends ShellEnvCommandBase {
       exit(1);
     } else {
       if (verbose) {
-        stdout.writeln('before: ${jsonEncode(ShellEnvironment().aliases)}');
+        stdout.writeln('before: ${jsonEncode(ShellEnvironment().vars)}');
       }
-      var alias = rest[0];
-      var command = rest.sublist(1).join(' ');
+      var name = rest[0];
+      var value = rest.sublist(1).join(' ');
       var fileContent = await envFileReadOrCreate();
-      if (fileContent.addAlias(alias, command)) {
+      if (fileContent.addVar(name, value)) {
         await fileContent.write();
       }
       // Force reload
       shellEnvironment = null;
       if (verbose) {
-        stdout.writeln('After: ${jsonEncode(ShellEnvironment().aliases)}');
+        stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
       }
       return true;
     }
   }
 }
 
-/// Direct shell env Alias Set run helper for testing.
+/// Direct shell env Var Set run helper for testing.
 Future<void> main(List<String> arguments) async {
-  await ShellEnvAliasSetCommand().parseAndRun(arguments);
+  await ShellEnvVarSetCommand().parseAndRun(arguments);
 }

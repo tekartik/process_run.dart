@@ -11,6 +11,7 @@ import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
+import 'env_file_content.dart';
 import 'env_var.dart';
 
 class ShellEnvCommandBase extends ShellCommand {
@@ -28,8 +29,21 @@ class ShellEnvCommandBase extends ShellCommand {
     return local;
   }
 
-  String get envFilePath =>
-      local ? getLocalEnvFilePath() : getUserEnvFilePath();
+  Future<FileContent> envFileReadOrCreate({bool write = false}) async {
+    var fileContent = FileContent(_envFilePath);
+    if (!await fileContent.read()) {
+      fileContent.lines = sampleFileContent;
+    }
+    if (write) {
+      await fileContent.write();
+    }
+    return fileContent;
+  }
+
+  String get envFilePath => _envFilePath;
+  String get _envFilePath => local
+      ? getLocalEnvFilePath(userEnvironment)
+      : getUserEnvFilePath(userEnvironment);
 
   List<String> _sampleFileContent;
   List<String> get sampleFileContent => _sampleFileContent ??= () {

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:meta/meta.dart';
+import 'package:process_run/src/bin/shell/run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:pub_semver/pub_semver.dart';
 
@@ -35,6 +36,7 @@ bool verbose = false;
 class MainShellCommand extends ShellCommand {
   MainShellCommand() : super(name: 'ds', version: shellBinVersion) {
     addCommand(ShellEnvCommand());
+    addCommand(ShellRunCommand());
   }
 
   @override
@@ -74,7 +76,7 @@ Future main(List<String> arguments) async {
 
   final parser = mainCommand.parser;
   var editParser = parser.addCommand(commandEdit);
-  var runParser = parser.addCommand(commandRun);
+  //var runParser = parser.addCommand(commandRun);
 
   //envParser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
 
@@ -84,12 +86,11 @@ Future main(List<String> arguments) async {
   editParser.addFlag(flagInfo,
       abbr: 'i', help: 'display info', negatable: false);
 
-  runParser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  runParser.addFlag(flagInfo,
-      abbr: 'i', help: 'display info', negatable: false);
+  // runParser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
+  // runParser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
 
-  mainCommand.parse(arguments);
-  mainCommand.run();
+  mainCommand.parseAndRun(arguments);
+  //mainCommand.run();
   return;
   /*
   final help = results[flagHelp] as bool;
@@ -219,7 +220,7 @@ class ShellCommand {
       Version version,
       ArgParser parser,
       ShellCommand parent,
-      FutureOr<bool> Function() onRun,
+      @deprecated FutureOr<bool> Function() onRun,
       String description}) {
     _onRun = onRun;
     _parser = parser;
@@ -277,7 +278,14 @@ class ShellCommand {
 
     // Find the command if any
     var command = results.command;
-    if (command == null) {}
+    if (command != null) {
+      var shellCommand = _commands[command.name];
+      if (shellCommand != null) {
+        // Set the result in the the shell command
+        shellCommand.results = command;
+        return shellCommand.run();
+      }
+    }
     var ran = await onRun();
     if (!ran) {
       stderr.writeln('No command ran');
@@ -285,4 +293,7 @@ class ShellCommand {
     }
     return false;
   }
+
+  @override
+  String toString() => 'ShellCommand($name)';
 }

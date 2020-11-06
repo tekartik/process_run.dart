@@ -209,10 +209,13 @@ class ShellEnvironment with MapMixin<String, String> {
   /// your application) to [shellEnvironment]
   ShellEnvironment({Map<String, String> environment}) {
     environment ??= shellEnvironment;
-    var shEnv = asShellEnvironment(environment);
-    // Copy
+
+    // Copy vars/path
     _env.addAll(environment);
-    aliases.addAll(shEnv.aliases);
+    // Copy alias
+    if (environment is ShellEnvironment) {
+      aliases.addAll(environment.aliases);
+    }
   }
 
   /// From a run start content, includeParentEnvironment should later be set

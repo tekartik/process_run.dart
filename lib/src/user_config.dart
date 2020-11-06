@@ -83,8 +83,8 @@ List<String> get userPaths => userConfig.paths;
 ///
 Map<String, String> get userEnvironment => ShellEnvironment.empty()
   ..vars.addAll(userConfig.vars)
-  ..paths.addAll(userConfig.paths)
-  ..aliases.addAll(userConfig.aliases);
+  ..aliases.addAll(userConfig.aliases)
+  ..paths.addAll(userConfig.paths);
 
 // Test only
 @protected
@@ -341,33 +341,79 @@ String getFlutterAncestorPath(String dartSdkBinDirPath) {
 
 /// Get config map
 UserConfig getUserConfig(Map<String, String> environment) {
-  var paths = <String>[];
-  var vars = <String, String>{};
-  var aliases = <String, String>{};
+  /// Init a platform environment
+  var shEnv = ShellEnvironment(environment: environment ?? platformEnvironment);
+  /*
+  var paths = List.from(shEnv.paths);
+  var vars = Map.from(shEnv.vars);
+  var aliases = Map.from(shEnv.aliases);
+   */
 
-  environment ??= platformEnvironment;
+  //environment ??= platformEnvironment;
 
-  // Include shell environment
-  vars.addAll(environment);
+  // Include shell environment before so that user and local overrides
+  //vars.addAll(environment);
 
+  // Copy to environment used to resolve progressively
   void addConfig(String path) {
+    // devPrint('including $path');
+    var config = loadFromPath(path);
+    var configShEnv = ShellEnvironment.empty();
+    if (config?.vars != null) {
+      configShEnv
+        ..vars.addAll(config.vars)
+        ..paths.addAll(config.paths)
+        ..aliases.addAll(config.aliases);
+      shEnv.merge(configShEnv);
+    }
+
+    /*
+    devPrint('adding config: $config');
+
+    // Vars override
+    config.vars?.forEach((key, value) {
+      shEnv.vars[key] = value ?? '';
+    });
+
+    // Path will change vars again
+    if (config.paths != null) {
+      paths.insertAll(0, config.paths);
+      shEnv.in
+    }
+
+    config.aliases?.forEach((key, value) {
+      shEnv.aliases[key] = value ?? '';
+    });
+
+     */
+  }
+
+  // Copy to environment used to resolve progressively
+  // insert path
+  /*
+  void addPostConfig(String path) {
     var config = loadFromPath(path);
     // devPrint('adding config: $config');
     if (config.paths != null) {
       paths.addAll(config.paths);
+      shEnv.paths.addAll(config.paths);
     }
     config.vars?.forEach((key, value) {
       vars[key] = value ?? '';
+      shEnv.vars[key] = value ?? '';
     });
     config.aliases?.forEach((key, value) {
-      aliases[key] = value ?? '';
+      aliases[key] = value;
+      shEnv.aliases[key] = value ?? '';
     });
   }
 
+   */
+
   // Add user config
-  addConfig(getUserEnvFilePath(environment));
-  // Add local config
-  addConfig(getLocalEnvFilePath());
+  addConfig(getUserEnvFilePath(shEnv));
+  // Add local config using our environment that might have been updated
+  addConfig(getLocalEnvFilePath(shEnv));
 
   if (dartExecutable != null) {
     var dartBinPath = dartSdkBinDirPath;
@@ -376,19 +422,20 @@ UserConfig getUserConfig(Map<String, String> environment) {
     // /flutter/bin/cache/dart-sdk/bin
     var flutterBinPath = getFlutterAncestorPath(dartBinPath);
     if (flutterBinPath != null) {
-      paths.add(flutterBinPath);
+      shEnv.paths.add(flutterBinPath);
     }
     // Add dart path so that dart commands always work!
-    paths.add(dartBinPath);
+    shEnv.paths.add(dartBinPath);
   }
 
-  // Add from environment
-  paths.addAll(getEnvironmentPaths(environment));
+  // Add path after so that local and user wins environment
+  // paths.addAll(getEnvironmentPaths(environment));
 
   // Set env PATH from path
-  vars[envPathKey] = paths?.join(envPathSeparator);
+  // NO! vars[envPathKey] = paths?.join(envPathSeparator);
 
-  return UserConfig(paths: paths, vars: vars, aliases: aliases);
+  return UserConfig(
+      paths: shEnv.paths, vars: shEnv.vars, aliases: shEnv.aliases);
 }
 
 // Fix environment with global settings and current dart sdk
@@ -397,7 +444,9 @@ List<String> getUserPaths(Map<String, String> environment) =>
 
 /// Get the user env file path
 String getUserEnvFilePath([Map<String, String> environment]) {
-  return (environment ?? platformEnvironment)[userEnvFilePathEnvKey] ??
+  environment ??= platformEnvironment;
+  // devPrint((Map<String, String>.from(environment)..removeWhere((key, value) => !key.toLowerCase().contains('teka'))).keys);
+  return environment[userEnvFilePathEnvKey] ??
       (userAppDataPath == null
           ? null
           : join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml'));
@@ -405,7 +454,9 @@ String getUserEnvFilePath([Map<String, String> environment]) {
 
 /// Get the local env file path
 String getLocalEnvFilePath([Map<String, String> environment]) {
-  var subDir = (environment ?? platformEnvironment)[localEnvFilePathEnvKey] ??
+  environment ??= platformEnvironment;
+
+  var subDir = environment[localEnvFilePathEnvKey] ??
       joinAll(['.dart_tool', 'process_run', 'env.yaml']);
   return join(Directory.current?.path ?? '.', subDir);
 }

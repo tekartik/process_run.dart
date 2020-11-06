@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:args/args.dart';
 import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
@@ -9,10 +8,15 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
 /// pub run process_run:shell edit-env
-Future shellRun(ArgParser parser, ArgResults results) async {
-  final help = results == null ? false : results[flagHelp] as bool;
+class ShellRunCommand extends ShellCommand {
+  ShellRunCommand()
+      : super(
+            name: 'run', description: 'Run a command using user environment') {
+    parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
+  }
 
-  void _printUsage() {
+  @override
+  void printUsage() {
     stdout.writeln('Run a command');
     stdout.writeln();
     stdout.writeln('Usage: $script run <command>');
@@ -25,49 +29,51 @@ Future shellRun(ArgParser parser, ArgResults results) async {
     stdout.writeln('Get information about the added path(s) and var(s)');
     stdout.writeln('  pub run process_run:shell run --version');
 
-    stdout.writeln('Options:');
-    stdout.writeln(parser.usage);
-    stdout.writeln();
+    super.printUsage();
   }
 
-  if (help) {
-    _printUsage();
-    return;
-  }
-
-  String command;
-  var commands = results.rest;
-  if (commands.isEmpty) {
-    stderr.writeln('missing command');
-  } else if (commands.length == 1) {
-    command = commands.first;
-  } else {
-    command = shellArguments(commands);
-  }
-
-  final displayInfo = results[flagInfo] as bool;
-  if (displayInfo) {
-    void displayInfo(String title, String path) {
-      var config = loadFromPath(path);
-      stdout.writeln('# $title');
-      stdout.writeln(
-          'file: ${relative(path, from: Directory.current?.path ?? '.')}');
-      stdout.writeln('vars: ${config.vars}');
-      stdout.writeln('paths: ${config.paths}');
+  @override
+  FutureOr<bool> onRun() async {
+    String command;
+    var commands = results.rest;
+    if (commands.isEmpty) {
+      stderr.writeln('missing command');
+    } else if (commands.length == 1) {
+      command = commands.first;
+    } else {
+      command = shellArguments(commands);
     }
 
-    stdout.writeln('command: $command');
-    displayInfo('user_env', getUserEnvFilePath());
-    displayInfo('local_env', getLocalEnvFilePath());
+    final displayInfo = results[flagInfo] as bool;
+    if (displayInfo) {
+      void displayInfo(String title, String path) {
+        var config = loadFromPath(path);
+        stdout.writeln('# $title');
+        stdout.writeln(
+            'file: ${relative(path, from: Directory.current?.path ?? '.')}');
+        stdout.writeln('vars: ${config.vars}');
+        stdout.writeln('paths: ${config.paths}');
+      }
 
-    return;
-  }
+      stdout.writeln('command: $command');
+      displayInfo('user_env', getUserEnvFilePath());
+      displayInfo('local_env', getLocalEnvFilePath());
 
-  if (command == null) {
-    exit(1);
+      return true;
+    }
+
+    if (command == null) {
+      exit(1);
+    }
+    if (verbose) {
+      print('command: $command');
+    }
+    await run(command);
+    return true;
   }
-  if (verbose) {
-    print('command: $command');
-  }
-  await run(command);
+}
+
+/// Direct shell env Alias dump run helper for testing.
+Future<void> main(List<String> arguments) async {
+  await ShellRunCommand().parseAndRun(arguments);
 }

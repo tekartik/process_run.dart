@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
@@ -9,7 +8,7 @@ import 'env.dart';
 
 class ShellEnvEditCommand extends ShellEnvCommandBase {
   ShellEnvEditCommand()
-      : super(name: 'Edit', description: 'Edit the environment file');
+      : super(name: 'edit', description: 'Edit the environment file');
 
   @override
   void printUsage() {
@@ -68,11 +67,9 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
     }
      */
 
-    var envFile = File(envFilePath);
-    if (!envFile.existsSync()) {
-      await Directory(dirname(envFilePath)).create(recursive: true);
-      //await envFile.writeAsString(sampleFileContent, flush: true);
-    }
+    //var envFile = File(envFilePath);
+    await envFileReadOrCreate(write: true);
+
     Future _run(String command) async {
       await run(command, commandVerbose: verbose);
     }

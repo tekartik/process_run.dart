@@ -6,9 +6,11 @@ import 'package:process_run/src/user_config.dart';
 
 class FileContent {
   File file;
+
   FileContent(String path) {
     file = File(path);
   }
+
   Future<bool> read() async {
     try {
       lines = LineSplitter.split(await file.readAsString()).toList();
@@ -49,7 +51,8 @@ class FileContent {
     return true;
   }
 
-  bool addAlias(String alias, String command) {
+  /// Supported top level [configKeys]
+  bool addKeyValue(List<String> configKeys, String key, String value) {
     // Remove alias header
     var index = indexOfTopLevelKey(userConfigAliasKeys);
     if (index < 0) {
@@ -61,7 +64,7 @@ class FileContent {
         var line = lines[i];
         if (isTopLevelKey(line)) {
           break;
-        } else if (line.trimLeft().startsWith('$alias:')) {
+        } else if (line.trimLeft().startsWith('$key:')) {
           // Found! remove
           // Remove last first!
           lines.removeAt(i);
@@ -70,11 +73,17 @@ class FileContent {
         }
       }
     }
-    lines.insert(index, '${userConfigAliasKeys.first}:');
-    lines.insert(index + 1, '  $alias: $command');
+    lines.insert(index, '${configKeys.first}:');
+    lines.insert(index + 1, '  $key: $value');
 
     return true;
   }
+
+  bool addAlias(String alias, String command) =>
+      addKeyValue(userConfigAliasKeys, alias, command);
+
+  bool addVar(String key, String value) =>
+      addKeyValue(userConfigVarKeys, key, value);
 
   /*
   /// Add a dependency in a brut force way

@@ -15,6 +15,8 @@ ds run echo Hello World
 ds run 'echo Hello World'
 pub run process_run:shell run echo Hello World
 
+# Change the env file location
+ds env var set TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH .local/ds_env.yaml
 ''');
 
 //   {
