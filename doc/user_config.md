@@ -56,3 +56,7 @@ var:
   FLUTTER_BIN: ~/.flutter/bin
   MY_PROJECT_ID: WKDL_456_Q;
 ```
+
+## Global configuration
+
+System env path location could be overriden using

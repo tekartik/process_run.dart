@@ -8,6 +8,12 @@ extension ProcessRunProcessResultsExt on List<ProcessResult> {
   Iterable<String> _outTextsToLines(Iterable<String> out) =>
       out.expand((element) => LineSplitter.split(element));
 
+  /// Join the out lines for a quick string access.
+  String get outText => outLines.join('\n');
+
+  /// Join the out lines for a quick string access.
+  String get errText => errLines.join('\n');
+
   /// Out line lists
   Iterable<String> get outLines =>
       _outTextsToLines(map((result) => result.stdout.toString()));

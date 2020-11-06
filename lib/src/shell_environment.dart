@@ -65,6 +65,49 @@ class ShellEnvironmentPaths with ListMixin<String> {
   String toString() => 'Path($length)';
 }
 
+/// Shell environment aliases for executable
+class ShellEnvironmentAliases with MapMixin<String, String> {
+  final Map<String, String> _map;
+
+  ShellEnvironmentAliases._([Map<String, String> map])
+      : _map = map ?? <String, String>{};
+
+  /// the other object takes precedence, vars are added
+  void merge(ShellEnvironmentAliases other) {
+    addAll(other);
+  }
+
+  @override
+  String operator [](Object key) => _map[key];
+
+  @override
+  void operator []=(String key, String value) => _map[key] = value;
+
+  @override
+  void clear() => _map.clear();
+
+  @override
+  Iterable<String> get keys => _map.keys;
+
+  @override
+  String remove(Object key) => _map.remove(key);
+
+  // Key hash is sufficient here
+  @override
+  int get hashCode => const ListEquality().hash(keys.toList());
+
+  @override
+  bool operator ==(Object other) {
+    if (other is ShellEnvironmentVars) {
+      return const MapEquality().equals(this, other);
+    }
+    return false;
+  }
+
+  @override
+  String toString() => 'Aliases($length)';
+}
+
 /// Shell environment variables helper. Does not affect the PATH variable
 class ShellEnvironmentVars with MapMixin<String, String> {
   final ShellEnvironment _environment;
@@ -150,6 +193,13 @@ class ShellEnvironment with MapMixin<String, String> {
   /// The PATH variable as a convenient list.
   ShellEnvironmentPaths get paths => _paths ??= ShellEnvironmentPaths._(this);
 
+  /// The aliases.
+  ShellEnvironmentAliases _aliases;
+
+  /// The aliases as convenient map.
+  ShellEnvironmentAliases get aliases =>
+      _aliases ??= ShellEnvironmentAliases._();
+
   /// Create a new shell environment from the current shellEnvironment.
   ///
   /// Defaults create a full parent environment.
@@ -159,7 +209,10 @@ class ShellEnvironment with MapMixin<String, String> {
   /// your application) to [shellEnvironment]
   ShellEnvironment({Map<String, String> environment}) {
     environment ??= shellEnvironment;
+    var shEnv = asShellEnvironment(environment);
+    // Copy
     _env.addAll(environment);
+    aliases.addAll(shEnv.aliases);
   }
 
   /// From a run start content, includeParentEnvironment should later be set
@@ -229,6 +282,7 @@ class ShellEnvironment with MapMixin<String, String> {
     if (other != null) {
       vars.merge(other.vars);
       paths.merge(other.paths);
+      aliases.merge(other.aliases);
     }
   }
 

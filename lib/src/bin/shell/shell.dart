@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:process_run/src/bin/shell/edit_env.dart';
-import 'package:process_run/src/bin/shell/run.dart';
+import 'package:meta/meta.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:pub_semver/pub_semver.dart';
 
-Version version = Version(0, 1, 1);
+import 'env.dart';
+
+Version shellBinVersion = Version(0, 1, 1);
 
 const flagHelp = 'help';
 const flagInfo = 'info';
@@ -19,8 +20,51 @@ const flagVersion = 'version';
 
 const commandEdit = 'edit-env';
 const commandRun = 'run';
+const commandEnv = 'env';
+
+const commandEnvEdit = 'edit';
+const commandEnvVar = 'var';
+const commandEnvVarDump = 'dump';
+const commandEnvPath = 'path';
+const commandEnvAliases = 'alias';
+
+String get script => 'ds';
 
 bool verbose = false;
+
+class MainShellCommand extends ShellCommand {
+  MainShellCommand() : super(name: 'ds', version: shellBinVersion) {
+    addCommand(ShellEnvCommand());
+  }
+
+  @override
+  void printUsage() {
+    stdout.writeln('*** ubuntu/windows only for now ***');
+    stdout.writeln('Process run shell configuration utility');
+    stdout.writeln();
+    stdout.writeln('Usage: $script <command> [<arguments>]');
+    stdout.writeln('Usage: pub run process_run:shell <command> [<arguments>]');
+    stdout.writeln();
+    stdout.writeln('Example: pub run process_run:shell edit-env');
+    stdout.writeln('will open the env file using gedit');
+    stdout.writeln();
+    stdout.writeln('Global options:');
+    stdout.writeln(parser.usage);
+    stdout.writeln();
+    stdout.writeln('Available commands:');
+    stdout.writeln('  edit-env    Edit environment file');
+    stdout.writeln(
+        '  run         Run a command with user and local env path and vars');
+    super.printUsage();
+  }
+
+  @override
+  FutureOr<bool> onRun() {
+    return false;
+  }
+}
+
+final mainCommand = MainShellCommand();
 
 ///
 /// write rest arguments as lines
@@ -28,22 +72,13 @@ bool verbose = false;
 Future main(List<String> arguments) async {
   //setupQuickLogging();
 
-  final parser = ArgParser(allowTrailingOptions: false);
+  final parser = mainCommand.parser;
   var editParser = parser.addCommand(commandEdit);
   var runParser = parser.addCommand(commandRun);
-  parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  parser.addFlag(flagVerbose, abbr: 'v', help: 'Verbose', negatable: false);
+
+  //envParser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
 
   editParser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  editParser.addFlag(flagLocal,
-      abbr: 'l',
-      help: 'Edit/Delete/Display local env',
-      negatable: false,
-      defaultsTo: true);
-  editParser.addFlag(flagUser,
-      abbr: 'u',
-      help: 'Edit/Delete/Display user env instead of local env',
-      negatable: false);
   editParser.addFlag(flagDelete,
       abbr: 'd', help: 'Delete the env file', negatable: false);
   editParser.addFlag(flagInfo,
@@ -53,11 +88,10 @@ Future main(List<String> arguments) async {
   runParser.addFlag(flagInfo,
       abbr: 'i', help: 'display info', negatable: false);
 
-  parser.addFlag(flagVersion,
-      help: 'Print the command version', negatable: false);
-
-  final results = parser.parse(arguments);
-
+  mainCommand.parse(arguments);
+  mainCommand.run();
+  return;
+  /*
   final help = results[flagHelp] as bool;
   verbose = results[flagVerbose] as bool;
 
@@ -65,6 +99,7 @@ Future main(List<String> arguments) async {
     stdout.writeln('*** ubuntu/windows only for now ***');
     stdout.writeln('Process run shell configuration utility');
     stdout.writeln();
+    stdout.writeln('Usage: $script <command> [<arguments>]');
     stdout.writeln('Usage: pub run process_run:shell <command> [<arguments>]');
     stdout.writeln();
     stdout.writeln('Example: pub run process_run:shell edit-env');
@@ -85,13 +120,6 @@ Future main(List<String> arguments) async {
     return;
   }
 
-  final displayVersion = results[flagVersion] as bool;
-
-  if (displayVersion) {
-    stdout.writeln('version: ${version}');
-    return;
-  }
-
   // quick debug:
   /*
   verbose = devWarning(true);
@@ -109,5 +137,152 @@ Future main(List<String> arguments) async {
     await editEnv(editParser, results.command);
   } else if (commandName == commandRun) {
     await shellRun(runParser, results.command);
+  } else {
+    mainCommand.run();
+  }*/
+}
+
+class ShellCommand {
+  // Optional parent
+  ShellCommand /*?*/ parent;
+  String name;
+
+  ArgParser get parser => _parser ??= ArgParser(allowTrailingOptions: false);
+  FutureOr<bool> Function() _onRun;
+  ArgParser _parser;
+  ArgResults results;
+  bool _verbose;
+
+  // Set before run
+  bool get verbose => _verbose ??= parent?.verbose;
+
+  String _description;
+
+  String get description => _description;
+  Version _version;
+
+  Version get version => _version ??= parent?.version;
+
+  // name
+  //   description
+  void printNameDescription() {
+    stdout.writeln('$name${parent != null ? '' : ' ${version.toString()}'}');
+    if (description != null) {
+      stdout.writeln('  $description');
+    }
+  }
+
+  void printUsage() {
+    printNameDescription();
+    stdout.writeln();
+    stdout.writeln(parser.usage);
+    if (_commands.isNotEmpty) {
+      stdout.writeln();
+      printCommands();
+    }
+  }
+
+  /// Prepend an em
+  void printCommands() {
+    _commands.forEach((name, value) {
+      value.printNameDescription();
+    });
+    stdout.writeln();
+  }
+
+  void printBaseUsage() {
+    printNameDescription();
+    stdout.writeln();
+    if (_commands.isNotEmpty) {
+      stdout.writeln();
+      printCommands();
+    } else {
+      stdout.writeln();
+      stdout.writeln(parser.usage);
+    }
+  }
+
+  ArgResults parse(List<String> arguments) {
+    return results = parser.parse(arguments);
+  }
+
+  @nonVirtual
+  FutureOr<bool> parseAndRun(List<String> arguments) {
+    parse(arguments);
+    return run();
+  }
+
+  final _commands = <String, ShellCommand>{};
+
+  ShellCommand(
+      {@required this.name,
+      Version version,
+      ArgParser parser,
+      ShellCommand parent,
+      FutureOr<bool> Function() onRun,
+      String description}) {
+    _onRun = onRun;
+    _parser = parser;
+    _description = description;
+    _version = version;
+    // read or create
+    parser = this.parser;
+    parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
+    if (parent == null) {
+      parser.addFlag(flagVersion,
+          help: 'Print the command version', negatable: false);
+
+      parser.addFlag(flagVerbose, help: 'Verbose mode', negatable: false);
+    }
+  }
+
+  void addCommand(ShellCommand command) {
+    parser.addCommand(command.name, command.parser);
+    _commands[command.name] = command;
+    command.parent = this;
+  }
+
+  /// To override
+  ///
+  /// return true if handled.
+  @visibleForOverriding
+  FutureOr<bool> onRun() {
+    if (_onRun != null) {
+      return _onRun();
+    }
+    return false;
+  }
+
+  /// Get a flag
+  bool getFlag(String name) => results[name] as bool;
+
+  @nonVirtual
+  FutureOr<bool> run() async {
+    // Handle verbose
+    // Handle version first
+    if (parent == null) {
+      final hasVersion = getFlag(flagVersion);
+      if (hasVersion) {
+        stdout.writeln(version);
+        return true;
+      }
+    }
+    // Handle help
+    final help = results[flagHelp] as bool;
+
+    if (help) {
+      printUsage();
+      return true;
+    }
+
+    // Find the command if any
+    var command = results.command;
+    if (command == null) {}
+    var ran = await onRun();
+    if (!ran) {
+      stderr.writeln('No command ran');
+      printBaseUsage();
+    }
+    return false;
   }
 }

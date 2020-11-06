@@ -110,6 +110,13 @@ String expandPath(String path) {
 /// Use to safely enclose an argument if needed
 String shellArgument(String argument) => argumentToString(argument);
 
+/// Convert multiple arguments to string than can be used in a terminal
+String shellArguments(List<String> argument) => argumentsToString(argument);
+
+/// Convert executable + arguments to a single script line
+String shellExecutableArguments(String executable, List<String> arguments) =>
+    executableArgumentsToString(executable, arguments);
+
 /// Cached shell environment with user config
 // Map<String, String> get platformEnvironment => rawShellEnvironment
 

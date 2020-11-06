@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart' as prefix0;
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
@@ -16,7 +15,7 @@ Future shellRun(ArgParser parser, ArgResults results) async {
   void _printUsage() {
     stdout.writeln('Run a command');
     stdout.writeln();
-    stdout.writeln('Usage: pub run process_run:shell run <command>');
+    stdout.writeln('Usage: $script run <command>');
     stdout.writeln(
         '  command being a command line as a single argument, examples:');
     stdout.writeln("  - 'firebase deploy'");
@@ -43,7 +42,7 @@ Future shellRun(ArgParser parser, ArgResults results) async {
   } else if (commands.length == 1) {
     command = commands.first;
   } else {
-    command = prefix0.argumentsToString(commands);
+    command = shellArguments(commands);
   }
 
   final displayInfo = results[flagInfo] as bool;

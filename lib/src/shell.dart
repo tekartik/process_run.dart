@@ -288,6 +288,15 @@ class Shell {
         var parts = shellSplit(command);
         var executable = parts[0];
         var arguments = parts.sublist(1);
+
+        // Find alias
+        var alias = _environment.aliases[executable];
+        if (alias != null) {
+          // The alias itself should be split
+          parts = shellSplit(alias);
+          executable = parts[0];
+          arguments = [...parts.sublist(1), ...arguments];
+        }
         var processResult =
             await _lockedRunExecutableArguments(runId, executable, arguments);
         processResults.add(processResult);

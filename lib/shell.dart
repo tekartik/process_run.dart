@@ -22,7 +22,9 @@ export 'package:process_run/src/shell_utils.dart'
         userAppDataPath,
         shellArgument,
         shellEnvironment,
-        platformEnvironment;
+        platformEnvironment,
+        shellArguments,
+        shellExecutableArguments;
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;
 

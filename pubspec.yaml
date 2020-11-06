@@ -22,3 +22,7 @@ dev_dependencies:
   async: any
   build_runner: '>=0.9.0'
   build_test: '>=0.10.2'
+
+executables:
+  # Shell helper
+  ds: shell
