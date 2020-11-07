@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.2-dev.2
+## 0.11.2
 
 * Add `ShellEnvironment` utility, allowing adding vars, path and alias
 * Add `ds` (shell binary) executable for manipulating environment used in `Shell` from the command line
