@@ -95,6 +95,9 @@ void main() {
       expect(findExecutableSync('dart', [dartSdkBinDirPath]), dartExecutable);
       expect(findExecutableSync('pub', [dartSdkBinDirPath]), isNotNull);
     });
+    test('folder not executable', () {
+      expect(findExecutableSync('test', ['.']), isNull);
+    });
 
     test('various', () {
       expect(scriptToCommands('''
