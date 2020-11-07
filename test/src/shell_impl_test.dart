@@ -73,6 +73,8 @@ void main() {
     String getTestAbsPath() => Platform.isWindows ? r'C:\temp' : '/temp';
     String getTestHomeRelPath() => Platform.isWindows ? r'~\temp' : '~/temp';
 
+    var configFileEmptyPath = 'test/data/test_env3_empty.yaml';
+
     test('userEnvironment', () async {
       try {
         var filePath =
@@ -83,6 +85,7 @@ void main() {
         path: test
         var:
           _TEKARTIK_PROCESS_RUN_TEST: 1
+          ${localEnvFilePathEnvKey}: ${configFileEmptyPath}
         ''');
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
@@ -106,6 +109,7 @@ void main() {
         ''');
         shellEnvironment = <String, String>{
           userEnvFilePathEnvKey: filePath,
+          localEnvFilePathEnvKey: configFileEmptyPath,
           userHomePathEnvKey: getTestAbsPath()
         };
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
@@ -130,12 +134,13 @@ void main() {
 
     test('missing user override for dart and dart binaries', () async {
       try {
-        var filePath = join('.dart_tool', 'process_run', 'test', 'user_env',
-            '_dummy_that_will_never_exists_env.yaml');
         resetUserConfig();
 
         // empty environment
-        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
+        shellEnvironment = <String, String>{
+          userEnvFilePathEnvKey: configFileEmptyPath,
+          localEnvFilePathEnvKey: configFileEmptyPath
+        };
 
         var dartBinDir = dirname(dartExecutable);
         var flutterDir = getFlutterAncestorPath(dartSdkBinDirPath);

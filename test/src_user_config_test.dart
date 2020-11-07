@@ -23,11 +23,6 @@ void main() {
       expect(userConfig.vars, {
         'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path1,
         'TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH': path2,
-        'PATH': [
-          if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
-            getFlutterAncestorPath(dartSdkBinDirPath),
-          dartSdkBinDirPath
-        ].join(Platform.isWindows ? ';' : ':')
       });
       expect(userConfig.paths, [
         if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
@@ -43,8 +38,10 @@ void main() {
       expect(userConfig.vars['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'], path2);
 
       // user only
-      userConfig =
-          getUserConfig(<String, String>{localEnvFilePathEnvKey: path1});
+      userConfig = getUserConfig(<String, String>{
+        localEnvFilePathEnvKey: path1,
+        userEnvFilePathEnvKey: path1
+      });
       expect(
           userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'], path1);
     });
