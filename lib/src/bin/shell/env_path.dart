@@ -1,9 +1,12 @@
 import 'package:process_run/src/bin/shell/env_path_dump.dart';
-import 'package:process_run/src/bin/shell/shell.dart';
+import 'package:process_run/src/bin/shell/env_path_prepend.dart';
 
-class ShellEnvPathCommand extends ShellCommand {
-  ShellEnvPathCommand() : super(name: 'Path', description: 'Path operations') {
+import 'import.dart';
+
+class ShellEnvPathCommand extends ShellBinCommand {
+  ShellEnvPathCommand() : super(name: 'path', description: 'Path operations') {
     addCommand(ShellEnvPathDumpCommand());
+    addCommand(ShellEnvPathPrependCommand());
   }
 }
 

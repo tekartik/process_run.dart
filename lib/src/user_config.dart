@@ -343,20 +343,9 @@ String getFlutterAncestorPath(String dartSdkBinDirPath) {
 UserConfig getUserConfig(Map<String, String> environment) {
   /// Init a platform environment
   var shEnv = ShellEnvironment(environment: environment ?? platformEnvironment);
-  /*
-  var paths = List.from(shEnv.paths);
-  var vars = Map.from(shEnv.vars);
-  var aliases = Map.from(shEnv.aliases);
-   */
-
-  //environment ??= platformEnvironment;
-
-  // Include shell environment before so that user and local overrides
-  //vars.addAll(environment);
 
   // Copy to environment used to resolve progressively
   void addConfig(String path) {
-    // devPrint('including $path');
     var config = loadFromPath(path);
     var configShEnv = ShellEnvironment.empty();
     if (config?.vars != null) {
@@ -366,49 +355,7 @@ UserConfig getUserConfig(Map<String, String> environment) {
         ..aliases.addAll(config.aliases);
       shEnv.merge(configShEnv);
     }
-
-    /*
-    devPrint('adding config: $config');
-
-    // Vars override
-    config.vars?.forEach((key, value) {
-      shEnv.vars[key] = value ?? '';
-    });
-
-    // Path will change vars again
-    if (config.paths != null) {
-      paths.insertAll(0, config.paths);
-      shEnv.in
-    }
-
-    config.aliases?.forEach((key, value) {
-      shEnv.aliases[key] = value ?? '';
-    });
-
-     */
   }
-
-  // Copy to environment used to resolve progressively
-  // insert path
-  /*
-  void addPostConfig(String path) {
-    var config = loadFromPath(path);
-    // devPrint('adding config: $config');
-    if (config.paths != null) {
-      paths.addAll(config.paths);
-      shEnv.paths.addAll(config.paths);
-    }
-    config.vars?.forEach((key, value) {
-      vars[key] = value ?? '';
-      shEnv.vars[key] = value ?? '';
-    });
-    config.aliases?.forEach((key, value) {
-      aliases[key] = value;
-      shEnv.aliases[key] = value ?? '';
-    });
-  }
-
-   */
 
   // Add user config
   addConfig(getUserEnvFilePath(shEnv));
@@ -427,12 +374,6 @@ UserConfig getUserConfig(Map<String, String> environment) {
     // Add dart path so that dart commands always work!
     shEnv.paths.add(dartBinPath);
   }
-
-  // Add path after so that local and user wins environment
-  // paths.addAll(getEnvironmentPaths(environment));
-
-  // Set env PATH from path
-  // NO! vars[envPathKey] = paths?.join(envPathSeparator);
 
   return UserConfig(
       paths: shEnv.paths, vars: shEnv.vars, aliases: shEnv.aliases);

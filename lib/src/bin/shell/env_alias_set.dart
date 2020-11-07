@@ -9,7 +9,7 @@ import 'package:process_run/src/common/import.dart';
 class ShellEnvAliasSetCommand extends ShellEnvCommandBase {
   ShellEnvAliasSetCommand()
       : super(
-          name: 'Set',
+          name: 'set',
           description: 'Set process_run alias',
         );
 

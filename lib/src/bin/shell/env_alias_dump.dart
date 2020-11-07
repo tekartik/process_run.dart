@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/utils.dart';
 
-class ShellEnvAliasDumpCommand extends ShellCommand {
+import 'import.dart';
+
+class ShellEnvAliasDumpCommand extends ShellBinCommand {
   ShellEnvAliasDumpCommand()
       : super(name: 'dump', description: 'Dump process_run aliases');
 

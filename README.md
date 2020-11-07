@@ -16,27 +16,6 @@ script can be called consistently on Mac/Windows/Linux
 
 ## Usage
 
-### run
-
-Additional options to `Process.run` are
-* specifying stdin
-* making it verbose
-
-Additional feature
-* It tries to resolve simple command like `dart`, `firebase`, `flutter`, or any script available on the user path
-  on any Platform.
-
-```dart
-import 'package:process_run/process_run.dart';
-```
-
-Display dart version and the command executed:
-
-```dart
-await run('dart', ['--version'], verbose: true);
-```
-
-
 ### which
 
 Like unix `which`, it searches for installed executables
@@ -82,6 +61,12 @@ pub --version
 ```
 
 More information [on shell here](https://github.com/tekartik/process_run.dart/blob/master/doc/shell.md)
+
+### shell bin utility
+
+Binary utility that allow changing from the command line the environment (var, path, alias) used in Shell.
+
+More information [on shell bin here](https://github.com/tekartik/process_run.dart/blob/master/doc/shell_bin_info.md)
 
 ### Flutter context
 

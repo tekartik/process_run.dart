@@ -7,8 +7,10 @@ import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
+import 'import.dart';
+
 /// pub run process_run:shell edit-env
-class ShellRunCommand extends ShellCommand {
+class ShellRunCommand extends ShellBinCommand {
   ShellRunCommand()
       : super(
             name: 'run', description: 'Run a command using user environment') {

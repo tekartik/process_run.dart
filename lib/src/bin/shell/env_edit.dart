@@ -12,7 +12,6 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
 
   @override
   void printUsage() {
-    // TODO: implement printUsage
     super.printUsage();
   }
 
@@ -21,53 +20,6 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
     if (verbose) {
       print('envFilePath: $envFilePath');
     }
-
-    /*
-    final delete = results[flagDelete] as bool;
-    if (delete) {
-      stdout.writeln('Confirm that you want to delete file ($label) [Y]');
-      stdout.writeln('  $envFilePath');
-      final input = stdin.readLineSync();
-      if (input.toLowerCase() == 'y') {
-        try {
-          await File(envFilePath).delete();
-          stdout.writeln('Deleted');
-        } catch (_) {}
-      }
-      return true;
-    }*/
-
-    /*
-    final displayInfo = results[flagInfo] as bool;
-    if (displayInfo) {
-      void displayInfo(String title, String path) {
-        var config = loadFromPath(path);
-        stdout.writeln('# $title');
-        stdout.writeln(
-            'file: ${relative(path, from: Directory.current?.path ?? '.')}');
-        if (config.fileContent != null) {
-          stdout.writeln('${config.fileContent}');
-          stdout.writeln();
-          if (config.yaml != null) {
-            stdout.writeln('yaml: ${config.yaml}');
-          }
-          if (config.vars?.isNotEmpty ?? false) {
-            stdout.writeln('vars: ${config.vars}');
-          }
-          if (config.paths?.isNotEmpty ?? false) {
-            stdout.writeln('paths: ${config.paths}');
-          }
-        } else {
-          stdout.writeln('not found');
-        }
-      }
-
-      displayInfo('env ($label)', envFilePath);
-      return true;
-    }
-     */
-
-    //var envFile = File(envFilePath);
     await envFileReadOrCreate(write: true);
 
     Future _run(String command) async {

@@ -11,10 +11,13 @@ import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
+import 'env_alias.dart';
 import 'env_file_content.dart';
+import 'env_path.dart';
 import 'env_var.dart';
+import 'import.dart';
 
-class ShellEnvCommandBase extends ShellCommand {
+class ShellEnvCommandBase extends ShellBinCommand {
   ShellEnvCommandBase({String name, String description})
       : super(name: name, description: description) {
     parser.addFlag(flagLocal,
@@ -29,6 +32,8 @@ class ShellEnvCommandBase extends ShellCommand {
     return local;
   }
 
+  String get label => local ? 'local' : 'user';
+
   Future<FileContent> envFileReadOrCreate({bool write = false}) async {
     var fileContent = FileContent(_envFilePath);
     if (!await fileContent.read()) {
@@ -41,11 +46,13 @@ class ShellEnvCommandBase extends ShellCommand {
   }
 
   String get envFilePath => _envFilePath;
+
   String get _envFilePath => local
       ? getLocalEnvFilePath(userEnvironment)
       : getUserEnvFilePath(userEnvironment);
 
   List<String> _sampleFileContent;
+
   List<String> get sampleFileContent => _sampleFileContent ??= () {
         var content = local
             ? '''
@@ -96,6 +103,44 @@ class ShellEnvCommand extends ShellEnvCommandBase {
                 'Manipulate local and global env vars, paths and aliases') {
     addCommand(ShellEnvVarCommand());
     addCommand(ShellEnvEditCommand());
+    addCommand(ShellEnvAliasCommand());
+    addCommand(ShellEnvPathCommand());
+    parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
+  }
+
+  @override
+  FutureOr<bool> onRun() async {
+    final displayInfo = results[flagInfo] as bool;
+    if (displayInfo) {
+      void displayInfo(String title, String path) {
+        var config = loadFromPath(path);
+        stdout.writeln('# $title');
+        stdout.writeln(
+            'file: ${relative(path, from: Directory.current?.path ?? '.')}');
+        if (config.fileContent != null) {
+          stdout.writeln('${config.fileContent}');
+          stdout.writeln();
+          // if (config.yaml != null) {
+          //  stdout.writeln('yaml: ${config.yaml}');
+          // }
+          if (config.vars?.isNotEmpty ?? false) {
+            stdout.writeln('var: ${config.vars}');
+          }
+          if (config.paths?.isNotEmpty ?? false) {
+            stdout.writeln('path: ${config.paths}');
+          }
+          if (config.aliases?.isNotEmpty ?? false) {
+            stdout.writeln('alias: ${config.paths}');
+          }
+        } else {
+          stdout.writeln('not found');
+        }
+      }
+
+      displayInfo('env ($label)', envFilePath);
+      return true;
+    }
+    return false;
   }
 }
 
@@ -151,17 +196,5 @@ Future shellEnv(ArgParser parser, ArgResults results) async {
     return;
   }
 
-  /*
-  final commandName = results.command.name;
-  if (commandName == commandEnvVar) {
-    await envVar(parser.commands[commandName], results.command);
-  } else {
-    exit(1);
-  }
-  if (verbose) {
-    print('command: $command');
-  }
-
-   */
   await run(command);
 }

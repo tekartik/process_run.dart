@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
 
 /// Shell environment ordered paths helper. Changes the PATH variable
@@ -11,7 +12,13 @@ class ShellEnvironmentPaths with ListMixin<String> {
   ShellEnvironmentPaths._(this._environment);
 
   List<String> get _paths {
-    return _environment[envPathKey]?.split(envPathSeparator) ?? <String>[];
+    var pathVar = _environment[envPathKey];
+    // Handle empty to black
+    if (pathVar?.isNotEmpty ?? false) {
+      return pathVar.split(envPathSeparator);
+    } else {
+      return <String>[];
+    }
   }
 
   set _paths(List<String> paths) {

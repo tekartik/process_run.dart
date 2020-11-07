@@ -27,12 +27,24 @@ void main() {
       await shell.run('ds run echo Hello World');
     });
 
-    test('old', () async {
-      await shell.run('ds edit-env --info');
-      await shell.run('ds run --help');
-      await shell.run('ds run --help');
-      (await shell.run('ds env edit -h')).outText.trim();
-      // devPrint(output);
+    test('env', () async {
+      await shell.run('ds env -u -i');
+      await shell.run('ds env -l -i');
+    });
+
+    test('path', () async {
+      await shell.run('ds env path prepend dummy1');
+      await shell.run('ds env path dump');
+    });
+
+    test('var', () async {
+      await shell.run('ds env var set TEST_VALUE dummy1');
+      await shell.run('ds env var dump');
+    });
+
+    test('alias', () async {
+      await shell.run('ds env alias set TEST_ALIAS test command');
+      await shell.run('ds env alias dump');
     });
   });
 }

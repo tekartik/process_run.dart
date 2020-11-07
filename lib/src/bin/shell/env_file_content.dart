@@ -54,12 +54,13 @@ class FileContent {
   /// Supported top level [configKeys]
   bool addKeyValue(List<String> configKeys, String key, String value) {
     // Remove alias header
-    var index = indexOfTopLevelKey(userConfigAliasKeys);
+    var index = indexOfTopLevelKey(configKeys);
     if (index < 0) {
       index = lines.length;
     } else {
+      lines.removeAt(index);
       // Remove existing alias
-      for (var i = index + 1; i < lines.length; i++) {
+      for (var i = index; i < lines.length; i++) {
         // Until first non space, non comment stat
         var line = lines[i];
         if (isTopLevelKey(line)) {
@@ -68,7 +69,6 @@ class FileContent {
           // Found! remove
           // Remove last first!
           lines.removeAt(i);
-          lines.removeAt(index);
           break;
         }
       }
@@ -85,36 +85,39 @@ class FileContent {
   bool addVar(String key, String value) =>
       addKeyValue(userConfigVarKeys, key, value);
 
-  /*
-  /// Add a dependency in a brut force way
-///
-String _envFilePrependPath(String dir, String content, String dependency,
-    {List<String> dependencyLines}) {
-  var lines = LineSplitter.split(content).toList();
-  var index = lines.indexOf('paths:');
-  if (index < 0) {
-    // The template might create it commented out
-    index = lines.indexOf('#dependencies:');
+  List<String> lines;
+
+  Future<bool> prependPaths(List<String> paths) async {
+    // Remove alias header
+    var index = indexOfTopLevelKey(userConfigPathKeys);
     if (index < 0) {
-      lines.add('\ndependencies:');
       index = lines.length;
     } else {
-      lines[index] = 'dependencies:';
-      index = index + 1;
-    }
-  } else {
-    index = index + 1;
-  }
-  lines.insert(index, '  $dependency:');
-  if (dependencyLines != null) {
-    for (var line in dependencyLines) {
-      lines.insert(++index, '    $line');
-    }
-  }
-  return lines.join('\n');
-}
+      // Remove it, we'll add it later
+      lines.removeAt(index);
 
-   */
+      // Remove existing paths
+      for (var path in paths) {
+        for (var i = index; i < lines.length; i++) {
+          // Until first non space, non comment stat
+          var line = lines[i];
+          if (isTopLevelKey(line)) {
+            break;
+          } else if (line.trim() == '- $path') {
+            // Found! remove
+            // Remove last first!
 
-  List<String> lines;
+            lines.removeAt(i);
+            break;
+          }
+        }
+      }
+    }
+    lines.insert(index, '${userConfigPathKeys.first}:');
+    for (var path in paths) {
+      lines.insert(++index, '  - $path');
+    }
+
+    return true;
+  }
 }

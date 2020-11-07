@@ -10,4 +10,3 @@ import 'package:process_run/src/bin/shell/shell.dart' as shell;
 Future main(List<String> arguments) async {
   return await shell.main(arguments);
 }
-//setupQuickLogging();

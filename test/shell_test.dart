@@ -53,11 +53,13 @@ void main() {
       // ignore: unnecessary_statements
       whichSync;
       // ignore: unnecessary_cast
-      (null as Process)?.outLines;
-      // ignore: unnecessary_cast
       (null as Process)?.errLines;
       // ignore: unnecessary_cast
+      (null as List<ProcessResult>)?.outText;
+      // ignore: unnecessary_cast
       (null as List<ProcessResult>)?.outLines;
+      // ignore: unnecessary_cast
+      (null as List<ProcessResult>)?.errText;
       // ignore: unnecessary_cast
       (null as List<ProcessResult>)?.errLines;
     });

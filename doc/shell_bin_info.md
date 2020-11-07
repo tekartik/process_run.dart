@@ -1,13 +1,21 @@
-# Manipulate vars
+# Manipulate environment
 
-```
-ds env alias dump
-ds env alias set ll ls -l
-```
+Binary utility that allow changing from the command line the environment (var, path, alias) used in Shell.
 
 ### Example
+```
+# Version
+ds --version
 
+# Run using the shell environment (alias, path and var=
+ds run echo Hello World
 
-# Old
+# Set a var
+ds env var set MY_VAR my_value
 
-Edit env
+# Set an alias
+ds env alias set ll ls -l
+
+# Add a path (prepend only)
+ds env path prepend dummy/relative/folder
+```

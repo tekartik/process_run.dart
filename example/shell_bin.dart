@@ -10,20 +10,16 @@ Future<void> main() async {
 # Version
 ds --version
 
-# Can be invoke in multiple ways
+# Run using the shell environment (alias, path and var=
 ds run echo Hello World
-ds run 'echo Hello World'
-pub run process_run:shell run echo Hello World
 
-# Change the env file location
-ds env var set TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH .local/ds_env.yaml
+# Set a var
+ds env var set MY_VAR my_value
+
+# Set an alias
+ds env alias set ll ls -l
+
+# Add a path (prepend only)
+ds env path prepend dummy/relative/folder
 ''');
-
-//   {
-//     await shell.run('''
-// # once installed
-// pub global activate process_run
-// ds run
-// ''');
-//   }
 }
