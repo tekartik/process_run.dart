@@ -1,8 +1,6 @@
-import 'dart:io';
-
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/bin/shell/dump.dart';
 import 'package:process_run/src/common/import.dart';
-import 'package:process_run/src/utils.dart';
 
 import 'import.dart';
 
@@ -12,7 +10,7 @@ class ShellEnvPathDumpCommand extends ShellBinCommand {
 
   @override
   FutureOr<bool> onRun() async {
-    stdout.writeln(jsonPretty(ShellEnvironment().paths));
+    dumpStringList(ShellEnvironment().paths);
     return true;
   }
 }

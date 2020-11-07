@@ -33,8 +33,6 @@ const commandEnvAliases = 'alias';
 
 String get script => 'ds';
 
-bool verbose = false;
-
 class MainShellCommand extends ShellBinCommand {
   MainShellCommand() : super(name: 'ds', version: shellBinVersion) {
     addCommand(ShellEnvCommand());

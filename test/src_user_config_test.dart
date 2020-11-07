@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/user_config.dart';
@@ -9,13 +10,19 @@ import 'package:test/test.dart';
 
 void main() {
   group('src_user_config', () {
+    var dummyEnvPath1 = join('test', 'data', 'test_env1.yaml_dummy');
+    var dummyEnvPath2 = join('test', 'data', 'test_env2.yaml_dummy');
     test('dummy_file', () async {
       //print(a);
-      var path = join('test', 'data', 'test_env1.yaml_dummy');
-      var userConfig =
-          getUserConfig(<String, String>{userEnvFilePathEnvKey: path});
+      var path1 = dummyEnvPath1;
+      var path2 = dummyEnvPath2;
+      var userConfig = getUserConfig(<String, String>{
+        userEnvFilePathEnvKey: path1,
+        localEnvFilePathEnvKey: path2
+      });
       expect(userConfig.vars, {
-        'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path,
+        'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path1,
+        'TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH': path2,
         'PATH': [
           if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
             getFlutterAncestorPath(dartSdkBinDirPath),
@@ -27,28 +34,55 @@ void main() {
           getFlutterAncestorPath(dartSdkBinDirPath),
         dartSdkBinDirPath
       ]);
+
+      // user only
+      userConfig = getUserConfig(<String, String>{
+        userEnvFilePathEnvKey: path2,
+        // localEnvFilePathEnvKey: path
+      });
+      expect(userConfig.vars['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'], path2);
+
+      // user only
+      userConfig =
+          getUserConfig(<String, String>{localEnvFilePathEnvKey: path1});
+      expect(
+          userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'], path1);
     });
+    test('overriding local env file name', () {
+      //print(a);
+      var path =
+          join('test', 'data', 'test_user_env1_local_env_file_override.yaml');
+      var userConfig =
+          getUserConfig(<String, String>{userEnvFilePathEnvKey: path});
+      expect(userConfig.aliases['test'], 'test alias');
+    });
+    var expectedDartPaths = [
+      if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+        getFlutterAncestorPath(dartSdkBinDirPath),
+      dartSdkBinDirPath
+    ];
     test('simple', () async {
       //print(a);
       var path = join('test', 'data', 'test_env1.yaml');
-      var userConfig =
-          getUserConfig(<String, String>{userEnvFilePathEnvKey: path});
+      var userConfig = getUserConfig(<String, String>{
+        userEnvFilePathEnvKey: path,
+        localEnvFilePathEnvKey: dummyEnvPath1
+      });
       expect(userConfig.vars, {
         'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path,
+        'TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH': dummyEnvPath1,
         'test': '1',
-        'PATH': [
-          'my_path',
-          if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
-            getFlutterAncestorPath(dartSdkBinDirPath),
-          dartSdkBinDirPath
-        ].join(Platform.isWindows ? ';' : ':')
       });
-      expect(userConfig.paths, [
-        'my_path',
-        if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
-          getFlutterAncestorPath(dartSdkBinDirPath),
-        dartSdkBinDirPath
-      ]);
+      expect(userConfig.paths, ['my_path', ...expectedDartPaths]);
+      var shEnv = ShellEnvironment.empty()
+        ..paths.addAll(userConfig.paths)
+        ..vars.addAll(userConfig.vars);
+      expect(shEnv['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'], path);
+      expect(shEnv['test'], '1');
+      expect(
+          shEnv['PATH'],
+          ['my_path', ...expectedDartPaths]
+              .join(Platform.isWindows ? ';' : ':'));
     });
 
     test('userLoadConfigFile', () async {

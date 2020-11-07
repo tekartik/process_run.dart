@@ -52,13 +52,18 @@ class FileContent {
   }
 
   /// Supported top level [configKeys]
-  bool addKeyValue(List<String> configKeys, String key, String value) {
+  bool writeKeyValue(List<String> configKeys, String key,
+      {bool delete = false, String value}) {
     // Remove alias header
+    var modified = false;
+    var insertTopLevelKey = false;
     var index = indexOfTopLevelKey(configKeys);
     if (index < 0) {
       index = lines.length;
+      insertTopLevelKey = true;
     } else {
-      lines.removeAt(index);
+      // Skip top level key
+      index++;
       // Remove existing alias
       for (var i = index; i < lines.length; i++) {
         // Until first non space, non comment stat
@@ -68,34 +73,52 @@ class FileContent {
         } else if (line.trimLeft().startsWith('$key:')) {
           // Found! remove
           // Remove last first!
+          modified = true;
           lines.removeAt(i);
           break;
         }
       }
     }
-    lines.insert(index, '${configKeys.first}:');
-    lines.insert(index + 1, '  $key: $value');
+    if (insertTopLevelKey) {
+      // Insert top header
+      modified = true;
+      lines.insert(index++, '${configKeys.first}:');
+    }
+    if (!delete) {
+      modified = true;
+      lines.insert(index++, '  $key: $value');
+    }
 
-    return true;
+    return modified;
   }
 
   bool addAlias(String alias, String command) =>
-      addKeyValue(userConfigAliasKeys, alias, command);
+      writeKeyValue(userConfigAliasKeys, alias, value: command);
 
+  bool deleteAlias(String alias) =>
+      writeKeyValue(userConfigAliasKeys, alias, delete: true);
   bool addVar(String key, String value) =>
-      addKeyValue(userConfigVarKeys, key, value);
+      writeKeyValue(userConfigVarKeys, key, value: value);
+
+  bool deleteVar(String key) =>
+      writeKeyValue(userConfigVarKeys, key, delete: true);
 
   List<String> lines;
 
-  Future<bool> prependPaths(List<String> paths) async {
+  /// Put the paths at the top
+  bool prependPaths(List<String> paths) => writePaths(paths);
+  bool deletePaths(List<String> paths) => writePaths(paths, delete: true);
+  bool writePaths(List<String> paths, {bool delete = false}) {
     // Remove alias header
     var index = indexOfTopLevelKey(userConfigPathKeys);
+    var insertTopLevelKey = false;
+    var modified = false;
     if (index < 0) {
       index = lines.length;
+      insertTopLevelKey = true;
     } else {
-      // Remove it, we'll add it later
-      lines.removeAt(index);
-
+      // Skip top level key
+      index++;
       // Remove existing paths
       for (var path in paths) {
         for (var i = index; i < lines.length; i++) {
@@ -106,18 +129,25 @@ class FileContent {
           } else if (line.trim() == '- $path') {
             // Found! remove
             // Remove last first!
-
+            modified = true;
             lines.removeAt(i);
             break;
           }
         }
       }
     }
-    lines.insert(index, '${userConfigPathKeys.first}:');
-    for (var path in paths) {
-      lines.insert(++index, '  - $path');
+    if (insertTopLevelKey) {
+      // Insert top header
+      modified = true;
+      lines.insert(index++, '${userConfigPathKeys.first}:');
+    }
+    if (!delete) {
+      for (var path in paths) {
+        modified = true;
+        lines.insert(index++, '  - $path');
+      }
     }
 
-    return true;
+    return modified;
   }
 }

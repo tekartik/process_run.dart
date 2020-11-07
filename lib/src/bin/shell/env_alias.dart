@@ -1,6 +1,8 @@
 import 'package:process_run/src/bin/shell/env_alias_dump.dart';
 import 'package:process_run/src/bin/shell/env_alias_set.dart';
 
+import 'env_alias_delete.dart';
+import 'env_alias_get.dart';
 import 'import.dart';
 
 class ShellEnvAliasCommand extends ShellBinCommand {
@@ -8,6 +10,8 @@ class ShellEnvAliasCommand extends ShellBinCommand {
       : super(name: 'alias', description: 'Alias operations') {
     addCommand(ShellEnvAliasDumpCommand());
     addCommand(ShellEnvAliasSetCommand());
+    addCommand(ShellEnvAliasGetCommand());
+    addCommand(ShellEnvAliasDeleteCommand());
   }
 }
 

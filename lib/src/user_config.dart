@@ -6,7 +6,6 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/src/shell_utils.dart';
@@ -103,6 +102,8 @@ class EnvFileConfig {
 
   EnvFileConfig(
       this.fileContent, this.yaml, this.paths, this.vars, this.aliases);
+
+  bool get isEmpty => paths.isEmpty && vars.isEmpty && aliases.isEmpty;
 
   Map<String, dynamic> toDebugMap() =>
       <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
@@ -249,9 +250,7 @@ EnvFileConfig _loadFromPath(String path) {
     try {
       fileContent = File(path).readAsStringSync();
     } catch (e) {
-      if (verbose) {
-        stderr.writeln('error reading env file $path $e');
-      }
+      //  stderr.writeln('error reading env file $path $e');
     }
     if (fileContent != null) {
       yaml = loadYaml(fileContent);
@@ -394,10 +393,15 @@ String getUserEnvFilePath([Map<String, String> environment]) {
 }
 
 /// Get the local env file path
+///
+/// Must be called after loading the env vars
 String getLocalEnvFilePath([Map<String, String> environment]) {
   environment ??= platformEnvironment;
 
-  var subDir = environment[localEnvFilePathEnvKey] ??
-      joinAll(['.dart_tool', 'process_run', 'env.yaml']);
+  var subDir = environment[localEnvFilePathEnvKey] ?? localEnvFilePathDefault;
   return join(Directory.current?.path ?? '.', subDir);
 }
+
+final localEnvFilePathDefault = joinAll(['.local', 'ds_env.yaml']);
+final localEnvFilePathDefaultOld =
+    joinAll(['.dart_tool', 'process_run', 'env.yaml']);

@@ -6,6 +6,7 @@ import 'package:io/io.dart';
 /// Get text
 Future<String> prompt(String text, {Stream<List<int>> stdin}) async {
   stdout.write('${(text?.isNotEmpty ?? false) ? '$text' : 'Enter text'}: ');
+  await stdout.flush();
   return await _promptGetText(stdin: stdin);
 }
 
@@ -21,6 +22,7 @@ Future<String> _promptGetText({Stream<List<int>> stdin}) async {
 /// Confirm action
 Future<bool> promptConfirm(String text, {Stream<List<int>> stdin}) async {
   stdout.write('${(text?.isNotEmpty ?? false) ? '$text. ' : ''}Continue Y/N? ');
+  await stdout.flush();
   final input = await _promptGetText(stdin: stdin);
   if (input.toLowerCase() != 'y') {
     return false;

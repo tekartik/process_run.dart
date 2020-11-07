@@ -67,6 +67,11 @@ class ShellBinCommand {
   }
 
   ArgResults parse(List<String> arguments) {
+    // Add missing common commands
+    parser.addFlag(flagVersion,
+        help: 'Print the command version', negatable: false);
+    parser.addFlag(flagVerbose,
+        abbr: 'v', help: 'Verbose mode', negatable: false);
     return results = parser.parse(arguments);
   }
 
@@ -92,12 +97,6 @@ class ShellBinCommand {
     // read or create
     parser = this.parser;
     parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-    if (parent == null) {
-      parser.addFlag(flagVersion,
-          help: 'Print the command version', negatable: false);
-
-      parser.addFlag(flagVerbose, help: 'Verbose mode', negatable: false);
-    }
   }
 
   void addCommand(ShellBinCommand command) {
@@ -122,9 +121,11 @@ class ShellBinCommand {
 
   @nonVirtual
   FutureOr<bool> run() async {
-    // Handle verbose
     // Handle version first
     if (parent == null) {
+      // Handle verbose
+      _verbose = getFlag(flagVerbose);
+
       final hasVersion = getFlag(flagVersion);
       if (hasVersion) {
         stdout.writeln(version);

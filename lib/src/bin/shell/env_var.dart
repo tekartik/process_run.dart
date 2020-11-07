@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:process_run/src/bin/shell/env_var_delete.dart';
 import 'package:process_run/src/bin/shell/env_var_dump.dart';
 import 'package:process_run/src/common/import.dart';
 
+import 'env_var_get.dart';
 import 'env_var_set.dart';
 import 'import.dart';
 
@@ -13,6 +15,8 @@ class ShellEnvVarCommand extends ShellBinCommand {
             description: 'Manipulate local and global env variables') {
     addCommand(ShellEnvVarDumpCommand());
     addCommand(ShellEnvVarSetCommand());
+    addCommand(ShellEnvVarGetCommand());
+    addCommand(ShellEnvVarDeleteCommand());
   }
 }
 

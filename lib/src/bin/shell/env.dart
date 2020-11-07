@@ -12,6 +12,7 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
 import 'env_alias.dart';
+import 'env_delete.dart';
 import 'env_file_content.dart';
 import 'env_path.dart';
 import 'env_var.dart';
@@ -103,6 +104,8 @@ class ShellEnvCommand extends ShellEnvCommandBase {
                 'Manipulate local and global env vars, paths and aliases') {
     addCommand(ShellEnvVarCommand());
     addCommand(ShellEnvEditCommand());
+    addCommand(ShellEnvDeleteCommand());
+
     addCommand(ShellEnvAliasCommand());
     addCommand(ShellEnvPathCommand());
     parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
@@ -118,19 +121,22 @@ class ShellEnvCommand extends ShellEnvCommandBase {
         stdout.writeln(
             'file: ${relative(path, from: Directory.current?.path ?? '.')}');
         if (config.fileContent != null) {
-          stdout.writeln('${config.fileContent}');
-          stdout.writeln();
+          //stdout.writeln('${config.fileContent}');
+          // stdout.writeln();
           // if (config.yaml != null) {
           //  stdout.writeln('yaml: ${config.yaml}');
           // }
           if (config.vars?.isNotEmpty ?? false) {
-            stdout.writeln('var: ${config.vars}');
+            stdout.writeln('  var: ${config.vars}');
           }
           if (config.paths?.isNotEmpty ?? false) {
-            stdout.writeln('path: ${config.paths}');
+            stdout.writeln(' path: ${config.paths}');
           }
           if (config.aliases?.isNotEmpty ?? false) {
             stdout.writeln('alias: ${config.paths}');
+          }
+          if (config.isEmpty) {
+            stdout.writeln('empty');
           }
         } else {
           stdout.writeln('not found');
