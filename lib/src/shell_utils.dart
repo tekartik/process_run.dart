@@ -217,7 +217,8 @@ String findExecutableSync(String command, List<String> paths) {
         }
       } else {
         var stats = File(commandPath).statSync();
-        if (stats.type != FileSystemEntityType.notFound) {
+        if (stats.type == FileSystemEntityType.file ||
+            stats.type == FileSystemEntityType.link) {
           // Check executable permission
           if (stats.mode & 0x49 != 0) {
             // binary 001001001
