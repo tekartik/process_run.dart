@@ -1,10 +1,10 @@
 import 'package:process_run/shell.dart';
 
-var ds = 'dart bin/shell.dart';
+var ds = 'dart run bin/shell.dart';
 Future<void> main() async {
   var env = ShellEnvironment();
   // Convenient in development alias to use non global version
-  env.aliases['ds'] = 'dart bin/shell.dart';
+  env.aliases['ds'] = 'dart run bin/shell.dart';
   var shell = Shell(environment: env);
   await shell.run('''
 # Version

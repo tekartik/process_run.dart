@@ -51,13 +51,13 @@ class FileContent {
     return true;
   }
 
-  /// Supported top level [configKeys]
-  bool writeKeyValue(List<String> configKeys, String key,
+  /// Supported top level [parentKeys]
+  bool writeKeyValue(List<String> parentKeys, String key,
       {bool delete = false, String value}) {
     // Remove alias header
     var modified = false;
     var insertTopLevelKey = false;
-    var index = indexOfTopLevelKey(configKeys);
+    var index = indexOfTopLevelKey(parentKeys);
     if (index < 0) {
       index = lines.length;
       insertTopLevelKey = true;
@@ -82,7 +82,7 @@ class FileContent {
     if (insertTopLevelKey) {
       // Insert top header
       modified = true;
-      lines.insert(index++, '${configKeys.first}:');
+      lines.insert(index++, '${parentKeys.first}:');
     }
     if (!delete) {
       modified = true;
@@ -91,6 +91,12 @@ class FileContent {
 
     return modified;
   }
+
+  List<String> lines;
+}
+
+class EnvFileContent extends FileContent {
+  EnvFileContent(String path) : super(path);
 
   bool addAlias(String alias, String command) =>
       writeKeyValue(userConfigAliasKeys, alias, value: command);
@@ -102,8 +108,6 @@ class FileContent {
 
   bool deleteVar(String key) =>
       writeKeyValue(userConfigVarKeys, key, delete: true);
-
-  List<String> lines;
 
   /// Put the paths at the top
   bool prependPaths(List<String> paths) => writePaths(paths);
@@ -124,7 +128,7 @@ class FileContent {
         for (var i = index; i < lines.length; i++) {
           // Until first non space, non comment stat
           var line = lines[i];
-          if (isTopLevelKey(line)) {
+          if (FileContent.isTopLevelKey(line)) {
             break;
           } else if (line.trim() == '- $path') {
             // Found! remove

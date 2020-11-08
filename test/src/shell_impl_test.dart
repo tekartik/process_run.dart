@@ -249,7 +249,7 @@ void main() {
       } finally {
         shellEnvironment = null;
       }
-    });
+    }, timeout: const Timeout(Duration(seconds: 120)));
 
     test('environment_vars', () async {
       String linuxEnvCommand;

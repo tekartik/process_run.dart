@@ -10,13 +10,13 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 var shell = Shell(
-    environment: ShellEnvironment()..aliases['ds'] = 'dart bin/shell.dart',
+    environment: ShellEnvironment()..aliases['ds'] = 'dart run bin/shell.dart',
     verbose: false);
 
 var safeLocalEnvFile = '.dart_tool/process_run/test/test_local_env3_safe.yaml';
 
 var safeShellEnvironment = ShellEnvironment()
-  ..aliases['ds'] = 'dart bin/shell.dart'
+  ..aliases['ds'] = 'dart run bin/shell.dart'
   ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
 Shell get safeShell => Shell(
     environment: safeShellEnvironment,
@@ -111,7 +111,7 @@ void main() {
     });
     group('file_content', () {
       test('addAlias', () async {
-        var fileContent = FileContent('dummy')..lines = [];
+        var fileContent = EnvFileContent('dummy')..lines = [];
         expect(fileContent.addAlias('a1', 'v1'), true);
         expect(fileContent.lines, ['alias:', '  a1: v1']);
         expect(
@@ -130,7 +130,7 @@ void main() {
         expect(fileContent.lines, ['alias:', '  a2: v2']);
       });
       test('addPath', () {
-        var fileContent = FileContent('dummy')..lines = [];
+        var fileContent = EnvFileContent('dummy')..lines = [];
         fileContent.prependPaths(['a1', 'b1']);
         expect(fileContent.lines, ['path:', '  - a1', '  - b1']);
         fileContent.prependPaths(['a1', 'b1']);

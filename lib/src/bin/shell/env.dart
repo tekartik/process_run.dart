@@ -35,8 +35,8 @@ class ShellEnvCommandBase extends ShellBinCommand {
 
   String get label => local ? 'local' : 'user';
 
-  Future<FileContent> envFileReadOrCreate({bool write = false}) async {
-    var fileContent = FileContent(_envFilePath);
+  Future<EnvFileContent> envFileReadOrCreate({bool write = false}) async {
+    var fileContent = EnvFileContent(_envFilePath);
     if (!await fileContent.read()) {
       fileContent.lines = sampleFileContent;
     }
