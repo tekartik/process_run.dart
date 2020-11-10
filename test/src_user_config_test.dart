@@ -70,7 +70,7 @@ void main() {
         'TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH': dummyEnvPath1,
         'test': '1',
       });
-      expect(userConfig.paths, ['my_path', ...expectedDartPaths]);
+      expect(userConfig.paths, [...expectedDartPaths, 'my_path']);
       var shEnv = ShellEnvironment.empty()
         ..paths.addAll(userConfig.paths)
         ..vars.addAll(userConfig.vars);
@@ -78,8 +78,27 @@ void main() {
       expect(shEnv['test'], '1');
       expect(
           shEnv['PATH'],
-          ['my_path', ...expectedDartPaths]
+          [...expectedDartPaths, 'my_path']
               .join(Platform.isWindows ? ';' : ':'));
+    });
+
+    test('config order', () async {
+      // User then local env then overriden local
+      //print(a);
+      var path = join('test', 'data', 'test_env1.yaml');
+      var userConfig = getUserConfig(<String, String>{
+        userEnvFilePathEnvKey: path,
+        localEnvFilePathEnvKey: dummyEnvPath1
+      });
+      expect(userConfig.paths, [...expectedDartPaths, 'my_path']);
+      userConfig = getUserConfig(<String, String>{
+        userEnvFilePathEnvKey: dummyEnvPath1,
+        localEnvFilePathEnvKey: path
+      });
+      expect(userConfig.paths, [
+        'my_path',
+        ...expectedDartPaths,
+      ]);
     });
 
     test('userLoadConfigFile', () async {

@@ -103,7 +103,14 @@ class EnvFileConfig {
   EnvFileConfig(
       this.fileContent, this.yaml, this.paths, this.vars, this.aliases);
 
-  bool get isEmpty => paths.isEmpty && vars.isEmpty && aliases.isEmpty;
+  /// Has no vars, paths nor aliases.
+  bool get isEmpty =>
+      (paths?.isEmpty ?? true) &&
+      (vars?.isEmpty ?? true) &&
+      (aliases?.isEmpty ?? true);
+
+  /// Has vars, paths or aliases.
+  bool get isNotEmpty => !isEmpty;
 
   Map<String, dynamic> toDebugMap() =>
       <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
@@ -347,7 +354,7 @@ UserConfig getUserConfig(Map<String, String> environment) {
   void addConfig(String path) {
     var config = loadFromPath(path);
     var configShEnv = ShellEnvironment.empty();
-    if (config?.vars != null) {
+    if (config?.isNotEmpty ?? false) {
       configShEnv
         ..vars.addAll(config.vars)
         ..paths.addAll(config.paths)
@@ -358,9 +365,8 @@ UserConfig getUserConfig(Map<String, String> environment) {
 
   // Add user config
   addConfig(getUserEnvFilePath(shEnv));
-  // Add local config using our environment that might have been updated
-  addConfig(getLocalEnvFilePath(shEnv));
 
+  // Prepend local dart environment
   // Always prepend dart executable so that dart runner context is used first
   if (dartExecutable != null) {
     var dartBinPath = dartSdkBinDirPath;
@@ -374,6 +380,9 @@ UserConfig getUserConfig(Map<String, String> environment) {
     // Add dart path so that dart commands always work!
     shEnv.paths.prepend(dartBinPath);
   }
+
+  // Add local config using our environment that might have been updated
+  addConfig(getLocalEnvFilePath(shEnv));
 
   return UserConfig(
       paths: shEnv.paths, vars: shEnv.vars, aliases: shEnv.aliases);
