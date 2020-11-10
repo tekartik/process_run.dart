@@ -361,6 +361,7 @@ UserConfig getUserConfig(Map<String, String> environment) {
   // Add local config using our environment that might have been updated
   addConfig(getLocalEnvFilePath(shEnv));
 
+  // Always prepend dart executable so that dart runner context is used first
   if (dartExecutable != null) {
     var dartBinPath = dartSdkBinDirPath;
 

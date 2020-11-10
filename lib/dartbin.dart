@@ -1,3 +1,5 @@
+/// Prefer using shell.
+///
 /// {@canonicalFor flutterbin_cmd.getFlutterBinChannel}
 /// {@canonicalFor flutterbin_cmd.getFlutterBinVersion}
 /// {@canonicalFor flutterbin_cmd.isFlutterSupported}

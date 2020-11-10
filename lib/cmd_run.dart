@@ -1,6 +1,10 @@
+/// Prefer using shell
+library process_run.cmd_run;
+
 ///
 /// Command runner
 ///
+
 import 'dart:async';
 import 'dart:io';
 
@@ -48,7 +52,10 @@ export 'src/dartbin_cmd.dart'
         PubCmd,
         PubGlobalRunCmd,
         PubRunCmd,
-        getDartBinVersion;
+        getDartBinVersion,
+        dartBinFileName,
+        parsePlatformChannel,
+        parsePlatformVersion;
 // ignore: deprecated_member_use_from_same_package
 export 'src/dev_cmd_run.dart' show devRunCmd;
 export 'src/flutterbin_cmd.dart' show flutterExecutablePath, FlutterCmd;
