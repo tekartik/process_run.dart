@@ -140,12 +140,18 @@ Future<Version> getDartBinVersion() async {
   // $ dart --version
   // Linux: Dart VM version: 2.7.0 (Unknown timestamp) on "linux_x64"
   var cmd = DartCmd(['--version']);
+  var result = await runCmd(cmd);
+
   // Take from stderr first
-  var resultOutput = (await runCmd(cmd)).stderr.toString().trim();
-  if (resultOutput.isEmpty) {
-    resultOutput = (await runCmd(cmd)).stdout.toString().trim();
-  }
-  var output = LineSplitter.split(resultOutput)
+  var version = parseDartBinVersionOutput(result.stderr.toString().trim());
+  // Take stdout in case it changes
+  version ??= parseDartBinVersionOutput(result.stdout.toString().trim());
+  return version;
+}
+
+/// Parse version from 'dart --version' output.
+Version parseDartBinVersionOutput(String text) {
+  var output = LineSplitter.split(text)
       .join(' ')
       .split(' ')
       .map((word) => word?.trim())

@@ -5,9 +5,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/dartbin_cmd.dart'
+    show parseDartBinVersionOutput;
 import 'package:test/test.dart';
 
 import 'hex_utils.dart';
@@ -455,4 +456,25 @@ _tekartik_dummy_app_that_does_not_exits
     expect(await getFlutterBinVersion(), isNotNull);
     expect(await getFlutterBinChannel(), isNotNull);
   }, skip: !isFlutterSupportedSync);
+
+  test('dart version', () async {
+    // Try to get the version in 2 different ways
+    var sh = Shell();
+
+    var whichDart = await which('dart');
+    var resolvedVersion = parseDartBinVersionOutput(
+        (await sh.runExecutableArguments(dartExecutable, ['--version']))
+            .stderr
+            .toString());
+    var whichVersion = parseDartBinVersionOutput(
+        (await sh.runExecutableArguments(whichDart, ['--version']))
+            .stderr
+            .toString());
+    var version = parseDartBinVersionOutput(
+        (await sh.runExecutableArguments('dart', ['--version']))
+            .stderr
+            .toString());
+    expect(version, resolvedVersion);
+    expect(version, whichVersion);
+  });
 }

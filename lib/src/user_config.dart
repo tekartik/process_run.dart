@@ -368,10 +368,10 @@ UserConfig getUserConfig(Map<String, String> environment) {
     // /flutter/bin/cache/dart-sdk/bin
     var flutterBinPath = getFlutterAncestorPath(dartBinPath);
     if (flutterBinPath != null) {
-      shEnv.paths.add(flutterBinPath);
+      shEnv.paths.prepend(flutterBinPath);
     }
     // Add dart path so that dart commands always work!
-    shEnv.paths.add(dartBinPath);
+    shEnv.paths.prepend(dartBinPath);
   }
 
   return UserConfig(

@@ -8,20 +8,53 @@ import 'package:process_run/src/process_run.dart';
 
 import 'src/process_cmd.dart';
 
-export 'dartbin.dart';
+export 'dartbin.dart'
+    show
+        dartChannel,
+        dartVersion,
+        dartExecutable,
+        dartSdkBinDirPath,
+        dartChannelBeta,
+        dartChannelMaster,
+        dartChannelStable,
+        dartChannelDev,
+        isFlutterSupportedSync,
+        isFlutterSupported,
+        dartSdkDirPath,
+        getFlutterBinVersion,
+        getFlutterBinChannel;
 export 'dartbin.dart'
     show
         getFlutterBinVersion,
         getFlutterBinChannel,
         isFlutterSupported,
         isFlutterSupportedSync;
-export 'process_run.dart';
-export 'src/build_runner.dart';
-export 'src/dartbin_cmd.dart' hide parsePlatformVersion;
-export 'src/dev_cmd_run.dart';
+export 'process_run.dart'
+    show
+        run,
+        executableArgumentsToString,
+        runExecutableArguments,
+        argumentsToString,
+        argumentToString;
+export 'src/build_runner.dart' show PbrCmd;
+export 'src/dartbin_cmd.dart'
+    show
+        Dart2JsCmd,
+        DartCmd,
+        DartDocCmd,
+        DartFmtCmd,
+        DartDevcCmd,
+        DartAnalyzerCmd,
+        PubCmd,
+        PubGlobalRunCmd,
+        PubRunCmd,
+        getDartBinVersion;
+// ignore: deprecated_member_use_from_same_package
+export 'src/dev_cmd_run.dart' show devRunCmd;
 export 'src/flutterbin_cmd.dart' show flutterExecutablePath, FlutterCmd;
-export 'src/process_cmd.dart';
-export 'src/webdev.dart';
+export 'src/process_cmd.dart'
+    show ProcessCmd, processCmdToDebugString, processResultToDebugString;
+export 'src/webdev.dart' show WebDevCmd;
 
 /// Command runner
 ///
