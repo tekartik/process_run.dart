@@ -41,7 +41,6 @@ class ShellBinCommand {
     stdout.writeln();
     stdout.writeln(parser.usage);
     if (_commands.isNotEmpty) {
-      stdout.writeln();
       printCommands();
     }
   }
@@ -56,7 +55,6 @@ class ShellBinCommand {
 
   void printBaseUsage() {
     printNameDescription();
-    stdout.writeln();
     if (_commands.isNotEmpty) {
       stdout.writeln();
       printCommands();

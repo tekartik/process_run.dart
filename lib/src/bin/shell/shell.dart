@@ -9,7 +9,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'env.dart';
 import 'import.dart';
 
-Version shellBinVersion = Version(0, 1, 1);
+Version shellBinVersion = Version(0, 2, 0);
 
 const flagHelp = 'help';
 const flagInfo = 'info';
@@ -47,17 +47,31 @@ class MainShellCommand extends ShellBinCommand {
     stdout.writeln('Usage: $script <command> [<arguments>]');
     stdout.writeln('Usage: pub run process_run:shell <command> [<arguments>]');
     stdout.writeln();
-    stdout.writeln('Example: pub run process_run:shell edit-env');
-    stdout.writeln('will open the env file using gedit');
+    stdout.writeln('Examples:');
     stdout.writeln();
-    stdout.writeln('Global options:');
-    stdout.writeln(parser.usage);
-    stdout.writeln();
-    stdout.writeln('Available commands:');
-    stdout.writeln('  edit-env    Edit environment file');
-    stdout.writeln(
-        '  run         Run a command with user and local env path and vars');
+    stdout.writeln('''
+# Set a local env variable
+ds env var set MY_VAR my_value
+# Get a local env variable
+ds env var get USER
+# Prepend a path
+ds env path prepend ~/.my_path
+# Add an alias
+ds env alias set hello_world echo Hello World
+# Run a command in the overriden envionement
+ds run hello_world
+ds run echo MY_VAR
+# Edit the local environment file
+ds env edit
+''');
     super.printUsage();
+  }
+
+  @override
+  void printBaseUsage() {
+    stdout.writeln('Process run shell configuration utility');
+    stdout.writeln(' -h, --help       Usage help');
+    // super.printBaseUsage();
   }
 
   @override
