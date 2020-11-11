@@ -11,6 +11,9 @@ import 'package:process_run/src/common/import.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'hex_utils.dart';
+import 'shell/common.dart';
+
+var echoEnv = ShellEnvironment()..aliases.addAll(commonAliases);
 
 Version version = Version(0, 1, 0);
 
@@ -24,6 +27,7 @@ Global options:
 -e, --stderr        stderr content as string
 -f, --stderr-hex    stderr as hexa string
 -i, --stdin         Handle first line of stdin
+-l, --write-line    Write an additional new line
 -x, --exit-code     Exit code to return
     --version       Print the command version
 */
@@ -47,6 +51,8 @@ Future main(List<String> arguments) async {
       abbr: 'e', help: 'stderr content as string', defaultsTo: null);
   parser.addOption('stderr-hex',
       abbr: 'f', help: 'stderr as hexa string', defaultsTo: null);
+  parser.addFlag('write-line',
+      abbr: 'l', help: 'Write an additional new line', negatable: false);
   parser.addFlag('stdin',
       abbr: 'i', help: 'Handle first line of stdin', negatable: false);
   parser.addOption('wait', help: 'Wait milliseconds');
@@ -65,6 +71,7 @@ Future main(List<String> arguments) async {
   final help = _argsResult['help'] as bool;
   final verbose = _argsResult['verbose'] as bool;
   final wait = parseInt(_argsResult['wait']);
+  final writeLine = _argsResult['write-line'] as bool;
 
   if (wait != null) {
     await Future.delayed(Duration(milliseconds: wait));
@@ -106,29 +113,47 @@ Future main(List<String> arguments) async {
     if (lineSync != null) {
       stdout.write(lineSync);
     }
+    if (writeLine) {
+      stdout.writeln();
+    }
   }
   // handle stdout
   final outputText = _argsResult['stdout'] as String;
   if (outputText != null) {
     stdout.write(outputText);
+    if (writeLine) {
+      stdout.writeln();
+    }
   }
   final hexOutputText = _argsResult['stdout-hex'] as String;
   if (hexOutputText != null) {
     stdout.add(hexToBytes(hexOutputText));
+    if (writeLine) {
+      stdout.writeln();
+    }
   }
   // handle stderr
   final stderrText = _argsResult['stderr'] as String;
   if (stderrText != null) {
     stderr.write(stderrText);
+    if (writeLine) {
+      stdout.writeln();
+    }
   }
   final stderrHexTest = _argsResult['stderr-hex'] as String;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
+    if (writeLine) {
+      stdout.writeln();
+    }
   }
 
   final envVar = _argsResult['stdout-env'] as String;
   if (envVar != null) {
     stdout.write(Platform.environment[envVar] ?? '');
+    if (writeLine) {
+      stdout.writeln();
+    }
   }
 
   if (_argsResult['all-env'] as bool) {
