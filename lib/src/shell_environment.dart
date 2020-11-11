@@ -22,6 +22,8 @@ class ShellEnvironmentPaths with ListMixin<String> {
   }
 
   set _paths(List<String> paths) {
+    // remove duplicates
+    paths = LinkedHashSet<String>.from(paths).toList();
     _environment[envPathKey] = paths.join(envPathSeparator);
   }
 

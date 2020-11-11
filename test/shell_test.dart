@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/dartbin_cmd.dart'
     show parseDartBinVersionOutput;
@@ -17,6 +18,14 @@ import 'hex_utils.dart';
 bool devTrue = true;
 //bool debug = devTrue;
 bool debug = false;
+
+// To set in both variable for a full empty environment
+var dummyEnvPath = join('test', 'data', 'test_env.yaml_dummy');
+ShellEnvironment newEnvNoOverride() =>
+    ShellEnvironment(environment: <String, String>{
+      userEnvFilePathEnvKey: dummyEnvPath,
+      localEnvFilePathEnvKey: dummyEnvPath
+    });
 
 void main() {
   group('Shell', () {

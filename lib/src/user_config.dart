@@ -371,14 +371,16 @@ UserConfig getUserConfig(Map<String, String> environment) {
   if (dartExecutable != null) {
     var dartBinPath = dartSdkBinDirPath;
 
+    // Add dart path so that dart commands always work!
+    shEnv.paths.prepend(dartBinPath);
+
+    // Flutter path must be before any other dart directoy as it'd better matches
     // Add flutter path if path matches:
     // /flutter/bin/cache/dart-sdk/bin
     var flutterBinPath = getFlutterAncestorPath(dartBinPath);
     if (flutterBinPath != null) {
       shEnv.paths.prepend(flutterBinPath);
     }
-    // Add dart path so that dart commands always work!
-    shEnv.paths.prepend(dartBinPath);
   }
 
   // Add local config using our environment that might have been updated

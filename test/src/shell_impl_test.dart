@@ -7,11 +7,27 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/flutterbin_cmd.dart';
 import 'package:process_run/src/user_config.dart';
 import 'package:process_run/which.dart';
 import 'package:test/test.dart';
 
 import '../echo_test.dart';
+import '../shell_test.dart';
+
+var expectedDartPaths = [
+  if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+    getFlutterAncestorPath(dartSdkBinDirPath),
+  dartSdkBinDirPath
+];
+
+List<String> getExpectedPartPaths(ShellEnvironment environment) {
+  return [
+    if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
+      getFlutterAncestorPath(dartSdkBinDirPath),
+    dartSdkBinDirPath
+  ];
+}
 
 void main() {
   group('Shell', () {
@@ -74,6 +90,36 @@ void main() {
     String getTestHomeRelPath() => Platform.isWindows ? r'~\temp' : '~/temp';
 
     var configFileEmptyPath = 'test/data/test_env3_empty.yaml';
+
+    test('userEnvironment in dart context', () async {
+      try {
+        shellEnvironment = newEnvNoOverride();
+        expect(userPaths,
+            getExpectedPartPaths(shellEnvironment as ShellEnvironment));
+      } finally {
+        shellEnvironment = null;
+      }
+    });
+
+    var _flutterExecutablePath = flutterExecutablePath;
+    test('userEnvironment in flutter context', () async {
+      try {
+        var flutterBinDirPath = dirname(_flutterExecutablePath);
+        shellEnvironment = newEnvNoOverride()..paths.prepend(flutterBinDirPath);
+
+        // '/opt/app/flutter/dev/flutter/bin',
+        // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
+        if (dartSdkBinDirPath.contains(flutterBinDirPath)) {
+          expect(
+              userPaths, [dirname(_flutterExecutablePath), dartSdkBinDirPath]);
+        } else {
+          expect(
+              userPaths, [dartSdkBinDirPath, dirname(_flutterExecutablePath)]);
+        }
+      } finally {
+        shellEnvironment = null;
+      }
+    }, skip: _flutterExecutablePath == null);
 
     test('userEnvironment', () async {
       try {

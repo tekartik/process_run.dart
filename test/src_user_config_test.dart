@@ -8,6 +8,9 @@ import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/user_config.dart';
 import 'package:test/test.dart';
 
+import 'shell_test.dart';
+import 'src/shell_impl_test.dart';
+
 void main() {
   group('src_user_config', () {
     var dummyEnvPath1 = join('test', 'data', 'test_env1.yaml_dummy');
@@ -53,11 +56,7 @@ void main() {
           getUserConfig(<String, String>{userEnvFilePathEnvKey: path});
       expect(userConfig.aliases['test'], 'test alias');
     });
-    var expectedDartPaths = [
-      if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
-        getFlutterAncestorPath(dartSdkBinDirPath),
-      dartSdkBinDirPath
-    ];
+
     test('simple', () async {
       //print(a);
       var path = join('test', 'data', 'test_env1.yaml');
@@ -70,7 +69,8 @@ void main() {
         'TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH': dummyEnvPath1,
         'test': '1',
       });
-      expect(userConfig.paths, [...expectedDartPaths, 'my_path']);
+      expect(userConfig.paths,
+          [...getExpectedPartPaths(newEnvNoOverride()), 'my_path']);
       var shEnv = ShellEnvironment.empty()
         ..paths.addAll(userConfig.paths)
         ..vars.addAll(userConfig.vars);
