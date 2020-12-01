@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0-nullsafety.0
+
+* `nnbd` support
+
 ## 0.11.2+5
 
 * Add `ShellEnvironment` utility, allowing adding vars, path and alias

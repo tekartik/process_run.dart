@@ -85,13 +85,15 @@ dart example/echo.dart -o $text
 dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o ${shellArgument(text)}
+dart example/echo.dart -o 你好
 ''');
       expect(results[0].stdout.toString().trim(), 'Helloworld');
       expect(results[1].stdout.toString().trim(), 'Helloworld');
       expect(results[2].stdout.toString().trim(), 'Hello  world');
       expect(results[3].stdout.toString().trim(), 'Hello  world');
       expect(results[4].stdout.toString().trim(), 'Hello  world');
-      expect(results.length, 5);
+      expect(results[5].stdout.toString().trim(), '你好');
+      expect(results.length, 6);
     });
 
     test('outLines, errLines', () async {

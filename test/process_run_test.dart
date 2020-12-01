@@ -18,7 +18,7 @@ import 'process_run_test_common.dart';
 
 void main() {
   group('toString', () {
-    test('argumentsToString', () {
+    test('argumentToString', () {
       expect(argumentToString(''), '""');
       expect(argumentToString('a'), 'a');
       expect(argumentToString(' '), '" "');
