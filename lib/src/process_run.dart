@@ -43,7 +43,8 @@ Future<ProcessResult> runExecutableArguments(
 
   if (commandVerbose == true) {
     utils.streamSinkWriteln(stdout ?? io.stdout,
-        '\$ ${executableArgumentsToString(executable, arguments)}');
+        '\$ ${executableArgumentsToString(executable, arguments)}',
+        encoding: stdoutEncoding);
   }
 
   // Build our environment
@@ -226,7 +227,8 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
   }
 
   if (commandVerbose == true) {
-    streamSinkWriteln(stdout ?? io.stdout, '\$ ${cmd}');
+    streamSinkWriteln(stdout ?? io.stdout, '\$ ${cmd}',
+        encoding: cmd.stdoutEncoding);
   }
 
   try {

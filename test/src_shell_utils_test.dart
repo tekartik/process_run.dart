@@ -1,4 +1,5 @@
 import 'package:process_run/dartbin.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:test/test.dart';
 
@@ -117,6 +118,15 @@ a ^
  "c" d
 e
     '''), ['a "b" "c" d', 'e']);
+    });
+
+    test('streamSinkWrite', () async {
+      var controller = ShellLinesController();
+      streamSinkWriteln(controller.sink, 't');
+      streamSinkWriteln(controller.sink, 'éà');
+      streamSinkWriteln(controller.sink, '你好');
+      controller.close();
+      expect(await controller.stream.toList(), ['t', 'éà', '你好']);
     });
   });
 }

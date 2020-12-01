@@ -8,6 +8,8 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 
+import 'bin/shell/import.dart';
+
 /// True if the line is a comment.
 ///
 /// line must have been trimmed before
@@ -253,9 +255,11 @@ List<String> _getEnvironmentPaths(Map<String, String> environment) =>
     <String>[];
 
 /// Write a string line to the ouput
-void streamSinkWriteln(StreamSink<List<int>> sink, String message) =>
-    streamSinkWrite(sink, '${message}\n');
+void streamSinkWriteln(StreamSink<List<int>> sink, String message,
+        {Encoding encoding = systemEncoding}) =>
+    streamSinkWrite(sink, '${message}\n', encoding: encoding);
 
 /// Write a string to a to sink
-void streamSinkWrite(StreamSink<List<int>> sink, String message) =>
-    sink.add(message.codeUnits);
+void streamSinkWrite(StreamSink<List<int>> sink, String message,
+        {Encoding encoding = systemEncoding}) =>
+    sink.add(encoding.encode(message));

@@ -85,13 +85,15 @@ dart example/echo.dart -o $text
 dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o ${shellArgument(text)}
+dart example/echo.dart -o éà
 ''');
       expect(results[0].stdout.toString().trim(), 'Helloworld');
       expect(results[1].stdout.toString().trim(), 'Helloworld');
       expect(results[2].stdout.toString().trim(), 'Hello  world');
       expect(results[3].stdout.toString().trim(), 'Hello  world');
       expect(results[4].stdout.toString().trim(), 'Hello  world');
-      expect(results.length, 5);
+      expect(results[5].stdout.toString().trim(), 'éà');
+      expect(results.length, 6);
     });
 
     test('outLines, errLines', () async {
@@ -485,5 +487,18 @@ _tekartik_dummy_app_that_does_not_exits
             .toString());
     expect(version, resolvedVersion);
     expect(version, whichVersion);
+  });
+
+  test('verbose non ascii char', () async {
+    var controller = ShellLinesController();
+    var shell = Shell(
+        stdout: controller.sink,
+        verbose: true,
+        environment: ShellEnvironment()
+          ..aliases['echo'] = 'dart example/echo.dart -o');
+    await shell.run('echo 你好é');
+    controller.close();
+    expect(await controller.stream.toList(),
+        ['\$ dart example/echo.dart -o 你好é', '你好é']);
   });
 }

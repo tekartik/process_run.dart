@@ -211,7 +211,8 @@ class Shell {
       path = join(_workingDirectoryPath, path);
     }
     if (_commandVerbose) {
-      streamSinkWriteln(_stdout ?? stdout, '\$ cd $path');
+      streamSinkWriteln(_stdout ?? stdout, '\$ cd $path',
+          encoding: _stdoutEncoding);
     }
     return clone(workingDirectory: path);
   }
