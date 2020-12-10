@@ -4,9 +4,9 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart';
-import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
+import 'package:process_run/src/dartbin_impl.dart';
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:yaml/yaml.dart';
@@ -363,13 +363,17 @@ UserConfig getUserConfig(Map<String, String> environment) {
     }
   }
 
-  // Add user config
+  // Add user config first (it will be eventually overwritten by local config)
   addConfig(getUserEnvFilePath(shEnv));
 
   // Prepend local dart environment
   // Always prepend dart executable so that dart runner context is used first
+
+  // Don't use global dartExecutable since it will trigger a call to userConfig
+  var dartExecutable =
+      platformResolvedExecutable ?? resolveDartExecutable(environment: shEnv);
   if (dartExecutable != null) {
-    var dartBinPath = dartSdkBinDirPath;
+    var dartBinPath = dirname(dartExecutable);
 
     // Add dart path so that dart commands always work!
     shEnv.paths.prepend(dartBinPath);

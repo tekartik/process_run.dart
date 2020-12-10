@@ -45,16 +45,26 @@ String _resolvedDartExecutable;
 /// Get dart vm either from executable or using the which command
 ///
 String get resolvedDartExecutable => _resolvedDartExecutable ??= () {
-      if (debugDartExecutableForceWhich) {
-        // Don"t try resolving that only works during debug/test
-      } else {
-        var executable = Platform.resolvedExecutable;
-        if (basenameWithoutExtension(executable) == 'dart') {
-          return executable;
-        }
+      var executable = platformResolvedExecutable;
+      if (executable != null) {
+        return executable;
       }
+
       return resolveDartExecutable();
     }();
+
+String _platformResolvedExecutable;
+String get platformResolvedExecutable {
+  if (!debugDartExecutableForceWhich) {
+    return _platformResolvedExecutable ??= () {
+      var executable = Platform.resolvedExecutable;
+      if (basenameWithoutExtension(executable) == 'dart') {
+        return executable;
+      }
+    }();
+  }
+  return null;
+}
 
 set resolvedDartExecutable(String dartExecutable) =>
     _resolvedDartExecutable = dartExecutable;

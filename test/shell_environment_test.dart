@@ -15,6 +15,7 @@ void main() {
   var basicEnv = ShellEnvironment.empty();
   basicEnv.vars['VAR1'] = 'var1';
   basicEnv.paths.add('path1');
+  basicEnv.aliases['alias1'] = 'command1';
 
   group('ShellEnvironment', () {
     test('empty', () {
@@ -66,7 +67,6 @@ void main() {
       env.paths.remove('path1');
       env.paths.remove('path2');
       expect(env, {
-        'PATH': '',
         'VAR3': 'var3',
       });
     });
@@ -226,22 +226,25 @@ void main() {
       expect(ShellEnvironment.empty(), ShellEnvironment.empty());
     });
     test('toJson', () async {
-      expect(ShellEnvironment.empty().toJson(), {'paths': [], 'vars': {}});
+      expect(ShellEnvironment.empty().toJson(),
+          {'paths': [], 'vars': {}, 'aliases': {}});
       expect(basicEnv.toJson(), {
         'paths': ['path1'],
-        'vars': {'VAR1': 'var1'}
+        'vars': {'VAR1': 'var1'},
+        'aliases': {'alias1': 'command1'}
       });
     });
     test('fromJson', () async {
       expect(
           ShellEnvironment.fromJson({
             'paths': ['path1'],
-            'vars': {'VAR1': 'var1'}
+            'vars': {'VAR1': 'var1'},
+            'aliases': {'alias1': 'command1'}
           }),
           basicEnv);
       expect(ShellEnvironment.fromJson({}), emptyEnv);
     });
-    test('merge', () async {
+    test('merge', () {
       var env = ShellEnvironment.empty();
 
       env.vars.addAll({'VAR1': 'var1', 'VAR2': 'value2'});
@@ -263,6 +266,32 @@ void main() {
             .join(envPathSeparator),
         'VAR3': 'var3'
       });
+    });
+    test('path merge', () {
+      var paths = ShellEnvironment().paths;
+      paths.merge(paths);
+      var env = ShellEnvironment.full(
+          environment: shellEnvironment, includeParentEnvironment: true);
+      paths = env.paths;
+      paths.merge(paths);
+
+      env = ShellEnvironment();
+      paths = env.paths;
+      paths.merge(paths);
+
+      paths = ShellEnvironment.empty().paths;
+      paths.add('1');
+      paths.prepend('0');
+      paths.add('2');
+      paths.addAll(['3', '4']);
+      expect(paths, ['0', '1', '2', '3', '4']);
+      paths.insertAll(0, ['1', '4']);
+      paths.addAll(paths);
+      // Shoud be ignored
+      paths.addAll(['3', '4']);
+      expect(paths, ['1', '4', '0', '2', '3']);
+      paths.merge(paths);
+      expect(paths, ['1', '4', '0', '2', '3']);
     });
   });
 }

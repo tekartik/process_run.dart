@@ -15,7 +15,14 @@ library process_run.shell;
 // We reuse io sharedStdIn definition.
 export 'package:io/io.dart' show sharedStdIn;
 export 'package:process_run/dartbin.dart'
-    show dartVersion, dartChannel, dartExecutable;
+    show
+        dartVersion,
+        dartChannel,
+        dartExecutable,
+        dartChannelStable,
+        dartChannelBeta,
+        dartChannelDev,
+        dartChannelMaster;
 export 'package:process_run/src/shell_utils.dart'
     show
         userHomePath,
