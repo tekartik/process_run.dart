@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:process_run/src/shell_utils.dart';
+
 import 'common/import.dart';
 
 /// Basic shell lines controller.
@@ -25,17 +27,29 @@ import 'common/import.dart';
 /// }
 /// ```
 class ShellLinesController {
+  final Encoding encoding;
   final _controller = StreamController<List<int>>();
+
+  ShellLinesController({this.encoding = systemEncoding});
+
+  /// Write a string with the specified encoding.
+  void write(String message) =>
+      streamSinkWrite(sink, message, encoding: encoding);
 
   /// The sink for the Shell stderr/stdout
   StreamSink<List<int>> get sink => _controller.sink;
 
-  /// The stram to listen to
-  Stream<String> get stream => shellStreamLines(_controller.stream);
+  /// The stream to listen to
+  Stream<String> get stream =>
+      shellStreamLines(_controller.stream, encoding: encoding);
 
   /// Dispose the controller.
   void close() {
     _controller.close();
+  }
+
+  void writeln(String message) {
+    write('$message\n');
   }
 }
 
@@ -52,7 +66,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
     void addCurrentLine() {
       if (currentLine?.isNotEmpty ?? false) {
         try {
-          ctlr.add(systemEncoding.decode(currentLine));
+          ctlr.add(encoding.decode(currentLine));
         } catch (_) {
 // Ignore nad encoded line
           print('ignoring: $currentLine');

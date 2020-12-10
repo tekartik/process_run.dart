@@ -92,7 +92,9 @@ dart example/echo.dart -o éà
       expect(results[2].stdout.toString().trim(), 'Hello  world');
       expect(results[3].stdout.toString().trim(), 'Hello  world');
       expect(results[4].stdout.toString().trim(), 'Hello  world');
-      expect(results[5].stdout.toString().trim(), 'éà');
+      if (!Platform.isWindows) {
+        expect(results[5].stdout.toString().trim(), 'éà');
+      }
       expect(results.length, 6);
     });
 
@@ -498,7 +500,9 @@ _tekartik_dummy_app_that_does_not_exits
           ..aliases['echo'] = 'dart example/echo.dart -o');
     await shell.run('echo 你好é');
     controller.close();
-    expect(await controller.stream.toList(),
-        ['\$ dart example/echo.dart -o 你好é', '你好é']);
+    if (!Platform.isWindows) {
+      expect(await controller.stream.toList(),
+          ['\$ dart example/echo.dart -o 你好é', '你好é']);
+    }
   });
 }

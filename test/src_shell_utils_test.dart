@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:test/test.dart';
 
@@ -121,10 +124,24 @@ e
     });
 
     test('streamSinkWrite', () async {
-      var controller = ShellLinesController();
-      streamSinkWriteln(controller.sink, 't');
-      streamSinkWriteln(controller.sink, 'éà');
-      streamSinkWriteln(controller.sink, '你好');
+      var controller = ShellLinesController(encoding: systemEncoding);
+      controller.writeln('t');
+      controller.writeln('éà');
+      controller.writeln('你好');
+      controller.close();
+      var list = await controller.stream.toList();
+      if (!Platform.isWindows) {
+        expect(list, ['t', 'éà', '你好']);
+      } else {
+        // Don't test other non supported characters
+        expect(list.first, 't');
+        expect(list[1], 'éà');
+      }
+
+      controller = ShellLinesController(encoding: utf8);
+      controller.writeln('t');
+      controller.writeln('éà');
+      controller.writeln('你好');
       controller.close();
       expect(await controller.stream.toList(), ['t', 'éà', '你好']);
     });

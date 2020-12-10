@@ -42,7 +42,7 @@ void main() {
 
       expect(env, {
         'VAR1': 'var1',
-        'PATH': (Platform.isWindows ? 'path1:path2' : 'path1:path2')
+        'PATH': (Platform.isWindows ? 'path1;path2' : 'path1:path2')
       });
     });
 
