@@ -75,7 +75,7 @@ void main() {
     });
 
     test('shellJoin', () {
-      void _test(String command, {String expected}) {
+      void _test(String command, {String? expected}) {
         var parts = shellSplit(command);
         var joined = shellJoin(parts);
         expect(joined, expected ?? command, reason: parts.toString());

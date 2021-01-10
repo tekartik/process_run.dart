@@ -9,7 +9,7 @@ void dumpStringMap(Map<String, String> map) {
   }
 }
 
-void dumpStringList(List<String> list) {
+void dumpStringList(List<String?> list) {
   for (var item in list) {
     stdout.writeln('$item');
   }

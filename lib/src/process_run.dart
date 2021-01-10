@@ -18,23 +18,18 @@ import 'common/import.dart';
 /// Don't mess-up with the input and output for now here. only use it for kill.
 Future<ProcessResult> runExecutableArguments(
     String executable, List<String> arguments,
-    {String workingDirectory,
-    Map<String, String> environment,
+    {String? workingDirectory,
+    Map<String, String>? environment,
     bool includeParentEnvironment = true,
-    bool runInShell,
-    Encoding stdoutEncoding = systemEncoding,
-    Encoding stderrEncoding = systemEncoding,
-    Stream<List<int>> stdin,
-    StreamSink<List<int>> stdout,
-    StreamSink<List<int>> stderr,
-    bool verbose,
-    bool commandVerbose,
-    void Function(Process process) onProcess}) async {
-  // enforce default
-  includeParentEnvironment ??= true;
-  //stdoutEncoding ??= SYSTEM_ENCODING;
-  //stderrEncoding ??= SYSTEM_ENCODING;
-
+    bool? runInShell,
+    Encoding? stdoutEncoding = systemEncoding,
+    Encoding? stderrEncoding = systemEncoding,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool? verbose,
+    bool? commandVerbose,
+    void Function(Process process)? onProcess}) async {
   if (verbose == true) {
     commandVerbose = true;
     stdout ??= io.stdout;
@@ -44,7 +39,7 @@ Future<ProcessResult> runExecutableArguments(
   if (commandVerbose == true) {
     utils.streamSinkWriteln(stdout ?? io.stdout,
         '\$ ${executableArgumentsToString(executable, arguments)}',
-        encoding: stdoutEncoding);
+        encoding: stdoutEncoding!);
   }
 
   // Build our environment
@@ -95,7 +90,7 @@ Future<ProcessResult> runExecutableArguments(
       io.stderr.writeln(
           '\$ ${executableArgumentsToString(executableShortName, arguments)}');
       io.stderr.writeln(
-          'workingDirectory: ${workingDirectory ?? Directory.current?.path}');
+          'workingDirectory: ${workingDirectory ?? Directory.current.path}');
     }
     rethrow;
   }
@@ -105,7 +100,7 @@ Future<ProcessResult> runExecutableArguments(
 
   // Connected stdin
   // Buggy!
-  StreamSubscription stdinSubscription;
+  StreamSubscription? stdinSubscription;
   if (stdin != null) {
     //stdin.pipe(process.stdin); // this closes the stream...
     stdinSubscription = stdin.listen((List<int> data) {
@@ -121,7 +116,7 @@ Future<ProcessResult> runExecutableArguments(
   }
 
   Future<dynamic> streamToResult(
-      Stream<List<int>> stream, Encoding encoding) async {
+      Stream<List<int>> stream, Encoding? encoding) async {
     final list = <int>[];
     await for (final data in stream) {
       //devPrint('s: ${data}');
@@ -186,9 +181,10 @@ Future<ProcessResult> runExecutableArguments(
 }
 
 /// Convenient way to display a command
-String executableArgumentsToString(String executable, List<String> arguments) {
+String executableArgumentsToString(
+    String? executable, List<String>? arguments) {
   final sb = StringBuffer();
-  if (Platform.isWindows && (basename(executable) == executable)) {
+  if (Platform.isWindows && (basename(executable!) == executable)) {
     var ext = extension(executable);
     switch (ext) {
       case '.exe':
@@ -199,7 +195,7 @@ String executableArgumentsToString(String executable, List<String> arguments) {
     }
   }
   sb.write(executable);
-  if (arguments is List && arguments.isNotEmpty) {
+  if (arguments is List && arguments!.isNotEmpty) {
     sb.write(' ${argumentsToString(arguments)}');
   }
   return sb.toString();
@@ -214,12 +210,12 @@ String executableArgumentsToString(String executable, List<String> arguments) {
 /// [verbose] implies [commandVerbose]
 ///
 Future<ProcessResult> processCmdRun(ProcessCmd cmd,
-    {bool verbose,
-    bool commandVerbose,
-    Stream<List<int>> stdin,
-    StreamSink<List<int>> stdout,
-    StreamSink<List<int>> stderr,
-    void Function(Process process) onProcess}) async {
+    {bool? verbose,
+    bool? commandVerbose,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    void Function(Process process)? onProcess}) async {
   if (verbose == true) {
     stdout ??= io.stdout;
     stderr ??= io.stderr;
@@ -232,7 +228,7 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
   }
 
   try {
-    return await runExecutableArguments(cmd.executable, cmd.arguments,
+    return await runExecutableArguments(cmd.executable!, cmd.arguments,
         workingDirectory: cmd.workingDirectory,
         environment: cmd.environment,
         includeParentEnvironment: cmd.includeParentEnvironment,
@@ -250,7 +246,7 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
       io.stderr.writeln(e);
       io.stderr.writeln('\$ ${cmd}');
       io.stderr.writeln(
-          'workingDirectory: ${cmd.workingDirectory ?? Directory.current?.path}');
+          'workingDirectory: ${cmd.workingDirectory ?? Directory.current.path}');
     }
     rethrow;
   }

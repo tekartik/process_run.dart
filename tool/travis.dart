@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:process_run/shell.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
 Future main() async {

@@ -3,6 +3,7 @@ library process_run.pub_test;
 
 import 'package:path/path.dart';
 import 'package:process_run/package/package.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

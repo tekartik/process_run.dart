@@ -8,12 +8,12 @@ import 'package:process_run/process_run.dart';
 import 'package:process_run/process_run.dart' as process_run;
 
 class ProcessCmd {
-  String executable;
+  String? executable;
   List<String> arguments;
-  String workingDirectory;
-  Map<String, String> environment;
+  String? workingDirectory;
+  Map<String, String>? environment;
   bool includeParentEnvironment;
-  bool runInShell;
+  bool? runInShell;
   Encoding stdoutEncoding;
   Encoding stderrEncoding;
 
@@ -50,7 +50,7 @@ class ProcessCmd {
 
   /// Execute
   @deprecated // user runCmd instead
-  Future<ProcessResult> run() => process_run.run(executable, arguments,
+  Future<ProcessResult> run() => process_run.run(executable!, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment,
@@ -62,10 +62,10 @@ class ProcessCmd {
 // Use ProcessCmd instead
 @deprecated
 ProcessCmd processCmd(String executable, List<String> arguments,
-    {String workingDirectory,
-    Map<String, String> environment,
+    {String? workingDirectory,
+    Map<String, String>? environment,
     bool includeParentEnvironment = true,
-    bool runInShell,
+    bool? runInShell,
     Encoding stdoutEncoding = systemEncoding,
     Encoding stderrEncoding = systemEncoding}) {
   return ProcessCmd(executable, arguments,

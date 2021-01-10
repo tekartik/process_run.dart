@@ -1,6 +1,7 @@
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/src/dartbin_cmd.dart'
     show parsePlatformVersion, parsePlatformChannel;
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

@@ -8,9 +8,9 @@ String getShellCmdBinFileName(String command) =>
 // [data] can be map a list
 // if it is a string, it will try to parse it first
 //
-String jsonPretty(dynamic data) {
+String? jsonPretty(dynamic data) {
   if (data is String) {
-    dynamic parsed = jsonDecode(data as String);
+    dynamic parsed = jsonDecode(data);
     if (parsed != null) {
       data = parsed;
     }

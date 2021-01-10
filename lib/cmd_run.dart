@@ -35,6 +35,7 @@ export 'dartbin.dart'
         isFlutterSupportedSync;
 export 'process_run.dart'
     show
+        // ignore: deprecated_member_use_from_same_package
         run,
         executableArgumentsToString,
         runExecutableArguments,
@@ -74,11 +75,11 @@ export 'src/webdev.dart' show WebDevCmd;
 /// [verbose] implies [commandVerbose]
 ///
 Future<ProcessResult> runCmd(ProcessCmd cmd,
-        {bool verbose,
-        bool commandVerbose,
-        Stream<List<int>> stdin,
-        StreamSink<List<int>> stdout,
-        StreamSink<List<int>> stderr}) =>
+        {bool? verbose,
+        bool? commandVerbose,
+        Stream<List<int>>? stdin,
+        StreamSink<List<int>>? stdout,
+        StreamSink<List<int>>? stderr}) =>
     processCmdRun(cmd,
         verbose: verbose,
         commandVerbose: commandVerbose,

@@ -7,6 +7,7 @@ import 'package:process_run/src/utils.dart';
 
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'common/import.dart';
 import 'process_cmd.dart';
@@ -136,7 +137,7 @@ String parsePlatformChannel(String text) {
 }
 
 /// Parse flutter version
-Future<Version> getDartBinVersion() async {
+Future<Version?> getDartBinVersion() async {
   // $ dart --version
   // Linux: Dart VM version: 2.7.0 (Unknown timestamp) on "linux_x64"
   var cmd = DartCmd(['--version']);
@@ -150,21 +151,19 @@ Future<Version> getDartBinVersion() async {
 }
 
 /// Parse version from 'dart --version' output.
-Version parseDartBinVersionOutput(String text) {
+Version? parseDartBinVersionOutput(String text) {
   var output = LineSplitter.split(text)
       .join(' ')
       .split(' ')
-      .map((word) => word?.trim())
-      .where((word) => word?.isNotEmpty ?? false);
+      .map((word) => word.trim())
+      .where((word) => word.isNotEmpty);
   var foundDart = false;
   try {
     for (var word in output) {
       if (foundDart) {
         try {
           var version = Version.parse(word);
-          if (version != null) {
-            return version;
-          }
+          return version;
         } catch (_) {}
       }
       if (word.toLowerCase().contains('dart')) {

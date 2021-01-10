@@ -21,7 +21,7 @@ var expectedDartPaths = [
   dartSdkBinDirPath
 ];
 
-List<String> getExpectedPartPaths(ShellEnvironment environment) {
+List<String?> getExpectedPartPaths(ShellEnvironment environment) {
   return [
     if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
       getFlutterAncestorPath(dartSdkBinDirPath),
@@ -37,7 +37,7 @@ void main() {
         expect(userAppDataPath, Platform.environment['APPDATA']);
       } else {
         expect(userHomePath, Platform.environment['HOME']);
-        expect(userAppDataPath, join(Platform.environment['HOME'], '.config'));
+        expect(userAppDataPath, join(Platform.environment['HOME']!, '.config'));
       }
     });
 
@@ -104,7 +104,7 @@ void main() {
     var _flutterExecutablePath = flutterExecutablePath;
     test('userEnvironment in flutter context', () async {
       try {
-        var flutterBinDirPath = dirname(_flutterExecutablePath);
+        var flutterBinDirPath = dirname(_flutterExecutablePath!);
         shellEnvironment = newEnvNoOverride()..paths.prepend(flutterBinDirPath);
 
         // '/opt/app/flutter/dev/flutter/bin',
@@ -164,14 +164,14 @@ void main() {
             getFlutterAncestorPath(dartSdkBinDirPath),
           dartSdkBinDirPath,
           'test',
-          join(userHomePath, 'temp'),
+          join(userHomePath!, 'temp'),
         ]);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
 
         resetUserConfig();
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
           ..addAll(Platform.environment);
-        expect(userPaths, containsAll(['test', join(userHomePath, 'temp')]));
+        expect(userPaths, containsAll(['test', join(userHomePath!, 'temp')]));
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
       } finally {
         shellEnvironment = null;
@@ -188,13 +188,14 @@ void main() {
           localEnvFilePathEnvKey: configFileEmptyPath
         };
 
-        var dartBinDir = dirname(dartExecutable);
+        var dartBinDir = dirname(dartExecutable!);
         var flutterDir = getFlutterAncestorPath(dartSdkBinDirPath);
         expect(userPaths, [
           if (flutterDir != null) flutterDir,
           dartBinDir,
         ]);
-        expect(dirname(await which('dart')), flutterDir ?? dartBinDir);
+        expect(dirname(await (which('dart') as FutureOr<String>)),
+            flutterDir ?? dartBinDir);
       } finally {
         shellEnvironment = null;
       }
@@ -298,10 +299,10 @@ void main() {
     }, timeout: const Timeout(Duration(seconds: 120)));
 
     test('environment_vars', () async {
-      String linuxEnvCommand;
+      String? linuxEnvCommand;
 
       if (Platform.isLinux) {
-        linuxEnvCommand = shellArgument(whichSync('env'));
+        linuxEnvCommand = shellArgument(whichSync('env')!);
       }
       expect(shellEnvironment, userEnvironment);
       userConfig = UserConfig(vars: <String, String>{'test': '1'});
@@ -311,14 +312,14 @@ void main() {
       //TODO test on other platform
       if (Platform.isLinux) {
         var out = (await Shell(verbose: false).run('$linuxEnvCommand'))
-            .map((result) => result?.stdout?.toString())
+            .map((result) => result.stdout.toString())
             .join('\n');
         expect(out, contains('test=1'));
       } else if (Platform.isWindows) {
         try {
           //TODO test on other platform
           var out = (await Shell(verbose: false).run('echo test=%test%'))
-              .map((result) => result?.stdout?.toString())
+              .map((result) => result.stdout.toString())
               .join('\n');
           expect(out, contains('test=1'));
         } on TestFailure catch (e) {

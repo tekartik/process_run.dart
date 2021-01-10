@@ -26,7 +26,7 @@ class ShellEnvVarSetCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 2 arguments expected');
       exit(1);
     } else {
-      if (verbose) {
+      if (verbose!) {
         stdout.writeln('file $label: $envFilePath');
         stdout.writeln('before: ${jsonEncode(ShellEnvironment().vars)}');
       }
@@ -34,7 +34,7 @@ class ShellEnvVarSetCommand extends ShellEnvCommandBase {
       var value = rest.sublist(1).join(' ');
       var fileContent = await envFileReadOrCreate();
       if (fileContent.addVar(name, value)) {
-        if (verbose) {
+        if (verbose!) {
           stdout.writeln('writing file');
         }
         await fileContent.write();
@@ -44,7 +44,7 @@ class ShellEnvVarSetCommand extends ShellEnvCommandBase {
       }
       // Force reload
       shellEnvironment = null;
-      if (verbose) {
+      if (verbose!) {
         stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
       }
       return true;

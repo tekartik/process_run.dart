@@ -19,9 +19,9 @@ void devPrint(Object object) {
 }
 
 @deprecated
-T devWarning<T>([T t]) => t;
+T? devWarning<T>([T? t]) => t;
 
-void _devError([Object msg]) {
+void _devError([Object? msg]) {
   // one day remove the print however sometimes the error thrown is hidden
   try {
     throw UnsupportedError('$msg');
@@ -35,7 +35,7 @@ void _devError([Object msg]) {
 }
 
 @deprecated
-void devError([String msg]) => _devError(msg);
+void devError([String? msg]) => _devError(msg);
 
 // exported for testing
 void debugDevPrint(Object object) => _devPrint(object);

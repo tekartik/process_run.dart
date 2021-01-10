@@ -42,17 +42,16 @@ class ShellLinesController {
 /// Basic line streaming. Assuming system encoding
 Stream<String> shellStreamLines(Stream<List<int>> stream,
     {Encoding encoding = systemEncoding}) {
-  StreamSubscription subscription;
-  List<int> currentLine;
+  StreamSubscription? subscription;
+  List<int>? currentLine;
   const endOfLine = 10;
   const lineFeed = 13;
-  StreamController<String> ctlr;
-  encoding ??= systemEncoding;
+  late StreamController<String> ctlr;
   ctlr = StreamController<String>(onListen: () {
     void addCurrentLine() {
       if (currentLine?.isNotEmpty ?? false) {
         try {
-          ctlr.add(systemEncoding.decode(currentLine));
+          ctlr.add(systemEncoding.decode(currentLine!));
         } catch (_) {
 // Ignore nad encoded line
           print('ignoring: $currentLine');
@@ -65,9 +64,9 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
       if (currentLine == null) {
         currentLine = data;
       } else {
-        var newCurrentLine = Uint8List(currentLine.length + data.length);
-        newCurrentLine.setAll(0, currentLine);
-        newCurrentLine.setAll(currentLine.length, data);
+        var newCurrentLine = Uint8List(currentLine!.length + data.length);
+        newCurrentLine.setAll(0, currentLine!);
+        newCurrentLine.setAll(currentLine!.length, data);
         currentLine = newCurrentLine;
       }
     }

@@ -33,19 +33,19 @@ class UserConfig {
   final Map<String, String> aliases;
 
   UserConfig(
-      {Map<String, String> vars,
-      List<String> paths,
-      Map<String, String> aliases})
+      {Map<String, String>? vars,
+      List<String>? paths,
+      Map<String, String>? aliases})
       : vars = vars ?? <String, String>{},
         paths = paths ?? <String>[],
         aliases = aliases ?? <String, String>{};
 
   @override
   String toString() =>
-      '${vars?.length} vars ${paths?.length} paths ${aliases?.length} aliases';
+      '${vars.length} vars ${paths.length} paths ${aliases.length} aliases';
 }
 
-UserConfig _userConfig;
+UserConfig? _userConfig;
 
 UserConfig get userConfig =>
     _userConfig ??
@@ -68,7 +68,7 @@ set userConfig(UserConfig userConfig) => _userConfig = userConfig;
 /// See [https://github.com/tekartik/process_run.dart/blob/master/doc/user_config.md]
 /// in the documentation for more information.
 ///
-List<String> get userPaths => userConfig.paths;
+List<String?> get userPaths => userConfig.paths;
 
 /// Get the user environment
 ///
@@ -92,13 +92,13 @@ void resetUserConfig() {
 }
 
 class EnvFileConfig {
-  final String fileContent;
+  final String? fileContent;
 
   // hopefully a map
   final dynamic yaml;
-  final List<String> paths;
-  final Map<String, String> vars;
-  final Map<String, String> aliases;
+  final List<String>? paths;
+  final Map<String, String>? vars;
+  final Map<String, String>? aliases;
 
   EnvFileConfig(
       this.fileContent, this.yaml, this.paths, this.vars, this.aliases);
@@ -170,9 +170,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       //   FIREBASE_TOP: /home/user/.firebase
       void _addVar(String key, String value) {
         // devPrint('$key: $value');
-        if (key != null) {
-          fileVars[key] = value;
-        }
+        fileVars[key] = value;
       }
 
       var vars = mapKeysValue(map, userConfigVarKeys);
@@ -182,8 +180,8 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
           if (item is Map) {
             if (item.isNotEmpty) {
               var entry = item.entries.first;
-              var key = entry.key?.toString();
-              var value = entry.value?.toString();
+              var key = entry.key.toString();
+              var value = entry.value.toString();
               _addVar(key, value);
             }
           } else {
@@ -194,7 +192,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       }
       if (vars is Map) {
         vars.forEach((key, value) {
-          _addVar(key?.toString(), value?.toString());
+          _addVar(key.toString(), value.toString());
         });
       }
 
@@ -209,7 +207,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       //   - ll: ls -l
       void _addAlias(String key, String value) {
         // devPrint('$key: $value');
-        if (key != null && (value?.isNotEmpty ?? false)) {
+        if (value.isNotEmpty) {
           fileAliases[key] = value;
         }
       }
@@ -221,8 +219,8 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
           if (item is Map) {
             if (item.isNotEmpty) {
               var entry = item.entries.first;
-              var key = entry.key?.toString();
-              var value = entry.value?.toString();
+              var key = entry.key.toString();
+              var value = entry.value.toString();
               _addAlias(key, value);
             }
           } else {
@@ -233,7 +231,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       }
       if (alias is Map) {
         alias.forEach((key, value) {
-          _addAlias(key?.toString(), value?.toString());
+          _addAlias(key.toString(), value.toString());
         });
       }
     }
@@ -248,10 +246,10 @@ EnvFileConfig loadFromPath(String path) => _loadFromPath(path);
 
 EnvFileConfig _loadFromPath(String path) {
   dynamic yaml;
-  String fileContent;
-  Map<String, String> vars;
-  Map<String, String> aliases;
-  List<String> paths;
+  String? fileContent;
+  Map<String, String>? vars;
+  Map<String, String>? aliases;
+  List<String>? paths;
   try {
     // Look for any config file in ~/tekartik/process_run/env.yaml
     try {
@@ -287,9 +285,9 @@ void userLoadConfigMap(Map map) {
 
 /// Only specify the vars to override and the paths to add
 void userLoadEnv(
-    {Map<String, String> vars,
-    List<String> paths,
-    Map<String, String> aliases}) {
+    {Map<String, String>? vars,
+    List<String>? paths,
+    Map<String, String>? aliases}) {
   userLoadEnvFileConfig(EnvFileConfig(null, null, paths, vars, aliases));
 }
 
@@ -302,22 +300,23 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   // devPrint('adding config: $config');
   if (added.paths != null) {
     if (const ListEquality().equals(
-        paths.sublist(0, min(added.paths.length, paths.length)), added.paths)) {
+        paths.sublist(0, min(added.paths!.length, paths.length)),
+        added.paths)) {
       // don't add if already in same order at the beginning
     } else {
-      paths.insertAll(0, added.paths);
+      paths.insertAll(0, added.paths!);
     }
   }
   added.vars?.forEach((key, value) {
-    vars[key] = value ?? '';
+    vars[key] = value;
   });
   // Set env PATH from path
-  vars[envPathKey] = paths?.join(envPathSeparator);
+  vars[envPathKey] = paths.join(envPathSeparator);
   userConfig = UserConfig(vars: vars, paths: paths);
 }
 
 /// Returns the matching flutter ancestor if any
-String getFlutterAncestorPath(String dartSdkBinDirPath) {
+String? getFlutterAncestorPath(String dartSdkBinDirPath) {
   try {
     var parent = dartSdkBinDirPath;
     if (basename(parent) == 'bin') {
@@ -346,7 +345,7 @@ String getFlutterAncestorPath(String dartSdkBinDirPath) {
 }
 
 /// Get config map
-UserConfig getUserConfig(Map<String, String> environment) {
+UserConfig getUserConfig(Map<String, String>? environment) {
   /// Init a platform environment
   var shEnv = ShellEnvironment(environment: environment ?? platformEnvironment);
 
@@ -354,17 +353,17 @@ UserConfig getUserConfig(Map<String, String> environment) {
   void addConfig(String path) {
     var config = loadFromPath(path);
     var configShEnv = ShellEnvironment.empty();
-    if (config?.isNotEmpty ?? false) {
+    if (config.isNotEmpty) {
       configShEnv
-        ..vars.addAll(config.vars)
-        ..paths.addAll(config.paths)
-        ..aliases.addAll(config.aliases);
+        ..vars.addAll(config.vars!)
+        ..paths.addAll(config.paths!)
+        ..aliases.addAll(config.aliases!);
       shEnv.merge(configShEnv);
     }
   }
 
   // Add user config
-  addConfig(getUserEnvFilePath(shEnv));
+  addConfig(getUserEnvFilePath(shEnv)!);
 
   // Prepend local dart environment
   // Always prepend dart executable so that dart runner context is used first
@@ -395,23 +394,23 @@ List<String> getUserPaths(Map<String, String> environment) =>
     getUserConfig(environment).paths;
 
 /// Get the user env file path
-String getUserEnvFilePath([Map<String, String> environment]) {
+String? getUserEnvFilePath([Map<String, String>? environment]) {
   environment ??= platformEnvironment;
   // devPrint((Map<String, String>.from(environment)..removeWhere((key, value) => !key.toLowerCase().contains('teka'))).keys);
   return environment[userEnvFilePathEnvKey] ??
       (userAppDataPath == null
           ? null
-          : join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml'));
+          : join(userAppDataPath!, 'tekartik', 'process_run', 'env.yaml'));
 }
 
 /// Get the local env file path
 ///
 /// Must be called after loading the env vars
-String getLocalEnvFilePath([Map<String, String> environment]) {
+String getLocalEnvFilePath([Map<String, String>? environment]) {
   environment ??= platformEnvironment;
 
   var subDir = environment[localEnvFilePathEnvKey] ?? localEnvFilePathDefault;
-  return join(Directory.current?.path ?? '.', subDir);
+  return join(Directory.current.path, subDir);
 }
 
 final localEnvFilePathDefault = joinAll(['.local', 'ds_env.yaml']);

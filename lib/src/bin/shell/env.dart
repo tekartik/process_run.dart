@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:args/args.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart' as prefix0;
@@ -19,7 +20,7 @@ import 'env_var.dart';
 import 'import.dart';
 
 class ShellEnvCommandBase extends ShellBinCommand {
-  ShellEnvCommandBase({String name, String description})
+  ShellEnvCommandBase({required String name, String? description})
       : super(name: name, description: description) {
     parser.addFlag(flagLocal,
         abbr: 'l', help: 'Use local env', negatable: false, defaultsTo: true);
@@ -36,7 +37,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
   String get label => local ? 'local' : 'user';
 
   Future<EnvFileContent> envFileReadOrCreate({bool write = false}) async {
-    var fileContent = EnvFileContent(_envFilePath);
+    var fileContent = EnvFileContent(_envFilePath!);
     if (!await fileContent.read()) {
       fileContent.lines = sampleFileContent;
     }
@@ -46,13 +47,13 @@ class ShellEnvCommandBase extends ShellBinCommand {
     return fileContent;
   }
 
-  String get envFilePath => _envFilePath;
+  String? get envFilePath => _envFilePath;
 
-  String get _envFilePath => local
+  String? get _envFilePath => local
       ? getLocalEnvFilePath(userEnvironment)
       : getUserEnvFilePath(userEnvironment);
 
-  List<String> _sampleFileContent;
+  List<String>? _sampleFileContent;
 
   List<String> get sampleFileContent => _sampleFileContent ??= () {
         var content = local
@@ -118,8 +119,7 @@ class ShellEnvCommand extends ShellEnvCommandBase {
       void displayInfo(String title, String path) {
         var config = loadFromPath(path);
         stdout.writeln('# $title');
-        stdout.writeln(
-            'file: ${relative(path, from: Directory.current?.path ?? '.')}');
+        stdout.writeln('file: ${relative(path, from: Directory.current.path)}');
         if (config.fileContent != null) {
           //stdout.writeln('${config.fileContent}');
           // stdout.writeln();
@@ -143,7 +143,7 @@ class ShellEnvCommand extends ShellEnvCommandBase {
         }
       }
 
-      displayInfo('env ($label)', envFilePath);
+      displayInfo('env ($label)', envFilePath!);
       return true;
     }
     return false;
@@ -157,7 +157,7 @@ Future<void> main(List<String> arguments) async {
 
 /// pub run process_run:shell edit-env
 Future shellEnv(ArgParser parser, ArgResults results) async {
-  final help = results == null ? false : results[flagHelp] as bool;
+  final help = results[flagHelp] as bool;
 
   void _printUsage() {
     stdout.writeln('Manipulate local and global env vars');
@@ -174,7 +174,7 @@ Future shellEnv(ArgParser parser, ArgResults results) async {
     return;
   }
 
-  String command;
+  late String command;
   var commands = results.rest;
   if (commands.isEmpty) {
     stderr.writeln('missing command');
@@ -189,14 +189,13 @@ Future shellEnv(ArgParser parser, ArgResults results) async {
     void displayInfo(String title, String path) {
       var config = loadFromPath(path);
       stdout.writeln('# $title');
-      stdout.writeln(
-          'file: ${relative(path, from: Directory.current?.path ?? '.')}');
+      stdout.writeln('file: ${relative(path, from: Directory.current.path)}');
       stdout.writeln('vars: ${config.vars}');
       stdout.writeln('paths: ${config.paths}');
     }
 
     stdout.writeln('command: $command');
-    displayInfo('user_env', getUserEnvFilePath());
+    displayInfo('user_env', getUserEnvFilePath()!);
     displayInfo('local_env', getLocalEnvFilePath());
 
     return;

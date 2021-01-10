@@ -10,8 +10,8 @@ import 'process_run_test_common.dart';
 void main() {
   test('connect_stdout', () async {
     await stdout.flush();
-    final result = await run(
-        dartExecutable, [echoScriptPath, '--stdout', 'out'],
+    final result = await runExecutableArguments(
+        dartExecutable!, [echoScriptPath, '--stdout', 'out'],
         stdout: stdout);
     expect(result.stderr, '');
     expect(result.stdout, 'out');
@@ -22,8 +22,8 @@ void main() {
 
   test('connect_stderr', () async {
     await stderr.flush();
-    final result = await run(
-        dartExecutable, [echoScriptPath, '--stderr', 'err'],
+    final result = await runExecutableArguments(
+        dartExecutable!, [echoScriptPath, '--stderr', 'err'],
         stderr: stderr);
     expect(result.stdout, '');
     expect(result.stderr, 'err');

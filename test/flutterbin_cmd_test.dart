@@ -10,6 +10,7 @@ import 'package:process_run/src/process_cmd.dart';
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/src/user_config.dart';
 import 'package:process_run/which.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -62,7 +63,7 @@ void main() {
     });
 
     test('dart', () async {
-      var flutterDir = dirname(await which('flutter'));
+      var flutterDir = dirname((await which('flutter'))!);
       // New in 2.9
       expect(File(join(flutterDir, 'dart')).existsSync(), isTrue);
       getFlutterAncestorPath(flutterDir);
@@ -70,7 +71,7 @@ void main() {
     }, skip: !isFlutterSupportedSync);
 
     test('which', () {
-      expect(basename(whichSync('flutter')),
+      expect(basename(whichSync('flutter')!),
           getBashOrBatExecutableFilename('flutter'));
     }, skip: !isFlutterSupportedSync);
   });

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:io/io.dart' as io show shellSplit;
+import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
@@ -30,14 +30,14 @@ bool isLineToBeContinued(String line) {
 }
 
 /// Convert a script to multiple commands
-List<String> scriptToCommands(String script) {
-  var commands = <String>[];
+List<String?> scriptToCommands(String script) {
+  var commands = <String?>[];
   // non null when previous line ended with ^ or \
-  String currentCommand;
+  String? currentCommand;
   for (var line in LineSplitter.split(script)) {
     line = line.trim();
 
-    void _addAndClearCurrent(String command) {
+    void _addAndClearCurrent(String? command) {
       commands.add(command);
       currentCommand = null;
     }
@@ -67,13 +67,13 @@ List<String> scriptToCommands(String script) {
   return commands;
 }
 
-String _userAppDataPath;
+String? _userAppDataPath;
 
 /// Returns the user data path
 ///
 /// On windows, it is read from the `APPDATA` environment variable. Otherwise
 /// it is the `~/.config` folder
-String get userAppDataPath => _userAppDataPath ??= () {
+String? get userAppDataPath => _userAppDataPath ??= () {
       var override = platformEnvironment[userAppDataPathEnvKey];
       if (override != null) {
         return override;
@@ -83,15 +83,15 @@ String get userAppDataPath => _userAppDataPath ??= () {
       }
       return null;
     }() ??
-    (userHomePath == null ? null : join(userHomePath, '.config'));
+    (userHomePath == null ? null : join(userHomePath!, '.config'));
 
-String _userHomePath;
+String? _userHomePath;
 
 /// Return the user home path.
 ///
 /// Usually read from the `HOME` environment variable or `USERPROFILE` on
 /// Windows.
-String get userHomePath =>
+String? get userHomePath =>
     _userHomePath ??= platformEnvironment[userHomePathEnvKey] ??
         platformEnvironment['HOME'] ??
         platformEnvironment['USERPROFILE'];
@@ -99,7 +99,7 @@ String get userHomePath =>
 /// Expand home if needed
 String expandPath(String path) {
   if (path == '~') {
-    return userHomePath;
+    return userHomePath ?? path;
   }
   if (path.startsWith('~/') || path.startsWith(r'~\')) {
     return '${userHomePath}${path.substring(1)}';
@@ -124,7 +124,7 @@ String shellExecutableArguments(String executable, List<String> arguments) =>
 Map<String, String> get shellEnvironment => userEnvironment;
 
 /// Cached raw shell environment
-Map<String, String> _platformEnvironment;
+Map<String, String>? _platformEnvironment;
 
 /// Environment without debug VM_OPTIONS and without any user overrides
 ///
@@ -133,7 +133,7 @@ Map<String, String> get platformEnvironment => _platformEnvironment ??=
     environmentFilterOutVmOptions(Platform.environment);
 
 /// Warning, change the shell environment for the next run commands.
-set shellEnvironment(Map<String, String> environment) {
+set shellEnvironment(Map<String, String>? environment) {
   _userAppDataPath = null;
   _userHomePath = null;
   _platformEnvironment = environment;
@@ -142,7 +142,7 @@ set shellEnvironment(Map<String, String> environment) {
 /// Raw overriden environment
 Map<String, String> environmentFilterOutVmOptions(
     Map<String, String> platformEnvironment) {
-  Map<String, String> environment;
+  Map<String, String>? environment;
   var vmOptions = platformEnvironment['DART_VM_OPTIONS'];
   if (vmOptions != null) {
     environment = Map<String, String>.from(platformEnvironment);
@@ -157,7 +157,7 @@ Map<String, String> environmentFilterOutVmOptions(
 }
 
 const windowsDefaultPathExt = <String>['.exe', '.bat', '.cmd', '.com'];
-List<String> _windowsPathExts;
+List<String>? _windowsPathExts;
 
 /// Default extension for PATHEXT on Windows
 List<String> get windowsPathExts => _windowsPathExts ??=
@@ -169,15 +169,15 @@ const envPathKey = 'PATH';
 String get envPathSeparator =>
     Platform.isWindows ? windowsEnvPathSeparator : posixEnvPathSeparator;
 
-List<String> environmentGetWindowsPathExt(
+List<String>? environmentGetWindowsPathExt(
         Map<String, String> platformEnvironment) =>
     platformEnvironment['PATHEXT']
         ?.split(windowsEnvPathSeparator)
-        ?.map((ext) => ext.toLowerCase())
-        ?.toList(growable: false);
+        .map((ext) => ext.toLowerCase())
+        .toList(growable: false);
 
 /// fix runInShell for Windows
-bool fixRunInShell(bool runInShell, String executable) {
+bool fixRunInShell(bool? runInShell, String executable) {
   if (Platform.isWindows) {
     if (runInShell != false) {
       if (runInShell == null) {
@@ -199,46 +199,45 @@ String shellJoin(List<String> parts) =>
     parts.map((part) => shellArgument(part)).join(' ');
 
 /// Find command in path
-String findExecutableSync(String command, List<String> paths) {
-  if (paths != null) {
-    for (var path in paths) {
-      var commandPath = absolute(normalize(join(path, command)));
+String? findExecutableSync(String command, List<String> paths) {
+  for (var path in paths) {
+    var commandPath = absolute(normalize(join(path, command)));
 
-      if (Platform.isWindows) {
-        for (var ext in windowsPathExts) {
-          var commandPathWithExt = '$commandPath$ext';
-          if (File(commandPathWithExt).existsSync()) {
-            return normalize(commandPathWithExt);
-          }
+    if (Platform.isWindows) {
+      for (var ext in windowsPathExts) {
+        var commandPathWithExt = '$commandPath$ext';
+        if (File(commandPathWithExt).existsSync()) {
+          return normalize(commandPathWithExt);
         }
-        // Try without extension
-        if (File(commandPath).existsSync()) {
+      }
+      // Try without extension
+      if (File(commandPath).existsSync()) {
+        return commandPath;
+      }
+    } else {
+      var stats = File(commandPath).statSync();
+      if (stats.type == FileSystemEntityType.file ||
+          stats.type == FileSystemEntityType.link) {
+        // Check executable permission
+        if (stats.mode & 0x49 != 0) {
+          // binary 001001001
+          // executable
           return commandPath;
-        }
-      } else {
-        var stats = File(commandPath).statSync();
-        if (stats.type == FileSystemEntityType.file ||
-            stats.type == FileSystemEntityType.link) {
-          // Check executable permission
-          if (stats.mode & 0x49 != 0) {
-            // binary 001001001
-            // executable
-            return commandPath;
-          }
         }
       }
     }
   }
+
   return null;
 }
 
-List<String> _platformEnvironmentPaths;
+List<String>? _platformEnvironmentPaths;
 
 /// Get platform environment path
 List<String> get platformEnvironmentPaths =>
     _platformEnvironmentPaths ??= _getEnvironmentPaths(platformEnvironment);
 
-List<String> getEnvironmentPaths([Map<String, String> environment]) {
+List<String> getEnvironmentPaths([Map<String, String>? environment]) {
   if (environment == null) {
     return platformEnvironmentPaths;
   }
@@ -249,8 +248,7 @@ List<String> getEnvironmentPaths([Map<String, String> environment]) {
 ///
 /// Never null
 List<String> _getEnvironmentPaths(Map<String, String> environment) =>
-    (environment ?? <String, String>{})[envPathKey]?.split(envPathSeparator) ??
-    <String>[];
+    environment[envPathKey]?.split(envPathSeparator) ?? <String>[];
 
 /// Write a string line to the ouput
 void streamSinkWriteln(StreamSink<List<int>> sink, String message,

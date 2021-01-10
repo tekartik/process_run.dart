@@ -6,6 +6,7 @@ import 'package:process_run/src/bin/shell/env_file_content.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/constant.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

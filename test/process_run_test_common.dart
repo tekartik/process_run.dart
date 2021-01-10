@@ -40,7 +40,7 @@ class TestSink<T> implements StreamSink<T> {
   ///
   /// If [onDone] is passed, it's called when the user calls [close]. Its result
   /// is piped to the [done] future.
-  TestSink({Function() onDone}) : _onDone = onDone ?? (() {});
+  TestSink({Function()? onDone}) : _onDone = onDone ?? (() {});
 
   @override
   void add(T event) {
@@ -48,7 +48,7 @@ class TestSink<T> implements StreamSink<T> {
   }
 
   @override
-  void addError(error, [StackTrace stackTrace]) {
+  void addError(error, [StackTrace? stackTrace]) {
     results.add(Result<T>.error(error, stackTrace));
   }
 

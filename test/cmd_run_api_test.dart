@@ -27,6 +27,7 @@ void main() {
       getFlutterBinChannel;
       isFlutterSupported;
       isFlutterSupportedSync;
+      // ignore: deprecated_member_use_from_same_package
       run;
       executableArgumentsToString;
       runExecutableArguments;

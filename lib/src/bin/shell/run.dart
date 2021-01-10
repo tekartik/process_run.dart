@@ -36,7 +36,7 @@ class ShellRunCommand extends ShellBinCommand {
 
   @override
   FutureOr<bool> onRun() async {
-    String command;
+    String? command;
     var commands = results.rest;
     if (commands.isEmpty) {
       stderr.writeln('missing command');
@@ -51,14 +51,13 @@ class ShellRunCommand extends ShellBinCommand {
       void displayInfo(String title, String path) {
         var config = loadFromPath(path);
         stdout.writeln('# $title');
-        stdout.writeln(
-            'file: ${relative(path, from: Directory.current?.path ?? '.')}');
+        stdout.writeln('file: ${relative(path, from: Directory.current.path)}');
         stdout.writeln('vars: ${config.vars}');
         stdout.writeln('paths: ${config.paths}');
       }
 
       stdout.writeln('command: $command');
-      displayInfo('user_env', getUserEnvFilePath());
+      displayInfo('user_env', getUserEnvFilePath()!);
       displayInfo('local_env', getLocalEnvFilePath());
 
       return true;
@@ -67,7 +66,7 @@ class ShellRunCommand extends ShellBinCommand {
     if (command == null) {
       exit(1);
     }
-    if (verbose) {
+    if (verbose!) {
       print('command: $command');
     }
     await run(command);

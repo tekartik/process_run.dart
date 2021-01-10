@@ -270,5 +270,5 @@ void main() {
 /// Better with non verbose shell.
 Future<ShellEnvironment> getEchoEnv(Shell shell) async {
   return ShellEnvironment.fromJson(
-      jsonDecode((await shell.run('$echo --all-env')).outLines.join()) as Map);
+      jsonDecode((await shell.run('$echo --all-env')).outLines.join()) as Map?);
 }

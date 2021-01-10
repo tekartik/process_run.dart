@@ -63,15 +63,15 @@ void main() {
       // ignore: unnecessary_statements
       whichSync;
       // ignore: unnecessary_cast
-      (null as Process)?.errLines;
+      (null as Process?)?.errLines;
       // ignore: unnecessary_cast
-      (null as List<ProcessResult>)?.outText;
+      (null as List<ProcessResult>?)?.outText;
       // ignore: unnecessary_cast
-      (null as List<ProcessResult>)?.outLines;
+      (null as List<ProcessResult>?)?.outLines;
       // ignore: unnecessary_cast
-      (null as List<ProcessResult>)?.errText;
+      (null as List<ProcessResult>?)?.errText;
       // ignore: unnecessary_cast
-      (null as List<ProcessResult>)?.errLines;
+      (null as List<ProcessResult>?)?.errLines;
     });
 
     test('arguments', () async {
@@ -157,7 +157,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         await shell.runExecutableArguments('dart', ['--bad-arg']);
         fail('shoud fail');
       } on ShellException catch (e) {
-        expect(e.result.exitCode, 255);
+        expect(e.result!.exitCode, 255);
       }
     });
 
@@ -165,7 +165,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       try {
         await () async {
           var shell = Shell().cd('example');
-          Future future;
+          late Future future;
           try {
             future = shell.run('dart echo.dart --wait 30000');
             await future.timeout(const Duration(milliseconds: 15000));
@@ -193,7 +193,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       try {
         await () async {
           var shell = Shell().cd('example');
-          Future future;
+          late Future future;
           try {
             future = shell.run('dart echo.dart --wait 3000');
             await future.timeout(const Duration(milliseconds: 2000));
@@ -354,7 +354,7 @@ _tekartik_dummy_app_that_does_not_exits
     await _testCommand('flutter --version'); // flutter.bat on windows
     await _testCommand('dart --version'); // dart.exe on windows
     await _testCommand(
-        '${shellArgument(dartExecutable)} --version'); // dart.exe on windows
+        '${shellArgument(dartExecutable!)} --version'); // dart.exe on windows
     await _testCommand('pub --version'); // dart.exe on windows
     // on windows, system command or alias in PowerShell
     await _testCommand('echo Hello world');
@@ -391,7 +391,7 @@ _tekartik_dummy_app_that_does_not_exits
       expect(userAppDataPath, Platform.environment['APPDATA']);
     } else {
       expect(userHomePath, Platform.environment['HOME']);
-      expect(userAppDataPath, join(Platform.environment['HOME'], '.config'));
+      expect(userAppDataPath, join(Platform.environment['HOME']!, '.config'));
     }
   });
 
@@ -447,7 +447,7 @@ _tekartik_dummy_app_that_does_not_exits
   test('flutter_resolve', () async {
     // Edge case finding flutter from dart
     if (Platform.isLinux) {
-      var paths = platformEnvironment['PATH'].split(':')
+      var paths = platformEnvironment['PATH']!.split(':')
         ..removeWhere((element) => element.endsWith('flutter/bin'));
 
       paths.insert(0, dartSdkBinDirPath);
@@ -472,9 +472,9 @@ _tekartik_dummy_app_that_does_not_exits
     // Try to get the version in 2 different ways
     var sh = Shell();
 
-    var whichDart = await which('dart');
+    var whichDart = await (which('dart') as FutureOr<String>);
     var resolvedVersion = parseDartBinVersionOutput(
-        (await sh.runExecutableArguments(dartExecutable, ['--version']))
+        (await sh.runExecutableArguments(dartExecutable!, ['--version']))
             .stderr
             .toString());
     var whichVersion = parseDartBinVersionOutput(

@@ -2,7 +2,7 @@ int _upperACodeUnit = 'A'.codeUnitAt(0);
 int _lowerACodeUnit = 'a'.codeUnitAt(0);
 int _digit0CodeUnit = '0'.codeUnitAt(0);
 
-int _hexCharValue(int charCode) {
+int? _hexCharValue(int charCode) {
   if (charCode >= _upperACodeUnit && charCode < _upperACodeUnit + 6) {
     return charCode - _upperACodeUnit + 10;
   }
@@ -47,7 +47,7 @@ String bytesToHex(List<int> bytes) {
 // It safely ignores non hex data so it can contain spaces or line feed
 List<int> hexToBytes(String text) {
   final bytes = <int>[];
-  int firstNibble;
+  int? firstNibble;
 
   text.codeUnits.forEach((int charCode) {
     if (firstNibble == null) {
@@ -55,7 +55,7 @@ List<int> hexToBytes(String text) {
     } else {
       final secondNibble = _hexCharValue(charCode);
       if (secondNibble != null) {
-        bytes.add(firstNibble * 16 + secondNibble);
+        bytes.add(firstNibble! * 16 + secondNibble);
         firstNibble = null;
       }
     }

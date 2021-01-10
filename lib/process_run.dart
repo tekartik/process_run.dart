@@ -65,23 +65,23 @@ String argumentsToString(List<String> arguments) {
   return argumentStrings.join(' ');
 }
 
-/// Could become deprecated.
+/// Use runExecutableArguments instead
 ///
 /// if [commmandVerbose] or [verbose] is true, display the command.
 /// if [verbose] is true, stream stdout & stdin
-/// @deprecated
+@deprecated
 Future<ProcessResult> run(String executable, List<String> arguments,
-        {String workingDirectory,
-        Map<String, String> environment,
+        {String? workingDirectory,
+        Map<String, String>? environment,
         bool includeParentEnvironment = true,
-        bool runInShell,
-        Encoding stdoutEncoding = systemEncoding,
-        Encoding stderrEncoding = systemEncoding,
-        Stream<List<int>> stdin,
-        StreamSink<List<int>> stdout,
-        StreamSink<List<int>> stderr,
-        bool verbose,
-        bool commandVerbose}) =>
+        bool? runInShell,
+        Encoding? stdoutEncoding = systemEncoding,
+        Encoding? stderrEncoding = systemEncoding,
+        Stream<List<int>>? stdin,
+        StreamSink<List<int>>? stdout,
+        StreamSink<List<int>>? stderr,
+        bool? verbose,
+        bool? commandVerbose}) =>
     runExecutableArguments(
       executable,
       arguments,

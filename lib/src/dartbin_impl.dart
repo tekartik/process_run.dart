@@ -8,11 +8,11 @@ bool _dartExecutableLock = false;
 
 var debugDartExecutableForceWhich = false;
 
-String findDartExecutableSync(List<String> paths) {
+String? findDartExecutableSync(List<String> paths) {
   return findExecutableSync('dart', paths);
 }
 
-String resolveDartExecutable({Map<String, String> environment}) {
+String? resolveDartExecutable({Map<String, String>? environment}) {
   if (!_dartExecutableLock) {
     _dartExecutableLock = true;
     try {
@@ -35,16 +35,16 @@ String resolveDartExecutable({Map<String, String> environment}) {
 }
 
 // Find dart in the cache dir
-String findFlutterDartExecutableSync(String path) {
+String? findFlutterDartExecutableSync(String path) {
   return findDartExecutableSync([join(path, 'cache', 'dart-sdk', 'bin')]);
 }
 
-String _resolvedDartExecutable;
+String? _resolvedDartExecutable;
 
 ///
 /// Get dart vm either from executable or using the which command
 ///
-String get resolvedDartExecutable => _resolvedDartExecutable ??= () {
+String? get resolvedDartExecutable => _resolvedDartExecutable ??= () {
       if (debugDartExecutableForceWhich) {
         // Don"t try resolving that only works during debug/test
       } else {
@@ -56,5 +56,5 @@ String get resolvedDartExecutable => _resolvedDartExecutable ??= () {
       return resolveDartExecutable();
     }();
 
-set resolvedDartExecutable(String dartExecutable) =>
+set resolvedDartExecutable(String? dartExecutable) =>
     _resolvedDartExecutable = dartExecutable;

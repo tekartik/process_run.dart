@@ -2,6 +2,7 @@
 library process_run.dartfmt_test;
 
 import 'package:process_run/cmd_run.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

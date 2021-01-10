@@ -25,7 +25,7 @@ class ShellEnvAliasDeleteCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 arguments expected');
       exit(1);
     } else {
-      if (verbose) {
+      if (verbose!) {
         stdout.writeln('file $label: $envFilePath');
         stdout.writeln('before: ${jsonEncode(ShellEnvironment().aliases)}');
       }
@@ -33,10 +33,10 @@ class ShellEnvAliasDeleteCommand extends ShellEnvCommandBase {
       var fileContent = await envFileReadOrCreate();
       var modified = false;
       for (var name in rest) {
-        modified = fileContent.deleteAlias(name) ?? modified;
+        modified = fileContent.deleteAlias(name) || modified;
       }
       if (modified) {
-        if (verbose) {
+        if (verbose!) {
           stdout.writeln('writing file');
         }
         await fileContent.write();
@@ -44,7 +44,7 @@ class ShellEnvAliasDeleteCommand extends ShellEnvCommandBase {
 
       // Force reload
       shellEnvironment = null;
-      if (verbose) {
+      if (verbose!) {
         stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
       }
       return true;

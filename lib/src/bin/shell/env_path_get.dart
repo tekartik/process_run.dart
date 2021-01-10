@@ -30,7 +30,7 @@ class ShellEnvPathGetCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 path argument expected');
       exit(1);
     } else {
-      if (verbose) {
+      if (verbose!) {
         stdout.writeln('File $label: $envFilePath');
       }
       dumpStringList(ShellEnvironment()

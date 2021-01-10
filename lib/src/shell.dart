@@ -33,21 +33,21 @@ var shellDebug = false; // devWarning(true); // false
 Future<List<ProcessResult>> run(
   String script, {
   bool throwOnError = true,
-  String workingDirectory,
-  Map<String, String> environment,
+  String? workingDirectory,
+  Map<String, String>? environment,
   bool includeParentEnvironment = true,
-  bool runInShell,
+  bool? runInShell,
   Encoding stdoutEncoding = systemEncoding,
   Encoding stderrEncoding = systemEncoding,
-  Stream<List<int>> stdin,
-  StreamSink<List<int>> stdout,
-  StreamSink<List<int>> stderr,
+  Stream<List<int>>? stdin,
+  StreamSink<List<int>>? stdout,
+  StreamSink<List<int>>? stderr,
   bool verbose = true,
 
   // Default to true
-  bool commandVerbose,
+  bool? commandVerbose,
   // Default to true if verbose is true
-  bool commentVerbose,
+  bool? commentVerbose,
 }) {
   return Shell(
           throwOnError: throwOnError,
@@ -89,14 +89,14 @@ Future<List<ProcessResult>> run(
 ///
 class Shell {
   final bool _throwOnError;
-  final String _workingDirectory;
-  ShellEnvironment _environment;
-  final bool _runInShell;
+  final String? _workingDirectory;
+  ShellEnvironment? _environment;
+  final bool? _runInShell;
   final Encoding _stdoutEncoding;
   final Encoding _stderrEncoding;
-  final Stream<List<int>> _stdin;
-  final StreamSink<List<int>> _stdout;
-  final StreamSink<List<int>> _stderr;
+  final Stream<List<int>>? _stdin;
+  final StreamSink<List<int>>? _stdout;
+  final StreamSink<List<int>>? _stderr;
   final bool _verbose;
   final bool _commandVerbose;
   final bool _commentVerbose;
@@ -108,23 +108,23 @@ class Shell {
   var _killedRunId = 0;
 
   /// Current kill process signal
-  ProcessSignal _killedProcessSignal;
+  late ProcessSignal _killedProcessSignal;
 
   /// Current child process running.
-  Process _currentProcess;
+  Process? _currentProcess;
 
-  ProcessCmd _currentProcessCmd;
-  int _currentProcessRunId;
+  ProcessCmd? _currentProcessCmd;
+  int? _currentProcessRunId;
 
   /// Parent shell for pushd/popd
-  Shell _parentShell;
+  Shell? _parentShell;
 
   /// Get it only once
-  List<String> _userPathsCache;
+  List<String>? _userPathsCache;
 
   /// Resolve environment
   List<String> get _userPaths =>
-      _userPathsCache ??= List.from(_environment.paths);
+      _userPathsCache ??= List.from(_environment!.paths);
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
@@ -135,30 +135,30 @@ class Shell {
   /// comments as well
   Shell(
       {bool throwOnError = true,
-      String workingDirectory,
-      Map<String, String> environment,
+      String? workingDirectory,
+      Map<String, String>? environment,
       bool includeParentEnvironment = true,
-      bool runInShell,
+      bool? runInShell,
       Encoding stdoutEncoding = systemEncoding,
       Encoding stderrEncoding = systemEncoding,
-      Stream<List<int>> stdin,
-      StreamSink<List<int>> stdout,
-      StreamSink<List<int>> stderr,
+      Stream<List<int>>? stdin,
+      StreamSink<List<int>>? stdout,
+      StreamSink<List<int>>? stderr,
       bool verbose = true,
       // Default to true
-      bool commandVerbose,
+      bool? commandVerbose,
       // Default to false
-      bool commentVerbose})
-      : _throwOnError = throwOnError ?? true,
+      bool? commentVerbose})
+      : _throwOnError = throwOnError,
         _workingDirectory = workingDirectory,
         _runInShell = runInShell,
-        _stdoutEncoding = stdoutEncoding ?? systemEncoding,
-        _stderrEncoding = stderrEncoding ?? systemEncoding,
+        _stdoutEncoding = stdoutEncoding,
+        _stderrEncoding = stderrEncoding,
         _stdin = stdin,
         _stdout = stdout,
         _stderr = stderr,
-        _verbose = verbose ?? true,
-        _commandVerbose = commandVerbose ?? verbose ?? true,
+        _verbose = verbose,
+        _commandVerbose = commandVerbose ?? verbose,
         _commentVerbose = commentVerbose ?? false {
     // Fix environment right away
     _environment = ShellEnvironment.full(
@@ -168,23 +168,23 @@ class Shell {
 
   /// Create a new shell
   Shell clone(
-      {bool throwOnError,
-      String workingDirectory,
+      {bool? throwOnError,
+      String? workingDirectory,
       // Don't change environment
       @deprecated
-          Map<String, String> environment,
+          Map<String, String>? environment,
       @deprecated
           // Don't change includeParentEnvironment
-          bool includeParentEnvironment,
-      bool runInShell,
-      Encoding stdoutEncoding,
-      Encoding stderrEncoding,
-      Stream<List<int>> stdin,
-      StreamSink<List<int>> stdout,
-      StreamSink<List<int>> stderr,
-      bool verbose,
-      bool commandVerbose,
-      bool commentVerbose}) {
+          bool? includeParentEnvironment,
+      bool? runInShell,
+      Encoding? stdoutEncoding,
+      Encoding? stderrEncoding,
+      Stream<List<int>>? stdin,
+      StreamSink<List<int>>? stdout,
+      StreamSink<List<int>>? stderr,
+      bool? verbose,
+      bool? commandVerbose,
+      bool? commentVerbose}) {
     return Shell(
         verbose: verbose ?? _verbose,
         environment: _environment,
@@ -227,9 +227,9 @@ class Shell {
   /// returns null if nothing in the stack
   Shell popd() {
     if (_parentShell != null && _commandVerbose) {
-      stdout.writeln('\$ cd ${_parentShell._workingDirectoryPath}');
+      stdout.writeln('\$ cd ${_parentShell!._workingDirectoryPath}');
     }
-    return _parentShell;
+    return _parentShell!;
   }
 
   /// Kills the current running process.
@@ -247,7 +247,7 @@ class Shell {
   bool _kill() {
     if (_currentProcess != null) {
       io.stderr.writeln('killing $_killedRunId, ${_currentProcessToString()}');
-      var result = _currentProcess?.kill(_killedProcessSignal);
+      var result = _currentProcess!.kill(_killedProcessSignal);
       _clearPreviousContext();
       return result;
     } else if (_currentProcessResultCompleter != null) {
@@ -280,7 +280,7 @@ class Shell {
           throw ShellException('Script was killed', null);
         }
         // Display the comments
-        if (isLineComment(command)) {
+        if (isLineComment(command!)) {
           if (_commentVerbose) {
             stdout.writeln(command);
           }
@@ -291,7 +291,7 @@ class Shell {
         var arguments = parts.sublist(1);
 
         // Find alias
-        var alias = _environment.aliases[executable];
+        var alias = _environment!.aliases[executable];
         if (alias != null) {
           // The alias itself should be split
           parts = shellSplit(alias);
@@ -332,7 +332,7 @@ class Shell {
     return 'runId:$_currentProcessRunId${_currentProcess == null ? '' : ', process: ${_currentProcess?.pid}: $_currentProcessRunId ${_currentProcessCmd}'}';
   }
 
-  Completer<ProcessResult> _currentProcessResultCompleter;
+  Completer<ProcessResult>? _currentProcessResultCompleter;
 
   void _clearPreviousContext() {
     if (shellDebug) {
@@ -340,7 +340,7 @@ class Shell {
           'Clear previous context ${_currentProcessResultCompleter?.isCompleted}');
     }
     if (!(_currentProcessResultCompleter?.isCompleted ?? true)) {
-      _currentProcessResultCompleter
+      _currentProcessResultCompleter!
           .completeError(ShellException('Killed by framework', null));
     }
     _currentProcessResultCompleter = null;
@@ -356,8 +356,8 @@ class Shell {
       var completer =
           _currentProcessResultCompleter = Completer<ProcessResult>();
 
-      Future<ProcessResult> run() async {
-        ProcessResult processResult;
+      Future<ProcessResult?> run() async {
+        ProcessResult? processResult;
 
         var executableFullPath =
             findExecutableSync(executable, _userPaths) ?? executable;
@@ -409,7 +409,7 @@ class Shell {
           }
         } on ProcessException catch (e) {
           var stderr = _stderr ?? io.stderr;
-          void _writeln([String msg]) {
+          void _writeln([String? msg]) {
             stderr.add(utf8.encode(msg ?? ''));
             stderr.add(utf8.encode('\n'));
           }
@@ -447,7 +447,7 @@ class Shell {
           print('$runId: error');
         }
         if (!completer.isCompleted) {
-          completer.completeError(e);
+          completer.completeError(e as Object);
         }
       });
       return completer.future;
@@ -462,7 +462,7 @@ class _ProcessCmd extends ProcessCmd {
   final String executableShortName;
 
   _ProcessCmd(String executable, List<String> arguments,
-      {this.executableShortName})
+      {required this.executableShortName})
       : super(executable, arguments);
 
   @override
@@ -472,7 +472,7 @@ class _ProcessCmd extends ProcessCmd {
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
-  final ProcessResult result;
+  final ProcessResult? result;
   final String message;
 
   ShellException(this.message, this.result);

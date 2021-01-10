@@ -46,14 +46,14 @@ void main() {
 
       expect(
           basename(whichSync('current_dir',
-              environment: <String, String>{'PATH': join('test', 'src')})),
+              environment: <String, String>{'PATH': join('test', 'src')})!),
           Platform.isWindows ? 'current_dir.bat' : 'current_dir');
     });
 
     test('dart_env', () async {
       var empty = <String, String>{};
 
-      String foundDart;
+      String? foundDart;
       // We can always find dart and pub
       try {
         // Normal

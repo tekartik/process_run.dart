@@ -6,15 +6,15 @@ import 'package:process_run/cmd_run.dart';
 
 @deprecated
 Future<ProcessResult> devRun(String executable, List<String> arguments,
-        {String workingDirectory,
-        Map<String, String> environment,
+        {String? workingDirectory,
+        Map<String, String>? environment,
         bool includeParentEnvironment = true,
         bool runInShell = false,
         Encoding stdoutEncoding = SYSTEM_ENCODING,
         Encoding stderrEncoding = SYSTEM_ENCODING,
-        Stream<List<int>> stdin,
-        StreamSink<List<int>> stdout,
-        StreamSink<List<int>> stderr,
+        Stream<List<int>>? stdin,
+        StreamSink<List<int>>? stdout,
+        StreamSink<List<int>>? stderr,
         @deprecated bool connectStdout = false,
         @deprecated bool connectStderr = false,
         @deprecated bool connectStdin = false}) =>

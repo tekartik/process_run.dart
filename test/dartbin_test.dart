@@ -15,6 +15,7 @@ import 'package:process_run/src/dartbin_impl.dart'
         resolvedDartExecutable;
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/which.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -34,16 +35,16 @@ void defineTests() {
       });
 
       test('run', () async {
-        final result = await Process.run(dartExecutable, ['--version']);
+        final result = await Process.run(dartExecutable!, ['--version']);
         expect(result.stderr.toLowerCase(), contains('dart'));
         expect(result.stderr.toLowerCase(), contains('version'));
         // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
       });
 
       test('dartExecutable_path', () {
-        expect(isAbsolute(dartExecutable), isTrue);
+        expect(isAbsolute(dartExecutable!), isTrue);
         expect(
-            Directory(join(dirname(dartExecutable), 'snapshots')).existsSync(),
+            Directory(join(dirname(dartExecutable!), 'snapshots')).existsSync(),
             isTrue);
       });
 
@@ -52,7 +53,7 @@ void defineTests() {
           try {
             expect(
                 dirname(findFlutterDartExecutableSync(
-                    dirname(flutterExecutablePath))),
+                    dirname(flutterExecutablePath!))!),
                 endsWith(join('cache', 'dart-sdk', 'bin')));
           } finally {
             resolvedDartExecutable = null;
@@ -62,7 +63,7 @@ void defineTests() {
       });
 
       test('dart_empty_param', () async {
-        final result = await Process.run(dartExecutable, []);
+        final result = await Process.run(dartExecutable!, []);
         if (dartVersion > Version(2, 10, 0, pre: '1')) {
           // Not yet in 2.9.0-21
           // Ok in 2.10.0-1.0.dev
@@ -74,13 +75,6 @@ void defineTests() {
           expect(result.exitCode, 255);
         }
       }, skip: 'dart without params hangs on dev now 2020/10/31');
-
-      test('dart_null_param', () async {
-        try {
-          await Process.run(dartExecutable, null);
-          fail('should fail');
-        } on ArgumentError catch (_) {}
-      });
     });
 
     test('which', () {
@@ -127,15 +121,15 @@ void defineTests() {
           resolvedDartExecutable = null;
           expect(
               dirname(resolveDartExecutable(environment: <String, String>{
-                'PATH': dirname(flutterExecutablePath)
-              })),
+                'PATH': dirname(flutterExecutablePath!)
+              })!),
               endsWith(join('cache', 'dart-sdk', 'bin')));
 
           expect(resolveDartExecutable(), isNotNull);
 
           // Dart from flutter
-          if (dirname(dartExecutable)
-              .contains(dirname(flutterExecutablePath))) {
+          if (dirname(dartExecutable!)
+              .contains(dirname(flutterExecutablePath!))) {
             expect(
                 dartSdkBinDirPath, endsWith(join('cache', 'dart-sdk', 'bin')));
           }
@@ -148,7 +142,7 @@ void defineTests() {
 
     group('help', () {
       test('dart', () async {
-        var result = await Process.run(dartExecutable, ['--help']);
+        var result = await Process.run(dartExecutable!, ['--help']);
         expect(result.exitCode, 0);
         var minVersion = Version(2, 10, 0, pre: '1');
         var reason = 'Version output now on stdout since $minVersion';
@@ -164,7 +158,7 @@ void defineTests() {
         }
 
         // Version is on stderr
-        result = await Process.run(dartExecutable, ['--version']);
+        result = await Process.run(dartExecutable!, ['--version']);
         expect(result.stdout, '');
         minVersion = Version(2, 9, 0, pre: '1');
         reason =

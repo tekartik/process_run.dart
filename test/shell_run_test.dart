@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 
 /// Truncate at max element.
 String stringTruncate(String text, int len) {
-  if (text == null || text.length <= len) {
+  if (text.length <= len) {
     return text;
   }
   return text.substring(0, len);

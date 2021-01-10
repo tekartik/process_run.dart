@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:io/io.dart' show sharedStdIn;
+import 'package:process_run/shell.dart';
 
 /// Get text
-Future<String> prompt(String text, {Stream<List<int>> stdin}) async {
+Future<String> prompt(String? text, {Stream<List<int>>? stdin}) async {
   stdout.write('${(text?.isNotEmpty ?? false) ? '$text' : 'Enter text'}: ');
   await stdout.flush();
   return await _promptGetText(stdin: stdin);
 }
 
 /// Get text
-Future<String> _promptGetText({Stream<List<int>> stdin}) async {
+Future<String> _promptGetText({Stream<List<int>>? stdin}) async {
   stdin ??= sharedStdIn;
   final input =
       await stdin.transform(utf8.decoder).transform(const LineSplitter()).first;
@@ -20,7 +20,7 @@ Future<String> _promptGetText({Stream<List<int>> stdin}) async {
 }
 
 /// Confirm action
-Future<bool> promptConfirm(String text, {Stream<List<int>> stdin}) async {
+Future<bool> promptConfirm(String? text, {Stream<List<int>>? stdin}) async {
   stdout.write('${(text?.isNotEmpty ?? false) ? '$text. ' : ''}Continue Y/N? ');
   await stdout.flush();
   final input = await _promptGetText(stdin: stdin);

@@ -15,7 +15,7 @@ class ShellEnvironmentPaths with ListMixin<String> {
     var pathVar = _environment[envPathKey];
     // Handle empty to black
     if (pathVar?.isNotEmpty ?? false) {
-      return pathVar.split(envPathSeparator);
+      return pathVar!.split(envPathSeparator);
     } else {
       return <String>[];
     }
@@ -78,7 +78,7 @@ class ShellEnvironmentPaths with ListMixin<String> {
 class ShellEnvironmentAliases with MapMixin<String, String> {
   final Map<String, String> _map;
 
-  ShellEnvironmentAliases._([Map<String, String> map])
+  ShellEnvironmentAliases._([Map<String, String>? map])
       : _map = map ?? <String, String>{};
 
   /// the other object takes precedence, vars are added
@@ -87,7 +87,7 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
   }
 
   @override
-  String operator [](Object key) => _map[key];
+  String? operator [](Object? key) => _map[key as String];
 
   @override
   void operator []=(String key, String value) => _map[key] = value;
@@ -99,7 +99,7 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
   Iterable<String> get keys => _map.keys;
 
   @override
-  String remove(Object key) => _map.remove(key);
+  String? remove(Object? key) => _map.remove(key);
 
   // Key hash is sufficient here
   @override
@@ -127,11 +127,11 @@ class ShellEnvironmentVars with MapMixin<String, String> {
   bool _ignoreKey(key) => key == envPathKey;
 
   @override
-  String operator [](Object key) {
+  String? operator [](Object? key) {
     if (_ignoreKey(key)) {
       return null;
     }
-    return _environment[key];
+    return _environment[key as String];
   }
 
   @override
@@ -151,7 +151,7 @@ class ShellEnvironmentVars with MapMixin<String, String> {
       _environment.keys.where((key) => !_ignoreKey(key));
 
   @override
-  String remove(Object key) {
+  String? remove(Object? key) {
     if (!_ignoreKey(key)) {
       return _environment.remove(key);
     }
@@ -180,7 +180,7 @@ class ShellEnvironmentVars with MapMixin<String, String> {
 }
 
 /// Use current if already and environment object.
-ShellEnvironment asShellEnvironment(Map<String, String> environment) =>
+ShellEnvironment asShellEnvironment(Map<String, String>? environment) =>
     (environment is ShellEnvironment)
         ? environment
         : ShellEnvironment(environment: environment);
@@ -191,19 +191,19 @@ class ShellEnvironment with MapMixin<String, String> {
   final _env = <String, String>{};
 
   /// The vars but the PATH variable
-  ShellEnvironmentVars _vars;
+  ShellEnvironmentVars? _vars;
 
   /// The vars but the PATH variable
   ShellEnvironmentVars get vars => _vars ??= ShellEnvironmentVars._(this);
 
   /// The PATH variable as a convenient list.
-  ShellEnvironmentPaths _paths;
+  ShellEnvironmentPaths? _paths;
 
   /// The PATH variable as a convenient list.
   ShellEnvironmentPaths get paths => _paths ??= ShellEnvironmentPaths._(this);
 
   /// The aliases.
-  ShellEnvironmentAliases _aliases;
+  ShellEnvironmentAliases? _aliases;
 
   /// The aliases as convenient map.
   ShellEnvironmentAliases get aliases =>
@@ -216,7 +216,7 @@ class ShellEnvironment with MapMixin<String, String> {
   /// It is recommended that you apply the environment to a shell. But it can
   /// also be set globally (be aware of the potential effect on other part of
   /// your application) to [shellEnvironment]
-  ShellEnvironment({Map<String, String> environment}) {
+  ShellEnvironment({Map<String, String>? environment}) {
     environment ??= shellEnvironment;
 
     // Copy vars/path
@@ -230,7 +230,8 @@ class ShellEnvironment with MapMixin<String, String> {
   /// From a run start content, includeParentEnvironment should later be set
   /// to false
   factory ShellEnvironment.full(
-      {Map<String, String> environment, bool includeParentEnvironment = true}) {
+      {Map<String, String>? environment,
+      bool includeParentEnvironment = true}) {
     ShellEnvironment newEnvironment;
     if (includeParentEnvironment) {
       newEnvironment = ShellEnvironment();
@@ -242,7 +243,7 @@ class ShellEnvironment with MapMixin<String, String> {
   }
 
   @override
-  String operator [](Object key) => _env[key];
+  String? operator [](Object? key) => _env[key as String];
 
   @override
   void operator []=(String key, String value) => _env[key] = value;
@@ -256,7 +257,7 @@ class ShellEnvironment with MapMixin<String, String> {
   Iterable<String> get keys => _env.keys;
 
   @override
-  String remove(Object key) {
+  String? remove(Object? key) {
     return _env.remove(key);
   }
 
@@ -270,7 +271,7 @@ class ShellEnvironment with MapMixin<String, String> {
   ///
   /// Mainly used for testing as it is not easy to which environment variable
   /// are required.
-  ShellEnvironment.fromJson(Map map) {
+  ShellEnvironment.fromJson(Map? map) {
     try {
       if (map != null) {
         var rawVars = map['vars'];
@@ -291,15 +292,13 @@ class ShellEnvironment with MapMixin<String, String> {
   ///
   /// the other object takes precedence, vars are added and paths prepended
   void merge(ShellEnvironment other) {
-    if (other != null) {
-      vars.merge(other.vars);
-      paths.merge(other.paths);
-      aliases.merge(other.aliases);
-    }
+    vars.merge(other.vars);
+    paths.merge(other.paths);
+    aliases.merge(other.aliases);
   }
 
   /// Find a [command] path location in the environment
-  String whichSync(String command) {
+  String? whichSync(String command) {
     return findExecutableSync(
       command,
       paths,
@@ -307,7 +306,7 @@ class ShellEnvironment with MapMixin<String, String> {
   }
 
   /// Find a [command] path location in the environment
-  Future<String> which(String command) async {
+  Future<String?> which(String command) async {
     return whichSync(command);
   }
 

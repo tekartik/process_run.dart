@@ -13,7 +13,7 @@
 library process_run.shell;
 
 // We reuse io sharedStdIn definition.
-export 'package:io/io.dart' show sharedStdIn;
+export 'package:process_run/src/io/shared_stdin.dart' show sharedStdIn;
 export 'package:process_run/dartbin.dart'
     show dartVersion, dartChannel, dartExecutable;
 export 'package:process_run/src/shell_utils.dart'

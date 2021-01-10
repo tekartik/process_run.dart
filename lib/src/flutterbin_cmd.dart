@@ -3,19 +3,20 @@ import 'dart:convert';
 import 'package:process_run/process_run.dart' hide run;
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/which.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
 import 'process_cmd.dart';
 
-String _flutterExecutablePath;
+String? _flutterExecutablePath;
 
 /// Resolved flutter path if found
-String get flutterExecutablePath =>
+String? get flutterExecutablePath =>
     _flutterExecutablePath ??= whichSync('flutter');
 
 /// Test only
 @deprecated
-set flutterExecutablePath(String path) {
+set flutterExecutablePath(String? path) {
   _flutterExecutablePath = path;
   // Reset info
   _flutterBinInfo = null;
@@ -40,40 +41,40 @@ class FlutterCmd extends ProcessCmd {
 }
 
 // to deprecate
-Future<Version> getFlutterVersion() => getFlutterBinVersion();
+Future<Version?> getFlutterVersion() => getFlutterBinVersion();
 
 /// Get flutter version.
 ///
 /// Returns null if flutter cannot be found in the path
-Future<Version> getFlutterBinVersion() async =>
+Future<Version?> getFlutterBinVersion() async =>
     (await getFlutterBinInfo())?.version;
 
 /// Get flutter channel. (dev, beta, master, stable)
 ///
 /// Returns null if flutter cannot be found in the path
-Future<String> getFlutterBinChannel() async =>
+Future<String?> getFlutterBinChannel() async =>
     (await getFlutterBinInfo())?.channel;
 
-FlutterBinInfo _flutterBinInfo;
+FlutterBinInfo? _flutterBinInfo;
 
-Future<FlutterBinInfo> getFlutterBinInfo() async =>
+Future<FlutterBinInfo?> getFlutterBinInfo() async =>
     _flutterBinInfo ??= await _getFlutterBinInfo();
 
 /// Parse flutter information
 abstract class FlutterBinInfo {
-  String get channel;
+  String? get channel;
 
-  Version get version;
+  Version? get version;
 
   /// First line is sufficient
-  static FlutterBinInfo parseVersionOutput(String resultOutput) {
-    Version version;
-    String channel;
+  static FlutterBinInfo? parseVersionOutput(String resultOutput) {
+    Version? version;
+    String? channel;
     var output = LineSplitter.split(resultOutput)
         .join(' ')
         .split(' ')
-        .map((word) => word?.trim())
-        .where((word) => word?.isNotEmpty ?? false);
+        .map((word) => word.trim())
+        .where((word) => word.isNotEmpty);
     // Take the first version string after flutter
     var foundFlutter = false;
     var foundChannel = false;
@@ -106,10 +107,10 @@ abstract class FlutterBinInfo {
 
 class FlutterBinInfoImpl implements FlutterBinInfo {
   @override
-  final String channel;
+  final String? channel;
 
   @override
-  final Version version;
+  final Version? version;
 
   FlutterBinInfoImpl({this.channel, this.version});
 }
@@ -119,7 +120,7 @@ class FlutterBinInfoImpl implements FlutterBinInfo {
 /// Not exposed yet
 ///
 /// Returns null if flutter cannot be found in the path
-Future<FlutterBinInfo> _getFlutterBinInfo() async {
+Future<FlutterBinInfo?> _getFlutterBinInfo() async {
   // $ flutter --version
   // Flutter 1.7.8+hotfix.4 • channel stable • https://github.com/flutter/flutter.git
   // Framework • revision 20e59316b8 (8 weeks ago) • 2019-07-18 20:04:33 -0700

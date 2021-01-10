@@ -5,11 +5,11 @@ import 'package:process_run/cmd_run.dart';
 
 @deprecated
 Future<ProcessResult> devRunCmd(ProcessCmd cmd,
-    {bool verbose,
-    bool commandVerbose,
-    Stream<List<int>> stdin,
-    StreamSink<List<int>> stdout,
-    StreamSink<List<int>> stderr}) async {
+    {bool? verbose,
+    bool? commandVerbose,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr}) async {
   return runCmd(cmd,
       verbose: true,
       commandVerbose: commandVerbose,
