@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:io/io.dart';
+import 'package:io/io.dart' show sharedStdIn;
 
 /// Get text
 Future<String> prompt(String text, {Stream<List<int>> stdin}) async {
