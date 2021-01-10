@@ -68,7 +68,7 @@ set userConfig(UserConfig userConfig) => _userConfig = userConfig;
 /// See [https://github.com/tekartik/process_run.dart/blob/master/doc/user_config.md]
 /// in the documentation for more information.
 ///
-List<String?> get userPaths => userConfig.paths;
+List<String> get userPaths => userConfig.paths;
 
 /// Get the user environment
 ///
@@ -92,22 +92,18 @@ void resetUserConfig() {
 }
 
 class EnvFileConfig {
-  final String? fileContent;
+  final List<String> paths;
+  final Map<String, String> vars;
+  final Map<String, String> aliases;
 
-  // hopefully a map
-  final dynamic yaml;
-  final List<String>? paths;
-  final Map<String, String>? vars;
-  final Map<String, String>? aliases;
-
-  EnvFileConfig(
-      this.fileContent, this.yaml, this.paths, this.vars, this.aliases);
+  EnvFileConfig(List<String>? paths, Map<String, String>? vars,
+      Map<String, String>? aliases)
+      : paths = paths ?? <String>[],
+        vars = vars ?? <String, String>{},
+        aliases = aliases ?? <String, String>{};
 
   /// Has no vars, paths nor aliases.
-  bool get isEmpty =>
-      (paths?.isEmpty ?? true) &&
-      (vars?.isEmpty ?? true) &&
-      (aliases?.isEmpty ?? true);
+  bool get isEmpty => paths.isEmpty && vars.isEmpty && aliases.isEmpty;
 
   /// Has vars, paths or aliases.
   bool get isNotEmpty => !isEmpty;
@@ -238,14 +234,13 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
   } catch (e) {
     stderr.writeln('error reading yaml $e');
   }
-  return EnvFileConfig(null, null, paths, fileVars, fileAliases);
+  return EnvFileConfig(paths, fileVars, fileAliases);
 }
 
 /// Never null, all members can be null
 EnvFileConfig loadFromPath(String path) => _loadFromPath(path);
 
 EnvFileConfig _loadFromPath(String path) {
-  dynamic yaml;
   String? fileContent;
   Map<String, String>? vars;
   Map<String, String>? aliases;
@@ -258,7 +253,7 @@ EnvFileConfig _loadFromPath(String path) {
       //  stderr.writeln('error reading env file $path $e');
     }
     if (fileContent != null) {
-      yaml = loadYaml(fileContent);
+      var yaml = loadYaml(fileContent);
       // devPrint('yaml: $yaml');
       if (yaml is Map) {
         var config = loadFromMap(yaml);
@@ -270,7 +265,7 @@ EnvFileConfig _loadFromPath(String path) {
   } catch (e) {
     stderr.writeln('error reading yaml $e');
   }
-  return EnvFileConfig(fileContent, yaml, paths, vars, aliases);
+  return EnvFileConfig(paths, vars, aliases);
 }
 
 /// Update userPaths and userEnvironment
@@ -288,7 +283,7 @@ void userLoadEnv(
     {Map<String, String>? vars,
     List<String>? paths,
     Map<String, String>? aliases}) {
-  userLoadEnvFileConfig(EnvFileConfig(null, null, paths, vars, aliases));
+  userLoadEnvFileConfig(EnvFileConfig(paths, vars, aliases));
 }
 
 // private
@@ -298,16 +293,14 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   var vars = Map<String, String>.from(config.vars);
   var added = envFileConfig;
   // devPrint('adding config: $config');
-  if (added.paths != null) {
-    if (const ListEquality().equals(
-        paths.sublist(0, min(added.paths!.length, paths.length)),
-        added.paths)) {
-      // don't add if already in same order at the beginning
-    } else {
-      paths.insertAll(0, added.paths!);
-    }
+  if (const ListEquality().equals(
+      paths.sublist(0, min(added.paths.length, paths.length)), added.paths)) {
+    // don't add if already in same order at the beginning
+  } else {
+    paths.insertAll(0, added.paths);
   }
-  added.vars?.forEach((key, value) {
+
+  added.vars.forEach((key, value) {
     vars[key] = value;
   });
   // Set env PATH from path
@@ -355,9 +348,9 @@ UserConfig getUserConfig(Map<String, String>? environment) {
     var configShEnv = ShellEnvironment.empty();
     if (config.isNotEmpty) {
       configShEnv
-        ..vars.addAll(config.vars!)
-        ..paths.addAll(config.paths!)
-        ..aliases.addAll(config.aliases!);
+        ..vars.addAll(config.vars)
+        ..paths.addAll(config.paths)
+        ..aliases.addAll(config.aliases);
       shEnv.merge(configShEnv);
     }
   }
@@ -398,9 +391,7 @@ String? getUserEnvFilePath([Map<String, String>? environment]) {
   environment ??= platformEnvironment;
   // devPrint((Map<String, String>.from(environment)..removeWhere((key, value) => !key.toLowerCase().contains('teka'))).keys);
   return environment[userEnvFilePathEnvKey] ??
-      (userAppDataPath == null
-          ? null
-          : join(userAppDataPath!, 'tekartik', 'process_run', 'env.yaml'));
+      join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml');
 }
 
 /// Get the local env file path

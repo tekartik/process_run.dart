@@ -41,6 +41,7 @@ void main() {
       ShellEnvironment;
       ShellEnvironmentPaths;
       ShellEnvironmentVars;
+      ShellEnvironmentAliases;
       whichSync;
       which;
       ProcessRunProcessResultsExt(null)?.outText;

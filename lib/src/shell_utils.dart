@@ -73,7 +73,7 @@ String? _userAppDataPath;
 ///
 /// On windows, it is read from the `APPDATA` environment variable. Otherwise
 /// it is the `~/.config` folder
-String? get userAppDataPath => _userAppDataPath ??= () {
+String get userAppDataPath => _userAppDataPath ??= () {
       var override = platformEnvironment[userAppDataPathEnvKey];
       if (override != null) {
         return override;
@@ -83,7 +83,7 @@ String? get userAppDataPath => _userAppDataPath ??= () {
       }
       return null;
     }() ??
-    (userHomePath == null ? null : join(userHomePath!, '.config'));
+    join(userHomePath, '.config');
 
 String? _userHomePath;
 
@@ -91,15 +91,16 @@ String? _userHomePath;
 ///
 /// Usually read from the `HOME` environment variable or `USERPROFILE` on
 /// Windows.
-String? get userHomePath =>
+String get userHomePath =>
     _userHomePath ??= platformEnvironment[userHomePathEnvKey] ??
         platformEnvironment['HOME'] ??
-        platformEnvironment['USERPROFILE'];
+        platformEnvironment['USERPROFILE'] ??
+        '~';
 
 /// Expand home if needed
 String expandPath(String path) {
   if (path == '~') {
-    return userHomePath ?? path;
+    return userHomePath;
   }
   if (path.startsWith('~/') || path.startsWith(r'~\')) {
     return '${userHomePath}${path.substring(1)}';
@@ -199,9 +200,9 @@ String shellJoin(List<String> parts) =>
     parts.map((part) => shellArgument(part)).join(' ');
 
 /// Find command in path
-String? findExecutableSync(String command, List<String> paths) {
+String? findExecutableSync(String command, List<String?> paths) {
   for (var path in paths) {
-    var commandPath = absolute(normalize(join(path, command)));
+    var commandPath = absolute(normalize(join(path!, command)));
 
     if (Platform.isWindows) {
       for (var ext in windowsPathExts) {

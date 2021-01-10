@@ -41,8 +41,14 @@ class ShellEnvironmentPaths with ListMixin<String> {
   }
 
   @override
-  void operator []=(int index, String value) {
-    _paths = _paths..[index] = value;
+  void operator []=(int index, String? value) {
+    _paths = _paths..[index] = value!;
+  }
+
+  @override
+  void add(String element) {
+    // Needed for nnbd
+    _paths = [..._paths, element];
   }
 
   @override

@@ -143,10 +143,10 @@ class ShellBinCommand {
     // Find the command if any
     var command = results.command;
 
-    var shellCommand = _commands[command.name];
+    var shellCommand = _commands[command?.name];
     if (shellCommand != null) {
       // Set the result in the the shell command
-      shellCommand.results = command;
+      shellCommand.results = command!;
       return shellCommand.run();
     }
 

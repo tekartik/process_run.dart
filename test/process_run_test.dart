@@ -259,11 +259,13 @@ void main() {
 
     test('relative', () async {
       if (Platform.isWindows) {
-        var result = await runExecutableArguments(join('test', 'src', 'current_dir.bat'), []);
+        var result = await runExecutableArguments(
+            join('test', 'src', 'current_dir.bat'), []);
         expect(result.exitCode, 0);
         expect(result.stdout.toString().trim(), Directory.current.path);
       } else {
-        var result = await runExecutableArguments(join('test', 'src', 'current_dir'), []);
+        var result = await runExecutableArguments(
+            join('test', 'src', 'current_dir'), []);
         expect(result.exitCode, 0);
         expect(result.stdout.toString().trim(), Directory.current.path);
       }
@@ -319,7 +321,8 @@ void main() {
       var env = Map<String, String>.from(platformEnvironment);
       env[envPathKey] = '${dirname(path)}${envPathSeparator}${env[envPathKey]}';
       print(env[envPathKey]);
-      var result = await runExecutableArguments('binary$basicScriptExecutableExtension', [],
+      var result = await runExecutableArguments(
+          'binary$basicScriptExecutableExtension', [],
           environment: env);
       expect(result.stdout.toString().trim(), 'Hello');
 

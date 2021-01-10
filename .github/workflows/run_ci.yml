@@ -14,7 +14,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        dart: [stable, beta, dev]
+        # dart: [stable, beta, dev]
+        # Temp for nnbd
+        dart: [beta, dev]
     steps:
       - uses: cedx/setup-dart@v2
         with:

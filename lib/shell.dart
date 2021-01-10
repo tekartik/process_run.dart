@@ -39,7 +39,11 @@ export 'src/process_cmd.dart';
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
 export 'src/shell.dart' show run, Shell, ShellException;
 export 'src/shell_environment.dart'
-    show ShellEnvironment, ShellEnvironmentPaths, ShellEnvironmentVars;
+    show
+        ShellEnvironment,
+        ShellEnvironmentPaths,
+        ShellEnvironmentVars,
+        ShellEnvironmentAliases;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
     show ProcessRunProcessResultsExt, ProcessRunProcessExt;

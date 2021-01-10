@@ -94,8 +94,8 @@ void main() {
 
     group('stdout_env', () {
       test('var', () async {
-        var result =
-            await runExecutableArguments(dartExecutable!, [echoScriptPath, '--stdout-env', 'PATH']);
+        var result = await runExecutableArguments(
+            dartExecutable!, [echoScriptPath, '--stdout-env', 'PATH']);
         //devPrint(result.stdout.toString());
         expect(result.stdout.toString().trim(), isNotEmpty);
 

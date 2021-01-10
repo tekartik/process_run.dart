@@ -120,26 +120,22 @@ class ShellEnvCommand extends ShellEnvCommandBase {
         var config = loadFromPath(path);
         stdout.writeln('# $title');
         stdout.writeln('file: ${relative(path, from: Directory.current.path)}');
-        if (config.fileContent != null) {
-          //stdout.writeln('${config.fileContent}');
-          // stdout.writeln();
-          // if (config.yaml != null) {
-          //  stdout.writeln('yaml: ${config.yaml}');
-          // }
-          if (config.vars?.isNotEmpty ?? false) {
-            stdout.writeln('  var: ${config.vars}');
-          }
-          if (config.paths?.isNotEmpty ?? false) {
-            stdout.writeln(' path: ${config.paths}');
-          }
-          if (config.aliases?.isNotEmpty ?? false) {
-            stdout.writeln('alias: ${config.paths}');
-          }
-          if (config.isEmpty) {
-            stdout.writeln('empty');
-          }
-        } else {
-          stdout.writeln('not found');
+        //stdout.writeln('${config.fileContent}');
+        // stdout.writeln();
+        // if (config.yaml != null) {
+        //  stdout.writeln('yaml: ${config.yaml}');
+        // }
+        if (config.vars.isNotEmpty) {
+          stdout.writeln('  var: ${config.vars}');
+        }
+        if (config.paths.isNotEmpty) {
+          stdout.writeln(' path: ${config.paths}');
+        }
+        if (config.aliases.isNotEmpty) {
+          stdout.writeln('alias: ${config.paths}');
+        }
+        if (config.isEmpty) {
+          stdout.writeln('empty');
         }
       }
 

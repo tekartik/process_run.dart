@@ -297,7 +297,12 @@ dart current_dir.dart
       expect(results[0].stdout.toString().trim(), Directory.current.path);
 
       // pop once
-      expect(shell.popd(), isNull);
+      try {
+        shell.popd();
+        fail('should fail');
+      } catch (e) {
+        expect(e, isNot(const TypeMatcher<TestFailure>()));
+      }
     });
     test('dart_no_path', () async {
       var environment = Map<String, String>.from(shellEnvironment)
@@ -472,13 +477,13 @@ _tekartik_dummy_app_that_does_not_exits
     // Try to get the version in 2 different ways
     var sh = Shell();
 
-    var whichDart = await (which('dart') as FutureOr<String>);
+    var whichDart = await which('dart');
     var resolvedVersion = parseDartBinVersionOutput(
         (await sh.runExecutableArguments(dartExecutable!, ['--version']))
             .stderr
             .toString());
     var whichVersion = parseDartBinVersionOutput(
-        (await sh.runExecutableArguments(whichDart, ['--version']))
+        (await sh.runExecutableArguments(whichDart!, ['--version']))
             .stderr
             .toString());
     var version = parseDartBinVersionOutput(

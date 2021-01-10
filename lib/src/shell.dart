@@ -11,7 +11,7 @@ import 'package:synchronized/synchronized.dart';
 
 import 'common/import.dart';
 
-var shellDebug = false; // devWarning(true); // false
+var shellDebug = false; //devWarning(true); // false
 ///
 /// Run one or multiple plain text command(s).
 ///
@@ -217,16 +217,19 @@ class Shell {
     return clone(workingDirectory: path);
   }
 
-  /// Get the shell path, using workingDurectory or current directory if null.
+  /// Get the shell path, using workingDirectory or current directory if null.
   String get path => _workingDirectoryPath;
 
   /// Create a new shell at the given path, allowing popd on it
   Shell pushd(String path) => cd(path).._parentShell = this;
 
   /// Pop the current directory to get the previous shell
-  /// returns null if nothing in the stack
+  /// throw State error if nothing in the stack
   Shell popd() {
-    if (_parentShell != null && _commandVerbose) {
+    if (_parentShell == null) {
+      throw StateError('no previous shell');
+    }
+    if (_commandVerbose) {
       stdout.writeln('\$ cd ${_parentShell!._workingDirectoryPath}');
     }
     return _parentShell!;
@@ -444,7 +447,7 @@ class Shell {
         }
       }).catchError((e) {
         if (shellDebug) {
-          print('$runId: error');
+          print('$runId: error $e');
         }
         if (!completer.isCompleted) {
           completer.completeError(e as Object);
