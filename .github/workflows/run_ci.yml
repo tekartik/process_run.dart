@@ -12,11 +12,10 @@ jobs:
       run:
         working-directory: .
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        # dart: [stable, beta, dev]
-        # Temp for nnbd
-        dart: [beta, dev]
+        dart: [stable, beta, dev]
     steps:
       - uses: cedx/setup-dart@v2
         with:

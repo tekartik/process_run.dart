@@ -1,5 +1,5 @@
 name: process_run
-version: 0.12.0-nullsafety.0
+version: 0.12.0
 description: Process run helpers for Linux/Win/Mac and which like feature for finding executables.
 homepage: https://github.com/tekartik/process_run.dart
 
@@ -7,32 +7,24 @@ environment:
   sdk: '>=2.12.0-0 <3.0.0'
 
 dependencies:
-  path: '>=1.8.0-nullsafety.3 <3.0.0'
-  collection: '>=1.15.0-nullsafety.5 <3.0.0'
-  charcode: '>=1.2.0-nullsafety.3 <3.0.0'
-  string_scanner: '>=1.1.0-nullsafety.3 <3.0.0'
-  # yaml: '>=2.0.0 <4.0.0'
-  yaml: '>=3.0.0-nullsafety.0 <5.0.0'
-  meta: '>=1.3.0-nullsafety.6 <3.0.0'
-  # args: '>=1.4.0 <3.0.0'
-  args: '>=2.0.0-nullsafety.0 <4.0.0'
-  # pub_semver: '>=1.4.0 <3.0.0'
-  pub_semver: '>=2.0.0-nullsafety.0 <4.0.0'
-  synchronized: '>=3.0.0-nullsafety.1 <5.0.0'
+  path: '>=1.8.0 <3.0.0'
+  collection: '>=1.15.0 <3.0.0'
+  charcode: '>=1.2.0 <3.0.0'
+  string_scanner: '>=1.1.0 <3.0.0'
+  yaml: '>=3.0.0 <5.0.0'
+  meta: '>=1.3.0 <3.0.0'
+  args: '>=2.0.0 <4.0.0'
+  pub_semver: '>=2.0.0 <4.0.0'
+  synchronized: '>=3.0.0 <5.0.0'
 
 dev_dependencies:
-  pedantic: '>=1.4.0'
-  test: '>=1.4.0'
-  async: '>=2.5.0-nullsafety.3'
-  build_runner: '>=0.9.0'
-  build_test: '>=0.10.2'
+  pedantic: '>=1.10.0'
+  test: '>=1.16.2'
+  async: '>=2.5.0'
+  build_runner: '>=1.11.2'
+  build_test: '>=1.3.7'
 
 executables:
   # Shell helper
   ds: shell
 
-dependency_overrides:
-  test: '>=1.16.0-nullsafety.11'
-  # Comment for publication - temp nnbd
-  args: '>=2.0.0-nullsafety.0'
-  pub_semver: '>=2.0.0-nullsafety.0'
