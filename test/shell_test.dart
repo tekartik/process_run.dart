@@ -92,8 +92,20 @@ dart example/echo.dart -o 你好
       expect(results[2].stdout.toString().trim(), 'Hello  world');
       expect(results[3].stdout.toString().trim(), 'Hello  world');
       expect(results[4].stdout.toString().trim(), 'Hello  world');
-      expect(results[5].stdout.toString().trim(), '你好');
+      if (Platform.isWindows) {
+        // Not supported requires utf8 encoding (see test below)
+      } else {
+        expect(results[5].stdout.toString().trim(), '你好');
+      }
       expect(results.length, 6);
+    });
+
+    test('arguments utf8', () async {
+      var shell = Shell(verbose: debug, stdoutEncoding: utf8);
+      var results = await shell.run('''
+dart example/echo.dart -o 你好
+''');
+      expect(results.outLines.toList()[0], '你好');
     });
 
     test('outLines, errLines', () async {
@@ -101,17 +113,13 @@ dart example/echo.dart -o 你好
 
       var results = await shell.run(
           'dart example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
-      //TODO test other platforms
-      if (Platform.isLinux) {
-        expect(results.outLines, ['Hello', 'World']);
-        expect(results.errLines, []);
-      }
+      expect(results.outLines, ['Hello', 'World']);
+      expect(results.errLines, []);
+
       results = await shell.run('dart example/echo.dart -e Hello');
-      //TODO test other platforms
-      if (Platform.isLinux) {
-        expect(results.outLines, []);
-        expect(results.errLines, ['Hello']);
-      }
+      expect(results.outLines, []);
+      expect(results.errLines, ['Hello']);
+
       results = await shell.run('''
 # This is a 2 commands file
 
@@ -119,11 +127,8 @@ dart example/echo.dart -o Hello
 
 dart example/echo.dart -e World
 ''');
-      //TODO test other platforms
-      if (Platform.isLinux) {
-        expect(results.outLines, ['Hello']);
-        expect(results.errLines, ['World']);
-      }
+      expect(results.outLines, ['Hello']);
+      expect(results.errLines, ['World']);
     });
 
     test('backslash', () async {
