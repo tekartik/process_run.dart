@@ -29,10 +29,10 @@ class SharedStdIn extends Stream<List<int>> {
   StreamController<List<int>>? _current;
   // ignore: cancel_subscriptions
   StreamSubscription<List<int>>? _sub;
+  var _terminated = false;
+  final Stream<List<int>> _originalStream;
 
-  SharedStdIn([Stream<List<int>>? stream]) {
-    _sub = (stream ??= stdin).listen(_onInput);
-  }
+  SharedStdIn([Stream<List<int>>? stream]) : _originalStream = stream ?? stdin;
 
   /// Returns a future that completes with the next line.
   ///
@@ -60,6 +60,9 @@ class SharedStdIn extends Stream<List<int>> {
 
   StreamController<List<int>> _getCurrent() =>
       _current ??= StreamController<List<int>>(
+          onListen: () {
+            _sub ??= _originalStream.listen(_onInput);
+          },
           onCancel: () {
             _current = null;
           },
@@ -72,7 +75,7 @@ class SharedStdIn extends Stream<List<int>> {
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    if (_sub == null) {
+    if (_terminated) {
       throw StateError('Stdin has already been terminated.');
     }
     final controller = _getCurrent();
@@ -91,10 +94,11 @@ class SharedStdIn extends Stream<List<int>> {
 
   /// Terminates the connection to `stdin`, closing all subscription.
   Future<void> terminate() async {
-    if (_sub == null) {
+    if (_terminated) {
       throw StateError('Stdin has already been terminated.');
     }
-    await _sub!.cancel();
+    _terminated = true;
+    await _sub?.cancel();
     await _current?.close();
     _sub = null;
   }

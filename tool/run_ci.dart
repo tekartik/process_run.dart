@@ -16,7 +16,7 @@ dart pub global run dart_style:format -n --set-exit-if-changed bin example lib t
 dartfmt -n --set-exit-if-changed .
 
 # Run tests
-pub run test -p vm
+dart test
 
 ''');
 }
