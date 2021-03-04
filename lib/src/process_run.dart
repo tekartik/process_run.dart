@@ -227,7 +227,7 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
   }
 
   if (commandVerbose == true) {
-    streamSinkWriteln(stdout ?? io.stdout, '\$ ${cmd}',
+    streamSinkWriteln(stdout ?? io.stdout, '\$ $cmd',
         encoding: cmd.stdoutEncoding);
   }
 
@@ -248,7 +248,7 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
   } catch (e) {
     if (verbose == true) {
       io.stderr.writeln(e);
-      io.stderr.writeln('\$ ${cmd}');
+      io.stderr.writeln('\$ $cmd');
       io.stderr.writeln(
           'workingDirectory: ${cmd.workingDirectory ?? Directory.current?.path}');
     }

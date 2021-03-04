@@ -310,7 +310,7 @@ void main() {
       var path = '.dart_tool/process_run/test/space in binary';
       await createEchoExecutable(path);
       var env = Map<String, String>.from(platformEnvironment);
-      env[envPathKey] = '${dirname(path)}${envPathSeparator}${env[envPathKey]}';
+      env[envPathKey] = '${dirname(path)}$envPathSeparator${env[envPathKey]}';
       print(env[envPathKey]);
       var result = await run(
           'space in binary$basicScriptExecutableExtension', [],
@@ -330,7 +330,7 @@ void main() {
       var path = '.dart_tool/process_run/test/space in path/binary';
       await createEchoExecutable(path);
       var env = Map<String, String>.from(platformEnvironment);
-      env[envPathKey] = '${dirname(path)}${envPathSeparator}${env[envPathKey]}';
+      env[envPathKey] = '${dirname(path)}$envPathSeparator${env[envPathKey]}';
       print(env[envPathKey]);
       var result = await run('binary$basicScriptExecutableExtension', [],
           environment: env);

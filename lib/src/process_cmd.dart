@@ -103,7 +103,7 @@ String processCmdToDebugString(ProcessCmd cmd) {
   if (cmd.workingDirectory != null) {
     sb.writeln('dir: ${cmd.workingDirectory}');
   }
-  sb.writeln('cmd: ${cmd}');
+  sb.writeln('cmd: $cmd');
 
   return sb.toString();
 }

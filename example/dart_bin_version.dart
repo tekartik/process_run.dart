@@ -7,6 +7,6 @@ import 'package:process_run/which.dart';
 Future main() async {
   print('dart: ${await which('dart')}');
   var dartBinVersion = await getDartBinVersion();
-  print('dartBinVersion: ${dartBinVersion}');
+  print('dartBinVersion: $dartBinVersion');
   await Shell().run('dart --version');
 }

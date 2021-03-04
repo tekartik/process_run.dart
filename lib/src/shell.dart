@@ -329,7 +329,7 @@ class Shell {
   }
 
   String _currentProcessToString() {
-    return 'runId:$_currentProcessRunId${_currentProcess == null ? '' : ', process: ${_currentProcess?.pid}: $_currentProcessRunId ${_currentProcessCmd}'}';
+    return 'runId:$_currentProcessRunId${_currentProcess == null ? '' : ', process: ${_currentProcess?.pid}: $_currentProcessRunId $_currentProcessCmd'}';
   }
 
   Completer<ProcessResult> _currentProcessResultCompleter;
@@ -404,7 +404,7 @@ class Shell {
           // devPrint('After $processCmd');
           if (_throwOnError && processResult.exitCode != 0) {
             throw ShellException(
-                '${processCmd}, exitCode ${processResult.exitCode}, workingDirectory: ${_workingDirectoryPath}',
+                '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
                 processResult);
           }
         } on ProcessException catch (e) {
@@ -422,13 +422,13 @@ class Shell {
             _writeln('Missing working directory $workingDirectory');
           } else {
             _writeln('''
-  Check that ${executableFullPath} exists
-    command: ${processCmd}''');
+  Check that $executableFullPath exists
+    command: $processCmd''');
           }
           _writeln();
 
           throw ShellException(
-              '${processCmd}, error: $e, workingDirectory: ${_workingDirectoryPath}',
+              '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
               null);
         }
 

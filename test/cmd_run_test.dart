@@ -46,7 +46,7 @@ void main() {
       result = await runCmd(cmd, verbose: true, stdout: out);
       expect(out.results.length, 2, reason: '${out.results}');
       expect(systemEncoding.decode(out.results[0].asValue.value).trim(),
-          '\$ dart ${echoScriptPath} --stdout out');
+          '\$ dart $echoScriptPath --stdout out');
       expect(systemEncoding.decode(out.results[1].asValue.value), 'out');
     });
 

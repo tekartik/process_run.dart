@@ -104,7 +104,7 @@ String expandPath(String path) {
     return userHomePath;
   }
   if (path.startsWith('~/') || path.startsWith(r'~\')) {
-    return '${userHomePath}${path.substring(1)}';
+    return '$userHomePath${path.substring(1)}';
   }
   return path;
 }

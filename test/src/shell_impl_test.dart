@@ -131,7 +131,7 @@ void main() {
         path: test
         var:
           _TEKARTIK_PROCESS_RUN_TEST: 1
-          ${localEnvFilePathEnvKey}: ${configFileEmptyPath}
+          $localEnvFilePathEnvKey: $configFileEmptyPath
         ''');
         shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
