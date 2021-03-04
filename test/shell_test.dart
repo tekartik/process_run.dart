@@ -175,7 +175,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           var shell = Shell().cd('example');
           late Future future;
           try {
-            future = shell.run('dart echo.dart --wait 30000');
+            future = shell.run('dart run echo.dart --wait 30000');
             await future.timeout(const Duration(milliseconds: 15000));
             fail('should fail');
           } on TimeoutException catch (_) {
