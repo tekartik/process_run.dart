@@ -86,6 +86,7 @@ dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o 'Hello  world'
 dart example/echo.dart -o ${shellArgument(text)}
 dart example/echo.dart -o 你好
+dart example/echo.dart -o éà
 ''');
       expect(results[0].stdout.toString().trim(), 'Helloworld');
       expect(results[1].stdout.toString().trim(), 'Helloworld');
@@ -96,6 +97,7 @@ dart example/echo.dart -o 你好
         // Not supported requires utf8 encoding (see test below)
       } else {
         expect(results[5].stdout.toString().trim(), '你好');
+        expect(results[6].stdout.toString().trim(), 'éà');
       }
       expect(results.length, 6);
     });
@@ -106,6 +108,7 @@ dart example/echo.dart -o 你好
 dart example/echo.dart -o 你好
 ''');
       expect(results.outLines.toList()[0], '你好');
+      expect(results.length, 6);
     });
 
     test('outLines, errLines', () async {
@@ -497,5 +500,20 @@ _tekartik_dummy_app_that_does_not_exits
             .toString());
     expect(version, resolvedVersion);
     expect(version, whichVersion);
+  });
+
+  test('verbose non ascii char', () async {
+    var controller = ShellLinesController();
+    var shell = Shell(
+        stdout: controller.sink,
+        verbose: true,
+        environment: ShellEnvironment()
+          ..aliases['echo'] = 'dart example/echo.dart -o');
+    await shell.run('echo 你好é');
+    controller.close();
+    if (!Platform.isWindows) {
+      expect(await controller.stream.toList(),
+          ['\$ dart example/echo.dart -o 你好é', '你好é']);
+    }
   });
 }

@@ -160,8 +160,7 @@ Future main(List<String> arguments) async {
 
   if (_argsResult['all-env'] as bool) {
     var env = ShellEnvironment(environment: Platform.environment);
-    stdout.writeln(const JsonEncoder.withIndent('  ')
-        .convert({'vars': env.vars, 'paths': env.paths}));
+    stdout.writeln(const JsonEncoder.withIndent('  ').convert(env.toJson()));
   }
 
   // handle the rest, default to output

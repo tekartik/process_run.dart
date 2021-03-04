@@ -4,10 +4,11 @@
 
 * `nnbd` support
 
-## 0.11.2+5
+## 0.11.2+8
 
 * Add `ShellEnvironment` utility, allowing adding vars, path and alias
 * Add `ds` (shell binary) executable for manipulating environment used in `Shell` from the command line
+* Fix verbose non ASCII character output
 
 ## 0.11.1
 

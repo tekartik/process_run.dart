@@ -22,15 +22,17 @@ class ShellEnvironmentPaths with ListMixin<String> {
   }
 
   set _paths(List<String> paths) {
-    // remove duplicates
-    paths = LinkedHashSet<String>.from(paths).toList();
-    _environment[envPathKey] = paths.join(envPathSeparator);
+    if (paths.isEmpty) {
+      _environment.remove(envPathKey);
+    } else {
+      // remove duplicates
+      paths = LinkedHashSet<String>.from(paths).toList();
+      _environment[envPathKey] = paths.join(envPathSeparator);
+    }
   }
 
   /// Prepend a path (i.e. higher in the hierarchy to handle a [which] resolution.
-  void prepend(String path) {
-    _paths = [path, ..._paths];
-  }
+  void prepend(String path) => insert(0, path);
 
   @override
   int get length => _paths.length;
@@ -56,13 +58,16 @@ class ShellEnvironmentPaths with ListMixin<String> {
     _paths = _paths..length = newLength;
   }
 
+  @override
+  void insert(int index, String element) {
+    _paths = _paths..insert(index, element);
+  }
+
   /// Merge an environment.
   ///
   /// the other object, paths are prepended.
   void merge(ShellEnvironmentPaths paths) {
-    _paths = _paths
-      ..removeWhere((element) => paths.contains(element))
-      ..insertAll(0, paths);
+    insertAll(0, paths);
   }
 
   @override
@@ -78,6 +83,18 @@ class ShellEnvironmentPaths with ListMixin<String> {
 
   @override
   String toString() => 'Path($length)';
+
+  /// Overriden to handle concurrent modification and avoid duplicates.
+  @override
+  void addAll(Iterable<String> paths) {
+    _paths = _paths..addAll(paths);
+  }
+
+  /// Overriden to handle concurrent modification and avoid duplicates.
+  @override
+  void insertAll(int index, Iterable<String> paths) {
+    _paths = _paths..insertAll(index, paths);
+  }
 }
 
 /// Shell environment aliases for executable
@@ -288,6 +305,10 @@ class ShellEnvironment with MapMixin<String, String> {
         if (rawPaths is Iterable) {
           paths.addAll(rawPaths.cast<String>());
         }
+        var rawAliases = map['aliases'];
+        if (rawAliases is Map) {
+          aliases.addAll(rawAliases.cast<String, String>());
+        }
       }
     } catch (_) {
       // Silent crash
@@ -318,7 +339,7 @@ class ShellEnvironment with MapMixin<String, String> {
 
   /// `paths` and `vars` key
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'paths': paths, 'vars': vars};
+    return <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
   }
 
   @override
@@ -333,11 +354,14 @@ class ShellEnvironment with MapMixin<String, String> {
       if (other.paths != paths) {
         return false;
       }
+      if (other.aliases != aliases) {
+        return false;
+      }
       return true;
     }
     return false;
   }
 
   @override
-  String toString() => 'ShellEnvironment($paths, $vars)';
+  String toString() => 'ShellEnvironment($paths, $vars, $aliases)';
 }

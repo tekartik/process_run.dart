@@ -8,6 +8,8 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 
+import 'bin/shell/import.dart';
+
 /// True if the line is a comment.
 ///
 /// line must have been trimmed before

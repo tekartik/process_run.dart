@@ -82,6 +82,18 @@ void main() {
               .join(Platform.isWindows ? ';' : ':'));
     });
 
+    test('config no overload', () async {
+      var env = Map<String, String>.from(platformEnvironment)
+        ..[userEnvFilePathEnvKey] = dummyEnvPath1
+        ..[localEnvFilePathEnvKey] = dummyEnvPath1;
+      var userConfig = getUserConfig(env);
+
+      expect(userConfig.vars['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'],
+          dummyEnvPath1);
+      expect(userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'],
+          dummyEnvPath1);
+    });
+
     test('config order', () async {
       // User then local env then overriden local
       //print(a);
