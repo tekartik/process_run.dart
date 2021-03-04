@@ -99,7 +99,7 @@ dart example/echo.dart -o éà
         expect(results[5].stdout.toString().trim(), '你好');
         expect(results[6].stdout.toString().trim(), 'éà');
       }
-      expect(results.length, 6);
+      expect(results.length, 7);
     });
 
     test('arguments utf8', () async {
@@ -108,7 +108,7 @@ dart example/echo.dart -o éà
 dart example/echo.dart -o 你好
 ''');
       expect(results.outLines.toList()[0], '你好');
-      expect(results.length, 6);
+      expect(results.length, 1);
     });
 
     test('outLines, errLines', () async {

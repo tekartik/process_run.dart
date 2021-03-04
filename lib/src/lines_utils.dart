@@ -65,7 +65,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
     void addCurrentLine() {
       if (currentLine?.isNotEmpty ?? false) {
         try {
-          ctlr.add(encoding.decode(currentLine));
+          ctlr.add(encoding.decode(currentLine!));
         } catch (_) {
 // Ignore nad encoded line
           print('ignoring: $currentLine');
