@@ -21,7 +21,7 @@ import 'common/import.dart';
 ///   shell.kill();
 /// });
 /// try {
-///   await shell.run('dart echo.dart some_text');
+///   await shell.run('dart run echo.dart some_text');
 /// } on ShellException catch (_) {
 ///   // We might get a shell exception
 /// }

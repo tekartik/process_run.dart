@@ -39,9 +39,10 @@ Future main() async {
   await runCmd(cmd, verbose: true);
 
   // Calling dart script
-  // $ dart example/my_script.dart my_first_arg my_second_arg
+  // $ dart run example/my_script.dart my_first_arg my_second_arg
   await runCmd(
-      DartCmd(['example/my_script.dart', 'my_first_arg', 'my_second_arg']),
+      DartCmd(
+          ['run', 'example/my_script.dart', 'my_first_arg', 'my_second_arg']),
       commandVerbose: true);
 
   // Calling pub

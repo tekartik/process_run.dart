@@ -30,7 +30,7 @@ void main() {
     });
     test('userEnvironment', () async {
       await run(
-          'dart example/echo.dart ${shellArgument(stringTruncate(userEnvironment.toString(), 1500))}',
+          'dart run example/echo.dart ${shellArgument(stringTruncate(userEnvironment.toString(), 1500))}',
           verbose: false);
 
       expect(userEnvironment.length,
@@ -40,7 +40,7 @@ void main() {
     });
     test('shellEnvironment', () async {
       await run(
-          'dart example/echo.dart ${shellArgument(stringTruncate(shellEnvironment.toString(), 1500))}',
+          'dart run example/echo.dart ${shellArgument(stringTruncate(shellEnvironment.toString(), 1500))}',
           verbose: false);
     });
 

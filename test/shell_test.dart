@@ -79,13 +79,13 @@ void main() {
       var text = 'Hello  world';
       var results = await shell.run('''
 # this will print 'Helloworld'
-dart example/echo.dart -o Hello  world
-dart example/echo.dart -o $text
+dart run example/echo.dart -o Hello  world
+dart run example/echo.dart -o $text
 # this will print 'Hello  world'
-dart example/echo.dart -o 'Hello  world'
-dart example/echo.dart -o 'Hello  world'
-dart example/echo.dart -o ${shellArgument(text)}
-dart example/echo.dart -o éà
+dart run example/echo.dart -o 'Hello  world'
+dart run example/echo.dart -o 'Hello  world'
+dart run example/echo.dart -o ${shellArgument(text)}
+dart run example/echo.dart -o éà
 ''');
       expect(results[0].stdout.toString().trim(), 'Helloworld');
       expect(results[1].stdout.toString().trim(), 'Helloworld');
@@ -102,13 +102,13 @@ dart example/echo.dart -o éà
       var shell = Shell(verbose: debug, runInShell: true);
 
       var results = await shell.run(
-          'dart example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
+          'dart run example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
       //TODO test other platforms
       if (Platform.isLinux) {
         expect(results.outLines, ['Hello', 'World']);
         expect(results.errLines, []);
       }
-      results = await shell.run('dart example/echo.dart -e Hello');
+      results = await shell.run('dart run example/echo.dart -e Hello');
       //TODO test other platforms
       if (Platform.isLinux) {
         expect(results.outLines, []);
@@ -117,9 +117,9 @@ dart example/echo.dart -o éà
       results = await shell.run('''
 # This is a 2 commands file
 
-dart example/echo.dart -o Hello
+dart run example/echo.dart -o Hello
 
-dart example/echo.dart -e World
+dart run example/echo.dart -e World
 ''');
       //TODO test other platforms
       if (Platform.isLinux) {
@@ -132,8 +132,8 @@ dart example/echo.dart -e World
       var shell = Shell(verbose: debug);
       var weirdText = r'a/\b c/\d';
       var results = await shell.run('''
-dart example/echo.dart -o $weirdText
-dart example/echo.dart -o ${shellArgument(weirdText)}
+dart run example/echo.dart -o $weirdText
+dart run example/echo.dart -o ${shellArgument(weirdText)}
 
 ''');
 
@@ -169,7 +169,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           var shell = Shell().cd('example');
           Future future;
           try {
-            future = shell.run('dart echo.dart --wait 30000');
+            future = shell.run('dart run echo.dart --wait 30000');
             await future.timeout(const Duration(milliseconds: 15000));
             fail('should fail');
           } on TimeoutException catch (_) {
@@ -181,7 +181,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
             await future;
             fail('should fail');
           } on ShellException catch (_) {
-            // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+            // 2: ShellException(dart run echo.dart --wait 3000, exitCode -15, workingDirectory:
             // devPrint('2: $_');
           }
         }()
@@ -197,7 +197,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           var shell = Shell().cd('example');
           Future future;
           try {
-            future = shell.run('dart echo.dart --wait 3000');
+            future = shell.run('dart run echo.dart --wait 3000');
             await future.timeout(const Duration(milliseconds: 2000));
             fail('should fail');
           } on TimeoutException catch (_) {
@@ -209,12 +209,12 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
             await future;
             fail('should fail');
           } on ShellException catch (_) {
-            // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+            // 2: ShellException(dart run echo.dart --wait 3000, exitCode -15, workingDirectory:
             // devPrint('2: $e');
           }
 
           try {
-            var future = shell.run('dart echo.dart --wait 10000');
+            var future = shell.run('dart run echo.dart --wait 10000');
             await Future.delayed(const Duration(milliseconds: 3000));
             shell.kill();
             await future.timeout(const Duration(milliseconds: 8000));
@@ -226,7 +226,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           try {
             // Killing before calling
             future = shell
-                .run('dart echo.dart --wait 9000')
+                .run('dart run echo.dart --wait 9000')
                 .timeout(const Duration(milliseconds: 7000));
             shell.kill();
             await future;
@@ -246,16 +246,16 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       var linesController = ShellLinesController();
       var shell =
           Shell(stdout: linesController.sink, verbose: false).cd('example');
-      await shell.run('dart echo.dart some_text');
+      await shell.run('dart run echo.dart some_text');
       linesController.close();
       expect(await linesController.stream.toList(), ['some_text']);
 
       linesController = ShellLinesController();
       shell = Shell(stdout: linesController.sink, verbose: false).cd('example');
-      await shell.run('dart echo.dart some_text1');
+      await shell.run('dart run echo.dart some_text1');
       await shell.run('''
-      dart echo.dart some_text2
-      dart echo.dart some_text3
+      dart run echo.dart some_text2
+      dart run echo.dart some_text3
       ''');
       linesController.close();
       expect(await linesController.stream.toList(),
@@ -497,12 +497,12 @@ _tekartik_dummy_app_that_does_not_exits
         stdout: controller.sink,
         verbose: true,
         environment: ShellEnvironment()
-          ..aliases['echo'] = 'dart example/echo.dart -o');
+          ..aliases['echo'] = 'dart run example/echo.dart -o');
     await shell.run('echo 你好é');
     controller.close();
     if (!Platform.isWindows) {
       expect(await controller.stream.toList(),
-          ['\$ dart example/echo.dart -o 你好é', '你好é']);
+          ['\$ dart run example/echo.dart -o 你好é', '你好é']);
     }
   });
 }

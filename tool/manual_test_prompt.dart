@@ -6,8 +6,8 @@ import 'package:process_run/src/prompt.dart';
 
 Future main() async {
   stdout.writeln('Enter 6 times some text');
-  await run('dart example/echo.dart --stdin', stdin: sharedStdIn);
-  await run('dart example/echo.dart --stdin', stdin: sharedStdIn);
+  await run('dart run example/echo.dart --stdin', stdin: sharedStdIn);
+  await run('dart run example/echo.dart --stdin', stdin: sharedStdIn);
   print(await prompt('Enter your name'));
   print(await prompt(null));
   print(await promptConfirm('Action'));
