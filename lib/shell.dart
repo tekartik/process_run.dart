@@ -53,4 +53,7 @@ export 'src/shell_environment.dart'
         ShellEnvironmentAliases;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
-    show ProcessRunProcessResultsExt, ProcessRunProcessExt;
+    show
+        ProcessRunProcessExt,
+        ProcessRunProcessResultExt,
+        ProcessRunProcessResultsExt;

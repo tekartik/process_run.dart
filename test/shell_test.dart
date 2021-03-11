@@ -117,6 +117,7 @@ dart example/echo.dart -o 你好
       var results = await shell.run(
           'dart example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
       expect(results.outLines, ['Hello', 'World']);
+      expect(results[0].outLines, ['Hello', 'World']);
       expect(results.errLines, []);
 
       results = await shell.run('dart example/echo.dart -e Hello');

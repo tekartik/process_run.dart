@@ -19,9 +19,7 @@ var safeLocalEnvFile = '.dart_tool/process_run/test/test_local_env3_safe.yaml';
 var safeShellEnvironment = ShellEnvironment()
   ..aliases['ds'] = 'dart run bin/shell.dart'
   ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
-Shell get safeShell => Shell(
-    environment: safeShellEnvironment,
-    verbose: false); // devWarning(true)); // false);
+Shell get safeShell => Shell(environment: safeShellEnvironment, verbose: false);
 void main() {
   group('bin_shell', () {
     test('version', () async {
@@ -32,7 +30,7 @@ void main() {
 
     test('help', () async {
       var outLines = (await shell.run('ds --help')).outLines;
-      expect(outLines.length, greaterThan(17));
+      expect(outLines.length, greaterThan(17), reason: '$outLines');
     });
     group('run', () {
       test('run', () async {

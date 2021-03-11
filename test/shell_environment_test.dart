@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/shell_environment.dart';
 import 'package:test/test.dart';
 
 import 'echo_test.dart';
@@ -78,6 +79,19 @@ void main() {
 
       expect(env, {
         envPathKey: ['path1', 'path2'].join(envPathSeparator)
+      });
+    });
+
+    test('non empty paths', () {
+      var env = ShellEnvironment(environment: {'PATH': 'test'});
+      env.paths.addAll(['path2']);
+
+      env.paths.prepend('path1');
+      env.paths.addAll(['path3']);
+      env.paths.remove('path3');
+
+      expect(env, {
+        envPathKey: ['path1', 'test', 'path2'].join(envPathSeparator)
       });
     });
 
