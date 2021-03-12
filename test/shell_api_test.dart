@@ -45,6 +45,7 @@ void main() {
       whichSync;
       which;
       ProcessRunProcessResultsExt(null)?.outText;
+      ProcessRunProcessResultExt(null)?.outText;
       ProcessRunProcessExt(null)?.outLines;
 
       // process_cmd

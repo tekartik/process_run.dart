@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1
+
+* Add `ProcessRunProcessResultExt` helper.
+* Add `onProcess` callback for Shell run actions.
+
 ## 0.12.0+1
 
 * `nnbd` support

@@ -42,7 +42,13 @@ export 'dartbin.dart'
         isFlutterSupported,
         isFlutterSupportedSync;
 export 'src/lines_utils.dart' show ShellLinesController, shellStreamLines;
-export 'src/process_cmd.dart';
+export 'src/process_cmd.dart'
+    show
+        processCmdToDebugString,
+        processResultToDebugString,
+
+        /// Deprecated
+        ProcessCmd;
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
 export 'src/shell.dart' show run, Shell, ShellException;
 export 'src/shell_environment.dart'
@@ -53,4 +59,7 @@ export 'src/shell_environment.dart'
         ShellEnvironmentAliases;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
-    show ProcessRunProcessResultsExt, ProcessRunProcessExt;
+    show
+        ProcessRunProcessExt,
+        ProcessRunProcessResultExt,
+        ProcessRunProcessResultsExt;

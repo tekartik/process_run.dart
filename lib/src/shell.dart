@@ -11,7 +11,7 @@ import 'package:synchronized/synchronized.dart';
 
 import 'common/import.dart';
 
-var shellDebug = false; //devWarning(true); // false
+var shellDebug = false; // devWarning(true); // false
 ///
 /// Run one or multiple plain text command(s).
 ///
@@ -19,7 +19,7 @@ var shellDebug = false; //devWarning(true); // false
 ///
 /// Commands can be on multiple line if ending with ' ^' or ' \'.
 ///
-/// Returns a list of executed command line results.
+/// Returns a list of executed command line results. Verbose by default.
 ///
 ///
 /// ```dart
@@ -48,6 +48,7 @@ Future<List<ProcessResult>> run(
   bool? commandVerbose,
   // Default to true if verbose is true
   bool? commentVerbose,
+  void Function(Process process)? onProcess,
 }) {
   return Shell(
           throwOnError: throwOnError,
@@ -63,7 +64,7 @@ Future<List<ProcessResult>> run(
           verbose: verbose,
           commandVerbose: commandVerbose,
           commentVerbose: commentVerbose)
-      .run(script);
+      .run(script, onProcess: onProcess);
 }
 
 /// Multiplatform Shell utility to run a script with multiple commands.
@@ -272,7 +273,10 @@ class Shell {
   ///
   /// Returns a list of executed command line results.
   ///
-  Future<List<ProcessResult>> run(String script) {
+  /// [onProcess] is called for each started process.
+  ///
+  Future<List<ProcessResult>> run(String script,
+      {void Function(Process process)? onProcess}) {
     // devPrint('Running $script');
     return _runLocked((runId) async {
       var commands = scriptToCommands(script);
@@ -301,8 +305,9 @@ class Shell {
           executable = parts[0];
           arguments = [...parts.sublist(1), ...arguments];
         }
-        var processResult =
-            await _lockedRunExecutableArguments(runId, executable, arguments);
+        var processResult = await _lockedRunExecutableArguments(
+            runId, executable, arguments,
+            onProcess: onProcess);
         processResults.add(processResult);
       }
 
@@ -315,10 +320,14 @@ class Shell {
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
   /// Returns a process result (or throw if specified in the shell).
+  ///
+  /// [onProcess] is called for each started process.
   Future<ProcessResult> runExecutableArguments(
-      String executable, List<String> arguments) async {
+      String executable, List<String> arguments,
+      {void Function(Process process)? onProcess}) async {
     return _runLocked((runId) async {
-      return _lockedRunExecutableArguments(runId, executable, arguments);
+      return _lockedRunExecutableArguments(runId, executable, arguments,
+          onProcess: onProcess);
     });
   }
 
@@ -351,9 +360,12 @@ class Shell {
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
+  /// Call onProcess upon process startup
+  ///
   /// Returns a process result (or throw if specified in the shell).
   Future<ProcessResult> _lockedRunExecutableArguments(
-      int runId, String executable, List<String> arguments) {
+      int runId, String executable, List<String> arguments,
+      {void Function(Process process)? onProcess}) {
     try {
       _clearPreviousContext();
       var completer =
@@ -389,6 +401,9 @@ class Shell {
               _currentProcessRunId = runId;
               if (shellDebug) {
                 print('onProcess ${_currentProcessToString()}');
+              }
+              if (onProcess != null) {
+                onProcess(process);
               }
               if (_killedRunId >= _runId) {
                 if (shellDebug) {

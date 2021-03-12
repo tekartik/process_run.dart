@@ -3,8 +3,10 @@ dart:
   - stable
   - beta
   - dev
-script: dart tool/travis.dart
+script:
+  - dart pub get
+  - dart run tool/travis.dart
 matrix:
   allow_failures:
     # Temp for nnbd
-    - dart: stable
+    - dart: dev

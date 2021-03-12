@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:process_run/src/shell.dart';
 import 'package:process_run/src/shell_utils.dart';
 
 import 'common/import.dart';
@@ -28,9 +29,11 @@ import 'common/import.dart';
 /// ```
 class ShellLinesController {
   final Encoding encoding;
-  final _controller = StreamController<List<int>>();
+  late StreamController<List<int>> _controller;
 
-  ShellLinesController({this.encoding = systemEncoding});
+  ShellLinesController({this.encoding = systemEncoding}) {
+    _controller = StreamController<List<int>>();
+  }
 
   /// Write a string with the specified encoding.
   void write(String message) =>
@@ -61,8 +64,12 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
   const endOfLine = 10;
   const lineFeed = 13;
   late StreamController<String> ctlr;
-  ctlr = StreamController<String>(onListen: () {
-    void addCurrentLine() {
+
+  // devPrint('listen (paused: $paused)');
+  void addCurrentLine() {
+    if (subscription?.isPaused ?? false) {
+      // Do nothing, current line is discarded
+    } else {
       if (currentLine?.isNotEmpty ?? false) {
         try {
           ctlr.add(encoding.decode(currentLine!));
@@ -71,9 +78,23 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
           print('ignoring: $currentLine');
         }
       }
-      currentLine = null;
     }
+    currentLine = null;
+  }
 
+  ctlr = StreamController<String>(onPause: () {
+    if (shellDebug) {
+      print('onPause (paused: ${subscription?.isPaused})');
+    }
+    // Last one
+    addCurrentLine();
+    subscription?.pause();
+  }, onResume: () {
+    // devPrint('onResume (paused: $paused)');
+    if (subscription?.isPaused ?? false) {
+      subscription?.resume();
+    }
+  }, onListen: () {
     void addToCurrentLine(List<int> data) {
       if (currentLine == null) {
         currentLine = data;
@@ -88,7 +109,11 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
     subscription = stream.listen((data) {
       // var _w;
       // print('read $data');
-      // devPrint('read $data');
+      var paused = subscription?.isPaused ?? false;
+      // devPrint('read $data (paused: $paused)');
+      if (paused) {
+        return;
+      }
       // look for \n (10)
       var start = 0;
       for (var i = 0; i < data.length; i++) {
@@ -106,9 +131,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
       }
     }, onDone: () {
       // Last one
-      if (currentLine != null) {
-        addCurrentLine();
-      }
+      addCurrentLine();
       ctlr.close();
     });
   }, onCancel: () {
