@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:pedantic/pedantic.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
@@ -249,24 +250,82 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       }
     }, timeout: const Timeout(Duration(seconds: 10)));
 
-    test('Shell Lines Controller', () async {
-      var linesController = ShellLinesController();
-      var shell =
-          Shell(stdout: linesController.sink, verbose: false).cd('example');
-      await shell.run('dart echo.dart some_text');
-      linesController.close();
-      expect(await linesController.stream.toList(), ['some_text']);
+    group('ShellLinesController', () {
+      test('Shell Lines out', () async {
+        var linesController = ShellLinesController();
+        var shell =
+            Shell(stdout: linesController.sink, verbose: false).cd('example');
+        await shell.run('dart echo.dart some_text');
+        linesController.close();
+        expect(await linesController.stream.toList(), ['some_text']);
 
-      linesController = ShellLinesController();
-      shell = Shell(stdout: linesController.sink, verbose: false).cd('example');
-      await shell.run('dart echo.dart some_text1');
-      await shell.run('''
+        linesController = ShellLinesController();
+        shell =
+            Shell(stdout: linesController.sink, verbose: false).cd('example');
+        await shell.run('dart echo.dart some_text1');
+        await shell.run('''
       dart echo.dart some_text2
       dart echo.dart some_text3
       ''');
-      linesController.close();
-      expect(await linesController.stream.toList(),
-          ['some_text1', 'some_text2', 'some_text3']);
+        linesController.close();
+        expect(await linesController.stream.toList(),
+            ['some_text1', 'some_text2', 'some_text3']);
+      });
+      test('pause', () async {
+        late ShellLinesController linesController;
+        var lines = <String>[];
+        late Shell shell;
+        StreamSubscription? subscription;
+
+        void _init() {
+          lines.clear();
+          unawaited(subscription?.cancel());
+          linesController = ShellLinesController();
+          shell =
+              Shell(stdout: linesController.sink, verbose: false).cd('example');
+          lines.clear();
+          subscription = linesController.stream.listen((event) {
+            // devPrint('line: $event');
+            lines = [...lines, event];
+          });
+        }
+
+        _init();
+        await shell.run('dart echo.dart some_text');
+        expect(lines, ['some_text']);
+
+        _init();
+        subscription?.pause();
+        await shell.run('dart echo.dart some_text');
+        expect(lines, []);
+
+        _init();
+
+        await shell.run('dart echo.dart some_text1');
+        expect(lines, ['some_text1']);
+        lines.clear();
+
+        subscription!.pause();
+        var count = 0;
+        await shell.run('''
+      dart echo.dart some_text2
+      dart echo.dart some_text3
+      ''', onProcess: (process) {
+          count++;
+          // devPrint('onProcess ${process.pid} (paused: $paused)');
+          process.exitCode.then((exitCode) {
+            expect(exitCode, 0);
+          });
+        });
+        expect(count, 2);
+        expect(lines, []);
+        lines.clear();
+        subscription!.resume();
+        await shell.run('''
+      dart echo.dart some_text4
+      ''');
+        expect(lines.last, 'some_text3');
+      });
     });
 
     test('cd', () async {

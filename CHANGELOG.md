@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.1-1
+
+* Add `ProcessRunProcessResultExt` helper.
+
 ## 0.12.0+1
 
 * `nnbd` support
