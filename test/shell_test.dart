@@ -324,7 +324,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         await shell.run('''
       dart echo.dart some_text4
       ''');
-        expect(lines.last, 'some_text3');
+        expect(lines.last, 'some_text4');
       });
     });
 

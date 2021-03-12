@@ -19,7 +19,7 @@ var shellDebug = false; // devWarning(true); // false
 ///
 /// Commands can be on multiple line if ending with ' ^' or ' \'.
 ///
-/// Returns a list of executed command line results.
+/// Returns a list of executed command line results. Verbose by default.
 ///
 ///
 /// ```dart
@@ -48,6 +48,7 @@ Future<List<ProcessResult>> run(
   bool? commandVerbose,
   // Default to true if verbose is true
   bool? commentVerbose,
+  void Function(Process process)? onProcess,
 }) {
   return Shell(
           throwOnError: throwOnError,
@@ -63,7 +64,7 @@ Future<List<ProcessResult>> run(
           verbose: verbose,
           commandVerbose: commandVerbose,
           commentVerbose: commentVerbose)
-      .run(script);
+      .run(script, onProcess: onProcess);
 }
 
 /// Multiplatform Shell utility to run a script with multiple commands.
@@ -272,6 +273,8 @@ class Shell {
   ///
   /// Returns a list of executed command line results.
   ///
+  /// [onProcess] is called for each started process.
+  ///
   Future<List<ProcessResult>> run(String script,
       {void Function(Process process)? onProcess}) {
     // devPrint('Running $script');
@@ -317,10 +320,14 @@ class Shell {
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
   /// Returns a process result (or throw if specified in the shell).
+  ///
+  /// [onProcess] is called for each started process.
   Future<ProcessResult> runExecutableArguments(
-      String executable, List<String> arguments) async {
+      String executable, List<String> arguments,
+      {void Function(Process process)? onProcess}) async {
     return _runLocked((runId) async {
-      return _lockedRunExecutableArguments(runId, executable, arguments);
+      return _lockedRunExecutableArguments(runId, executable, arguments,
+          onProcess: onProcess);
     });
   }
 
