@@ -3,9 +3,9 @@ library process_run.dartdevc_test;
 
 import 'dart:io';
 
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:test/test.dart';
 
 import 'process_run_test_common.dart';
 

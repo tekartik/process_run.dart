@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:args/args.dart';
@@ -8,8 +6,6 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart' as prefix0;
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/bin/shell/env_edit.dart';
-import 'package:process_run/src/bin/shell/shell.dart';
-import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
 import 'env_alias.dart';

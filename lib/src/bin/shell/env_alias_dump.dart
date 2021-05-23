@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/mixin/shell_bin.dart';
 import 'package:process_run/src/utils.dart';
 
 import 'import.dart';

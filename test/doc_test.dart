@@ -1,8 +1,8 @@
 @TestOn('vm')
 library process_run.doc_test;
 
-import 'package:test/test.dart';
 import 'package:process_run/shell_run.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('doc', () {

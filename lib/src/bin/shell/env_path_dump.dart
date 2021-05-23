@@ -1,6 +1,5 @@
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/dump.dart';
-import 'package:process_run/src/common/import.dart';
 
 import 'import.dart';
 

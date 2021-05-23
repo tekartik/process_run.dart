@@ -5,14 +5,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart';
+import 'package:process_run/dartbin.dart';
+import 'package:process_run/process_run.dart';
 import 'package:process_run/shell.dart'
     show platformEnvironment, Shell, shellArgument;
 import 'package:process_run/src/shell_utils.dart'
     show envPathKey, envPathSeparator;
 import 'package:test/test.dart';
-import 'package:path/path.dart';
-import 'package:process_run/dartbin.dart';
-import 'package:process_run/process_run.dart';
 
 import 'process_run_test_common.dart';
 

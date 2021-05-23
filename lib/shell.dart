@@ -12,8 +12,6 @@
 /// {@canonicalFor user_config.userPaths}
 library process_run.shell;
 
-// We reuse io sharedStdIn definition.
-export 'package:process_run/src/io/shared_stdin.dart' show sharedStdIn;
 export 'package:process_run/dartbin.dart'
     show
         dartVersion,
@@ -23,6 +21,9 @@ export 'package:process_run/dartbin.dart'
         dartChannelBeta,
         dartChannelDev,
         dartChannelMaster;
+
+// We reuse io sharedStdIn definition.
+export 'package:process_run/src/io/shared_stdin.dart' show sharedStdIn;
 export 'package:process_run/src/shell_utils.dart'
     show
         userHomePath,

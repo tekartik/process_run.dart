@@ -2,11 +2,8 @@ import 'dart:convert';
 
 import 'package:process_run/process_run.dart' hide run;
 import 'package:process_run/shell_run.dart';
-import 'package:process_run/src/which.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
-
-import 'process_cmd.dart';
 
 String? _flutterExecutablePath;
 

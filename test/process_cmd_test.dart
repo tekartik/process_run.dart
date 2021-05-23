@@ -4,11 +4,9 @@ library process_run.process_cmd_test;
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:process_run/dartbin.dart';
-import 'package:process_run/process_cmd.dart';
+import 'package:test/test.dart';
 
 import 'process_run_test_common.dart';
 

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/shell_utils.dart';

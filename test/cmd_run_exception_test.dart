@@ -3,8 +3,8 @@ library process_run.cmd_run_exception_test;
 
 import 'dart:io';
 
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('runCmdException', () {

@@ -27,6 +27,7 @@ final SharedStdIn sharedStdIn = SharedStdIn(stdin);
 @visibleForTesting
 class SharedStdIn extends Stream<List<int>> {
   StreamController<List<int>>? _current;
+
   // ignore: cancel_subscriptions
   StreamSubscription<List<int>>? _sub;
   var _terminated = false;

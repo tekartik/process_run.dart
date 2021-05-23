@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:process_run/shell_run.dart';
-import 'package:process_run/src/prompt.dart';
 
 Future main() async {
   stdout.writeln('Enter 6 times some text');
