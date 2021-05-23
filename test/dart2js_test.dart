@@ -4,9 +4,9 @@ library process_run.dart2js_test;
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:test/test.dart';
 
 String getScriptPath(Type type) =>
     (reflectClass(type).owner as LibraryMirror).uri.toFilePath();

@@ -54,6 +54,7 @@ String? get resolvedDartExecutable => _resolvedDartExecutable ??= () {
     }();
 
 String? _platformResolvedExecutable;
+
 String? get platformResolvedExecutable {
   if (!debugDartExecutableForceWhich) {
     return _platformResolvedExecutable ??= () {

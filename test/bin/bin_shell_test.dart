@@ -4,7 +4,6 @@ library process_run.test.bin.shell_bin_test;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env_file_content.dart';
 import 'package:process_run/src/bin/shell/import.dart';
-import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
@@ -19,7 +18,9 @@ var safeLocalEnvFile = '.dart_tool/process_run/test/test_local_env3_safe.yaml';
 var safeShellEnvironment = ShellEnvironment()
   ..aliases['ds'] = 'dart run bin/shell.dart'
   ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
+
 Shell get safeShell => Shell(environment: safeShellEnvironment, verbose: false);
+
 void main() {
   group('bin_shell', () {
     test('version', () async {

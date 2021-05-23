@@ -39,5 +39,7 @@ void devError([String? msg]) => _devError(msg);
 
 // exported for testing
 void debugDevPrint(Object object) => _devPrint(object);
+
 void debugDevError(Object object) => _devError(object);
+
 set debugDevPrintEnabled(bool enabled) => _devPrintEnabled = enabled;

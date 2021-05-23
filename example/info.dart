@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:process_run/cmd_run.dart' show flutterExecutablePath;
 import 'package:process_run/shell.dart';
-import 'package:process_run/which.dart';
 
 Future main() async {
   print('dartExecutable: $dartExecutable');

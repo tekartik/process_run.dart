@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
-import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;
 
 import 'bin/shell/import.dart';
 

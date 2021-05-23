@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:async/async.dart';
+import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
-import 'package:path/path.dart';
 
 String get projectTop => '.';
 

@@ -103,6 +103,7 @@ class EnvFileContent extends FileContent {
 
   bool deleteAlias(String alias) =>
       writeKeyValue(userConfigAliasKeys, alias, delete: true);
+
   bool addVar(String key, String value) =>
       writeKeyValue(userConfigVarKeys, key, value: value);
 
@@ -111,7 +112,9 @@ class EnvFileContent extends FileContent {
 
   /// Put the paths at the top
   bool prependPaths(List<String> paths) => writePaths(paths);
+
   bool deletePaths(List<String> paths) => writePaths(paths, delete: true);
+
   bool writePaths(List<String> paths, {bool delete = false}) {
     // Remove alias header
     var index = indexOfTopLevelKey(userConfigPathKeys);

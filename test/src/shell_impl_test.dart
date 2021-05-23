@@ -9,7 +9,6 @@ import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/flutterbin_cmd.dart';
 import 'package:process_run/src/user_config.dart';
-import 'package:process_run/which.dart';
 import 'package:test/test.dart';
 
 import '../echo_test.dart';

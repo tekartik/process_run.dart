@@ -1,10 +1,5 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
-import 'package:process_run/src/bin/shell/shell.dart';
-import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/user_config.dart';
 
 import 'import.dart';

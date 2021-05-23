@@ -5,10 +5,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
-import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/common/import.dart';
-import 'package:process_run/which.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -4,13 +4,10 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/utils.dart';
-
-import 'package:process_run/dartbin.dart';
-import 'package:process_run/process_run.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
+
 import 'common/import.dart';
-import 'process_cmd.dart';
 
 String dartBinFileName = 'dart${Platform.isWindows ? '.exe' : ''}';
 

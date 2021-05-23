@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
-import 'package:process_run/src/common/import.dart';
 import 'package:test/test.dart';
 
 /// Truncate at max element.

@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart' show flutterExecutablePath;
 import 'package:process_run/dartbin.dart';
-import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/dartbin_impl.dart'
     show
         debugDartExecutableForceWhich,

@@ -1,9 +1,9 @@
 @TestOn('vm')
 library process_run.dartbin_cmd_verbose_test;
 
-import 'package:test/test.dart';
 import 'package:process_run/cmd_run.dart' show runCmd;
 import 'package:process_run/src/dartbin_cmd.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('dartbin_cmd_verbose', () {
