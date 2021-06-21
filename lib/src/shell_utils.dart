@@ -7,6 +7,7 @@ import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;
 
 import 'bin/shell/import.dart';
+import 'env_utils.dart';
 
 /// True if the line is a comment.
 ///
@@ -260,3 +261,17 @@ void streamSinkWriteln(StreamSink<List<int>> sink, String message,
 void streamSinkWrite(StreamSink<List<int>> sink, String message,
         {Encoding encoding = systemEncoding}) =>
     sink.add(encoding.encode(message));
+
+/// IOSink extension
+extension IOSinkExt on IOSink {
+  /// Catch exception
+  Future<void> safeFlush() async {
+    try {
+      if (Platform.isWindows && isRelease) {
+        // Don't flush on release on windows as calling twice hangs in compiled mode
+      } else {
+        await flush();
+      }
+    } catch (_) {}
+  }
+}

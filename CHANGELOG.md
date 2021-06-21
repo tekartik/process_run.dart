@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.12.1
+## 0.12.1+1
 
 * Add `ProcessRunProcessResultExt` helper.
 * Add `onProcess` callback for Shell run actions.
+* Don't flush stdout/stderr in Windows release mode as it hangs
 
 ## 0.12.0+1
 

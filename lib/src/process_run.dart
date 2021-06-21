@@ -173,10 +173,10 @@ Future<ProcessResult> runExecutableArguments(
 
   // flush for consistency
   if (stdout == io.stdout) {
-    await io.stdout.flush();
+    await io.stdout.safeFlush();
   }
   if (stderr == io.stderr) {
-    await io.stderr.flush();
+    await io.stderr.safeFlush();
   }
 
   return result;
