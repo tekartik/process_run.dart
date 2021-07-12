@@ -4,7 +4,6 @@ library process_run.cmd_run;
 ///
 /// Command runner
 ///
-
 import 'dart:async';
 import 'dart:io';
 
@@ -47,7 +46,7 @@ export 'src/dartbin_cmd.dart'
         Dart2JsCmd,
         DartCmd,
         DartDocCmd,
-        DartFmtCmd,
+        DartFmtCmd, // ignore: deprecated_member_use_from_same_package
         DartDevcCmd,
         DartAnalyzerCmd,
         PubCmd,

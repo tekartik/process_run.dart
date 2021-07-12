@@ -48,7 +48,7 @@ void main() {
         'dartdoc',
         'dart',
         'pub',
-        'dartfmt',
+        // 'dartfmt', deprecated
         'dart2js',
         'dartanalyzer',
       ]) {

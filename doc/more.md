@@ -5,7 +5,6 @@
 Helper to format dart binaries argument that works cross-platforms
 * `dart2js`
 * `pub`
-* `dartfmt`
 * `dartanalyzer`
 * `dartoc`
 * `dartdevc`

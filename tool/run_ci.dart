@@ -8,15 +8,11 @@ Future main() async {
   print(Platform.operatingSystem);
   print(Platform.version);
   await shell.run('''
-# Analyze code
+# Analyze code & format
 dart pub global activate dart_style
 dart pub global run dart_style:format -n --set-exit-if-changed bin example lib test tool
 
-# Formatting
-dartfmt -n --set-exit-if-changed .
-
 # Run tests
 dart test
-
 ''');
 }
