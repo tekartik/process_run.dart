@@ -90,7 +90,9 @@ List<String> shellSplit(String command) {
                 next == $backslash) {
               token.writeCharCode(next);
             } else {
-              token..writeCharCode($backslash)..writeCharCode(next);
+              token
+                ..writeCharCode($backslash)
+                ..writeCharCode(next);
             }
           } else {
             token.writeCharCode(scanner.readChar());
