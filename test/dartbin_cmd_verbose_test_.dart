@@ -8,7 +8,13 @@ import 'package:test/test.dart';
 void main() {
   group('dartbin_cmd_verbose', () {
     test('all', () async {
-      expect((await runCmd(DartFmtCmd(['--help']), verbose: true)).exitCode, 0);
+      expect(
+          (await runCmd(
+                  DartFmtCmd(// ignore: deprecated_member_use_from_same_package
+                      ['--help']),
+                  verbose: true))
+              .exitCode,
+          0);
       expect(
           (await runCmd(DartAnalyzerCmd(['--help']), verbose: true)).exitCode,
           0);

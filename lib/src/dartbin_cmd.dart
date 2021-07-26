@@ -41,6 +41,7 @@ class DartCmd extends _DartBinCmd {
 }
 
 /// dartfmt command
+@Deprecated('dartfmt is deprecated itself')
 class DartFmtCmd extends _DartBinCmd {
   DartFmtCmd(List<String> arguments)
       : super(getShellCmdBinFileName('dartfmt'), arguments);
