@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:test/test.dart';
 
+import 'dartbin_test.dart';
 import 'process_run_test_common.dart';
 
 void main() {
@@ -36,8 +37,7 @@ void main() {
     });
     test('dart_cmd', () async {
       final result = await runCmd(ProcessCmd(dartExecutable, ['--version']));
-      expect(result.stderr.toLowerCase(), contains('dart'));
-      expect(result.stderr.toLowerCase(), contains('version'));
+      testDartVersionOutput(result);
       // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
     });
     // only duplicate this one

@@ -8,6 +8,8 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
+import 'dartbin_test.dart';
+
 void main() {
   group('which', () {
     test('dart', () async {
@@ -17,8 +19,7 @@ void main() {
       print(dartExecutable);
       var cmd = ProcessCmd(dartExecutable, ['--version']);
       final result = await runCmd(cmd);
-      expect(result.stderr.toLowerCase(), contains('dart'));
-      expect(result.stderr.toLowerCase(), contains('version'));
+      testDartVersionOutput(result);
     });
 
     test('no_env', () {

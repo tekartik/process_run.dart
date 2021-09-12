@@ -7,15 +7,14 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:test/test.dart';
 
+import 'dartbin_test.dart';
 import 'process_run_test_common.dart';
 
 void main() {
   group('cmd_run', () {
     test('DartCmd', () async {
       final result = await runCmd(DartCmd(['--version']));
-      expect(result.stderr.toLowerCase(), contains('dart'));
-      expect(result.stderr.toLowerCase(), contains('version'));
-      expect(result.stderr, contains(Platform.version));
+      testDartVersionOutput(result);
       // Dart VM version: 2.0.0-dev.65.0 (Tue Jun 26 14:17:21 2018 +0200) on 'linux_x64'
     });
 

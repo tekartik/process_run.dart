@@ -61,11 +61,11 @@ void main() {
         stdout.writeln('exitCode: ${result.exitCode}');
       }
     });
-    test('dart2native', () async {
+    test('dart compile', () async {
       var bin = 'build/native/info.exe';
       await Directory(dirname(bin)).create(recursive: true);
       await run('''
-  dart2native example/info.dart -o $bin
+  dart compile exe example/info.dart -o $bin
   $bin
   ''');
     });

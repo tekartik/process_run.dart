@@ -20,23 +20,46 @@ import 'package:test/test.dart';
 
 void main() => defineTests();
 
+void testDartVersionOutput(ProcessResult result) {
+  if (dartVersion >= Version(2, 15, 0, pre: '0')) {
+    // New output is on stdout
+    expect(result.stdout.toLowerCase(), contains('dart'));
+    expect(result.stdout.toLowerCase(), contains('version'));
+    expect(result.stdout, contains(Platform.version));
+  } else {
+    // Before it was on stderr
+    expect(result.stderr.toLowerCase(), contains('dart'));
+    expect(result.stderr.toLowerCase(), contains('version'));
+    expect(result.stderr, contains(Platform.version));
+  }
+}
+
 void defineTests() {
   group('dartbin', () {
     group('dart', () {
       test('run_dart', () async {
         final result = await Process.run('dart', ['--version']);
-        expect(result.stderr.toLowerCase(), contains('dart'));
-        expect(result.stderr.toLowerCase(), contains('version'));
+        try {
+          // New output is on stdout
+          expect(result.stdout.toLowerCase(), contains('dart'));
+          expect(result.stdout.toLowerCase(), contains('version'));
+        } catch (_) {
+          // before 2.15 is stdout
+          // dart used might not match the current dart used here
+          expect(result.stderr.toLowerCase(), contains('dart'));
+          expect(result.stderr.toLowerCase(), contains('version'));
+        }
         // Before 2.9.0
         // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
         // After 2.9.0
         // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"
+        // After 2.15.0
+        // Dart SDK version: 2.15.0-82.0.dev (dev) (Sat Sep 4 03:33:09 2021 -0700) on "linux_x64"
       });
 
       test('run', () async {
         final result = await Process.run(dartExecutable!, ['--version']);
-        expect(result.stderr.toLowerCase(), contains('dart'));
-        expect(result.stderr.toLowerCase(), contains('version'));
+        testDartVersionOutput(result);
         // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
       });
 
@@ -156,17 +179,31 @@ void defineTests() {
           expect(result.stderr, contains('Usage: dart '), reason: reason);
         }
 
-        // Version is on stderr
+        // Version is on stdout after 2.15
         result = await Process.run(dartExecutable!, ['--version']);
-        expect(result.stdout, '');
-        minVersion = Version(2, 9, 0, pre: '1');
-        reason =
-            'Output changed from VM to SDK since $minVersion err: ${result.stderr}';
-        if (dartVersion >= minVersion) {
-          // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"\n'
-          expect(result.stderr, contains('Dart SDK'), reason: reason);
-        } else {
-          expect(result.stderr, contains('Dart VM'), reason: reason);
+        try {
+          expect(result.stderr, '');
+          minVersion = Version(2, 9, 0, pre: '1');
+          reason =
+              'Output stdout from VM to SDK since $minVersion err: ${result.stderr}';
+          if (dartVersion >= minVersion) {
+            // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"\n'
+            expect(result.stdout, contains('Dart SDK'), reason: reason);
+          } else {
+            expect(result.stdout, contains('Dart VM'), reason: reason);
+          }
+        } catch (_) {
+          // Pre 2.15
+          expect(result.stdout, '');
+          minVersion = Version(2, 9, 0, pre: '1');
+          reason =
+              'Output changed from VM to SDK since $minVersion err: ${result.stderr}';
+          if (dartVersion >= minVersion) {
+            // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"\n'
+            expect(result.stderr, contains('Dart SDK'), reason: reason);
+          } else {
+            expect(result.stderr, contains('Dart VM'), reason: reason);
+          }
         }
       });
     });
