@@ -24,9 +24,9 @@ void main() {
       // expect(cmd.executable, flutterExecutablePath);
       expect(cmd.arguments, ['--version']);
       final result = await runCmd(cmd);
-      expect(result.stdout.toLowerCase(), contains('dart'));
-      expect(result.stdout.toLowerCase(), contains('revision'));
-      expect(result.stdout.toLowerCase(), contains('flutter'));
+      expect(result.outText.toLowerCase(), contains('dart'));
+      expect(result.outText.toLowerCase(), contains('revision'));
+      expect(result.outText.toLowerCase(), contains('flutter'));
 
       // Whatever ship stable
       expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));

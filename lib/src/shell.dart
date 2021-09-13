@@ -172,9 +172,9 @@ class Shell {
       {bool? throwOnError,
       String? workingDirectory,
       // Don't change environment
-      @deprecated
+      @Deprecated('Don\'t change map')
           Map<String, String>? environment,
-      @deprecated
+      @Deprecated('Don\'t change includeParentEnvironment')
           // Don't change includeParentEnvironment
           bool? includeParentEnvironment,
       bool? runInShell,

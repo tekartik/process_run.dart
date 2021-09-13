@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:pedantic/pedantic.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
@@ -15,8 +14,9 @@ import 'package:test/test.dart';
 
 import 'hex_utils.dart';
 
-@deprecated
+@Deprecated('Dev only, used when uncommenting debug = devTrue')
 bool devTrue = true;
+
 //bool debug = devTrue;
 bool debug = false;
 
@@ -279,7 +279,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
 
         void _init() {
           lines.clear();
-          unawaited(subscription?.cancel());
+          subscription?.cancel();
           linesController = ShellLinesController();
           shell =
               Shell(stdout: linesController.sink, verbose: false).cd('example');
@@ -525,7 +525,7 @@ _tekartik_dummy_app_that_does_not_exits
 
       paths.insert(0, dartSdkBinDirPath);
       print(paths);
-      var environment = {'PATH': '${paths.join(':')}'};
+      var environment = {'PATH': paths.join(':')};
       print(environment);
       var shell =
           Shell(environment: environment, includeParentEnvironment: false);

@@ -308,7 +308,7 @@ void main() {
 
       expect(
           (await Shell(environment: env, verbose: false)
-                  .run('${shellArgument('space in binary')}'))
+                  .run(shellArgument('space in binary')))
               .first
               .stdout
               .toString()

@@ -4,20 +4,20 @@ import 'dart:io';
 
 import 'package:process_run/cmd_run.dart';
 
-@deprecated
+@Deprecated('Dev only, verbose')
 Future<ProcessResult> devRun(String executable, List<String> arguments,
         {String? workingDirectory,
         Map<String, String>? environment,
         bool includeParentEnvironment = true,
         bool runInShell = false,
-        Encoding stdoutEncoding = SYSTEM_ENCODING,
-        Encoding stderrEncoding = SYSTEM_ENCODING,
+        Encoding stdoutEncoding = systemEncoding,
+        Encoding stderrEncoding = systemEncoding,
         Stream<List<int>>? stdin,
         StreamSink<List<int>>? stdout,
         StreamSink<List<int>>? stderr,
-        @deprecated bool connectStdout = false,
-        @deprecated bool connectStderr = false,
-        @deprecated bool connectStdin = false}) =>
+        @Deprecated('use stdout') bool connectStdout = false,
+        @Deprecated('use stderr') bool connectStderr = false,
+        @Deprecated('use stdin') bool connectStdin = false}) =>
     run(executable, arguments,
         workingDirectory: workingDirectory,
         environment: environment,

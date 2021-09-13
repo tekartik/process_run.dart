@@ -12,14 +12,14 @@ String? get flutterExecutablePath =>
     _flutterExecutablePath ??= whichSync('flutter');
 
 /// Test only
-@deprecated
+@Deprecated('Dev only')
 set flutterExecutablePath(String? path) {
   _flutterExecutablePath = path;
   // Reset info
   _flutterBinInfo = null;
 }
 
-@deprecated
+@Deprecated('Dev only')
 ProcessCmd flutterCmd(List<String> arguments) => FlutterCmd(arguments);
 
 bool get isFlutterSupported => isFlutterSupportedSync;

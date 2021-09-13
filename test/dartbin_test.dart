@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart' show flutterExecutablePath;
 import 'package:process_run/dartbin.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/dartbin_impl.dart'
     show
         debugDartExecutableForceWhich,
@@ -23,14 +24,14 @@ void main() => defineTests();
 void testDartVersionOutput(ProcessResult result) {
   if (dartVersion >= Version(2, 15, 0, pre: '0')) {
     // New output is on stdout
-    expect(result.stdout.toLowerCase(), contains('dart'));
-    expect(result.stdout.toLowerCase(), contains('version'));
-    expect(result.stdout, contains(Platform.version));
+    expect(result.outText.toLowerCase(), contains('dart'));
+    expect(result.outText.toString().toLowerCase(), contains('version'));
+    expect(result.outText, contains(Platform.version));
   } else {
     // Before it was on stderr
-    expect(result.stderr.toLowerCase(), contains('dart'));
-    expect(result.stderr.toLowerCase(), contains('version'));
-    expect(result.stderr, contains(Platform.version));
+    expect(result.errText.toLowerCase(), contains('dart'));
+    expect(result.errText.toLowerCase(), contains('version'));
+    expect(result.errText, contains(Platform.version));
   }
 }
 
@@ -41,13 +42,13 @@ void defineTests() {
         final result = await Process.run('dart', ['--version']);
         try {
           // New output is on stdout
-          expect(result.stdout.toLowerCase(), contains('dart'));
-          expect(result.stdout.toLowerCase(), contains('version'));
+          expect(result.outText.toLowerCase(), contains('dart'));
+          expect(result.outText.toLowerCase(), contains('version'));
         } catch (_) {
           // before 2.15 is stdout
           // dart used might not match the current dart used here
-          expect(result.stderr.toLowerCase(), contains('dart'));
-          expect(result.stderr.toLowerCase(), contains('version'));
+          expect(result.errText.toLowerCase(), contains('dart'));
+          expect(result.errText.toLowerCase(), contains('version'));
         }
         // Before 2.9.0
         // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
