@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-@deprecated
+@Deprecated('Dev only, when uncommeing the line debug = devTrue')
 bool devTrue = true;
 // bool debug = devTrue;
 bool debug = false;

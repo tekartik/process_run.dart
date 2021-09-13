@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:process_run/cmd_run.dart';
 
-@deprecated
+@Deprecated('Deb only, verbose')
 Future<ProcessResult> devRunCmd(ProcessCmd cmd,
     {bool? verbose,
     bool? commandVerbose,

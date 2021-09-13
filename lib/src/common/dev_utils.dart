@@ -8,17 +8,17 @@ void _devPrint(Object object) {
 
 bool _devPrintEnabled = true;
 
-@deprecated
+@Deprecated('Dev only')
 set devPrintEnabled(bool enabled) => _devPrintEnabled = enabled;
 
-@deprecated
+@Deprecated('Dev only')
 void devPrint(Object object) {
   if (_devPrintEnabled) {
     print(object);
   }
 }
 
-@deprecated
+@Deprecated('Dev only')
 T devWarning<T>(T t) => t;
 
 void _devError([Object? msg]) {
@@ -34,7 +34,7 @@ void _devError([Object? msg]) {
   }
 }
 
-@deprecated
+@Deprecated('Dev only')
 void devError([String? msg]) => _devError(msg);
 
 // exported for testing

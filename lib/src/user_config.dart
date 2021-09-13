@@ -142,7 +142,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
 
       // Add current dart path
 
-      dynamic mapKeysValue(Map map, List<String> keys) {
+      Object? mapKeysValue(Map map, List<String> keys) {
         for (var key in keys) {
           var value = map[key];
           if (value != null) {
@@ -172,7 +172,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       var vars = mapKeysValue(map, userConfigVarKeys);
 
       if (vars is List) {
-        vars.forEach((item) {
+        for (var item in vars) {
           if (item is Map) {
             if (item.isNotEmpty) {
               var entry = item.entries.first;
@@ -184,7 +184,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
             // devPrint(item.runtimeType);
           }
           // devPrint(item);
-        });
+        }
       }
       if (vars is Map) {
         vars.forEach((key, value) {
@@ -211,7 +211,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       // Copy alias
       var alias = mapKeysValue(map, userConfigAliasKeys);
       if (alias is List) {
-        vars.forEach((item) {
+        for (var item in alias) {
           if (item is Map) {
             if (item.isNotEmpty) {
               var entry = item.entries.first;
@@ -223,7 +223,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
             // devPrint(item.runtimeType);
           }
           // devPrint(item);
-        });
+        }
       }
       if (alias is Map) {
         alias.forEach((key, value) {

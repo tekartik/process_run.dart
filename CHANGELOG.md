@@ -1,4 +1,6 @@
-# Changelog
+## 0.12.2
+
+* dart 2.14 lints
 
 ## 0.12.1+1
 

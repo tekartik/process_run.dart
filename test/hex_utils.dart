@@ -49,16 +49,16 @@ List<int> hexToBytes(String text) {
   final bytes = <int>[];
   int? firstNibble;
 
-  text.codeUnits.forEach((int charCode) {
+  for (var charCode in text.codeUnits) {
     if (firstNibble == null) {
       firstNibble = _hexCharValue(charCode);
     } else {
       final secondNibble = _hexCharValue(charCode);
       if (secondNibble != null) {
-        bytes.add(firstNibble! * 16 + secondNibble);
+        bytes.add(firstNibble * 16 + secondNibble);
         firstNibble = null;
       }
     }
-  });
+  }
   return bytes;
 }

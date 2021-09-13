@@ -10,11 +10,6 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
       : super(name: 'edit', description: 'Edit the environment file');
 
   @override
-  void printUsage() {
-    super.printUsage();
-  }
-
-  @override
   FutureOr<bool> onRun() async {
     if (verbose!) {
       print('envFilePath: $envFilePath');

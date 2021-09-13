@@ -7,6 +7,8 @@ import 'package:process_run/shell.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
+import 'dartbin_test.dart';
+
 void main() {
   group('dartbin_cmd', () {
     test('api', () {
@@ -18,8 +20,7 @@ void main() {
       expect(cmd.executable, dartExecutable);
       expect(cmd.arguments, ['--version']);
       final result = await runCmd(cmd);
-      expect(result.stderr.toLowerCase(), contains('dart'));
-      expect(result.stderr.toLowerCase(), contains('version'));
+      testDartVersionOutput(result);
       // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
     });
     test('others', () async {

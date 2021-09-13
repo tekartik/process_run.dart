@@ -36,10 +36,10 @@ class ProcessCmd {
   int get hashCode => executable.hashCode;
 
   @override
-  bool operator ==(o) {
-    if (o is ProcessCmd) {
-      return (o.executable == executable &&
-          const ListEquality().equals(o.arguments, arguments));
+  bool operator ==(Object other) {
+    if (other is ProcessCmd) {
+      return (other.executable == executable &&
+          const ListEquality().equals(other.arguments, arguments));
     }
     return false;
   }
@@ -48,7 +48,7 @@ class ProcessCmd {
   String toString() => executableArgumentsToString(executable, arguments);
 
   /// Execute
-  @deprecated // user runCmd instead
+  @Deprecated('Use runCmd instead')
   Future<ProcessResult> run() => process_run.run(executable!, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
@@ -59,7 +59,7 @@ class ProcessCmd {
 }
 
 // Use ProcessCmd instead
-@deprecated
+@Deprecated('Use ProcessCmd instead')
 ProcessCmd processCmd(String executable, List<String> arguments,
     {String? workingDirectory,
     Map<String, String>? environment,

@@ -69,7 +69,7 @@ String argumentsToString(List<String> arguments) {
 ///
 /// if [commmandVerbose] or [verbose] is true, display the command.
 /// if [verbose] is true, stream stdout & stdin
-@deprecated
+@Deprecated('Use runExecutableArguments instead')
 Future<ProcessResult> run(String executable, List<String> arguments,
         {String? workingDirectory,
         Map<String, String>? environment,

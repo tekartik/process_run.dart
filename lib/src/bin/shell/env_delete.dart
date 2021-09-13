@@ -14,11 +14,6 @@ class ShellEnvDeleteCommand extends ShellEnvCommandBase {
   }
 
   @override
-  void printUsage() {
-    super.printUsage();
-  }
-
-  @override
   FutureOr<bool> onRun() async {
     var path = envFilePath;
     if (verbose!) {

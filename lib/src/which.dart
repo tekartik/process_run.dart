@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 import 'package:process_run/src/shell_environment.dart';
 
 Future<String?> which(String command,
-    {@deprecated Map<String, String>? env,
+    {@Deprecated('Use environment') Map<String, String>? env,
     Map<String, String>? environment,
     bool includeParentEnvironment = true}) async {
   return whichSync(command,
@@ -16,7 +16,7 @@ Future<String?> which(String command,
 
 /// Find the command according to the [paths] or env variables (`PATH`)
 String? whichSync(String command,
-    {@deprecated Map<String, String>? env,
+    {@Deprecated('Use environment') Map<String, String>? env,
     Map<String, String>? environment,
     bool includeParentEnvironment = true}) {
   // only valid for single commands
