@@ -88,6 +88,7 @@ Map<String, String> get userEnvironment => ShellEnvironment.empty()
 // Test only
 @protected
 void resetUserConfig() {
+  shellEnvironment = null;
   _userConfig = null;
 }
 

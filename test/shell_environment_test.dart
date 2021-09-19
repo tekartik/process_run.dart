@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/shell_environment.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:test/test.dart';
 
@@ -24,11 +25,9 @@ void main() {
       var env = ShellEnvironment.empty();
       try {
         shellEnvironment = env;
-        // expect(shellEnvironment, isEmpty);
+        expect(shellEnvironment, isEmpty);
         shellEnvironment = null;
-        expect(shellEnvironment, isNotEmpty);
-        shellEnvironment = _prev;
-        expect(shellEnvironment, isNotEmpty);
+        expect(shellEnvironment, _prev);
       } finally {
         shellEnvironment = _prev;
         expect(shellEnvironment, isNotEmpty);
@@ -306,6 +305,17 @@ void main() {
       paths.merge(paths);
       expect(paths, ['1', '4', '0', '2', '3']);
     });
+  });
+
+  test('overriding', () async {
+    var _prev = shellEnvironment;
+    try {
+      var env = ShellEnvironment()..paths.prepend('T1');
+      shellEnvironment = env;
+      expect(ShellEnvironment().paths.first, 'T1');
+    } finally {
+      shellEnvironment = _prev;
+    }
   });
 }
 

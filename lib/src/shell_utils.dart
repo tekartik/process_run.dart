@@ -5,6 +5,8 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;
+import 'package:process_run/src/shell_environment.dart';
+import 'package:process_run/src/user_config.dart';
 
 import 'bin/shell/import.dart';
 import 'env_utils.dart';
@@ -123,7 +125,11 @@ String shellExecutableArguments(String executable, List<String> arguments) =>
 // Map<String, String> get platformEnvironment => rawShellEnvironment
 
 /// Same as userEnvironment
-Map<String, String> get shellEnvironment => userEnvironment;
+Map<String, String> get shellEnvironment =>
+    _shellEnvironment ?? userEnvironment;
+
+/// Set only when overriden.
+Map<String, String>? _shellEnvironment;
 
 /// Cached raw shell environment
 Map<String, String>? _platformEnvironment;
@@ -134,11 +140,21 @@ Map<String, String>? _platformEnvironment;
 Map<String, String> get platformEnvironment => _platformEnvironment ??=
     environmentFilterOutVmOptions(Platform.environment);
 
-/// Warning, change the shell environment for the next run commands.
-set shellEnvironment(Map<String, String>? environment) {
+/// Warning, change the platform environment and reset.
+set platformEnvironment(Map<String, String>? environment) {
   _userAppDataPath = null;
   _userHomePath = null;
   _platformEnvironment = environment;
+  shellEnvironment = null;
+}
+
+/// Warning, change the shell environment for the next run commands.
+set shellEnvironment(Map<String, String>? environment) {
+  if (environment == null) {
+    _shellEnvironment = null;
+  } else {
+    _shellEnvironment = asShellEnvironment(environment);
+  }
 }
 
 /// Raw overriden environment
