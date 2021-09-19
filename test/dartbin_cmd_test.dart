@@ -59,7 +59,7 @@ void main() {
     test('missing dart', () async {
       // ignore: deprecated_member_use_from_same_package
       flutterExecutablePath = null;
-      shellEnvironment = <String, String>{};
+      platformEnvironment = <String, String>{};
       try {
         var version = await getDartBinVersion();
         // Always present
@@ -67,7 +67,7 @@ void main() {
       } finally {
         // ignore: deprecated_member_use_from_same_package
         flutterExecutablePath = null;
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
       // Always present
       var version = await getDartBinVersion();

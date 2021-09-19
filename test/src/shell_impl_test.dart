@@ -42,33 +42,33 @@ void main() {
 
     test('userHomePath', () {
       try {
-        shellEnvironment = <String, String>{userHomePathEnvKey: 'test'};
+        platformEnvironment = <String, String>{userHomePathEnvKey: 'test'};
         expect(userHomePath, 'test');
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     });
 
     test('userAppDataPath', () {
       try {
-        shellEnvironment = <String, String>{userAppDataPathEnvKey: 'test'}
+        platformEnvironment = <String, String>{userAppDataPathEnvKey: 'test'}
           ..addAll(Platform.environment);
         expect(userAppDataPath, 'test');
 
-        shellEnvironment = <String, String>{userHomePathEnvKey: 'test'};
+        platformEnvironment = <String, String>{userHomePathEnvKey: 'test'};
         expect(userAppDataPath, join('test', '.config'));
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     });
 
     test('null HOME', () async {
       try {
-        var env = Map<String, String>.from(shellEnvironment)
+        var env = Map<String, String>.from(platformEnvironment)
           ..remove('HOME')
           ..remove('USERPROFILE')
           ..remove('APPDATA');
-        shellEnvironment = env;
+        platformEnvironment = env;
         expect(userHomePath, '~');
         expect(userAppDataPath, join('~', '.config'));
         // echo differs on windows
@@ -81,7 +81,7 @@ void main() {
           expect(firstLine, 'Hello world');
         }
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     });
 
@@ -92,11 +92,11 @@ void main() {
 
     test('userEnvironment in dart context', () async {
       try {
-        shellEnvironment = newEnvNoOverride();
+        platformEnvironment = newEnvNoOverride();
         expect(userPaths,
             getExpectedPartPaths(shellEnvironment as ShellEnvironment));
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     });
 
@@ -104,7 +104,8 @@ void main() {
     test('userEnvironment in flutter context', () async {
       try {
         var flutterBinDirPath = dirname(_flutterExecutablePath!);
-        shellEnvironment = newEnvNoOverride()..paths.prepend(flutterBinDirPath);
+        platformEnvironment = newEnvNoOverride()
+          ..paths.prepend(flutterBinDirPath);
 
         // '/opt/app/flutter/dev/flutter/bin',
         // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
@@ -116,7 +117,7 @@ void main() {
               userPaths, [dartSdkBinDirPath, dirname(_flutterExecutablePath)]);
         }
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     }, skip: _flutterExecutablePath == null);
 
@@ -132,7 +133,7 @@ void main() {
           _TEKARTIK_PROCESS_RUN_TEST: 1
           $localEnvFilePathEnvKey: $configFileEmptyPath
         ''');
-        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
+        platformEnvironment = <String, String>{userEnvFilePathEnvKey: filePath};
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
         expect(userPaths, [
           if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
@@ -152,7 +153,7 @@ void main() {
         var:
           - _TEKARTIK_PROCESS_RUN_TEST: '~'
         ''');
-        shellEnvironment = <String, String>{
+        platformEnvironment = <String, String>{
           userEnvFilePathEnvKey: filePath,
           localEnvFilePathEnvKey: configFileEmptyPath,
           userHomePathEnvKey: getTestAbsPath()
@@ -168,12 +169,12 @@ void main() {
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
 
         resetUserConfig();
-        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
+        platformEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
           ..addAll(Platform.environment);
         expect(userPaths, containsAll(['test', join(userHomePath, 'temp')]));
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '~');
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     });
 
@@ -182,7 +183,7 @@ void main() {
         resetUserConfig();
 
         // empty environment
-        shellEnvironment = <String, String>{
+        platformEnvironment = <String, String>{
           userEnvFilePathEnvKey: configFileEmptyPath,
           localEnvFilePathEnvKey: configFileEmptyPath
         };
@@ -195,7 +196,7 @@ void main() {
         ]);
         expect(dirname((await which('dart'))!), flutterDir ?? dartBinDir);
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     });
 
@@ -210,7 +211,7 @@ void main() {
         var:
           _TEKARTIK_PROCESS_RUN_TEST: 1
         ''', flush: true);
-        shellEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
+        platformEnvironment = <String, String>{userEnvFilePathEnvKey: filePath}
           ..addAll(Platform.environment);
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '1');
 
@@ -292,7 +293,7 @@ void main() {
           }
         }
       } finally {
-        shellEnvironment = null;
+        platformEnvironment = null;
       }
     }, timeout: const Timeout(Duration(seconds: 120)));
 
@@ -304,9 +305,10 @@ void main() {
       }
       expect(shellEnvironment, userEnvironment);
       userConfig = UserConfig(vars: <String, String>{'test': '1'});
-      expect(userEnvironment, {'test': '1'});
-      expect(shellEnvironment, {'test': '1'});
-      expect(platformEnvironment, isNot({'test': '1'}));
+      expect(userEnvironment['test'], '1');
+      expect(shellEnvironment['test'], '1');
+
+      // expect(platformEnvironment, isNot({'test': '1'}));
       //TODO test on other platform
       if (Platform.isLinux) {
         var out = (await Shell(verbose: false).run('$linuxEnvCommand'))
@@ -325,6 +327,9 @@ void main() {
               '...to investigate or simple drop as it is a windows inconsistency');
         }
       }
+      userConfig = UserConfig(vars: <String, String>{'test': '2'});
+      expect(userEnvironment['test'], '2');
+      expect(shellEnvironment['test'], '2');
     });
 
     test('getUserPaths', () async {
