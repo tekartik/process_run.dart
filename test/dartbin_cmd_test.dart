@@ -46,7 +46,7 @@ void main() {
       // expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
       expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
       expect(DartFmtCmd(// ignore: deprecated_member_use_from_same_package
-          ['--help']).toString(), 'dartfmt --help');
+          ['--help']).toString(), 'dart format --help');
       expect(DartCmd(['--help']).toString(), 'dart --help');
     });
 

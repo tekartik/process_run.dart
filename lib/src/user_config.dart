@@ -127,110 +127,107 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
   var fileAliases = <String, String>{};
 
   try {
-    // devPrint('yaml: $yaml');
-    if (map is Map) {
-      // Handle added path
-      // can be
-      //
-      // path:~/bin
-      //
-      // or
-      //
-      // path:
-      //   - ~/bin
-      //   - ~/Android/Sdk/tools/bin
-      //
+    // Handle added path
+    // can be
+    //
+    // path:~/bin
+    //
+    // or
+    //
+    // path:
+    //   - ~/bin
+    //   - ~/Android/Sdk/tools/bin
+    //
 
-      // Add current dart path
+    // Add current dart path
 
-      Object? mapKeysValue(Map map, List<String> keys) {
-        for (var key in keys) {
-          var value = map[key];
-          if (value != null) {
-            return value;
+    Object? mapKeysValue(Map map, List<String> keys) {
+      for (var key in keys) {
+        var value = map[key];
+        if (value != null) {
+          return value;
+        }
+      }
+      return null;
+    }
+
+    var path = mapKeysValue(map, userConfigPathKeys);
+    if (path is List) {
+      paths.addAll(path.map((path) => expandPath(path.toString())));
+    } else if (path is String) {
+      paths.add(expandPath(path.toString()));
+    }
+
+    // Handle variable like
+    //
+    // var:
+    //   ANDROID_TOP: /home/user/Android
+    //   FIREBASE_TOP: /home/user/.firebase
+    void _addVar(String key, String value) {
+      // devPrint('$key: $value');
+      fileVars[key] = value;
+    }
+
+    var vars = mapKeysValue(map, userConfigVarKeys);
+
+    if (vars is List) {
+      for (var item in vars) {
+        if (item is Map) {
+          if (item.isNotEmpty) {
+            var entry = item.entries.first;
+            var key = entry.key.toString();
+            var value = entry.value.toString();
+            _addVar(key, value);
           }
+        } else {
+          // devPrint(item.runtimeType);
         }
-        return null;
+        // devPrint(item);
       }
+    }
+    if (vars is Map) {
+      vars.forEach((key, value) {
+        _addVar(key.toString(), value.toString());
+      });
+    }
 
-      var path = mapKeysValue(map, userConfigPathKeys);
-      if (path is List) {
-        paths.addAll(path.map((path) => expandPath(path.toString())));
-      } else if (path is String) {
-        paths.add(expandPath(path.toString()));
+    // Handle variable like
+    //
+    // alias:
+    //   ll: ls -l
+    //
+    //  or
+    //
+    // alias:
+    //   - ll: ls -l
+    void _addAlias(String key, String value) {
+      // devPrint('$key: $value');
+      if (value.isNotEmpty) {
+        fileAliases[key] = value;
       }
+    }
 
-      // Handle variable like
-      //
-      // var:
-      //   ANDROID_TOP: /home/user/Android
-      //   FIREBASE_TOP: /home/user/.firebase
-      void _addVar(String key, String value) {
-        // devPrint('$key: $value');
-        fileVars[key] = value;
-      }
-
-      var vars = mapKeysValue(map, userConfigVarKeys);
-
-      if (vars is List) {
-        for (var item in vars) {
-          if (item is Map) {
-            if (item.isNotEmpty) {
-              var entry = item.entries.first;
-              var key = entry.key.toString();
-              var value = entry.value.toString();
-              _addVar(key, value);
-            }
-          } else {
-            // devPrint(item.runtimeType);
+    // Copy alias
+    var alias = mapKeysValue(map, userConfigAliasKeys);
+    if (alias is List) {
+      for (var item in alias) {
+        if (item is Map) {
+          if (item.isNotEmpty) {
+            var entry = item.entries.first;
+            var key = entry.key.toString();
+            var value = entry.value.toString();
+            _addAlias(key, value);
           }
-          // devPrint(item);
+        } else {
+          // devPrint(item.runtimeType);
         }
+        // devPrint(item);
       }
-      if (vars is Map) {
-        vars.forEach((key, value) {
-          _addVar(key.toString(), value.toString());
-        });
-      }
-
-      // Handle variable like
-      //
-      // alias:
-      //   ll: ls -l
-      //
-      //  or
-      //
-      // alias:
-      //   - ll: ls -l
-      void _addAlias(String key, String value) {
-        // devPrint('$key: $value');
-        if (value.isNotEmpty) {
-          fileAliases[key] = value;
-        }
-      }
-
-      // Copy alias
-      var alias = mapKeysValue(map, userConfigAliasKeys);
-      if (alias is List) {
-        for (var item in alias) {
-          if (item is Map) {
-            if (item.isNotEmpty) {
-              var entry = item.entries.first;
-              var key = entry.key.toString();
-              var value = entry.value.toString();
-              _addAlias(key, value);
-            }
-          } else {
-            // devPrint(item.runtimeType);
-          }
-          // devPrint(item);
-        }
-      }
-      if (alias is Map) {
-        alias.forEach((key, value) {
-          _addAlias(key.toString(), value.toString());
-        });
-      }
+    }
+    if (alias is Map) {
+      alias.forEach((key, value) {
+        _addAlias(key.toString(), value.toString());
+      });
     }
   } catch (e) {
     stderr.writeln('error reading yaml $e');

@@ -14,8 +14,6 @@ import 'package:process_run/src/dartbin_impl.dart'
         resolveDartExecutable,
         resolvedDartExecutable;
 import 'package:process_run/src/script_filename.dart';
-import 'package:process_run/which.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

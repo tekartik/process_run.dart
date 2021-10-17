@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/shell_environment.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:test/test.dart';
 
