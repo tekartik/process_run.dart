@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:process_run/src/shell.dart';
+import 'package:process_run/src/shell_common.dart';
 import 'package:process_run/src/shell_utils.dart';
 
 import 'common/import.dart';

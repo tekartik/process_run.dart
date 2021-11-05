@@ -3,7 +3,6 @@
 .buildlog
 .pub/
 build/
-packages
 .packages
 .dart/
 

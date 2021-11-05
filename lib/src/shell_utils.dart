@@ -10,6 +10,9 @@ import 'package:process_run/src/user_config.dart';
 
 import 'bin/shell/import.dart';
 import 'env_utils.dart';
+import 'shell_utils_common.dart';
+
+export 'shell_utils_common.dart';
 
 /// True if the line is a comment.
 ///
@@ -174,18 +177,11 @@ Map<String, String> environmentFilterOutVmOptions(
   return environment ?? platformEnvironment;
 }
 
-const windowsDefaultPathExt = <String>['.exe', '.bat', '.cmd', '.com'];
 List<String>? _windowsPathExts;
 
 /// Default extension for PATHEXT on Windows
 List<String> get windowsPathExts => _windowsPathExts ??=
     environmentGetWindowsPathExt(platformEnvironment) ?? windowsDefaultPathExt;
-const String windowsEnvPathSeparator = ';';
-const String posixEnvPathSeparator = ':';
-const envPathKey = 'PATH';
-
-String get envPathSeparator =>
-    Platform.isWindows ? windowsEnvPathSeparator : posixEnvPathSeparator;
 
 List<String>? environmentGetWindowsPathExt(
         Map<String, String> platformEnvironment) =>
@@ -267,16 +263,6 @@ List<String> getEnvironmentPaths([Map<String, String>? environment]) {
 /// Never null
 List<String> _getEnvironmentPaths(Map<String, String> environment) =>
     environment[envPathKey]?.split(envPathSeparator) ?? <String>[];
-
-/// Write a string line to the ouput
-void streamSinkWriteln(StreamSink<List<int>> sink, String message,
-        {Encoding encoding = systemEncoding}) =>
-    streamSinkWrite(sink, '$message\n', encoding: encoding);
-
-/// Write a string to a to sink
-void streamSinkWrite(StreamSink<List<int>> sink, String message,
-        {Encoding encoding = systemEncoding}) =>
-    sink.add(encoding.encode(message));
 
 /// IOSink extension
 extension IOSinkExt on IOSink {
