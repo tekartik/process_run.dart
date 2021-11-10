@@ -131,3 +131,33 @@ void main(List<String> arguments) async {
   await stdin.terminate();
 }
 ```
+
+If you have the password in a variable and not access to stdin (for example in some flutter scenario), you
+can do something like:
+
+```dart
+import 'dart:io';
+
+import 'package:http/http.dart';
+import 'package:process_run/shell.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
+
+void main(List<String> arguments) async {
+  // Assuming you have the password in `pwd` variable
+
+  // Use sudo --stdin to read the password from stdin
+  // Use an alias for simplicity (only need to refer to sudo instead of sudo --stdin
+  var env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
+
+  // Create a fake stdin stream from the password variable
+  var stdin =
+      ByteStream.fromBytes(systemEncoding.encode(pwd)).asBroadcastStream();
+
+  // Execute!
+  var shell = Shell(stdin: stdin, environment: env);
+
+  // Should not ask for password
+  await shell.run('sudo lsof -i:22');
+  await shell.run('sudo lsof -i:80');
+}
+```
