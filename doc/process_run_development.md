@@ -30,7 +30,7 @@ pub run build_runner test -- -p chrome -p firefox -p vm
 ```
 dependency_overrides:
   process_run:
-    git: git://github.com/tekartik/process_run.dart
+    git: https://github.com/tekartik/process_run.dart
 ```
 
 ### Publishing
