@@ -341,6 +341,9 @@ abstract class ShellEnvironmentBase
   String toString() => 'ShellEnvironment($paths, $vars, $aliases)';
 }
 
+/// The global environment
+ShellEnvironment get shellEnvironment => shellContext.shellEnvironment;
+
 /// Shell modifiable helpers. should not be modified after being set.
 abstract class ShellEnvironment with MapMixin<String, String> {
   /// The vars but the PATH variable
@@ -359,4 +362,15 @@ abstract class ShellEnvironment with MapMixin<String, String> {
 
   /// `paths` and `vars` key
   Map<String, dynamic> toJson();
+
+  /// Create a new shell environment from the current shellEnvironment.
+  ///
+  /// Defaults create a full parent environment.
+  ///
+  /// It is recommended that you apply the environment to a shell. But it can
+  /// also be set globally (be aware of the potential effect on other part of
+  /// your application) to [shellEnvironment]
+  factory ShellEnvironment({Map<String, String>? environment}) {
+    return shellContext.newShellEnvironment(environment: environment);
+  }
 }

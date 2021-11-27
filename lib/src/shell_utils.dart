@@ -6,13 +6,22 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;
 import 'package:process_run/src/shell_environment.dart';
-import 'package:process_run/src/user_config.dart';
 
 import 'bin/shell/import.dart';
 import 'env_utils.dart';
 import 'shell_utils_common.dart';
 
-export 'shell_utils_common.dart';
+// Compat
+export 'shell_utils_common.dart'
+    show
+        argumentToString,
+        argumentsToString,
+        shellArguments,
+        shellArgument,
+        streamSinkWrite,
+        streamSinkWriteln,
+        envPathKey,
+        envPathSeparator;
 
 /// True if the line is a comment.
 ///
@@ -113,12 +122,6 @@ String expandPath(String path) {
   }
   return path;
 }
-
-/// Use to safely enclose an argument if needed
-String shellArgument(String argument) => argumentToString(argument);
-
-/// Convert multiple arguments to string than can be used in a terminal
-String shellArguments(List<String> argument) => argumentsToString(argument);
 
 /// Convert executable + arguments to a single script line
 String shellExecutableArguments(String executable, List<String> arguments) =>

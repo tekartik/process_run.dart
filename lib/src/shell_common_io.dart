@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:process_run/shell.dart' as io;
-import 'package:process_run/src/mixin/shell_common.dart';
-import 'package:process_run/src/shell_context_io.dart';
 
 import 'shell_common.dart';
 
@@ -28,57 +26,76 @@ class ProcessResultIo implements ProcessResult {
   String toString() => 'exitCode $exitCode, pid $pid';
 }
 
-class ShellIo implements Shell {
-  final ShellContextIo shellContextIo;
-  late final ShellEnvironment environment;
-  late final ShellOptions? options;
-  late final io.Shell ioShell;
-
-  ShellIo(
-      {required this.shellContextIo,
-      this.options,
-      bool includeParentEnvironment = true,
-      ShellEnvironment? environment}) {
-    this.environment = environment ?? shellContextIo.shellEnvironment;
-    ioShell = io.Shell(
-        options: options,
-        environment: this.environment,
-        includeParentEnvironment: includeParentEnvironment);
+Future<T> _wrapIoException<T>(Future<T> Function() action) async {
+  try {
+    return await action();
+  } on io.ShellException catch (e) {
+    throw ShellExceptionIo(e);
   }
+}
+
+class ShellIo implements Shell {
+  late final io.Shell impl;
+
+  ShellIo({
+    required this.impl,
+  });
+
+  Shell _wrapIoShell(io.Shell ioShell) => ShellIo(impl: ioShell);
 
   @override
-  ShellCommon cd(String path) => ioShell.cd(path);
+  Shell cd(String path) => _wrapIoShell(impl.cd(path));
 
   @override
   bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
     var ioProcessSignal = io.ProcessSignal.sigterm;
-    return ioShell.kill(ioProcessSignal);
+    return impl.kill(ioProcessSignal);
   }
 
   @override
-  String get path => ioShell.path;
+  String get path => impl.path;
 
   @override
-  ShellCommon popd() => ioShell.popd();
+  Shell popd() => _wrapIoShell(impl.popd());
 
   @override
-  ShellCommon pushd(String path) => ioShell.pushd(path);
+  Shell pushd(String path) => _wrapIoShell(impl.pushd(path));
 
   @override
   Future<List<ProcessResult>> run(String script,
-      {void Function(Process process)? onProcess}) async {
-    var ioResult = await ioShell.run(script,
-        onProcess: onProcess == null ? null : (io.Process process) {});
-    return ioResult
-        .map((ioProcessResult) => ProcessResultIo(ioProcessResult))
-        .toList();
-  }
+          {void Function(Process process)? onProcess}) =>
+      _wrapIoException(() async {
+        var ioResult = await impl.run(script,
+            onProcess: onProcess == null ? null : (io.Process process) {});
+        return ioResult
+            .map((ioProcessResult) => ProcessResultIo(ioProcessResult))
+            .toList();
+      });
 
   @override
   Future<ProcessResult> runExecutableArguments(
-      String executable, List<String> arguments,
-      {void Function(Process process)? onProcess}) async {
-    return ProcessResultIo(
-        await ioShell.runExecutableArguments(executable, arguments));
+          String executable, List<String> arguments,
+          {void Function(Process process)? onProcess}) =>
+      _wrapIoException(() async {
+        return ProcessResultIo(
+            await impl.runExecutableArguments(executable, arguments));
+      });
+}
+
+class ShellExceptionIo implements ShellException {
+  final io.ShellException impl;
+
+  ShellExceptionIo(this.impl);
+
+  @override
+  String get message => impl.message;
+
+  @override
+  ProcessResult? get result {
+    var implResult = impl.result;
+    if (implResult != null) {
+      return ProcessResultIo(implResult);
+    }
+    return null;
   }
 }

@@ -21,6 +21,10 @@ abstract class ShellContext {
 
   Shell newShell(
       {ShellOptions? options,
-      ShellEnvironment? environment,
+      Map<String, String>? environment,
       bool includeParentEnvironment = true});
+
+  ShellEnvironment newShellEnvironment({
+    Map<String, String>? environment,
+  });
 }

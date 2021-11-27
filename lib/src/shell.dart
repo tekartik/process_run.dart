@@ -12,7 +12,6 @@ import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'common/import.dart';
-import 'shell_common.dart' as common;
 
 export 'shell_common.dart' show shellDebug;
 
@@ -92,7 +91,7 @@ Future<List<ProcessResult>> run(
 ///
 /// A list of ProcessResult is returned
 ///
-class Shell implements common.ShellCommon {
+class Shell {
   final bool _throwOnError;
   final String? _workingDirectory;
   ShellEnvironment? _environment;
@@ -212,7 +211,6 @@ class Shell implements common.ShellCommon {
       _workingDirectory ?? Directory.current.path;
 
   /// Create new shell at the given path
-  @override
   Shell cd(String path) {
     if (isRelative(path)) {
       path = join(_workingDirectoryPath, path);
@@ -225,16 +223,13 @@ class Shell implements common.ShellCommon {
   }
 
   /// Get the shell path, using workingDirectory or current directory if null.
-  @override
   String get path => _workingDirectoryPath;
 
   /// Create a new shell at the given path, allowing popd on it
-  @override
   Shell pushd(String path) => cd(path).._parentShell = this;
 
   /// Pop the current directory to get the previous shell
   /// throw State error if nothing in the stack
-  @override
   Shell popd() {
     if (_parentShell == null) {
       throw StateError('no previous shell');
