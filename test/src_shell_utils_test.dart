@@ -1,3 +1,6 @@
+@TestOn('vm')
+library process_run.test.src_shell_utils_test;
+
 import 'dart:convert';
 
 import 'package:process_run/shell.dart';

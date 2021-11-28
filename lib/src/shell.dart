@@ -6,12 +6,15 @@ import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/process_run.dart';
+import 'package:process_run/src/shell_common.dart'
+    show ShellOptions, shellDebug;
 import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
 import 'common/import.dart';
 
-var shellDebug = false; // devWarning(true); // false
+export 'shell_common.dart' show shellDebug;
+
 ///
 /// Run one or multiple plain text command(s).
 ///
@@ -149,7 +152,8 @@ class Shell {
       // Default to true
       bool? commandVerbose,
       // Default to false
-      bool? commentVerbose})
+      bool? commentVerbose,
+      ShellOptions? options})
       : _throwOnError = throwOnError,
         _workingDirectory = workingDirectory,
         _runInShell = runInShell,

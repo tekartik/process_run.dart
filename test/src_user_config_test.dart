@@ -1,3 +1,6 @@
+@TestOn('vm')
+library process_run.test.src_user_config_test;
+
 import 'dart:io';
 
 import 'package:path/path.dart';

@@ -1,4 +1,4 @@
-## 0.12.2+1
+## 0.12.2+2
 
 * Cache shellEnvironment when set
 * dart 2.14 lints

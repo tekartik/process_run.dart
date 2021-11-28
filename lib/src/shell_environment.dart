@@ -1,206 +1,10 @@
-import 'dart:collection';
-
-import 'package:collection/collection.dart';
-import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/shell_utils.dart';
 
-/// Shell environment ordered paths helper. Changes the PATH variable
-class ShellEnvironmentPaths with ListMixin<String> {
-  final ShellEnvironment _environment;
+import 'shell_environment_common.dart' as common;
 
-  ShellEnvironmentPaths._(this._environment);
-
-  List<String> get _paths {
-    var pathVar = _environment[envPathKey];
-    // Handle empty to black
-    if (pathVar?.isNotEmpty ?? false) {
-      return pathVar!.split(envPathSeparator);
-    } else {
-      return <String>[];
-    }
-  }
-
-  set _paths(List<String> paths) {
-    if (paths.isEmpty) {
-      _environment.remove(envPathKey);
-    } else {
-      // remove duplicates
-      paths = LinkedHashSet<String>.from(paths).toList();
-      _environment[envPathKey] = paths.join(envPathSeparator);
-    }
-  }
-
-  /// Prepend a path (i.e. higher in the hierarchy to handle a [which] resolution.
-  void prepend(String path) => insert(0, path);
-
-  @override
-  int get length => _paths.length;
-
-  @override
-  String operator [](int index) {
-    return _paths[index];
-  }
-
-  @override
-  void operator []=(int index, String? value) {
-    _paths = _paths..[index] = value!;
-  }
-
-  @override
-  void add(String element) {
-    // Needed for nnbd
-    _paths = [..._paths, element];
-  }
-
-  @override
-  set length(int newLength) {
-    _paths = _paths..length = newLength;
-  }
-
-  @override
-  void insert(int index, String element) {
-    _paths = _paths..insert(index, element);
-  }
-
-  /// Merge an environment.
-  ///
-  /// the other object, paths are prepended.
-  void merge(ShellEnvironmentPaths paths) {
-    insertAll(0, paths);
-  }
-
-  @override
-  int get hashCode => const ListEquality().hash(this);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is ShellEnvironmentPaths) {
-      return const ListEquality().equals(this, other);
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'Path($length)';
-
-  /// Overriden to handle concurrent modification and avoid duplicates.
-  @override
-  void addAll(Iterable<String> paths) {
-    _paths = _paths..addAll(paths);
-  }
-
-  /// Overriden to handle concurrent modification and avoid duplicates.
-  @override
-  void insertAll(int index, Iterable<String> paths) {
-    _paths = _paths..insertAll(index, paths);
-  }
-}
-
-/// Shell environment aliases for executable
-class ShellEnvironmentAliases with MapMixin<String, String> {
-  final Map<String, String> _map;
-
-  ShellEnvironmentAliases._([Map<String, String>? map])
-      : _map = map ?? <String, String>{};
-
-  /// the other object takes precedence, vars are added
-  void merge(ShellEnvironmentAliases other) {
-    addAll(other);
-  }
-
-  @override
-  String? operator [](Object? key) => _map[key as String];
-
-  @override
-  void operator []=(String key, String value) => _map[key] = value;
-
-  @override
-  void clear() => _map.clear();
-
-  @override
-  Iterable<String> get keys => _map.keys;
-
-  @override
-  String? remove(Object? key) => _map.remove(key);
-
-  // Key hash is sufficient here
-  @override
-  int get hashCode => const ListEquality().hash(keys.toList());
-
-  @override
-  bool operator ==(Object other) {
-    if (other is ShellEnvironmentVars) {
-      return const MapEquality().equals(this, other);
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'Aliases($length)';
-}
-
-/// Shell environment variables helper. Does not affect the PATH variable
-class ShellEnvironmentVars with MapMixin<String, String> {
-  final ShellEnvironment _environment;
-
-  ShellEnvironmentVars._(this._environment);
-
-  /// Currently only the PATH key is ignored.
-  bool _ignoreKey(key) => key == envPathKey;
-
-  @override
-  String? operator [](Object? key) {
-    if (_ignoreKey(key)) {
-      return null;
-    }
-    return _environment[key as String];
-  }
-
-  @override
-  void operator []=(String key, String value) {
-    if (!_ignoreKey(key)) {
-      _environment[key] = value;
-    }
-  }
-
-  @override
-  void clear() {
-    removeWhere((key, value) => !_ignoreKey(key));
-  }
-
-  @override
-  Iterable<String> get keys =>
-      _environment.keys.where((key) => !_ignoreKey(key));
-
-  @override
-  String? remove(Object? key) {
-    if (!_ignoreKey(key)) {
-      return _environment.remove(key);
-    }
-    return null;
-  }
-
-  /// the other object takes precedence, vars are added
-  void merge(ShellEnvironmentVars other) {
-    addAll(other);
-  }
-
-  // Key hash is sufficient here
-  @override
-  int get hashCode => const ListEquality().hash(keys.toList());
-
-  @override
-  bool operator ==(Object other) {
-    if (other is ShellEnvironmentVars) {
-      return const MapEquality().equals(this, other);
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'Vars($length)';
-}
+export 'shell_environment_common.dart'
+    show ShellEnvironmentAliases, ShellEnvironmentPaths, ShellEnvironmentVars;
 
 /// Use current if already and environment object.
 ShellEnvironment asShellEnvironment(Map<String, String>? environment) =>
@@ -209,29 +13,7 @@ ShellEnvironment asShellEnvironment(Map<String, String>? environment) =>
         : ShellEnvironment(environment: environment);
 
 /// Shell modifiable helpers. should not be modified after being set.
-class ShellEnvironment with MapMixin<String, String> {
-  /// The resulting _env
-  final _env = <String, String>{};
-
-  /// The vars but the PATH variable
-  ShellEnvironmentVars? _vars;
-
-  /// The vars but the PATH variable
-  ShellEnvironmentVars get vars => _vars ??= ShellEnvironmentVars._(this);
-
-  /// The PATH variable as a convenient list.
-  ShellEnvironmentPaths? _paths;
-
-  /// The PATH variable as a convenient list.
-  ShellEnvironmentPaths get paths => _paths ??= ShellEnvironmentPaths._(this);
-
-  /// The aliases.
-  ShellEnvironmentAliases? _aliases;
-
-  /// The aliases as convenient map.
-  ShellEnvironmentAliases get aliases =>
-      _aliases ??= ShellEnvironmentAliases._();
-
+class ShellEnvironment extends common.ShellEnvironmentBase {
   /// Create a new shell environment from the current shellEnvironment.
   ///
   /// Defaults create a full parent environment.
@@ -239,16 +21,8 @@ class ShellEnvironment with MapMixin<String, String> {
   /// It is recommended that you apply the environment to a shell. But it can
   /// also be set globally (be aware of the potential effect on other part of
   /// your application) to [shellEnvironment]
-  ShellEnvironment({Map<String, String>? environment}) {
-    environment ??= shellEnvironment;
-
-    // Copy vars/path
-    _env.addAll(environment);
-    // Copy alias
-    if (environment is ShellEnvironment) {
-      aliases.addAll(environment.aliases);
-    }
-  }
+  ShellEnvironment({Map<String, String>? environment})
+      : super.fromEnvironment(environment: environment);
 
   /// From a run start content, includeParentEnvironment should later be set
   /// to false
@@ -265,64 +39,17 @@ class ShellEnvironment with MapMixin<String, String> {
     return newEnvironment;
   }
 
-  @override
-  String? operator [](Object? key) => _env[key as String];
-
-  @override
-  void operator []=(String key, String value) => _env[key] = value;
-
-  @override
-  void clear() {
-    _env.clear();
-  }
-
-  @override
-  Iterable<String> get keys => _env.keys;
-
-  @override
-  String? remove(Object? key) {
-    return _env.remove(key);
-  }
-
   /// Create an empty shell environment.
   ///
   /// Mainly used for testing as it is not easy to which environment variable
   /// are required.
-  ShellEnvironment.empty();
+  ShellEnvironment.empty() : super.empty();
 
   /// From json.
   ///
   /// Mainly used for testing as it is not easy to which environment variable
   /// are required.
-  ShellEnvironment.fromJson(Map? map) {
-    try {
-      if (map != null) {
-        var rawVars = map['vars'];
-        if (rawVars is Map) {
-          vars.addAll(rawVars.cast<String, String>());
-        }
-        var rawPaths = map['paths'];
-        if (rawPaths is Iterable) {
-          paths.addAll(rawPaths.cast<String>());
-        }
-        var rawAliases = map['aliases'];
-        if (rawAliases is Map) {
-          aliases.addAll(rawAliases.cast<String, String>());
-        }
-      }
-    } catch (_) {
-      // Silent crash
-    }
-  }
-
-  /// Merge an environment.
-  ///
-  /// the other object takes precedence, vars are added and paths prepended
-  void merge(ShellEnvironment other) {
-    vars.merge(other.vars);
-    paths.merge(other.paths);
-    aliases.merge(other.aliases);
-  }
+  ShellEnvironment.fromJson(Map? map) : super.fromJson(map);
 
   /// Find a [command] path location in the environment
   String? whichSync(String command) {
@@ -336,32 +63,4 @@ class ShellEnvironment with MapMixin<String, String> {
   Future<String?> which(String command) async {
     return whichSync(command);
   }
-
-  /// `paths` and `vars` key
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
-  }
-
-  @override
-  int get hashCode => const ListEquality().hash(paths);
-
-  @override
-  bool operator ==(Object other) {
-    if (other is ShellEnvironment) {
-      if (other.vars != vars) {
-        return false;
-      }
-      if (other.paths != paths) {
-        return false;
-      }
-      if (other.aliases != aliases) {
-        return false;
-      }
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  String toString() => 'ShellEnvironment($paths, $vars, $aliases)';
 }

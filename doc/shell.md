@@ -89,3 +89,75 @@ try {
   // We might get a shell exception
 }
 ```
+### Running sudo (Linux)
+
+You can run your dart program using sudo to run all you child scripts as a super user.
+
+Running a shell script with sudo from inside a dart script ran in non super user mode 
+is a little bit trickier as it requires user interaction. One solution (tried on Ubuntu) is to use
+`sudo --stdin` to specify reading the password from the stdin.
+
+You can then run script using the following:
+
+```dart
+await shell.run('sudo --stdin lsof -i:22');
+```
+
+A shared stdin object could be used to redirect dart program input to shell objects.
+
+Here is a more complex example:
+```dart
+import 'package:process_run/shell.dart';
+
+/// Only works on linux, list the process listening on port 22
+void main(List<String> arguments) async {
+  /// We have use a shared stdin if we want to reuse it.
+  var stdin = sharedStdIn;
+
+  /// Use sudo --stdin to read the password from stdin
+  /// Use an alias for simplicity (only need to refer to sudo instead of sudo --stdin
+  var env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
+  var shell = Shell(
+      stdin: sharedStdIn,
+      // lsof return exitCode 1 if not found
+      environment: env,
+      throwOnError: false);
+
+  await shell.run('sudo lsof -i:22');
+  // second time should not ask for password
+  await shell.run('sudo lsof -i:80');
+
+  /// Stop shared stdin
+  await stdin.terminate();
+}
+```
+
+If you have the password in a variable and not access to stdin (for example in some flutter scenario), you
+can do something like:
+
+```dart
+import 'dart:io';
+
+import 'package:http/http.dart';
+import 'package:process_run/shell.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
+
+void main(List<String> arguments) async {
+  // Assuming you have the password in `pwd` variable
+
+  // Use sudo --stdin to read the password from stdin
+  // Use an alias for simplicity (only need to refer to sudo instead of sudo --stdin
+  var env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
+
+  // Create a fake stdin stream from the password variable
+  var stdin =
+      ByteStream.fromBytes(systemEncoding.encode(pwd)).asBroadcastStream();
+
+  // Execute!
+  var shell = Shell(stdin: stdin, environment: env);
+
+  // Should not ask for password
+  await shell.run('sudo lsof -i:22');
+  await shell.run('sudo lsof -i:80');
+}
+```
