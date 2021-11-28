@@ -7,6 +7,8 @@ import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
 
+import 'process_run_test_common.dart';
+
 /// Truncate at max element.
 String stringTruncate(String text, int len) {
   if (text.length <= len) {
@@ -68,6 +70,38 @@ void main() {
   dart compile exe example/info.dart -o $bin
   $bin
   ''');
+    });
+    test('throwOnError', () async {
+      var verbose = false; // devWarning(true);
+      var env = ShellEnvironment()
+        ..aliases['echo'] = 'dart run ${shellArgument(echoScriptPath)}';
+
+      // Prevent error to be thrown if exitCode is not 0
+      var shell =
+          Shell(throwOnError: false, verbose: verbose, environment: env);
+      // This won't throw
+      var exitCode = (await shell.run('echo --exit-code 1')).first.exitCode;
+      expect(exitCode, 1);
+
+      try {
+        await shell.run('dummy_command_BfwXVcrONHT3QIiMzNoS');
+        fail('should fail');
+      } on ShellException catch (e) {
+        // ShellException(dummy_command_BfwXVcrONHT3QIiMzNoS, error: ProcessException: No such file or directory)
+        if (verbose) {
+          print(e);
+        }
+      }
+      try {
+        shell = Shell(environment: env, verbose: verbose);
+        await shell.run('echo --exit-code 1');
+        fail('should fail');
+      } on ShellException catch (e) {
+        // ShellException(dart run ./example/echo.dart --exit-code 1, exitCode 1)
+        if (verbose) {
+          print(e);
+        }
+      }
     });
   });
 }

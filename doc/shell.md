@@ -57,6 +57,25 @@ dir
 shell = shell.popd();
 ```
 
+
+### Handling errors
+
+By default, `run` will throw an error if the `exitCode` is not 0. You can prevent that
+with the option `throwOnError` which is true by default:
+
+```dart
+void main(List<String> arguments) async {
+  // Prevent error to be thrown if exitCode is not 0
+  var shell = Shell(throwOnError: false);
+  // This won't throw
+  await shell.run('dir dummy_folder');
+
+  shell = Shell();
+  // This throws an error!
+  await shell.run('dir dummy_folder');
+}
+```
+
 ### Adding system path
 
 If somehow you cannot modify the system path, it will look for any path (last) defined in
