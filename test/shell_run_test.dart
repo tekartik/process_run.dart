@@ -83,14 +83,18 @@ void main() {
       var exitCode = (await shell.run('echo --exit-code 1')).first.exitCode;
       expect(exitCode, 1);
 
-      try {
-        await shell.run('dummy_command_BfwXVcrONHT3QIiMzNoS');
-        fail('should fail');
-      } on ShellException catch (e) {
-        // ShellException(dummy_command_BfwXVcrONHT3QIiMzNoS, error: ProcessException: No such file or directory)
-        if (verbose) {
-          print(e);
+      if (!Platform.isWindows) {
+        try {
+          await shell.run('dummy_command_BfwXVcrONHT3QIiMzNoS');
+          fail('should fail');
+        } on ShellException catch (e) {
+          // ShellException(dummy_command_BfwXVcrONHT3QIiMzNoS, error: ProcessException: No such file or directory)
+          if (verbose) {
+            print(e);
+          }
         }
+      } else {
+        //TODO test on Windows
       }
       try {
         shell = Shell(environment: env, verbose: verbose);
