@@ -42,9 +42,8 @@ class DartCmd extends _DartBinCmd {
 
 /// dartfmt command
 @Deprecated('dartfmt is deprecated itself')
-class DartFmtCmd extends _DartBinCmd {
-  DartFmtCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('dart'), ['format', ...arguments]);
+class DartFmtCmd extends DartCmd {
+  DartFmtCmd(List<String> arguments) : super(['format', ...arguments]);
 }
 
 /// dartanalyzer
@@ -72,9 +71,8 @@ class DartDevcCmd extends _DartBinCmd {
 }
 
 /// pub
-class PubCmd extends _DartBinCmd {
-  PubCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('pub'), arguments);
+class PubCmd extends DartCmd {
+  PubCmd(List<String> arguments) : super(['pub', ...arguments]);
 }
 
 @Deprecated('Not supported anymore')
