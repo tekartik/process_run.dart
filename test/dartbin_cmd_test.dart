@@ -43,7 +43,7 @@ void main() {
     });
 
     test('toString', () {
-      expect(PubCmd(['--help']).toString(), 'pub --help');
+      expect(PubCmd(['--help']).toString(), 'dart pub --help');
       expect(DartDocCmd(['--help']).toString(), 'dartdoc --help');
       expect(Dart2JsCmd(['--help']).toString(), 'dart2js --help');
       // expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
