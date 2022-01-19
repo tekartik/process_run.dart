@@ -9,7 +9,9 @@ import 'package:test/test.dart';
 
 void main() {
   test('compile and run exe', () async {
-    var echoExePath = join('build', 'windows', 'process_run_echo.exe');
+    var folder = Platform.isWindows ? 'windows' : 'linux';
+    var exeExtension = Platform.isWindows ? '.exe' : '';
+    var echoExePath = join('build', folder, 'process_run_echo$exeExtension');
     var echoExeDir = dirname(echoExePath);
     var echoExeName = basename(echoExePath);
     var shell = Shell(verbose: false);
@@ -34,5 +36,7 @@ void main() {
     }
 
     expect(lines, ['test']);
-  }, skip: !Platform.isWindows, timeout: const Timeout(Duration(minutes: 10)));
+  },
+      skip: !(Platform.isWindows || Platform.isLinux),
+      timeout: const Timeout(Duration(minutes: 10)));
 }
