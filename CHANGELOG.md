@@ -1,7 +1,8 @@
-## 0.12.3+1
+## 0.12.3+2
 
 * Cache shellEnvironment when set
 * dart 2.14 lints
+* Resolve relative executable according to working directory
 
 ## 0.12.1+1
 
