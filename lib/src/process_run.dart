@@ -56,6 +56,12 @@ Future<ProcessResult> runExecutableArguments(
     // Try to find it in path or use it as is
     executable = utils.findExecutableSync(executable, shellEnvironment.paths) ??
         executable;
+  } else {
+    // resolve locally
+    executable = utils.findExecutableSync(basename(executable), [
+          join(workingDirectory ?? Directory.current.path, dirname(executable))
+        ]) ??
+        executable;
   }
 
   // Fix runInShell on windows (force run in shell for non-.exe)
