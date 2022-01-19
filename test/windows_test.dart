@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('compile and run exe', () async {
-    var echoExePath = join('build', 'windows', 'echo.exe');
+    var echoExePath = join('build', 'windows', 'process_run_echo.exe');
     var echoExeDir = dirname(echoExePath);
     var echoExeName = basename(echoExePath);
     var shell = Shell(verbose: false);
