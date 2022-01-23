@@ -31,7 +31,7 @@ void main() {
     try {
       await exePathShell.run('${shellArgument(echoExeName)} --stdout test');
       fail('should fail');
-    } on ShellException catch (e) {
+    } on ShellException catch (_) {
       // print(e);
     }
 
