@@ -34,6 +34,7 @@ void main() {
       argumentsToString;
       argumentToString;
       PbrCmd;
+      // ignore: deprecated_member_use_from_same_package
       Dart2JsCmd;
       DartCmd;
       DartDocCmd;
