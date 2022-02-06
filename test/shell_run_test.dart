@@ -47,7 +47,7 @@ void main() {
 
     test('--version', () async {
       for (var bin in [
-        'dartdoc',
+        // 'dartdoc', deprecated
         'dart',
         'pub',
         // 'dartfmt', deprecated

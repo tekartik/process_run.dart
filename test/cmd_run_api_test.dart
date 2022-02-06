@@ -37,7 +37,7 @@ void main() {
       // ignore: deprecated_member_use_from_same_package
       Dart2JsCmd;
       DartCmd;
-      DartDocCmd;
+      DartDocCmd; // ignore: deprecated_member_use_from_same_package
       DartFmtCmd; // ignore: deprecated_member_use_from_same_package
       DartDevcCmd;
       DartAnalyzerCmd;
