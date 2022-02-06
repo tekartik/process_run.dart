@@ -43,6 +43,7 @@ export 'process_run.dart'
 export 'src/build_runner.dart' show PbrCmd;
 export 'src/dartbin_cmd.dart'
     show
+        // ignore: deprecated_member_use_from_same_package
         Dart2JsCmd,
         DartCmd,
         DartDocCmd,

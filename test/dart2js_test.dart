@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 @TestOn('vm')
 library process_run.dart2js_test;
 
@@ -6,6 +8,7 @@ import 'dart:mirrors';
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 String getScriptPath(Type type) =>
@@ -51,5 +54,8 @@ void defineTests() {
       expect(result.exitCode, 0);
       //}, skip: 'failed on SDK 1.19.0'); - fixed in 1.19.1
     });
-  });
+  },
+      skip: dartVersion >= Version(2, 17, 0, pre: '0')
+          ? 'Remove this test once dart stable hits 2.17'
+          : null); // Starts failing with dart 2.17, dart2js is deprecated
 }

@@ -53,6 +53,7 @@ class DartAnalyzerCmd extends _DartBinCmd {
 }
 
 /// dart2js
+@Deprecated('Use dart compile js')
 class Dart2JsCmd extends _DartBinCmd {
   Dart2JsCmd(List<String> arguments)
       : super(getShellCmdBinFileName('dart2js'), arguments);

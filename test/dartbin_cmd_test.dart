@@ -35,6 +35,7 @@ void main() {
         expect(exitCode, 0);
       }
       expect((await runCmd(DartAnalyzerCmd(['--help']))).exitCode, 0);
+      // ignore: deprecated_member_use_from_same_package
       expect((await runCmd(Dart2JsCmd(['--help']))).exitCode, 0);
       expect((await runCmd(DartDocCmd(['--help']))).exitCode, 0);
       // expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
@@ -45,6 +46,7 @@ void main() {
     test('toString', () {
       expect(PubCmd(['--help']).toString(), 'dart pub --help');
       expect(DartDocCmd(['--help']).toString(), 'dartdoc --help');
+      // ignore: deprecated_member_use_from_same_package
       expect(Dart2JsCmd(['--help']).toString(), 'dart2js --help');
       // expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
       expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
