@@ -49,10 +49,10 @@ void main() {
       for (var bin in [
         // 'dartdoc', deprecated
         'dart',
-        'pub',
+        // 'pub', deprecated
         // 'dartfmt', deprecated
-        'dart2js',
-        'dartanalyzer',
+        // 'dart2js', deprecated
+        // 'dartanalyzer', deprecated
       ]) {
         stdout.writeln('');
         var result = (await run('$bin --version',
