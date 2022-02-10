@@ -22,11 +22,13 @@ void main() => defineTests();
 void defineTests() {
   group('dartdoc', () {
     test('help', () async {
+      // ignore: deprecated_member_use_from_same_package
       final result = await runCmd(DartDocCmd(['--help']));
       expect(result.stdout, contains('--version'));
       expect(result.exitCode, 0);
     });
     test('version', () async {
+      // ignore: deprecated_member_use_from_same_package
       final result = await runCmd(DartDocCmd(['--version']));
       expect(result.stdout, contains('dartdoc'));
       expect(result.exitCode, 0);
@@ -35,10 +37,11 @@ void defineTests() {
       // from dartdoc: exec '$DART' --packages='$BIN_DIR/snapshots/resources/dartdoc/.packages' '$SNAPSHOT' '$@'
 
       final result = await runCmd(
+          // ignore: deprecated_member_use_from_same_package
           DartDocCmd(['--output', join(testOut, 'dartdoc_build')]));
       //expect(result.stdout, contains('dartdoc'));
       expect(result.exitCode, 0);
       //}, skip: 'failed on SDK 1.19.0'); - fixed in 1.19.1
     }, timeout: const Timeout(Duration(minutes: 2)));
-  });
+  }, skip: 'Deprecated');
 }

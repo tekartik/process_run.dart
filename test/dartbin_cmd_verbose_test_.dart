@@ -26,8 +26,12 @@ void main() {
             // ignore: deprecated_member_use_from_same_package
             (await runCmd(Dart2JsCmd(['--help']), verbose: true)).exitCode,
             0);
+        expect(
+            // ignore: deprecated_member_use_from_same_package
+            (await runCmd(DartDocCmd(['--help']), verbose: true)).exitCode,
+            0);
       }
-      expect((await runCmd(DartDocCmd(['--help']), verbose: true)).exitCode, 0);
+
       expect((await runCmd(PubCmd(['--help']), verbose: true)).exitCode, 0);
     });
   });
