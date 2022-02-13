@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/shell_utils.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -99,7 +100,10 @@ void main() {
       expect(findExecutableSync('pub', []), isNull);
 
       expect(findExecutableSync('dart', [dartSdkBinDirPath]), dartExecutable);
-      expect(findExecutableSync('pub', [dartSdkBinDirPath]), isNotNull);
+      if (dartVersion < Version(2, 17, 0, pre: '0')) {
+        // no longer supported
+        expect(findExecutableSync('pub', [dartSdkBinDirPath]), isNotNull);
+      }
     });
     test('folder not executable', () {
       expect(findExecutableSync('test', ['.']), isNull);

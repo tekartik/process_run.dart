@@ -10,6 +10,7 @@ import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/dartbin_cmd.dart'
     show parseDartBinVersionOutput;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'hex_utils.dart';
@@ -382,13 +383,16 @@ dart current_dir.dart
     });
 
     test('pub_no_path', () async {
-      print(userPaths);
-      var environment = Map<String, String>.from(shellEnvironment)
-        ..remove('PATH');
-      var shell = Shell(environment: environment, verbose: false);
-      var results = await shell.run('''pub --version''');
-      expect(results.length, 1);
-      expect(results.first.exitCode, 0);
+      // No longer supported
+      if (dartVersion < Version(2, 17, 0, pre: '0')) {
+        print(userPaths);
+        var environment = Map<String, String>.from(shellEnvironment)
+          ..remove('PATH');
+        var shell = Shell(environment: environment, verbose: false);
+        var results = await shell.run('''pub --version''');
+        expect(results.length, 1);
+        expect(results.first.exitCode, 0);
+      }
     });
 
     test('escape backslash', () async {
@@ -428,7 +432,9 @@ _tekartik_dummy_app_that_does_not_exits
     await _testCommand('dart --version'); // dart.exe on windows
     await _testCommand(
         '${shellArgument(dartExecutable!)} --version'); // dart.exe on windows
-    await _testCommand('pub --version'); // dart.exe on windows
+    if (dartVersion < Version(2, 17, 0, pre: '0')) {
+      await _testCommand('pub --version'); // dart.exe on windows
+    }
     // on windows, system command or alias in PowerShell
     await _testCommand('echo Hello world');
   });

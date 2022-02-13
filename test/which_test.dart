@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'dartbin_test.dart';
@@ -39,7 +40,9 @@ void main() {
             join(dirname(whichSync('flutter')),
                 getBashOrBatExecutableFilename('dart')));*/
       }
-      expect(whichSync('pub', environment: empty), isNotNull);
+      if (dartVersion < Version(2, 17, 0, pre: '0')) {
+        expect(whichSync('pub', environment: empty), isNotNull);
+      }
       expect(whichSync('current_dir', environment: empty), isNull);
 
       expect(

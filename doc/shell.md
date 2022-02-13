@@ -86,7 +86,7 @@ If somehow you cannot modify the system path, it will look for any path (last) d
 ### Command line
 
 $ pub global active process_run
-$ alias ds='pub global run process_run:shell'
+$ alias ds='dart pub global run process_run:shell'
  
 ### Helper
 
