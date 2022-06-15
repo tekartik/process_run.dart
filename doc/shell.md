@@ -180,3 +180,19 @@ void main(List<String> arguments) async {
   await shell.run('sudo lsof -i:80');
 }
 ```
+
+### Running sudo (MacOS)
+
+Turn off Sandboxing by removing it from the Signing & Capabilities tab:
+
+
+
+Then run your commands via `osascript` like so:
+
+```
+  await shell.run('''
+     osascript -e 'do shell script "[YOUR_SHELL_COMMAND_GOES_HERE]" with administrator privileges'
+  ''')
+```
+
+That will prompt for the user to type his password and then will run the script.
