@@ -185,7 +185,7 @@ void main(List<String> arguments) async {
 
 Turn off Sandboxing by removing it from the Signing & Capabilities tab:
 
-
+![alt text](https://i.stack.imgur.com/iTRFC.png)
 
 Then run your commands via `osascript` like so:
 
