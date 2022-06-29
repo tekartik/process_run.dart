@@ -1,79 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 
-import 'shell_environment_common.dart';
+import 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
+
+export 'package:process_run/shell.dart'
+    show Shell, ShellException, ShellEnvironment;
+
+export 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
 
 var shellDebug = false; // devWarning(true); // false
-
-/// The result of running a non-interactive
-/// process started with [Process.run] or [Process.runSync].
-class ProcessResult {
-  /// Exit code for the process.
-  ///
-  /// See [Process.exitCode] for more information in the exit code
-  /// value.
-  final int exitCode;
-
-  /// Standard output from the process. The value used for the
-  /// `stdoutEncoding` argument to `Process.run` determines the type. If
-  /// `null` was used, this value is of type `List<int>` otherwise it is
-  /// of type `String`.
-  final Object? stdout;
-
-  /// Standard error from the process. The value used for the
-  /// `stderrEncoding` argument to `Process.run` determines the type. If
-  /// `null` was used, this value is of type `List<int>`
-  /// otherwise it is of type `String`.
-  final Object? stderr;
-
-  /// Process id of the process.
-  final int pid;
-
-  ProcessResult(this.pid, this.exitCode, this.stdout, this.stderr);
-}
-
-abstract class Process {
-  /// A `Future` which completes with the exit code of the process
-  /// when the process completes.
-  ///
-  /// The handling of exit codes is platform specific.
-  ///
-  /// On Linux and OS X a normal exit code will be a positive value in
-  /// the range `[0..255]`. If the process was terminated due to a signal
-  /// the exit code will be a negative value in the range `[-255..-1]`,
-  /// where the absolute value of the exit code is the signal
-  /// number. For example, if a process crashes due to a segmentation
-  /// violation the exit code will be -11, as the signal SIGSEGV has the
-  /// number 11.
-  ///
-  /// On Windows a process can report any 32-bit value as an exit
-  /// code. When returning the exit code this exit code is turned into
-  /// a signed value. Some special values are used to report
-  /// termination due to some system event. E.g. if a process crashes
-  /// due to an access violation the 32-bit exit code is `0xc0000005`,
-  /// which will be returned as the negative number `-1073741819`. To
-  /// get the original 32-bit value use `(0x100000000 + exitCode) &
-  /// 0xffffffff`.
-  ///
-  /// There is no guarantee that [stdout] and [stderr] have finished reporting
-  /// the buffered output of the process when the returned future completes.
-  /// To be sure that all output is captured,
-  /// wait for the done event on the streams.
-  Future<int> get exitCode;
-
-  /// The standard output stream of the process as a `Stream`.
-  Stream<List<int>> get stdout;
-
-  /// The standard error stream of the process as a `Stream`.
-  Stream<List<int>> get stderr;
-}
-
-class ProcessSignal {
-  const ProcessSignal();
-  static const sigterm = ProcessSignal();
-}
 
 /// Multiplatform Shell utility to run a script with multiple commands.
 ///
@@ -96,8 +34,9 @@ class ProcessSignal {
 ///
 /// A list of ProcessResult is returned
 ///
-abstract class Shell {
-  factory Shell(
+abstract class ShellCore {
+  /*
+  ShellCore(
           {ShellOptions? options,
           Map<String, String>? environment,
 
@@ -116,7 +55,7 @@ abstract class Shell {
               runInShell: runInShell,
               stdout: stdout,
               stderr: stderr),
-          environment: environment);
+          environment: environment);*/
 
   /// Kills the current running process.
   ///
@@ -163,6 +102,7 @@ abstract class Shell {
   Shell popd();
 }
 
+/*
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
   final ProcessResult? result;
@@ -173,6 +113,7 @@ class ShellException implements Exception {
   @override
   String toString() => 'ShellException($message)';
 }
+*/
 
 class ShellOptions {
   final bool _throwOnError;
@@ -188,6 +129,16 @@ class ShellOptions {
   final bool _commandVerbose;
   final bool _commentVerbose;
 
+  late final ShellEnvironment? _environment;
+
+  String? get workingDirectory => _workingDirectory;
+  ShellEnvironment get environment => _environment!;
+  StreamSink<List<int>>? get stdout => _stdout;
+  StreamSink<List<int>>? get stderr => _stderr;
+  Stream<List<int>>? get stdin => _stdin;
+  Encoding? get stdoutEncoding => _stdoutEncoding;
+  Encoding? get stderrEncoding => _stderrEncoding;
+
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
   /// Unless specified [runInShell] will be false. However on windows, it will
@@ -195,10 +146,11 @@ class ShellOptions {
   ///
   /// if [verbose] is not false or [commentVerbose] is true, it will display the
   /// comments as well
-  const ShellOptions(
+  ShellOptions(
       {bool throwOnError = true,
       String? workingDirectory,
       Map<String, String>? environment,
+      bool includeParentEnvironment = true,
       bool? runInShell,
       Encoding? stdoutEncoding,
       Encoding? stderrEncoding,
@@ -220,7 +172,21 @@ class ShellOptions {
         _stderr = stderr,
         _verbose = verbose,
         _commandVerbose = commandVerbose ?? verbose,
-        _commentVerbose = commentVerbose ?? false;
+        _commentVerbose = commentVerbose ?? false {
+    _environment = ShellEnvironment.full(
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment);
+  }
+
+  bool get commandVerbose => _commandVerbose;
+
+  bool get commentVerbose => _commentVerbose;
+
+  bool? get runInShell => _runInShell;
+
+  bool? get verbose => _verbose;
+
+  bool get throwOnError => _throwOnError;
 
   /// Create a new shell
   ShellOptions clone(
@@ -234,7 +200,8 @@ class ShellOptions {
       StreamSink<List<int>>? stderr,
       bool? verbose,
       bool? commandVerbose,
-      bool? commentVerbose}) {
+      bool? commentVerbose,
+      ShellEnvironment? shellEnvironment}) {
     return ShellOptions(
         verbose: verbose ?? _verbose,
         runInShell: runInShell ?? _runInShell,

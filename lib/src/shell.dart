@@ -1,17 +1,16 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:io' as io;
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/bin/shell/import.dart';
+import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell_common.dart'
     show ShellOptions, shellDebug;
 import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
-
-import 'common/import.dart';
 
 export 'shell_common.dart' show shellDebug;
 
@@ -92,18 +91,7 @@ Future<List<ProcessResult>> run(
 /// A list of ProcessResult is returned
 ///
 class Shell {
-  final bool _throwOnError;
-  final String? _workingDirectory;
-  ShellEnvironment? _environment;
-  final bool? _runInShell;
-  final Encoding _stdoutEncoding;
-  final Encoding _stderrEncoding;
-  final Stream<List<int>>? _stdin;
-  final StreamSink<List<int>>? _stdout;
-  final StreamSink<List<int>>? _stderr;
-  final bool _verbose;
-  final bool _commandVerbose;
-  final bool _commentVerbose;
+  final ShellOptions _options;
 
   /// Incremental internal runId
   var _runId = 0;
@@ -128,7 +116,7 @@ class Shell {
 
   /// Resolve environment
   List<String> get _userPaths =>
-      _userPathsCache ??= List.from(_environment!.paths);
+      _userPathsCache ??= List.from(_options.environment.paths);
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
@@ -137,39 +125,42 @@ class Shell {
   ///
   /// if [verbose] is not false or [commentVerbose] is true, it will display the
   /// comments as well
-  Shell(
-      {bool throwOnError = true,
-      String? workingDirectory,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true,
-      bool? runInShell,
-      Encoding stdoutEncoding = systemEncoding,
-      Encoding stderrEncoding = systemEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool verbose = true,
-      // Default to true
-      bool? commandVerbose,
-      // Default to false
-      bool? commentVerbose,
-      ShellOptions? options})
-      : _throwOnError = throwOnError,
-        _workingDirectory = workingDirectory,
-        _runInShell = runInShell,
-        _stdoutEncoding = stdoutEncoding,
-        _stderrEncoding = stderrEncoding,
-        _stdin = stdin,
-        _stdout = stdout,
-        _stderr = stderr,
-        _verbose = verbose,
-        _commandVerbose = commandVerbose ?? verbose,
-        _commentVerbose = commentVerbose ?? false {
-    // Fix environment right away
-    _environment = ShellEnvironment.full(
-        environment: environment,
-        includeParentEnvironment: includeParentEnvironment);
-  }
+  factory Shell(
+          {bool throwOnError = true,
+          String? workingDirectory,
+          Map<String, String>? environment,
+          bool includeParentEnvironment = true,
+          bool? runInShell,
+          Encoding stdoutEncoding = systemEncoding,
+          Encoding stderrEncoding = systemEncoding,
+          Stream<List<int>>? stdin,
+          StreamSink<List<int>>? stdout,
+          StreamSink<List<int>>? stderr,
+          bool verbose = true,
+          // Default to true
+          bool? commandVerbose,
+          // Default to false
+          bool? commentVerbose,
+          ShellOptions? options}) =>
+      shellContext.newShell(
+          options: options ??
+              ShellOptions(
+                  verbose: verbose,
+                  stdin: stdin,
+                  stdout: stdout,
+                  stderr: stderr,
+                  throwOnError: throwOnError,
+                  workingDirectory: workingDirectory,
+                  runInShell: runInShell,
+                  commandVerbose: commandVerbose ?? verbose,
+                  environment: environment,
+                  commentVerbose: commentVerbose ?? false,
+                  stderrEncoding: stderrEncoding,
+                  stdoutEncoding: stdoutEncoding));
+
+  /// Internal use only.
+  @protected
+  Shell.implWithOptions(ShellOptions options) : _options = options;
 
   /// Create a new shell
   Shell clone(
@@ -191,33 +182,34 @@ class Shell {
       bool? commandVerbose,
       bool? commentVerbose}) {
     return Shell(
-        verbose: verbose ?? _verbose,
-        environment: _environment,
-        runInShell: runInShell ?? _runInShell,
-        commandVerbose: commandVerbose ?? _commandVerbose,
-        commentVerbose: commentVerbose ?? _commentVerbose,
-        includeParentEnvironment: false,
-        stderr: stderr ?? _stderr,
-        stderrEncoding: stderrEncoding ?? _stderrEncoding,
-        stdin: stdin ?? _stdin,
-        stdout: stdout ?? _stdout,
-        stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
-        throwOnError: throwOnError ?? _throwOnError,
-        workingDirectory: workingDirectory ?? _workingDirectory);
+        options: _options.clone(
+            throwOnError: throwOnError,
+            workingDirectory: workingDirectory,
+            runInShell: runInShell,
+            stdoutEncoding: stdoutEncoding,
+            stderrEncoding: stderrEncoding,
+            stdin: stdin,
+            stderr: stderr,
+            stdout: stdout,
+            commentVerbose: commentVerbose,
+            commandVerbose: commandVerbose,
+            verbose: verbose,
+            shellEnvironment:
+                environment is ShellEnvironment ? environment : null));
   }
 
   /// non null
   String get _workingDirectoryPath =>
-      _workingDirectory ?? Directory.current.path;
+      _options.workingDirectory ?? Directory.current.path;
 
   /// Create new shell at the given path
   Shell cd(String path) {
     if (isRelative(path)) {
       path = join(_workingDirectoryPath, path);
     }
-    if (_commandVerbose) {
-      streamSinkWriteln(_stdout ?? stdout, '\$ cd $path',
-          encoding: _stdoutEncoding);
+    if (_options.commandVerbose) {
+      streamSinkWriteln(_options.stdout ?? stdout, '\$ cd $path',
+          encoding: _options.stdoutEncoding);
     }
     return clone(workingDirectory: path);
   }
@@ -234,7 +226,7 @@ class Shell {
     if (_parentShell == null) {
       throw StateError('no previous shell');
     }
-    if (_commandVerbose) {
+    if (_options.commandVerbose) {
       stdout.writeln('\$ cd ${_parentShell!._workingDirectoryPath}');
     }
     return _parentShell!;
@@ -292,7 +284,7 @@ class Shell {
         }
         // Display the comments
         if (isLineComment(command!)) {
-          if (_commentVerbose) {
+          if (_options.commentVerbose) {
             stdout.writeln(command);
           }
           continue;
@@ -302,7 +294,7 @@ class Shell {
         var arguments = parts.sublist(1);
 
         // Find alias
-        var alias = _environment!.aliases[executable];
+        var alias = _options.environment.aliases[executable];
         if (alias != null) {
           // The alias itself should be split
           parts = shellSplit(alias);
@@ -383,23 +375,23 @@ class Shell {
 
         var processCmd = _ProcessCmd(executableFullPath, arguments,
             executableShortName: executable)
-          ..runInShell = _runInShell
-          ..environment = _environment
+          ..runInShell = _options.runInShell
+          ..environment = _options.environment
           ..includeParentEnvironment = false
-          ..stderrEncoding = _stderrEncoding
-          ..stdoutEncoding = _stdoutEncoding
-          ..workingDirectory = _workingDirectory;
+          ..stderrEncoding = _options.stderrEncoding!
+          ..stdoutEncoding = _options.stdoutEncoding!
+          ..workingDirectory = _options.workingDirectory;
         try {
           if (shellDebug) {
             print('$_runId: Before $processCmd');
           }
           try {
             processResult = await processCmdRun(processCmd,
-                verbose: _verbose,
-                commandVerbose: _commandVerbose,
-                stderr: _stderr,
-                stdin: _stdin,
-                stdout: _stdout, onProcess: (process) {
+                verbose: _options.verbose,
+                commandVerbose: _options.commandVerbose,
+                stderr: _options.stderr,
+                stdin: _options.stdin,
+                stdout: _options.stdout, onProcess: (process) {
               _currentProcess = process;
               _currentProcessCmd = processCmd;
               _currentProcessRunId = runId;
@@ -424,13 +416,13 @@ class Shell {
             }
           }
           // devPrint('After $processCmd');
-          if (_throwOnError && processResult.exitCode != 0) {
+          if (_options.throwOnError && processResult.exitCode != 0) {
             throw ShellException(
                 '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
                 processResult);
           }
         } on ProcessException catch (e) {
-          var stderr = _stderr ?? io.stderr;
+          var stderr = _options.stderr ?? io.stderr;
           void _writeln([String? msg]) {
             stderr.add(utf8.encode(msg ?? ''));
             stderr.add(utf8.encode('\n'));

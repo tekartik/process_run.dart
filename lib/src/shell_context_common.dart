@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:path/path.dart' as p;
 import 'package:process_run/src/shell_common.dart';
-import 'package:process_run/src/shell_environment_common.dart';
 
 /// abstract shell context
 abstract class ShellContext {
@@ -21,8 +20,8 @@ abstract class ShellContext {
 
   Shell newShell(
       {ShellOptions? options,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true});
+      @Deprecated('Use options') Map<String, String>? environment,
+      @Deprecated('Use options') bool includeParentEnvironment = true});
 
   ShellEnvironment newShellEnvironment({
     Map<String, String>? environment,

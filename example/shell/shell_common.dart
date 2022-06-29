@@ -1,4 +1,4 @@
-import 'package:process_run/src/shell_common.dart';
+import 'package:process_run/shell.dart';
 
 Future<void> main() async {
   var shell = Shell();

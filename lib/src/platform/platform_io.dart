@@ -7,3 +7,7 @@ bool get platformIoIsWindows => Platform.isWindows;
 
 /// Global shell context
 ShellContext shellContext = ShellContextIo();
+
+void clearShellContext() {
+  throw StateError('clearShellContext Not supported');
+}

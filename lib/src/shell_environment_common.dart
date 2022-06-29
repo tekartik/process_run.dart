@@ -1,15 +1,17 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_utils_common.dart';
 //import 'package:process_run/shell.dart';
 //import 'package:process_run/src/common/import.dart';
 //import 'package:process_run/src/shell_utils.dart';
+export 'package:process_run/shell.dart' show ShellEnvironment;
 
 /// Shell environment ordered paths helper. Changes the PATH variable
 class ShellEnvironmentPaths with ListMixin<String> {
-  final ShellEnvironment _environment;
+  final ShellEnvironmentCore _environment;
 
   ShellEnvironmentPaths._(this._environment);
 
@@ -144,7 +146,7 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
 
 /// Shell environment variables helper. Does not affect the PATH variable
 class ShellEnvironmentVars with MapMixin<String, String> {
-  final ShellEnvironment _environment;
+  final ShellEnvironmentCore _environment;
 
   ShellEnvironmentVars._(this._environment);
 
@@ -207,7 +209,7 @@ class ShellEnvironmentVars with MapMixin<String, String> {
 /// Shell modifiable helpers. should not be modified after being set.
 abstract class ShellEnvironmentBase
     with MapMixin<String, String>
-    implements ShellEnvironment {
+    implements ShellEnvironmentCore {
   /// The resulting _env
   final _env = <String, String>{};
 
@@ -345,7 +347,7 @@ abstract class ShellEnvironmentBase
 ShellEnvironment get shellEnvironment => shellContext.shellEnvironment;
 
 /// Shell modifiable helpers. should not be modified after being set.
-abstract class ShellEnvironment with MapMixin<String, String> {
+abstract class ShellEnvironmentCore with MapMixin<String, String> {
   /// The vars but the PATH variable
   ShellEnvironmentVars get vars;
 
@@ -363,6 +365,7 @@ abstract class ShellEnvironment with MapMixin<String, String> {
   /// `paths` and `vars` key
   Map<String, dynamic> toJson();
 
+  /*
   /// Create a new shell environment from the current shellEnvironment.
   ///
   /// Defaults create a full parent environment.
@@ -373,4 +376,5 @@ abstract class ShellEnvironment with MapMixin<String, String> {
   factory ShellEnvironment({Map<String, String>? environment}) {
     return shellContext.newShellEnvironment(environment: environment);
   }
+   */
 }

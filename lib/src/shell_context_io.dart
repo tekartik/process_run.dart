@@ -3,12 +3,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:process_run/shell.dart' as ds;
-import 'package:process_run/src/shell.dart' as io;
 import 'package:process_run/src/shell_common.dart';
 import 'package:process_run/src/shell_common_io.dart';
 import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_environment.dart' as io;
-import 'package:process_run/src/shell_environment_common.dart';
 
 class ShellContextIo implements ShellContext {
   @override
@@ -39,10 +37,7 @@ class ShellContextIo implements ShellContext {
       {ShellOptions? options,
       Map<String, String>? environment,
       bool includeParentEnvironment = true}) {
-    var ioShell = io.Shell(
-        options: options,
-        environment: environment,
-        includeParentEnvironment: includeParentEnvironment);
-    return ShellIo(impl: ioShell);
+    var ioShell = ShellIo(options: options ?? ShellOptions());
+    return ioShell;
   }
 }

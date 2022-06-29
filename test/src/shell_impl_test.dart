@@ -241,7 +241,7 @@ void main() {
         expect(result, '1');
 
         shell = Shell(
-            verbose: false,
+            verbose: devWarning(true), // false,
             environment: platformEnvironment,
             includeParentEnvironment: false);
         result =
