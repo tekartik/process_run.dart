@@ -82,17 +82,17 @@ void main() {
     });
 
     test('shellJoin', () {
-      void _test(String command, {String? expected}) {
+      void testSplitJoin(String command, {String? expected}) {
         var parts = shellSplit(command);
         var joined = shellJoin(parts);
         expect(joined, expected ?? command, reason: parts.toString());
       }
 
-      _test('foo');
-      _test('foo bar');
-      _test(r'\');
-      _test('"foo bar"');
-      _test("'foo bar'", expected: '"foo bar"');
+      testSplitJoin('foo');
+      testSplitJoin('foo bar');
+      testSplitJoin(r'\');
+      testSplitJoin('"foo bar"');
+      testSplitJoin("'foo bar'", expected: '"foo bar"');
     });
 
     test('no_env', () {

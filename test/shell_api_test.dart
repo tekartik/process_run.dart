@@ -37,6 +37,7 @@ void main() {
       prompt;
       run;
       Shell;
+      ShellOptions;
       ShellException;
       ShellEnvironment;
       ShellEnvironmentPaths;

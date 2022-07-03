@@ -64,22 +64,22 @@ Future main(List<String> arguments) async {
   parser.addFlag('version',
       help: 'Print the command version', negatable: false);
 
-  final _argsResult = parser.parse(arguments);
+  final argsResult = parser.parse(arguments);
 
   int? parseInt(dynamic value) {
     return int.tryParse(value?.toString() ?? '');
   }
 
-  final help = _argsResult['help'] as bool;
-  final verbose = _argsResult['verbose'] as bool?;
-  final wait = parseInt(_argsResult['wait']);
-  final writeLine = _argsResult['write-line'] as bool?;
+  final help = argsResult['help'] as bool;
+  final verbose = argsResult['verbose'] as bool?;
+  final wait = parseInt(argsResult['wait']);
+  final writeLine = argsResult['write-line'] as bool?;
 
   if (wait != null) {
     await Future.delayed(Duration(milliseconds: wait));
   }
 
-  void _printUsage() {
+  void printUsage() {
     stdout.writeln('Echo utility');
     stdout.writeln();
     stdout.writeln('Usage: $currentScriptName <command> [<arguments>]');
@@ -92,11 +92,11 @@ Future main(List<String> arguments) async {
   }
 
   if (help) {
-    _printUsage();
+    printUsage();
     return;
   }
 
-  final displayVersion = _argsResult['version'] as bool;
+  final displayVersion = argsResult['version'] as bool;
 
   if (displayVersion) {
     stdout.write('$currentScriptName version $version');
@@ -105,7 +105,7 @@ Future main(List<String> arguments) async {
   }
 
   // handle stdin if asked for it
-  if (_argsResult['stdin'] as bool) {
+  if (argsResult['stdin'] as bool) {
     // devPrint('reading stdin $stdin');
     if (verbose!) {
       //stderr.writeln('stdin  $stdin');
@@ -120,14 +120,14 @@ Future main(List<String> arguments) async {
     }
   }
   // handle stdout
-  final outputText = _argsResult['stdout'] as String?;
+  final outputText = argsResult['stdout'] as String?;
   if (outputText != null) {
     stdout.write(outputText);
     if (writeLine!) {
       stdout.writeln();
     }
   }
-  final hexOutputText = _argsResult['stdout-hex'] as String?;
+  final hexOutputText = argsResult['stdout-hex'] as String?;
   if (hexOutputText != null) {
     stdout.add(hexToBytes(hexOutputText));
     if (writeLine!) {
@@ -135,14 +135,14 @@ Future main(List<String> arguments) async {
     }
   }
   // handle stderr
-  final stderrText = _argsResult['stderr'] as String?;
+  final stderrText = argsResult['stderr'] as String?;
   if (stderrText != null) {
     stderr.write(stderrText);
     if (writeLine!) {
       stdout.writeln();
     }
   }
-  final stderrHexTest = _argsResult['stderr-hex'] as String?;
+  final stderrHexTest = argsResult['stderr-hex'] as String?;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
     if (writeLine!) {
@@ -150,7 +150,7 @@ Future main(List<String> arguments) async {
     }
   }
 
-  final envVar = _argsResult['stdout-env'] as String?;
+  final envVar = argsResult['stdout-env'] as String?;
   if (envVar != null) {
     stdout.write(Platform.environment[envVar] ?? '');
     if (writeLine!) {
@@ -158,18 +158,18 @@ Future main(List<String> arguments) async {
     }
   }
 
-  if (_argsResult['all-env'] as bool) {
+  if (argsResult['all-env'] as bool) {
     var env = ShellEnvironment(environment: Platform.environment);
     stdout.writeln(const JsonEncoder.withIndent('  ').convert(env.toJson()));
   }
 
   // handle the rest, default to output
-  for (final rest in _argsResult.rest) {
+  for (final rest in argsResult.rest) {
     stdout.writeln(rest);
   }
 
   // exit code!
-  final exitCodeText = _argsResult['exit-code'] as String?;
+  final exitCodeText = argsResult['exit-code'] as String?;
   if (exitCodeText != null) {
     exit(int.parse(exitCodeText));
   }

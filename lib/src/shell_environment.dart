@@ -30,6 +30,7 @@ class ShellEnvironment extends common.ShellEnvironmentBase {
       {Map<String, String>? environment,
       bool includeParentEnvironment = true}) {
     ShellEnvironment newEnvironment;
+    // devPrint(environment?.keys.where((element) => element.contains('TEKA')));
     if (includeParentEnvironment) {
       newEnvironment = ShellEnvironment();
       newEnvironment.merge(asShellEnvironment(environment));

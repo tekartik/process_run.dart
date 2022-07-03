@@ -19,16 +19,16 @@ void main() {
 
   group('ShellEnvironment', () {
     test('empty', () {
-      var _prev = shellEnvironment;
+      var prevEnv = shellEnvironment;
       expect(shellEnvironment, isNotEmpty);
       var env = ShellEnvironment.empty();
       try {
         shellEnvironment = env;
         expect(shellEnvironment, isEmpty);
         shellEnvironment = null;
-        expect(shellEnvironment, _prev);
+        expect(shellEnvironment, prevEnv);
       } finally {
-        shellEnvironment = _prev;
+        shellEnvironment = prevEnv;
         expect(shellEnvironment, isNotEmpty);
       }
     });
@@ -93,7 +93,7 @@ void main() {
     });
 
     test('global vars ', () async {
-      var _prev = shellEnvironment;
+      var prevEnv = shellEnvironment;
       expect(shellEnvironment, isNotEmpty);
       var shell = Shell(verbose: false);
       var env = ShellEnvironment()
@@ -117,7 +117,7 @@ void main() {
         // expect(result, {});
         expect(result.vars['TEST_PROCESS_RUN_VAR1'], 'test_process_run_value1');
       } finally {
-        shellEnvironment = _prev;
+        shellEnvironment = prevEnv;
       }
     }); // not working
 
@@ -186,7 +186,7 @@ void main() {
       if (whichSync(current_dir) != null) {
         stderr.writeln('Global current_dir found, skipping');
       }
-      var _prev = shellEnvironment;
+      var prevEnv = shellEnvironment;
       expect(shellEnvironment, isNotEmpty);
 
       var shell = Shell();
@@ -206,7 +206,7 @@ void main() {
         var shell = Shell();
         await shell.run(current_dir);
       } finally {
-        shellEnvironment = _prev;
+        shellEnvironment = prevEnv;
       }
     });
     test('local empty include parent', () async {
@@ -307,13 +307,13 @@ void main() {
   });
 
   test('overriding', () async {
-    var _prev = shellEnvironment;
+    var prevEnv = shellEnvironment;
     try {
       var env = ShellEnvironment()..paths.prepend('T1');
       shellEnvironment = env;
       expect(ShellEnvironment().paths.first, 'T1');
     } finally {
-      shellEnvironment = _prev;
+      shellEnvironment = prevEnv;
     }
   });
 }

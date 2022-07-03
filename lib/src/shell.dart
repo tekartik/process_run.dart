@@ -154,6 +154,7 @@ class Shell {
                   runInShell: runInShell,
                   commandVerbose: commandVerbose ?? verbose,
                   environment: environment,
+                  includeParentEnvironment: includeParentEnvironment,
                   commentVerbose: commentVerbose ?? false,
                   stderrEncoding: stderrEncoding,
                   stdoutEncoding: stdoutEncoding));
@@ -382,6 +383,7 @@ class Shell {
           ..stdoutEncoding = _options.stdoutEncoding!
           ..workingDirectory = _options.workingDirectory;
         try {
+          // devPrint(_options.environment.keys.where((element) => element.contains('TEKARTIK')));
           if (shellDebug) {
             print('$_runId: Before $processCmd');
           }
@@ -423,7 +425,7 @@ class Shell {
           }
         } on ProcessException catch (e) {
           var stderr = _options.stderr ?? io.stderr;
-          void _writeln([String? msg]) {
+          void writeln([String? msg]) {
             stderr.add(utf8.encode(msg ?? ''));
             stderr.add(utf8.encode('\n'));
           }
@@ -431,15 +433,15 @@ class Shell {
           var workingDirectory =
               processCmd.workingDirectory ?? Directory.current.path;
 
-          _writeln();
+          writeln();
           if (!Directory(workingDirectory).existsSync()) {
-            _writeln('Missing working directory $workingDirectory');
+            writeln('Missing working directory $workingDirectory');
           } else {
-            _writeln('''
+            writeln('''
   Check that $executableFullPath exists
     command: $processCmd''');
           }
-          _writeln();
+          writeln();
 
           throw ShellException(
               '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',

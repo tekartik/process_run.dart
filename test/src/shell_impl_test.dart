@@ -2,7 +2,6 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/shell_run.dart';
 import 'package:process_run/src/common/constant.dart';
@@ -100,26 +99,26 @@ void main() {
       }
     });
 
-    var _flutterExecutablePath = flutterExecutablePath;
+    var localFlutterExecutablePath = flutterExecutablePath;
     test('userEnvironment in flutter context', () async {
       try {
-        var flutterBinDirPath = dirname(_flutterExecutablePath!);
+        var flutterBinDirPath = dirname(localFlutterExecutablePath!);
         platformEnvironment = newEnvNoOverride()
           ..paths.prepend(flutterBinDirPath);
 
         // '/opt/app/flutter/dev/flutter/bin',
         // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
         if (dartSdkBinDirPath.contains(flutterBinDirPath)) {
-          expect(
-              userPaths, [dirname(_flutterExecutablePath), dartSdkBinDirPath]);
+          expect(userPaths,
+              [dirname(localFlutterExecutablePath), dartSdkBinDirPath]);
         } else {
-          expect(
-              userPaths, [dartSdkBinDirPath, dirname(_flutterExecutablePath)]);
+          expect(userPaths,
+              [dartSdkBinDirPath, dirname(localFlutterExecutablePath)]);
         }
       } finally {
         platformEnvironment = null;
       }
-    }, skip: _flutterExecutablePath == null);
+    }, skip: localFlutterExecutablePath == null);
 
     test('userEnvironment', () async {
       try {
@@ -241,7 +240,7 @@ void main() {
         expect(result, '1');
 
         shell = Shell(
-            verbose: devWarning(true), // false,
+            verbose: false,
             environment: platformEnvironment,
             includeParentEnvironment: false);
         result =

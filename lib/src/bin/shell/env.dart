@@ -151,7 +151,7 @@ Future<void> main(List<String> arguments) async {
 Future shellEnv(ArgParser parser, ArgResults results) async {
   final help = results[flagHelp] as bool;
 
-  void _printUsage() {
+  void printUsage() {
     stdout.writeln('Manipulate local and global env vars');
     stdout.writeln();
     stdout.writeln('Usage: ds env var <command>');
@@ -162,7 +162,7 @@ Future shellEnv(ArgParser parser, ArgResults results) async {
   }
 
   if (help) {
-    _printUsage();
+    printUsage();
     return;
   }
 

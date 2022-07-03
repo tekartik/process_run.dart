@@ -52,7 +52,7 @@ List<String?> scriptToCommands(String script) {
   for (var line in LineSplitter.split(script)) {
     line = line.trim();
 
-    void _addAndClearCurrent(String? command) {
+    void addAndClearCurrent(String? command) {
       commands.add(command);
       currentCommand = null;
     }
@@ -69,13 +69,13 @@ List<String?> scriptToCommands(String script) {
           // remove ending character
           currentCommand = line.substring(0, line.length - 1).trim();
         } else {
-          _addAndClearCurrent(line);
+          addAndClearCurrent(line);
         }
       }
     } else {
       // terminate current
       if (currentCommand != null) {
-        _addAndClearCurrent(currentCommand);
+        addAndClearCurrent(currentCommand);
       }
     }
   }

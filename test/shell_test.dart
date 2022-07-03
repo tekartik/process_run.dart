@@ -278,7 +278,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         late Shell shell;
         StreamSubscription? subscription;
 
-        void _init() {
+        void init() {
           lines.clear();
           subscription?.cancel();
           linesController = ShellLinesController();
@@ -291,16 +291,16 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           });
         }
 
-        _init();
+        init();
         await shell.run('dart echo.dart some_text');
         expect(lines, ['some_text']);
 
-        _init();
+        init();
         subscription?.pause();
         await shell.run('dart echo.dart some_text');
         expect(lines, []);
 
-        _init();
+        init();
 
         await shell.run('dart echo.dart some_text1');
         expect(lines, ['some_text1']);
@@ -416,7 +416,7 @@ _tekartik_dummy_app_that_does_not_exits
     }); // skip windows for now
   });
 
-  Future _testCommand(String command) async {
+  Future testCommand(String command) async {
     var shell = Shell(verbose: debug);
     try {
       await shell.run(command);
@@ -427,21 +427,21 @@ _tekartik_dummy_app_that_does_not_exits
 
   test('various command', () async {
     // that can be installed or not
-    await _testCommand('firebase --version'); // firebase.cmd on windows
-    await _testCommand('flutter --version'); // flutter.bat on windows
-    await _testCommand('dart --version'); // dart.exe on windows
-    await _testCommand(
+    await testCommand('firebase --version'); // firebase.cmd on windows
+    await testCommand('flutter --version'); // flutter.bat on windows
+    await testCommand('dart --version'); // dart.exe on windows
+    await testCommand(
         '${shellArgument(dartExecutable!)} --version'); // dart.exe on windows
     if (dartVersion < Version(2, 17, 0, pre: '0')) {
-      await _testCommand('pub --version'); // dart.exe on windows
+      await testCommand('pub --version'); // dart.exe on windows
     }
     // on windows, system command or alias in PowerShell
-    await _testCommand('echo Hello world');
+    await testCommand('echo Hello world');
   });
 
   test('echo', () async {
-    await _testCommand('echo Hello world'); // alias to Write-Output
-    await _testCommand('echo Hello world'); // alias to Write-Output
+    await testCommand('echo Hello world'); // alias to Write-Output
+    await testCommand('echo Hello world'); // alias to Write-Output
   });
 
   test('pipe', () async {

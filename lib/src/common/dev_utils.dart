@@ -12,7 +12,7 @@ bool _devPrintEnabled = true;
 set devPrintEnabled(bool enabled) => _devPrintEnabled = enabled;
 
 @Deprecated('Dev only')
-void devPrint(Object object) {
+void devPrint(Object? object) {
   if (_devPrintEnabled) {
     print(object);
   }

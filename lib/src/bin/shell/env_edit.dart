@@ -16,28 +16,28 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
     }
     await envFileReadOrCreate(write: true);
 
-    Future _run(String command) async {
+    Future doRun(String command) async {
       await run(command, commandVerbose: verbose);
     }
 
     if (Platform.isLinux) {
       if (await which('gedit') != null) {
-        await _run('gedit ${shellArgument(envFilePath!)}');
+        await doRun('gedit ${shellArgument(envFilePath!)}');
         return true;
       }
     } else if (Platform.isWindows) {
       if (await which('notepad') != null) {
-        await _run('notepad ${shellArgument(envFilePath!)}');
+        await doRun('notepad ${shellArgument(envFilePath!)}');
         return true;
       }
     } else if (Platform.isMacOS) {
       if (await which('open') != null) {
-        await _run('open -a TextEdit ${shellArgument(envFilePath!)}');
+        await doRun('open -a TextEdit ${shellArgument(envFilePath!)}');
         return true;
       }
     }
     if (await which('vi') != null) {
-      await _run('vi ${shellArgument(envFilePath!)}');
+      await doRun('vi ${shellArgument(envFilePath!)}');
       return true;
     }
     print('no editor found');

@@ -163,7 +163,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
     // var:
     //   ANDROID_TOP: /home/user/Android
     //   FIREBASE_TOP: /home/user/.firebase
-    void _addVar(String key, String value) {
+    void addVar(String key, String value) {
       // devPrint('$key: $value');
       fileVars[key] = value;
     }
@@ -177,7 +177,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
             var entry = item.entries.first;
             var key = entry.key.toString();
             var value = entry.value.toString();
-            _addVar(key, value);
+            addVar(key, value);
           }
         } else {
           // devPrint(item.runtimeType);
@@ -187,7 +187,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
     }
     if (vars is Map) {
       vars.forEach((key, value) {
-        _addVar(key.toString(), value.toString());
+        addVar(key.toString(), value.toString());
       });
     }
 
@@ -200,7 +200,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
     //
     // alias:
     //   - ll: ls -l
-    void _addAlias(String key, String value) {
+    void addAlias(String key, String value) {
       // devPrint('$key: $value');
       if (value.isNotEmpty) {
         fileAliases[key] = value;
@@ -216,7 +216,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
             var entry = item.entries.first;
             var key = entry.key.toString();
             var value = entry.value.toString();
-            _addAlias(key, value);
+            addAlias(key, value);
           }
         } else {
           // devPrint(item.runtimeType);
@@ -226,7 +226,7 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
     }
     if (alias is Map) {
       alias.forEach((key, value) {
-        _addAlias(key.toString(), value.toString());
+        addAlias(key.toString(), value.toString());
       });
     }
   } catch (e) {

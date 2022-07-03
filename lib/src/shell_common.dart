@@ -115,6 +115,7 @@ class ShellException implements Exception {
 }
 */
 
+/// Shell options.
 class ShellOptions {
   final bool _throwOnError;
   final String? _workingDirectory;
@@ -131,12 +132,25 @@ class ShellOptions {
 
   late final ShellEnvironment? _environment;
 
+  /// Specified working directory (null for not specified).
   String? get workingDirectory => _workingDirectory;
+
+  /// Full environment used (including parent environment).
   ShellEnvironment get environment => _environment!;
+
+  /// stdout.
   StreamSink<List<int>>? get stdout => _stdout;
+
+  /// stderr.
   StreamSink<List<int>>? get stderr => _stderr;
+
+  /// stdin.
   Stream<List<int>>? get stdin => _stdin;
+
+  /// stdout encoding.
   Encoding? get stdoutEncoding => _stdoutEncoding;
+
+  /// stderr encoding.
   Encoding? get stderrEncoding => _stderrEncoding;
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
@@ -178,14 +192,19 @@ class ShellOptions {
         includeParentEnvironment: includeParentEnvironment);
   }
 
+  /// True if commands are displayed.
   bool get commandVerbose => _commandVerbose;
 
+  /// True if comments are displayed.
   bool get commentVerbose => _commentVerbose;
 
+  /// True if runInShell is specified.
   bool? get runInShell => _runInShell;
 
-  bool? get verbose => _verbose;
+  /// True if verbose is turned on.
+  bool get verbose => _verbose;
 
+  /// True if it should throw if an error occurred.
   bool get throwOnError => _throwOnError;
 
   /// Create a new shell
