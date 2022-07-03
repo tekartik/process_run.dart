@@ -1,7 +1,7 @@
 /// {@canonicalFor prompt.prompt}
 /// {@canonicalFor prompt.promptConfirm}
 /// {@canonicalFor prompt.promptTerminate}
-/// {@canonicalFor shell_utils.shellArgument}
+/// {@canonicalFor process_run.src.shell_utils_common.shellArgument}
 /// {@canonicalFor user_config.userLoadEnv}
 /// {@canonicalFor user_config.userLoadEnvFile}
 /// {@canonicalFor shell_utils.platformEnvironment}
@@ -10,6 +10,7 @@
 /// {@canonicalFor user_config.userEnvironment}
 /// {@canonicalFor shell_utils.userHomePath}
 /// {@canonicalFor user_config.userPaths}
+/// {@canonicalFor process_run.runExecutableArguments}
 library process_run.shell;
 
 export 'package:process_run/dartbin.dart'

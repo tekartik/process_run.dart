@@ -4,14 +4,17 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell.dart';
 import 'package:process_run/src/shell_utils.dart' as utils;
 import 'package:process_run/src/shell_utils.dart';
 
 import 'common/import.dart';
 
+export 'shell_utils_io.dart' show executableArgumentsToString;
+
 ///
-/// if [commmandVerbose] or [verbose] is true, display the command.
+/// if [commandVerbose] or [verbose] is true, display the command.
 /// if [verbose] is true, stream stdout & stdin
 ///
 /// Optional [onProcess(process)] is called to allow killing the process.
@@ -185,27 +188,6 @@ Future<ProcessResult> runExecutableArguments(
   }
 
   return result;
-}
-
-/// Convenient way to display a command
-String executableArgumentsToString(
-    String? executable, List<String>? arguments) {
-  final sb = StringBuffer();
-  if (Platform.isWindows && (basename(executable!) == executable)) {
-    var ext = extension(executable);
-    switch (ext) {
-      case '.exe':
-      case '.bat':
-      case '.cmd':
-      case '.com':
-        executable = executable.substring(0, executable.length - 4);
-    }
-  }
-  sb.write(executable);
-  if (arguments is List && arguments!.isNotEmpty) {
-    sb.write(' ${argumentsToString(arguments)}');
-  }
-  return sb.toString();
 }
 
 /// Command runner. not exported

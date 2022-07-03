@@ -1,3 +1,5 @@
+library process_run.src.shell_utils_common;
+
 import 'dart:async';
 import 'dart:convert';
 
