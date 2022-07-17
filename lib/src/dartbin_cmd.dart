@@ -47,6 +47,7 @@ class DartFmtCmd extends DartCmd {
 }
 
 /// dartanalyzer
+@Deprecated('dartanalyzer is deprecated itself, use dart analyze')
 class DartAnalyzerCmd extends _DartBinCmd {
   DartAnalyzerCmd(List<String> arguments)
       : super(getShellCmdBinFileName('dartanalyzer'), arguments);

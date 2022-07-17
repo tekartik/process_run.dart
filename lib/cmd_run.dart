@@ -49,6 +49,7 @@ export 'src/dartbin_cmd.dart'
         DartDocCmd, // ignore: deprecated_member_use_from_same_package
         DartFmtCmd, // ignore: deprecated_member_use_from_same_package
         DartDevcCmd,
+        // ignore: deprecated_member_use_from_same_package
         DartAnalyzerCmd,
         PubCmd,
         PubGlobalRunCmd,

@@ -34,7 +34,7 @@ void main() {
         // Somehow the exit code is 1 on windows
         expect(exitCode, 0);
       }
-      expect((await runCmd(DartAnalyzerCmd(['--help']))).exitCode, 0);
+      // expect((await runCmd(DartAnalyzerCmd(['--help']))).exitCode, 0);
       // expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
       expect((await runCmd(PubCmd(['--help']))).exitCode, 0);
       //expect((await runCmd(DartDevkCmd(['--help']))).exitCode, 0);
@@ -46,7 +46,7 @@ void main() {
       // ignore: deprecated_member_use_from_same_package
       expect(Dart2JsCmd(['--help']).toString(), 'dart2js --help');
       // expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
-      expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
+      //expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
       expect(DartFmtCmd(// ignore: deprecated_member_use_from_same_package
           ['--help']).toString(), 'dart format --help');
       expect(DartCmd(['--help']).toString(), 'dart --help');

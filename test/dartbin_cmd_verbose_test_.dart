@@ -17,9 +17,7 @@ void main() {
                   verbose: true))
               .exitCode,
           0);
-      expect(
-          (await runCmd(DartAnalyzerCmd(['--help']), verbose: true)).exitCode,
-          0);
+
       // To remove once dart stable hits 2.17.0
       if (dartVersion < Version(2, 17, 0, pre: '0')) {
         expect(
