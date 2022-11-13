@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
+import 'package:process_run/src/shell_context_common.dart';
 
 import 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
 
@@ -100,20 +101,17 @@ abstract class ShellCore {
   /// Pop the current directory to get the previous shell
   /// throw State error if nothing in the stack
   Shell popd();
+
+  /// override in local (default) or user settings, null means delete,
+  /// [local] defaults to true.
+  Future<Shell> shellVarOverride(String name, String? value, {bool? local});
+
+  /// Clone a new shell with the given options.
+  Shell cloneWithOptions(ShellOptions options);
+
+  /// Shell options.
+  ShellOptions get options;
 }
-
-/*
-/// Exception thrown in exitCode != 0 and throwOnError is true
-class ShellException implements Exception {
-  final ProcessResult? result;
-  final String message;
-
-  ShellException(this.message, this.result);
-
-  @override
-  String toString() => 'ShellException($message)';
-}
-*/
 
 /// Shell options.
 class ShellOptions {
@@ -232,7 +230,8 @@ class ShellOptions {
         stdout: stdout ?? _stdout,
         stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
         throwOnError: throwOnError ?? _throwOnError,
-        workingDirectory: workingDirectory ?? _workingDirectory);
+        workingDirectory: workingDirectory ?? _workingDirectory,
+        environment: shellEnvironment);
   }
 }
 
@@ -243,4 +242,39 @@ Future<String?> which(String command,
   return shellContext.which(command,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment);
+}
+
+/// Default missing implementation.
+mixin ShellMixin implements ShellCore {
+  // Set lazily after newShell;
+  late ShellContext shellContext;
+
+  @override
+  Future<Shell> shellVarOverride(String name, String? value, {bool? local}) {
+    throw UnimplementedError('shellVarOverride');
+  }
+
+  @override
+  Shell cloneWithOptions(ShellOptions options) {
+    var shell = shellContext.newShell(options: options);
+    return shell;
+  }
+
+  Shell clone(
+      {bool? throwOnError,
+      String? workingDirectory,
+      Map<String, String>? environment,
+      bool? includeParentEnvironment,
+      bool? runInShell,
+      Encoding? stdoutEncoding,
+      Encoding? stderrEncoding,
+      Stream<List<int>>? stdin,
+      StreamSink<List<int>>? stdout,
+      StreamSink<List<int>>? stderr,
+      bool? verbose,
+      bool? commandVerbose,
+      bool? commentVerbose}) {
+    // TODO: implement clone
+    throw UnimplementedError();
+  }
 }

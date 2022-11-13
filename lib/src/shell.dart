@@ -8,7 +8,7 @@ import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell_common.dart'
-    show ShellOptions, shellDebug;
+    show ShellCore, ShellOptions, shellDebug;
 import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -90,7 +90,7 @@ Future<List<ProcessResult>> run(
 ///
 /// A list of ProcessResult is returned
 ///
-class Shell {
+abstract class Shell implements ShellCore {
   final ShellOptions _options;
 
   /// Incremental internal runId
@@ -126,50 +126,60 @@ class Shell {
   /// if [verbose] is not false or [commentVerbose] is true, it will display the
   /// comments as well
   factory Shell(
-          {bool throwOnError = true,
-          String? workingDirectory,
-          Map<String, String>? environment,
-          bool includeParentEnvironment = true,
-          bool? runInShell,
-          Encoding stdoutEncoding = systemEncoding,
-          Encoding stderrEncoding = systemEncoding,
-          Stream<List<int>>? stdin,
-          StreamSink<List<int>>? stdout,
-          StreamSink<List<int>>? stderr,
-          bool verbose = true,
-          // Default to true
-          bool? commandVerbose,
-          // Default to false
-          bool? commentVerbose,
-          ShellOptions? options}) =>
-      shellContext.newShell(
-          options: options ??
-              ShellOptions(
-                  verbose: verbose,
-                  stdin: stdin,
-                  stdout: stdout,
-                  stderr: stderr,
-                  throwOnError: throwOnError,
-                  workingDirectory: workingDirectory,
-                  runInShell: runInShell,
-                  commandVerbose: commandVerbose ?? verbose,
-                  environment: environment,
-                  includeParentEnvironment: includeParentEnvironment,
-                  commentVerbose: commentVerbose ?? false,
-                  stderrEncoding: stderrEncoding,
-                  stdoutEncoding: stdoutEncoding));
+      {bool throwOnError = true,
+      String? workingDirectory,
+      Map<String, String>? environment,
+      bool includeParentEnvironment = true,
+      bool? runInShell,
+      Encoding stdoutEncoding = systemEncoding,
+      Encoding stderrEncoding = systemEncoding,
+      Stream<List<int>>? stdin,
+      StreamSink<List<int>>? stdout,
+      StreamSink<List<int>>? stderr,
+      bool verbose = true,
+      // Default to true
+      bool? commandVerbose,
+      // Default to false
+      bool? commentVerbose,
+      ShellOptions? options}) {
+    var shell = shellContext.newShell(
+        options: options ??
+            ShellOptions(
+                verbose: verbose,
+                stdin: stdin,
+                stdout: stdout,
+                stderr: stderr,
+                throwOnError: throwOnError,
+                workingDirectory: workingDirectory,
+                runInShell: runInShell,
+                commandVerbose: commandVerbose ?? verbose,
+                environment: environment,
+                includeParentEnvironment: includeParentEnvironment,
+                commentVerbose: commentVerbose ?? false,
+                stderrEncoding: stderrEncoding,
+                stdoutEncoding: stdoutEncoding));
+    return shell;
+  }
 
   /// Internal use only.
   @protected
   Shell.implWithOptions(ShellOptions options) : _options = options;
 
+  /// Shell options.
+  @override
+  ShellOptions get options => _options;
+
   /// Create a new shell
+  @Deprecated('Use clone with options')
   Shell clone(
       {bool? throwOnError,
       String? workingDirectory,
       // Don't change environment
       @Deprecated('Don\'t change map')
           Map<String, String>? environment,
+
+      /// Explicetely set e new environment
+//      ShellEnvironment? shellEnvironment,
       @Deprecated('Don\'t change includeParentEnvironment')
           // Don't change includeParentEnvironment
           bool? includeParentEnvironment,
@@ -182,21 +192,24 @@ class Shell {
       bool? verbose,
       bool? commandVerbose,
       bool? commentVerbose}) {
+    var localShellEnvironment =
+        // Compat
+        (environment is ShellEnvironment ? environment : null);
     return Shell(
-        options: _options.clone(
-            throwOnError: throwOnError,
-            workingDirectory: workingDirectory,
-            runInShell: runInShell,
-            stdoutEncoding: stdoutEncoding,
-            stderrEncoding: stderrEncoding,
-            stdin: stdin,
-            stderr: stderr,
-            stdout: stdout,
-            commentVerbose: commentVerbose,
-            commandVerbose: commandVerbose,
-            verbose: verbose,
-            shellEnvironment:
-                environment is ShellEnvironment ? environment : null));
+        options: options.clone(
+      throwOnError: throwOnError,
+      workingDirectory: workingDirectory,
+      runInShell: runInShell,
+      stdoutEncoding: stdoutEncoding,
+      stderrEncoding: stderrEncoding,
+      stdin: stdin,
+      stderr: stderr,
+      stdout: stdout,
+      commentVerbose: commentVerbose,
+      commandVerbose: commandVerbose,
+      shellEnvironment: localShellEnvironment,
+      verbose: verbose,
+    ));
   }
 
   /// non null
@@ -204,6 +217,7 @@ class Shell {
       _options.workingDirectory ?? Directory.current.path;
 
   /// Create new shell at the given path
+  @override
   Shell cd(String path) {
     if (isRelative(path)) {
       path = join(_workingDirectoryPath, path);
@@ -212,17 +226,20 @@ class Shell {
       streamSinkWriteln(_options.stdout ?? stdout, '\$ cd $path',
           encoding: _options.stdoutEncoding);
     }
-    return clone(workingDirectory: path);
+    return cloneWithOptions(options.clone(workingDirectory: path));
   }
 
   /// Get the shell path, using workingDirectory or current directory if null.
+  @override
   String get path => _workingDirectoryPath;
 
   /// Create a new shell at the given path, allowing popd on it
+  @override
   Shell pushd(String path) => cd(path).._parentShell = this;
 
   /// Pop the current directory to get the previous shell
   /// throw State error if nothing in the stack
+  @override
   Shell popd() {
     if (_parentShell == null) {
       throw StateError('no previous shell');
@@ -238,6 +255,7 @@ class Shell {
   /// Returns `true` if the signal is successfully delivered to the process.
   /// Otherwise the signal could not be sent, usually meaning,
   /// that the process is already dead.
+  @override
   bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
     // Picked the current 'timestamp' of the run killed
     _killedRunId = _runId;
@@ -272,6 +290,7 @@ class Shell {
   ///
   /// [onProcess] is called for each started process.
   ///
+  @override
   Future<List<ProcessResult>> run(String script,
       {void Function(Process process)? onProcess}) {
     // devPrint('Running $script');
@@ -319,6 +338,7 @@ class Shell {
   /// Returns a process result (or throw if specified in the shell).
   ///
   /// [onProcess] is called for each started process.
+  @override
   Future<ProcessResult> runExecutableArguments(
       String executable, List<String> arguments,
       {void Function(Process process)? onProcess}) async {
@@ -379,8 +399,8 @@ class Shell {
           ..runInShell = _options.runInShell
           ..environment = _options.environment
           ..includeParentEnvironment = false
-          ..stderrEncoding = _options.stderrEncoding!
-          ..stdoutEncoding = _options.stdoutEncoding!
+          ..stderrEncoding = _options.stderrEncoding ?? io.systemEncoding
+          ..stdoutEncoding = _options.stdoutEncoding ?? io.systemEncoding
           ..workingDirectory = _options.workingDirectory;
         try {
           // devPrint(_options.environment.keys.where((element) => element.contains('TEKARTIK')));

@@ -1,12 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env.dart';
-import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/io/env_var_set_io.dart';
 
 class ShellEnvVarSetCommand extends ShellEnvCommandBase {
+  late final helper =
+      ShellEnvVarSetIoHelper(local: local, verbose: verbose ?? false);
+
   ShellEnvVarSetCommand()
       : super(
           name: 'set',
@@ -26,27 +27,10 @@ class ShellEnvVarSetCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 2 arguments expected');
       exit(1);
     } else {
-      if (verbose!) {
-        stdout.writeln('file $label: $envFilePath');
-        stdout.writeln('before: ${jsonEncode(ShellEnvironment().vars)}');
-      }
       var name = rest[0];
       var value = rest.sublist(1).join(' ');
-      var fileContent = await envFileReadOrCreate();
-      if (fileContent.addVar(name, value)) {
-        if (verbose!) {
-          stdout.writeln('writing file');
-        }
-        await fileContent.write();
-      }
-      if (local && name == localEnvFilePathEnvKey) {
-        stderr.writeln('$name cannot be set in local file');
-      }
-      // Force reload
-      shellEnvironment = null;
-      if (verbose!) {
-        stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
-      }
+      await helper.setValue(name, value);
+
       return true;
     }
   }

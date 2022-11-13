@@ -20,16 +20,18 @@ import 'package:test/test.dart';
 void main() => defineTests();
 
 void testDartVersionOutput(ProcessResult result) {
+  var errText = result.errText;
   if (dartVersion >= Version(2, 15, 0, pre: '0')) {
+    var outText = result.outText;
     // New output is on stdout
-    expect(result.outText.toLowerCase(), contains('dart'));
-    expect(result.outText.toString().toLowerCase(), contains('version'));
-    expect(result.outText, contains(Platform.version));
+    expect(outText.toLowerCase(), contains('dart'));
+    expect(outText.toString().toLowerCase(), contains('version'));
+    expect(outText, contains(Platform.version));
   } else {
     // Before it was on stderr
-    expect(result.errText.toLowerCase(), contains('dart'));
-    expect(result.errText.toLowerCase(), contains('version'));
-    expect(result.errText, contains(Platform.version));
+    expect(errText.toLowerCase(), contains('dart'));
+    expect(errText.toLowerCase(), contains('version'));
+    expect(errText, contains(Platform.version));
   }
 }
 

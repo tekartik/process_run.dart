@@ -139,8 +139,9 @@ String parsePlatformChannel(String text) {
 Future<Version?> getDartBinVersion() async {
   // $ dart --version
   // Linux: Dart VM version: 2.7.0 (Unknown timestamp) on "linux_x64"
-  var cmd = DartCmd(['--version']);
-  var result = await runCmd(cmd);
+
+  var result =
+      await runExecutableArguments('dart', ['--version'], verbose: false);
 
   // Take from stderr first
   var version = parseDartBinVersionOutput(result.stderr.toString().trim());

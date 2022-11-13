@@ -43,7 +43,7 @@ Future<ProcessResult> runExecutableArguments(
   if (commandVerbose == true) {
     utils.streamSinkWriteln(stdout ?? io.stdout,
         '\$ ${executableArgumentsToString(executable, arguments)}',
-        encoding: stdoutEncoding!);
+        encoding: stdoutEncoding);
   }
 
   // Build our environment

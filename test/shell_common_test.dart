@@ -98,7 +98,7 @@ class ProcessMock implements Process {
   Stream<List<int>> get stdout => throw UnimplementedError();
 }
 
-class ShellMock implements Shell {
+class ShellMock with ShellMixin implements Shell {
   var scripts = <String>[];
 
   @override
@@ -151,23 +151,8 @@ class ShellMock implements Shell {
   }
 
   @override
-  Shell clone(
-      {bool? throwOnError,
-      String? workingDirectory,
-      Map<String, String>? environment,
-      bool? includeParentEnvironment,
-      bool? runInShell,
-      Encoding? stdoutEncoding,
-      Encoding? stderrEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool? verbose,
-      bool? commandVerbose,
-      bool? commentVerbose}) {
-    // TODO: implement clone
-    throw UnimplementedError();
-  }
+  // TODO: implement options
+  ShellOptions get options => throw UnimplementedError();
 }
 
 void main() {

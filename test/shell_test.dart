@@ -176,10 +176,11 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       try {
         await () async {
           var shell = Shell().cd('example');
+          await shell.run('dart run echo.dart --version');
           late Future future;
           try {
             future = shell.run('dart run echo.dart --wait 30000');
-            await future.timeout(const Duration(milliseconds: 15000));
+            await future.timeout(const Duration(milliseconds: 2500));
             fail('should fail');
           } on TimeoutException catch (_) {
             // 1: TimeoutException after 0:00:02.000000: Future not completed
@@ -581,5 +582,23 @@ _tekartik_dummy_app_that_does_not_exits
       expect(await controller.stream.toList(),
           ['\$ dart example/echo.dart -o 你好é', '你好é']);
     }
+  });
+
+  test('var set/get/delete', () async {
+    var keyName = 'TEST_VALUE_SHELL_VAR_OVERRIDE';
+    var shell = Shell();
+    shell = await shell.shellVarOverride(keyName, 'dummy1');
+    expect(shell.options.environment.vars[keyName], 'dummy1');
+    //await safeShell.run('ds env var set TEST_VALUE dummy1');
+    var text = (await Shell().run('ds env var get $keyName')).outText;
+    expect(text, contains('dummy1'));
+    //await Shell().run('ds env var delete TEST_VALUE');
+    shell = await shell.shellVarOverride(keyName, null);
+    expect(shell.options.environment.vars.containsKey(keyName), isFalse);
+    text = (await Shell().run('ds env var get $keyName')).outText;
+    expect(text, isNot(contains('dummy1')));
+  });
+  test('dump', () async {
+    await Shell().run('ds env var dump');
   });
 }

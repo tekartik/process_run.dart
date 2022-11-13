@@ -1,11 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/io/env_var_delete_io.dart';
 
 class ShellEnvVarDeleteCommand extends ShellEnvCommandBase {
+  late final helper =
+      ShellEnvVarDeleteIoHelper(local: local, verbose: verbose ?? false);
+
   ShellEnvVarDeleteCommand()
       : super(
           name: 'delete',
@@ -26,28 +28,7 @@ class ShellEnvVarDeleteCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 arguments expected');
       exit(1);
     } else {
-      if (verbose!) {
-        stdout.writeln('file $label: $envFilePath');
-        stdout.writeln('before: ${jsonEncode(ShellEnvironment().vars)}');
-      }
-
-      var fileContent = await envFileReadOrCreate();
-      var modified = false;
-      for (var name in rest) {
-        modified = fileContent.deleteVar(name) || modified;
-      }
-      if (modified) {
-        if (verbose!) {
-          stdout.writeln('writing file');
-        }
-        await fileContent.write();
-      }
-
-      // Force reload
-      shellEnvironment = null;
-      if (verbose!) {
-        stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
-      }
+      await helper.deleteMulti(rest);
       return true;
     }
   }

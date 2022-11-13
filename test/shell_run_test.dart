@@ -89,6 +89,7 @@ void main() {
           fail('should fail');
         } on ShellException catch (e) {
           // ShellException(dummy_command_BfwXVcrONHT3QIiMzNoS, error: ProcessException: No such file or directory)
+          // ignore: dead_code
           if (verbose) {
             print(e);
           }
@@ -102,6 +103,7 @@ void main() {
         fail('should fail');
       } on ShellException catch (e) {
         // ShellException(dart run ./example/echo.dart --exit-code 1, exitCode 1)
+        // ignore: dead_code
         if (verbose) {
           print(e);
         }

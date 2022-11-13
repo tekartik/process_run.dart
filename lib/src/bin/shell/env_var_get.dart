@@ -1,12 +1,14 @@
 import 'dart:io';
 
-import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/io/env_var_get_io.dart';
 
 import 'dump.dart';
 
 class ShellEnvVarGetCommand extends ShellEnvCommandBase {
+  late final helper = ShellEnvVarGetIoHelper();
+
   ShellEnvVarGetCommand()
       : super(
           name: 'get',
@@ -29,9 +31,7 @@ class ShellEnvVarGetCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 arguments expected');
       exit(1);
     } else {
-      Map<String, String> map = ShellEnvironment().vars;
-      map = Map<String, String>.from(map)
-        ..removeWhere((key, value) => !rest.contains(key));
+      var map = helper.getMulti(rest);
       if (map.isEmpty) {
         stdout.writeln('not found');
       } else {

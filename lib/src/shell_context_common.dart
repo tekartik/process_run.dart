@@ -18,6 +18,8 @@ abstract class ShellContext {
   /// Default shell encoding (systemEncoding on iOS)
   Encoding get encoding;
 
+  /// New shell must set itself as a shell Context, shell environement is
+  /// no longer relevent.
   Shell newShell(
       {ShellOptions? options,
       @Deprecated('Use options') Map<String, String>? environment,

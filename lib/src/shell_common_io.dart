@@ -1,6 +1,7 @@
 import 'dart:io' as io;
 
 import 'package:process_run/shell.dart' as io;
+import 'package:process_run/src/io/env_var_set_io.dart';
 
 import 'shell_common.dart';
 
@@ -35,10 +36,19 @@ Future<T> _wrapIoException<T>(Future<T> Function() action) async {
 }
  */
 
-class ShellIo extends Shell {
+class ShellIo extends Shell with ShellMixin {
   ShellIo({
     required ShellOptions options,
   }) : super.implWithOptions(options);
+
+  @override
+  Future<io.Shell> shellVarOverride(String name, String? value,
+      {bool? local}) async {
+    var helper =
+        ShellEnvVarSetIoHelper(local: local ?? true, verbose: options.verbose);
+    var env = await helper.setValue(name, value);
+    return shellContext.newShell(options: options.clone(shellEnvironment: env));
+  }
 }
 
 class ShellExceptionIo implements ShellException {
