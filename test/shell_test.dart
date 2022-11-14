@@ -23,6 +23,7 @@ bool debug = false;
 
 // To set in both variable for a full empty environment
 var dummyEnvPath = join('test', 'data', 'test_env.yaml_dummy');
+
 ShellEnvironment newEnvNoOverride() =>
     ShellEnvironment(environment: <String, String>{
       userEnvFilePathEnvKey: dummyEnvPath,
@@ -624,8 +625,5 @@ _tekartik_dummy_app_that_does_not_exits
     text = (await shell.run('ds env var get $keyName')).outText;
     expect(text, isNot(contains('dummy1')));
     expect(shell.options.environment.aliases['ds'], dsCommand);
-  });
-  test('dump', () async {
-    await Shell().run('ds env var dump');
   });
 }
