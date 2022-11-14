@@ -5,12 +5,12 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_io.dart';
-
-import '../platform/platform.dart';
+import 'package:process_run/src/shell_common.dart';
 
 class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
   /// Local should be true by default
-  ShellEnvVarSetIoHelper({required super.local, super.verbose = true});
+  ShellEnvVarSetIoHelper(
+      {required super.shell, required super.local, super.verbose = true});
 
   Future<ShellEnvironment> setValue(String name, String? value) async {
     if (verbose) {
@@ -34,9 +34,9 @@ class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
     if (local && name == localEnvFilePathEnvKey) {
       stderr.writeln('$name cannot be set in local file');
     }
-    // Force reload
-    var newShellEnvironment = shellContext.newShellEnvironment(
-        environment: Map<String, String>.from(shellEnvironment));
+    // reload
+    var newShellEnvironment = shell.context.newShellEnvironment(
+        environment: Map<String, String>.from(shell.options.environment));
     if (value == null) {
       newShellEnvironment.vars.remove(name);
     } else {

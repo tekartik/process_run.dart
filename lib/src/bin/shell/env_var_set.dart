@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_var_set_io.dart';
 
 class ShellEnvVarSetCommand extends ShellEnvCommandBase {
-  late final helper =
-      ShellEnvVarSetIoHelper(local: local, verbose: verbose ?? false);
+  late final helper = ShellEnvVarSetIoHelper(
+      shell: Shell(), local: local, verbose: verbose ?? false);
 
   ShellEnvVarSetCommand()
       : super(

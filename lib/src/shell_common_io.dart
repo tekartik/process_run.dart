@@ -44,10 +44,10 @@ class ShellIo extends Shell with ShellMixin {
   @override
   Future<io.Shell> shellVarOverride(String name, String? value,
       {bool? local}) async {
-    var helper =
-        ShellEnvVarSetIoHelper(local: local ?? true, verbose: options.verbose);
+    var helper = ShellEnvVarSetIoHelper(
+        shell: this, local: local ?? true, verbose: options.verbose);
     var env = await helper.setValue(name, value);
-    return shellContext.newShell(options: options.clone(shellEnvironment: env));
+    return context.newShell(options: options.clone(shellEnvironment: env));
   }
 }
 

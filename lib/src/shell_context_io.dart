@@ -38,7 +38,7 @@ class ShellContextIo implements ShellContext {
       Map<String, String>? environment,
       bool includeParentEnvironment = true}) {
     var ioShell = ShellIo(options: options ?? ShellOptions());
-    ioShell.shellContext = this;
+    ioShell.context = this;
     return ioShell;
   }
 }

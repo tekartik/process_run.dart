@@ -111,6 +111,9 @@ abstract class ShellCore {
 
   /// Shell options.
   ShellOptions get options;
+
+  /// Shell context.
+  ShellContext get context;
 }
 
 /// Shell options.
@@ -247,7 +250,8 @@ Future<String?> which(String command,
 /// Default missing implementation.
 mixin ShellMixin implements ShellCore {
   // Set lazily after newShell;
-  late ShellContext shellContext;
+  @override
+  late ShellContext context;
 
   @override
   Future<Shell> shellVarOverride(String name, String? value, {bool? local}) {

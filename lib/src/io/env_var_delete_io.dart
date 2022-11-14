@@ -6,7 +6,8 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_io.dart';
 
 class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
-  ShellEnvVarDeleteIoHelper({required super.local, required super.verbose});
+  ShellEnvVarDeleteIoHelper(
+      {required super.shell, required super.local, required super.verbose});
 
   Future<ShellEnvironment> deleteMulti(List<String> keys) async {
     var fileContent = await envFileReadOrCreate();
@@ -21,11 +22,16 @@ class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
       await fileContent.write();
     }
 
-    // Force reload
-    shellEnvironment = null;
     if (verbose) {
       stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
     }
+
+    // Convenient fix, although it could be wrong...
+    var newShellEnvironment = shell.context.newShellEnvironment(
+        environment: Map<String, String>.from(shell.options.environment));
+
+    newShellEnvironment.vars.removeWhere((name, _) => keys.contains(name));
+
     return ShellEnvironment();
   }
 }

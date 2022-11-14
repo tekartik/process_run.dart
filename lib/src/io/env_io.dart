@@ -1,13 +1,16 @@
 import 'dart:convert';
 
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env_file_content.dart';
 import 'package:process_run/src/user_config.dart';
 
 class ShellEnvIoHelper {
+  final Shell shell;
   final bool local;
   final bool verbose;
 
-  ShellEnvIoHelper({required this.local, required this.verbose});
+  ShellEnvIoHelper(
+      {required this.shell, required this.local, required this.verbose});
 
   String get label => local ? 'local' : 'user';
 
@@ -25,8 +28,8 @@ class ShellEnvIoHelper {
   String? get envFilePath => _envFilePath;
 
   String? get _envFilePath => local
-      ? getLocalEnvFilePath(userEnvironment)
-      : getUserEnvFilePath(userEnvironment);
+      ? getLocalEnvFilePath(shell.options.environment)
+      : getUserEnvFilePath(shell.options.environment);
 
   List<String>? _sampleFileContent;
 

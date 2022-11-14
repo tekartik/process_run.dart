@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_var_delete_io.dart';
 
 class ShellEnvVarDeleteCommand extends ShellEnvCommandBase {
-  late final helper =
-      ShellEnvVarDeleteIoHelper(local: local, verbose: verbose ?? false);
+  late final helper = ShellEnvVarDeleteIoHelper(
+      shell: Shell(), local: local, verbose: verbose ?? false);
 
   ShellEnvVarDeleteCommand()
       : super(
