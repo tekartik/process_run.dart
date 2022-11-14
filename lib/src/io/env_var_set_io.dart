@@ -36,7 +36,7 @@ class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
     }
     // reload
     var newShellEnvironment = shell.context.newShellEnvironment(
-        environment: Map<String, String>.from(shell.options.environment));
+        environment: ShellEnvironment(environment: shell.options.environment));
     if (value == null) {
       newShellEnvironment.vars.remove(name);
     } else {

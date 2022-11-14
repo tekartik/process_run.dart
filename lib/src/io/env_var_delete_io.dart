@@ -28,7 +28,7 @@ class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
 
     // Convenient fix, although it could be wrong...
     var newShellEnvironment = shell.context.newShellEnvironment(
-        environment: Map<String, String>.from(shell.options.environment));
+        environment: ShellEnvironment(environment: shell.options.environment));
 
     newShellEnvironment.vars.removeWhere((name, _) => keys.contains(name));
 

@@ -587,12 +587,14 @@ _tekartik_dummy_app_that_does_not_exits
   test('var set/get/delete', () async {
     var localFile = '.dart_tool/process_run/test/local1.yaml';
     var userFile = '.dart_tool/process_run/test/user1.yaml';
+    var dsCommand = 'dart run bin/shell.dart';
     var safeShellEnvironment = ShellEnvironment()
-      ..aliases['ds'] = 'dart run bin/shell.dart'
+      ..aliases['ds'] = dsCommand
       ..vars[userEnvFilePathEnvKey] = userFile
       ..vars[localEnvFilePathEnvKey] = localFile;
 
-    var shell = Shell(environment: safeShellEnvironment, verbose: false);
+    var shell = Shell(environment: safeShellEnvironment, verbose: true);
+    expect(shell.options.environment.aliases['ds'], dsCommand);
     var keyName = 'TEST_VALUE';
     var userKeyName = 'USER_TEST_VALUE';
 
@@ -604,6 +606,7 @@ _tekartik_dummy_app_that_does_not_exits
     } catch (_) {}
     expect(File(localFile).existsSync(), isFalse);
     shell = await shell.shellVarOverride(keyName, 'dummy1');
+    expect(shell.options.environment.aliases['ds'], dsCommand);
     expect(shell.options.environment.vars[keyName], 'dummy1');
     expect(File(localFile).existsSync(), isTrue);
     expect(File(userFile).existsSync(), isFalse);
@@ -620,6 +623,7 @@ _tekartik_dummy_app_that_does_not_exits
     expect(shell.options.environment.vars.containsKey(keyName), isFalse);
     text = (await shell.run('ds env var get $keyName')).outText;
     expect(text, isNot(contains('dummy1')));
+    expect(shell.options.environment.aliases['ds'], dsCommand);
   });
   test('dump', () async {
     await Shell().run('ds env var dump');
