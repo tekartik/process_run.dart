@@ -11,6 +11,7 @@ String get projectTop => '.';
 String get testDir => join('.dart_tool', 'process_run', 'test');
 
 String get echoScriptPath => join(projectTop, 'example', 'echo.dart');
+String get streamerScriptPath => join(projectTop, 'example', 'streamer.dart');
 
 // does not exists
 String get dummyExecutable => join(dirname(testDir), 'example', 'dummy');
