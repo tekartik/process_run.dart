@@ -6,15 +6,10 @@ import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:args/args.dart';
 import 'package:path/path.dart';
-import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
-
-import 'shell/common.dart';
-
-var echoEnv = ShellEnvironment()..aliases.addAll(commonAliases);
 
 Version version = Version(0, 1, 0);
 
@@ -32,7 +27,8 @@ Global options:
 const udelayOption = 'udelay';
 
 ///
-/// write rest arguments as lines
+/// Stream lines to stdout, according to count (count of lines), delay (delay
+/// between 2 lines) and/or timeout (stop after timeout)
 ///
 Future main(List<String> arguments) async {
   //setupQuickLogging();
