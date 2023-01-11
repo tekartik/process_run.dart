@@ -75,12 +75,12 @@ class ShellEnvironmentPaths with ListMixin<String> {
   }
 
   @override
-  int get hashCode => const ListEquality().hash(this);
+  int get hashCode => const ListEquality<Object?>().hash(this);
 
   @override
   bool operator ==(Object other) {
     if (other is ShellEnvironmentPaths) {
-      return const ListEquality().equals(this, other);
+      return const ListEquality<Object>().equals(this, other);
     }
     return false;
   }
@@ -130,12 +130,12 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
 
   // Key hash is sufficient here
   @override
-  int get hashCode => const ListEquality().hash(keys.toList());
+  int get hashCode => const ListEquality<Object?>().hash(keys.toList());
 
   @override
   bool operator ==(Object other) {
     if (other is ShellEnvironmentVars) {
-      return const MapEquality().equals(this, other);
+      return const MapEquality<Object?, Object?>().equals(this, other);
     }
     return false;
   }
@@ -151,7 +151,7 @@ class ShellEnvironmentVars with MapMixin<String, String> {
   ShellEnvironmentVars._(this._environment);
 
   /// Currently only the PATH key is ignored.
-  bool _ignoreKey(key) => key == envPathKey;
+  bool _ignoreKey(Object? key) => key == envPathKey;
 
   @override
   String? operator [](Object? key) {
@@ -192,12 +192,12 @@ class ShellEnvironmentVars with MapMixin<String, String> {
 
   // Key hash is sufficient here
   @override
-  int get hashCode => const ListEquality().hash(keys.toList());
+  int get hashCode => const ListEquality<Object?>().hash(keys.toList());
 
   @override
   bool operator ==(Object other) {
     if (other is ShellEnvironmentVars) {
-      return const MapEquality().equals(this, other);
+      return const MapEquality<Object?, Object?>().equals(this, other);
     }
     return false;
   }
@@ -320,7 +320,7 @@ abstract class ShellEnvironmentBase
   }
 
   @override
-  int get hashCode => const ListEquality().hash(paths);
+  int get hashCode => const ListEquality<Object?>().hash(paths);
 
   @override
   bool operator ==(Object other) {

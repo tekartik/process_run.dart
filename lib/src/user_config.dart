@@ -291,7 +291,7 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   var vars = Map<String, String>.from(config.vars);
   var added = envFileConfig;
   // devPrint('adding config: $config');
-  if (const ListEquality().equals(
+  if (const ListEquality<Object?>().equals(
       paths.sublist(0, min(added.paths.length, paths.length)), added.paths)) {
     // don't add if already in same order at the beginning
   } else {

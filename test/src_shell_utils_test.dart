@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 void main() {
   group('shell_utils', () {
     test('scriptToCommands', () {
-      expect(scriptToCommands(''), []);
+      expect(scriptToCommands(''), isEmpty);
       // expect(scriptToCommands('\\'), ['\\']);
       expect(scriptToCommands(' e\n#\n # comment\nf \n '),
           ['e', '#', '# comment', 'f']);
@@ -49,7 +49,7 @@ void main() {
         'DART_VM_OPTIONS': '--pause-isolates-on-start --enable-vm-service:51156'
       };
       env = environmentFilterOutVmOptions(env);
-      expect(env, {});
+      expect(env, isEmpty);
       env = {
         'DART_VM_OPTIONS': '--enable-vm-service:51156',
         'TEKARTIK_DART_VM_OPTIONS': '--profile'

@@ -139,7 +139,7 @@ void main() {
         'vars': {'test': '1'}
       });
       expect(userConfig.vars, {'test': '1', 'PATH': ''});
-      expect(userConfig.paths, []);
+      expect(userConfig.paths, isEmpty);
       userLoadConfigMap({
         'path': ['my_path']
       });
@@ -174,7 +174,7 @@ void main() {
         'PATH': ['other_path', 'my_path'].join(envPathSeparator)
       });
       expect(userConfig.paths, ['other_path', 'my_path']);
-      userLoadConfigMap({'path': []});
+      userLoadConfigMap({'path': <Object?>[]});
       expect(userConfig.vars, {
         'PATH': ['other_path', 'my_path'].join(envPathSeparator)
       });
@@ -189,7 +189,7 @@ void main() {
       var config = loadFromMap({
         'var': {'test': 1}
       });
-      expect(config.paths, []);
+      expect(config.paths, <Object?>[]);
       expect(config.vars, {'test': '1'});
     });
 

@@ -41,7 +41,7 @@ class TestSink<T> implements StreamSink<T> {
   ///
   /// If [onDone] is passed, it's called when the user calls [close]. Its result
   /// is piped to the [done] future.
-  TestSink({Function()? onDone}) : _onDone = onDone ?? (() {});
+  TestSink({Object? Function()? onDone}) : _onDone = onDone ?? (() {});
 
   @override
   void add(T event) {
@@ -55,7 +55,7 @@ class TestSink<T> implements StreamSink<T> {
 
   @override
   Future addStream(Stream<T> stream) {
-    var completer = Completer.sync();
+    var completer = Completer<void>.sync();
     stream.listen(add, onError: addError, onDone: completer.complete);
     return completer.future;
   }

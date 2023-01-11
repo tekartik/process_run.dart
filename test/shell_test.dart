@@ -121,10 +121,10 @@ dart example/echo.dart -o 你好
           'dart example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
       expect(results.outLines, ['Hello', 'World']);
       expect(results[0].outLines, ['Hello', 'World']);
-      expect(results.errLines, []);
+      expect(results.errLines, isEmpty);
 
       results = await shell.run('dart example/echo.dart -e Hello');
-      expect(results.outLines, []);
+      expect(results.outLines, isEmpty);
       expect(results.errLines, ['Hello']);
 
       results = await shell.run('''
@@ -226,7 +226,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
 
           try {
             var future = shell.run('dart echo.dart --wait 10000');
-            await Future.delayed(const Duration(milliseconds: 3000));
+            await Future<void>.delayed(const Duration(milliseconds: 3000));
             shell.kill();
             await future.timeout(const Duration(milliseconds: 8000));
             fail('should fail');
@@ -300,7 +300,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         init();
         subscription?.pause();
         await shell.run('dart echo.dart some_text');
-        expect(lines, []);
+        expect(lines, isEmpty);
 
         init();
 
@@ -321,7 +321,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           });
         });
         expect(count, 2);
-        expect(lines, []);
+        expect(lines, isEmpty);
         lines.clear();
         subscription!.resume();
         await shell.run('''

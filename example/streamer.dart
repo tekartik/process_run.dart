@@ -84,7 +84,7 @@ Future main(List<String> arguments) async {
   var index = 0;
   Future<void> doPrint() async {
     if (delay != null) {
-      await Future.delayed(Duration(microseconds: delay));
+      await Future<void>.delayed(Duration(microseconds: delay));
     }
     index++;
     print('[$index]');

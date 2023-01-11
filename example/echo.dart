@@ -76,7 +76,7 @@ Future main(List<String> arguments) async {
   final writeLine = argsResult['write-line'] as bool?;
 
   if (wait != null) {
-    await Future.delayed(Duration(milliseconds: wait));
+    await Future<void>.delayed(Duration(milliseconds: wait));
   }
 
   void printUsage() {

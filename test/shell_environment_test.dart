@@ -237,8 +237,11 @@ void main() {
       expect(ShellEnvironment.empty(), ShellEnvironment.empty());
     });
     test('toJson', () async {
-      expect(ShellEnvironment.empty().toJson(),
-          {'paths': [], 'vars': {}, 'aliases': {}});
+      expect(ShellEnvironment.empty().toJson(), {
+        'paths': <String>[],
+        'vars': <Object?, Object?>{},
+        'aliases': <Object?, Object?>{}
+      });
       expect(basicEnv.toJson(), {
         'paths': ['path1'],
         'vars': {'VAR1': 'var1'},

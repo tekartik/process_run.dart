@@ -39,7 +39,7 @@ class ProcessCmd {
   bool operator ==(Object other) {
     if (other is ProcessCmd) {
       return (other.executable == executable &&
-          const ListEquality().equals(other.arguments, arguments));
+          const ListEquality<String>().equals(other.arguments, arguments));
     }
     return false;
   }
@@ -76,7 +76,7 @@ ProcessCmd processCmd(String executable, List<String> arguments,
       stderrEncoding: stderrEncoding);
 }
 
-bool _isNotEmpty(stdout) {
+bool _isNotEmpty(Object? stdout) {
   if (stdout is List) {
     return stdout.isNotEmpty;
   } else if (stdout is String) {

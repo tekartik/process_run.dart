@@ -478,12 +478,12 @@ abstract class Shell implements ShellCore {
         if (!completer.isCompleted) {
           completer.complete(value);
         }
-      }).catchError((e) {
+      }).catchError((Object e) {
         if (shellDebug) {
           print('$runId: error $e');
         }
         if (!completer.isCompleted) {
-          completer.completeError(e as Object);
+          completer.completeError(e);
         }
       });
       return completer.future;

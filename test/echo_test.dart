@@ -16,7 +16,7 @@ var echo = '$resolvedDartExecutable run example/echo.dart';
 void main() {
   group('echo', () {
     Future runCheck(
-      Function(ProcessResult result) check,
+      Object? Function(ProcessResult result) check,
       String executable,
       List<String> arguments, {
       String? workingDirectory,
@@ -79,7 +79,7 @@ void main() {
 
       void checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
-        expect(result.stdout, []);
+        expect(result.stdout, <int>[]);
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
@@ -159,7 +159,7 @@ void main() {
 
       void checkEmpty(ProcessResult result) {
         expect(result.stdout, '');
-        expect(result.stderr, []);
+        expect(result.stderr, <int>[]);
         expect(result.pid, isNotNull);
         expect(result.exitCode, 0);
       }
