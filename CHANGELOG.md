@@ -1,6 +1,7 @@
-## 0.12.4
+## 0.12.5
 
 * requires dart sdk 2.18
+* strict-casts support
 
 ## 0.12.3+2
 
