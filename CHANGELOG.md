@@ -1,3 +1,7 @@
+## 0.12.4
+
+* requires dart sdk 2.18
+
 ## 0.12.3+2
 
 * Cache shellEnvironment when set
