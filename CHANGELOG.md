@@ -1,3 +1,7 @@
+## 0.12.5+1
+
+* Fix `clone` in `ShellMixin`.
+
 ## 0.12.5
 
 * requires dart sdk 2.18
