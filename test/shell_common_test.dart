@@ -23,8 +23,7 @@ class ShellContextMock implements ShellContext {
       {ShellOptions? options,
       Map<String, String>? environment,
       bool includeParentEnvironment = true}) {
-    // TODO: implement newShell
-    return ShellMock();
+    return ShellMock(options: options);
   }
 
   @override
@@ -34,7 +33,6 @@ class ShellContextMock implements ShellContext {
   }
 
   @override
-  // TODO: implement path
   Context get path => throw UnimplementedError();
 
   @override
@@ -101,6 +99,10 @@ class ProcessMock implements Process {
 class ShellMock with ShellMixin implements Shell {
   var scripts = <String>[];
 
+  ShellMock({ShellOptions? options}) {
+    this.options = options ?? ShellOptions();
+  }
+
   @override
   Shell cd(String path) {
     // TODO: implement cd
@@ -112,10 +114,6 @@ class ShellMock with ShellMixin implements Shell {
     // TODO: implement kill
     throw UnimplementedError();
   }
-
-  @override
-  // TODO: implement path
-  String get path => throw UnimplementedError();
 
   @override
   Shell popd() {
@@ -151,8 +149,7 @@ class ShellMock with ShellMixin implements Shell {
   }
 
   @override
-  // TODO: implement options
-  ShellOptions get options => throw UnimplementedError();
+  late final ShellOptions options;
 }
 
 void main() {
@@ -208,6 +205,18 @@ void main() {
         }
       }
       //expect(shell.scripts, ['hola']);
+    });
+    test('cloneWithOptions', () async {
+      var shell =
+          ShellMock().cloneWithOptions(ShellOptions(workingDirectory: 'a/b'));
+      expect(shell.path, 'a/b');
+      expect(shell.options.workingDirectory, 'a/b');
+    });
+    test('clone', () async {
+      // ignore: deprecated_member_use_from_same_package
+      var shell = ShellMock().clone(workingDirectory: 'a/b');
+      expect(shell.path, 'a/b');
+      expect(shell.options.workingDirectory, 'a/b');
     });
   });
 }

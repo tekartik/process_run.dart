@@ -254,6 +254,9 @@ mixin ShellMixin implements ShellCore {
   late ShellContext context;
 
   @override
+  String get path => options.workingDirectory ?? '.';
+
+  @override
   Future<Shell> shellVarOverride(String name, String? value, {bool? local}) {
     throw UnimplementedError('shellVarOverride');
   }
