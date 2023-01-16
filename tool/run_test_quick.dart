@@ -5,10 +5,10 @@ Future main() async {
 
   await shell.run('''
 # Analyze code
-dartanalyzer --fatal-warnings --fatal-infos example lib tool test
-dartfmt -n --set-exit-if-changed .
+dart analyze --fatal-warnings --fatal-infos example lib tool test
+dart format --set-exit-if-changed .
 
 # Run tests
-pub run test -p vm
+dart test -p vm
 ''');
 }

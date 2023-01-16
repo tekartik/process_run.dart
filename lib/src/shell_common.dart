@@ -263,7 +263,7 @@ mixin ShellMixin implements ShellCore {
 
   @override
   Shell cloneWithOptions(ShellOptions options) {
-    var shell = shellContext.newShell(options: options);
+    var shell = context.newShell(options: options);
     return shell;
   }
 
