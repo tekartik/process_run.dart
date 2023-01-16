@@ -1,4 +1,4 @@
-## 0.12.5+1
+## 0.12.5+2
 
 * Fix `clone` in `ShellMixin`.
 

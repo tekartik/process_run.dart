@@ -4,11 +4,7 @@ Future main() async {
   var shell = Shell();
 
   await shell.run('''
-# Analyze code
-dart analyze --fatal-warnings --fatal-infos example lib tool test
-dart format --set-exit-if-changed .
-
 # Run tests
-dart test -p vm
+dart test -p vm test/shell_test.dart
 ''');
 }
