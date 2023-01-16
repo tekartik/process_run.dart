@@ -264,6 +264,7 @@ mixin ShellMixin implements ShellCore {
     return shell;
   }
 
+  @Deprecated('Use clone with options')
   Shell clone(
       {bool? throwOnError,
       String? workingDirectory,
@@ -278,7 +279,22 @@ mixin ShellMixin implements ShellCore {
       bool? verbose,
       bool? commandVerbose,
       bool? commentVerbose}) {
-    // TODO: implement clone
-    throw UnimplementedError();
+    return cloneWithOptions(
+      ShellOptions(
+        throwOnError: throwOnError ?? options.throwOnError,
+        workingDirectory: workingDirectory ?? options.workingDirectory,
+        environment: environment ?? options.environment,
+        includeParentEnvironment: includeParentEnvironment ?? true,
+        runInShell: runInShell ?? options.runInShell,
+        stdoutEncoding: stdoutEncoding ?? options.stdoutEncoding,
+        stderrEncoding: stderrEncoding ?? options.stderrEncoding,
+        stdin: stdin ?? options.stdin,
+        stdout: stdout ?? options.stdout,
+        stderr: stderr ?? options.stderr,
+        verbose: verbose ?? options.verbose,
+        commandVerbose: commandVerbose ?? options.commandVerbose,
+        commentVerbose: commentVerbose ?? options.commentVerbose,
+      ),
+    );
   }
 }
