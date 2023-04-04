@@ -246,7 +246,11 @@ EnvFileConfig _loadFromPath(String path) {
   try {
     // Look for any config file in ~/tekartik/process_run/env.yaml
     try {
-      fileContent = File(path).readAsStringSync();
+      var configFile = File(path);
+
+      if (configFile.existsSync()) {
+        fileContent = configFile.readAsStringSync();
+      }
     } catch (e) {
       //  stderr.writeln('error reading env file $path $e');
     }
