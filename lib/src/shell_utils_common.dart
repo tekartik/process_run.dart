@@ -85,4 +85,4 @@ String argumentsToString(List<String> arguments) {
 String shellArgument(String argument) => argumentToString(argument);
 
 /// Convert multiple arguments to string than can be used in a terminal
-String shellArguments(List<String> argument) => argumentsToString(argument);
+String shellArguments(List<String> arguments) => argumentsToString(arguments);
