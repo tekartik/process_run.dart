@@ -201,5 +201,10 @@ void main() {
               join('flutter', 'bin', 'cache', 'dart-sdk', 'bin')),
           join('flutter', 'bin'));
     });
+
+    test('loadFromMap missing file', () async {
+      var config = loadFromPath('dummy_file');
+      expect(config.isEmpty, isTrue);
+    });
   });
 }
