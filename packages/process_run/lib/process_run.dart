@@ -7,3 +7,4 @@ export 'package:process_run/src/shell_utils_common.dart'
 export 'shell.dart';
 export 'src/process_run.dart'
     show runExecutableArguments, executableArgumentsToString;
+export 'which.dart' show which, whichSync;

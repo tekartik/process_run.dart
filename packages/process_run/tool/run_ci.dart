@@ -9,9 +9,8 @@ Future main() async {
   print(Platform.version);
   await shell.run('''
 # Analyze code & format
-dart pub global activate dart_style
-dart pub global run dart_style:format -n --set-exit-if-changed bin example lib test tool
-
+dart format --set-exit-if-changed bin example lib test tool
+dart analyze --fatal-infos --fatal-warnings .
 # Run tests
 dart test
 ''');

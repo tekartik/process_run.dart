@@ -65,7 +65,7 @@ set userConfig(UserConfig userConfig) => _userConfig = userConfig;
 /// It can be overriden to include user defined paths loaded from
 /// ~/.config/tekartik/process_run/env.yam
 ///
-/// See [https://github.com/tekartik/process_run.dart/blob/master/doc/user_config.md]
+/// See [https://github.com/tekartik/process_run.dart/blob/master/packages/process_run/doc/user_config.md]
 /// in the documentation for more information.
 ///
 List<String> get userPaths => userConfig.paths;

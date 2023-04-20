@@ -1,6 +1,6 @@
 # Shell
 
-Allows to run script from Mac/Windows/Linux in a portable way. Empty lines are added for lisibility
+Allows to run script from Mac/Windows/Linux in a portable way. Empty lines are added for readibility
 
 ```dart
 var shell = Shell();

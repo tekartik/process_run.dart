@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: .
+        working-directory: packages/process_run
     strategy:
       fail-fast: false
       matrix:

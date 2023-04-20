@@ -58,7 +58,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
 #
 # `path(s)` is a list of path, `var(s)` is a key/value map.
 #
-# Content example. See <https://github.com/tekartik/process_run.dart/blob/master/doc/user_config.md> for more information
+# Content example. See <https://github.com/tekartik/process_run.dart/blob/master/packages/process_run/doc/user_config.md> for more information
 #
 # path:
 #   - ./local
@@ -74,7 +74,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
 #
 # `path` is a list of path, `var` is a key/value map.
 #
-# Content example. See <https://github.com/tekartik/process_run.dart/blob/master/doc/user_config.md> for more information
+# Content example. See <https://github.com/tekartik/process_run.dart/blob/master/packages/process_run/doc/user_config.md> for more information
 #
 # path:
 #   - ~/Android/Sdk/tools/bin

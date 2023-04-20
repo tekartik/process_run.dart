@@ -13,7 +13,6 @@ Helper to format dart binaries argument that works cross-platforms
 
 Allow creating `ProcessCmd` object that can be run in different manner
 
-
 ### Sample usage
 
 #### Using ProcessCmd
