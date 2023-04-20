@@ -1,3 +1,7 @@
+## 0.13.0
+
+* Dart 3 support
+
 ## 0.12.5+3
 
 * Fix `clone` in `ShellMixin`.
