@@ -3,7 +3,6 @@ library process_run.process_run_out_test;
 
 import 'dart:io';
 
-import 'package:process_run/dartbin.dart';
 import 'package:process_run/process_run.dart';
 import 'package:test/test.dart';
 

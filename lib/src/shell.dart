@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/platform/platform.dart';

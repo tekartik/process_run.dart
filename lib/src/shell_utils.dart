@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/io/shell_words.dart' as io show shellSplit;

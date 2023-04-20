@@ -1,10 +1,8 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:process_run/process_run.dart';
-import 'package:process_run/process_run.dart' as process_run;
 
 class ProcessCmd {
   String? executable;
@@ -46,16 +44,6 @@ class ProcessCmd {
 
   @override
   String toString() => executableArgumentsToString(executable, arguments);
-
-  /// Execute
-  @Deprecated('Use runCmd instead')
-  Future<ProcessResult> run() => process_run.run(executable!, arguments,
-      workingDirectory: workingDirectory,
-      environment: environment,
-      includeParentEnvironment: includeParentEnvironment,
-      runInShell: runInShell,
-      stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding);
 }
 
 // Use ProcessCmd instead

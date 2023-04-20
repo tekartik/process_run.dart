@@ -11,27 +11,6 @@ import 'common/import.dart';
 
 String dartBinFileName = 'dart${Platform.isWindows ? '.exe' : ''}';
 
-@Deprecated('Use DartCmd instead')
-ProcessCmd dartCmd(List<String> arguments) => DartCmd(arguments);
-
-@Deprecated('Use DartFmtCmd instead')
-ProcessCmd dartfmtCmd(List<String> args) => DartFmtCmd(args);
-
-@Deprecated('Use DartAnalyzerCmd instead')
-ProcessCmd dartanalyzerCmd(List<String> args) => DartAnalyzerCmd(args);
-
-@Deprecated('Use Dart2JsCmd instead')
-ProcessCmd dart2jsCmd(List<String> args) => Dart2JsCmd(args);
-
-@Deprecated('Use DartDocCmd instead')
-ProcessCmd dartdocCmd(List<String> args) => DartDocCmd(args);
-
-@Deprecated('Use DartDevcCmd instead')
-ProcessCmd dartdevcCmd(List<String> args) => DartDevcCmd(args);
-
-@Deprecated('Use PubCmd instead')
-ProcessCmd pubCmd(List<String> args) => PubCmd(args);
-
 /// Call dart executable
 ///
 /// To prevent 'Observatory server failed to start after 1 tries' when

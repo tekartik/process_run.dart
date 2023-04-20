@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell.dart';
 import 'package:process_run/src/shell_utils.dart' as utils;
 import 'package:process_run/src/shell_utils.dart';

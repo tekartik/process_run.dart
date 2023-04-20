@@ -23,6 +23,7 @@ export 'package:process_run/dartbin.dart'
         dartChannelDev,
         dartChannelMaster;
 export 'package:process_run/src/api/shell_common.dart' show ShellOptions;
+
 // We reuse io sharedStdIn definition.
 export 'package:process_run/src/io/shared_stdin.dart' show sharedStdIn;
 export 'package:process_run/src/shell_utils.dart'
@@ -34,6 +35,8 @@ export 'package:process_run/src/shell_utils.dart'
         platformEnvironment,
         shellArguments,
         shellExecutableArguments;
+export 'package:process_run/src/shell_utils_common.dart'
+    show argumentsToString, argumentToString;
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;
 
@@ -51,6 +54,8 @@ export 'src/process_cmd.dart'
 
         /// Deprecated
         ProcessCmd;
+export 'src/process_run.dart'
+    show runExecutableArguments, executableArgumentsToString;
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
 export 'src/shell.dart' show run, Shell, ShellException;
 export 'src/shell_environment.dart'
