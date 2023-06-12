@@ -174,14 +174,13 @@ abstract class Shell implements ShellCore {
       {bool? throwOnError,
       String? workingDirectory,
       // Don't change environment
-      @Deprecated('Don\'t change map')
-          Map<String, String>? environment,
+      @Deprecated('Don\'t change map') Map<String, String>? environment,
 
       /// Explicetely set e new environment
 //      ShellEnvironment? shellEnvironment,
       @Deprecated('Don\'t change includeParentEnvironment')
-          // Don't change includeParentEnvironment
-          bool? includeParentEnvironment,
+      // Don't change includeParentEnvironment
+      bool? includeParentEnvironment,
       bool? runInShell,
       Encoding? stdoutEncoding,
       Encoding? stderrEncoding,
