@@ -1,3 +1,7 @@
+## 0.13.1
+
+* Dart 3 only
+
 ## 0.13.0
 
 * Dart 3 support
