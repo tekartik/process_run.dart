@@ -16,8 +16,7 @@ import 'env_var.dart';
 import 'import.dart';
 
 class ShellEnvCommandBase extends ShellBinCommand {
-  ShellEnvCommandBase({required String name, String? description})
-      : super(name: name, description: description) {
+  ShellEnvCommandBase({required super.name, super.description}) {
     parser.addFlag(flagLocal,
         abbr: 'l', help: 'Use local env', negatable: false, defaultsTo: true);
     parser.addFlag(flagUser,

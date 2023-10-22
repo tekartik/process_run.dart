@@ -1,3 +1,7 @@
+## 0.13.2
+
+* Export `stringToArguments` in `shell.dart`
+
 ## 0.13.1
 
 * Dart 3 only

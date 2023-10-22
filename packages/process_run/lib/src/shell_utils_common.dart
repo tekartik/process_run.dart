@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:process_run/src/platform/platform.dart';
 
 import 'characters.dart';
+import 'shell_utils.dart' as shell_utils;
 
 const windowsDefaultPathExt = <String>['.exe', '.bat', '.cmd', '.com'];
 
@@ -86,3 +87,7 @@ String shellArgument(String argument) => argumentToString(argument);
 
 /// Convert multiple arguments to string than can be used in a terminal
 String shellArguments(List<String> arguments) => argumentsToString(arguments);
+
+/// Convert a string command to arguments.
+List<String> stringToArguments(String command) =>
+    shell_utils.shellSplit(command);

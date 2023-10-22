@@ -1,4 +1,5 @@
 /// Development helpers to generate warning in code
+library;
 
 void _devPrint(Object object) {
   if (_devPrintEnabled) {

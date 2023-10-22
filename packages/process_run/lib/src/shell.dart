@@ -495,9 +495,8 @@ abstract class Shell implements ShellCore {
 class _ProcessCmd extends ProcessCmd {
   final String executableShortName;
 
-  _ProcessCmd(String executable, List<String> arguments,
-      {required this.executableShortName})
-      : super(executable, arguments);
+  _ProcessCmd(String super.executable, super.arguments,
+      {required this.executableShortName});
 
   @override
   String toString() =>

@@ -53,6 +53,9 @@ void main() {
       ProcessCmd;
       processResultToDebugString;
       processCmdToDebugString;
+
+      // shell_utils
+      stringToArguments;
     });
   });
 }

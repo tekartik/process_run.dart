@@ -96,7 +96,7 @@ class FileContent {
 }
 
 class EnvFileContent extends FileContent {
-  EnvFileContent(String path) : super(path);
+  EnvFileContent(super.path);
 
   bool addAlias(String alias, String command) =>
       writeKeyValue(userConfigAliasKeys, alias, value: command);

@@ -21,8 +21,7 @@ class ShellEnvironment extends common.ShellEnvironmentBase {
   /// It is recommended that you apply the environment to a shell. But it can
   /// also be set globally (be aware of the potential effect on other part of
   /// your application) to [shellEnvironment]
-  ShellEnvironment({Map<String, String>? environment})
-      : super.fromEnvironment(environment: environment);
+  ShellEnvironment({super.environment}) : super.fromEnvironment();
 
   /// From a run start content, includeParentEnvironment should later be set
   /// to false
@@ -50,7 +49,7 @@ class ShellEnvironment extends common.ShellEnvironmentBase {
   ///
   /// Mainly used for testing as it is not easy to which environment variable
   /// are required.
-  ShellEnvironment.fromJson(Map? map) : super.fromJson(map);
+  ShellEnvironment.fromJson(super.map) : super.fromJson();
 
   /// Find a [command] path location in the environment
   String? whichSync(String command) {
