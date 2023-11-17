@@ -214,36 +214,89 @@ List<String> shellSplit(String command) =>
 String shellJoin(List<String> parts) =>
     parts.map((part) => shellArgument(part)).join(' ');
 
-/// Find command in path
-String? findExecutableSync(String command, List<String?> paths) {
-  for (var path in paths) {
-    var commandPath = absolute(normalize(join(path!, command)));
+String? _findExecutableInPath(String command, String path) {
+  var commandPath = absolute(normalize(join(path, command)));
 
-    if (Platform.isWindows) {
-      for (var ext in windowsPathExts) {
-        var commandPathWithExt = '$commandPath$ext';
-        if (File(commandPathWithExt).existsSync()) {
-          return normalize(commandPathWithExt);
-        }
+  if (Platform.isWindows) {
+    for (var ext in windowsPathExts) {
+      var commandPathWithExt = '$commandPath$ext';
+      if (File(commandPathWithExt).existsSync()) {
+        return normalize(commandPathWithExt);
       }
-      // Try without extension
-      if (File(commandPath).existsSync()) {
+    }
+    // Try without extension
+    if (File(commandPath).existsSync()) {
+      return commandPath;
+    }
+  } else {
+    var stats = File(commandPath).statSync();
+    if (stats.type == FileSystemEntityType.file ||
+        stats.type == FileSystemEntityType.link) {
+      // Check executable permission
+      if (stats.mode & 0x49 != 0) {
+        // binary 001001001
+        // executable
         return commandPath;
-      }
-    } else {
-      var stats = File(commandPath).statSync();
-      if (stats.type == FileSystemEntityType.file ||
-          stats.type == FileSystemEntityType.link) {
-        // Check executable permission
-        if (stats.mode & 0x49 != 0) {
-          // binary 001001001
-          // executable
-          return commandPath;
-        }
       }
     }
   }
+  return null;
+}
 
+/// Find command in path
+String? findExecutableSync(String command, List<String?> paths) {
+  for (var path in paths) {
+    var executable = _findExecutableInPath(command, path!);
+    if (executable != null) {
+      return executable;
+    }
+  }
+
+  // Special case for flutter happen when running from test
+  // On windows the executable might be in flutter
+  // executable: C:\opt\app\flutter\stable\flutter\bin\cache\artifacts\engine\windows-x64\flutter_tester.exe
+  // Try without extension
+  if (command == 'flutter') {
+    // print('executable: ${Platform.executable}');
+    return _findFlutterExecutableInParents(Platform.executable);
+  }
+
+  return null;
+}
+
+bool _isFlutterRoot(String path) {
+  try {
+    // "version" file contains: 3.13.0
+    if (!File(join(path, 'version')).existsSync()) {
+      return false;
+    }
+    // bin/flutter(.exe)
+    if (_findExecutableInPath('flutter', join(path, 'bin')) == null) {
+      return false;
+    }
+
+    return true;
+  } catch (_) {}
+  return false;
+}
+
+///
+/// checking recursively the parent for any hg or git directory
+///
+String? _findFlutterExecutableInParents(String path) {
+  path = normalize(absolute(path));
+  String parent;
+  while (true) {
+    if (_isFlutterRoot(path)) {
+      return _findExecutableInPath('flutter', join(path, 'bin'));
+    }
+
+    parent = dirname(path);
+    if (parent == path) {
+      break;
+    }
+    path = parent;
+  }
   return null;
 }
 
