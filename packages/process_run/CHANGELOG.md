@@ -1,3 +1,7 @@
+## 0.13.3-1
+
+* Fix finding `flutter` on windows in unit tests
+
 ## 0.13.2
 
 * Export `stringToArguments` in `shell.dart`
