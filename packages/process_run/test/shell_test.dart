@@ -461,9 +461,27 @@ _tekartik_dummy_app_that_does_not_exits
         (await shell.run('echo Hello world')).first.stdout.toString(),
         mode: FileMode.append);
 
-    var separator = Platform.isWindows ? '\r\n' : '\n';
-    expect(await file.readAsString(),
-        'Hello world${separator}Hello world$separator');
+    try {
+      // Update 2024-11-17 Windows used to have different separator.
+      var separator = '\n';
+      expect(await file.readAsString(),
+          'Hello world${separator}Hello world$separator');
+      if (Platform.isWindows) {
+        stdout.writeln('report: echo output \\n');
+      }
+    } catch (_) {
+      if (Platform.isWindows) {
+        // Old test
+        var separator = Platform.isWindows ? '\r\n' : '\n';
+        expect(await file.readAsString(),
+            'Hello world${separator}Hello world$separator');
+        if (Platform.isWindows) {
+          stdout.writeln('report: echo output \\r\\n');
+        }
+      } else {
+        rethrow;
+      }
+    }
   });
 
   test('user', () {
