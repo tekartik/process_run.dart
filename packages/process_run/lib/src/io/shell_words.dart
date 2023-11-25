@@ -4,8 +4,9 @@
 
 // ignore_for_file: comment_references
 
-import 'package:charcode/charcode.dart';
 import 'package:string_scanner/string_scanner.dart';
+
+import 'package:process_run/src/common/ascii_charcodes.dart';
 
 /// Splits [command] into tokens according to [the POSIX shell
 /// specification][spec].
@@ -34,7 +35,7 @@ List<String> shellSplit(String command) {
   while (!scanner.isDone) {
     final next = scanner.readChar();
     switch (next) {
-      case $backslash:
+      case charcodeBackslash:
         // Section 2.2.1: A <backslash> that is not quoted shall preserve the
         // literal value of the following character, with the exception of a
         // <newline>. If a <newline> follows the <backslash>, the shell shall
@@ -42,25 +43,25 @@ List<String> shellSplit(String command) {
         // shall be removed before splitting the input into tokens. Since the
         // escaped <newline> is removed entirely from the input and is not
         // replaced by any white space, it cannot serve as a token separator.
-        if (scanner.scanChar($lf)) break;
+        if (scanner.scanChar(charcodeLf)) break;
 
         hasToken = true;
         token.writeCharCode(scanner.readChar());
         break;
 
-      case $single_quote:
+      case charcodeSingleQuote:
         hasToken = true;
         // Section 2.2.2: Enclosing characters in single-quotes ( '' ) shall
         // preserve the literal value of each character within the
         // single-quotes. A single-quote cannot occur within single-quotes.
         final firstQuote = scanner.position - 1;
-        while (!scanner.scanChar($single_quote)) {
+        while (!scanner.scanChar(charcodeSingleQuote)) {
           _checkUnmatchedQuote(scanner, firstQuote);
           token.writeCharCode(scanner.readChar());
         }
         break;
 
-      case $double_quote:
+      case charcodeDoubleQuote:
         hasToken = true;
         // Section 2.2.3: Enclosing characters in double-quotes ( "" ) shall
         // preserve the literal value of all characters within the
@@ -71,10 +72,10 @@ List<String> shellSplit(String command) {
         // or dollar sign within double quotes, since those are dynamic
         // features.)
         final firstQuote = scanner.position - 1;
-        while (!scanner.scanChar($double_quote)) {
+        while (!scanner.scanChar(charcodeDoubleQuote)) {
           _checkUnmatchedQuote(scanner, firstQuote);
 
-          if (scanner.scanChar($backslash)) {
+          if (scanner.scanChar(charcodeBackslash)) {
             _checkUnmatchedQuote(scanner, firstQuote);
 
             // The <backslash> shall retain its special meaning as an escape
@@ -83,15 +84,15 @@ List<String> shellSplit(String command) {
             //
             //     $ ` " \ <newline>
             final next = scanner.readChar();
-            if (next == $lf) continue;
-            if (next == $dollar ||
-                next == $backquote ||
-                next == $double_quote ||
-                next == $backslash) {
+            if (next == charcodeLf) continue;
+            if (next == charcodeDollar ||
+                next == charcodeBackquote ||
+                next == charcodeDoubleQuote ||
+                next == charcodeBackslash) {
               token.writeCharCode(next);
             } else {
               token
-                ..writeCharCode($backslash)
+                ..writeCharCode(charcodeBackslash)
                 ..writeCharCode(next);
             }
           } else {
@@ -100,25 +101,25 @@ List<String> shellSplit(String command) {
         }
         break;
 
-      case $hash:
+      case charcodeHash:
         // Section 2.3: If the current character is a '#' [and the previous
         // characters was not part of a word], it and all subsequent characters
         // up to, but excluding, the next <newline> shall be discarded as a
         // comment. The <newline> that ends the line is not considered part of
         // the comment.
         if (hasToken) {
-          token.writeCharCode($hash);
+          token.writeCharCode(charcodeHash);
           break;
         }
 
-        while (!scanner.isDone && scanner.peekChar() != $lf) {
+        while (!scanner.isDone && scanner.peekChar() != charcodeLf) {
           scanner.readChar();
         }
         break;
 
-      case $space:
-      case $tab:
-      case $lf:
+      case charcodeSpace:
+      case charcodeTab:
+      case charcodeLf:
         // ignore: invariant_booleans
         if (hasToken) results.add(token.toString());
         hasToken = false;
