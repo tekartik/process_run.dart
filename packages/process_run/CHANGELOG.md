@@ -1,6 +1,7 @@
-## 0.13.3-1
+## 0.13.3
 
 * Fix finding `flutter` on windows in unit tests
+* Remove `charcode` dependency.
 
 ## 0.13.2
 
