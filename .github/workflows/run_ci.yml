@@ -7,21 +7,32 @@ on:
 
 jobs:
   test:
-    name: Test on ${{ matrix.os }} / ${{ matrix.dart }}
+    name: Test on ${{ matrix.os }} / dart ${{ matrix.dart }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: packages/process_run
+        working-directory: .
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        dart: [3.0.5, stable, beta, dev]
+        include:
+          - os: ubuntu-latest
+            dart: 3.0.5
+          - os: ubuntu-latest
+            dart: stable
+          - os: ubuntu-latest
+            dart: beta
+          - os: ubuntu-latest
+            dart: dev
+          - os: windows-latest
+            dart: stable
+          - os: macos-latest
+            dart: stable
     steps:
       - uses: dart-lang/setup-dart@v1.4
         with:
           sdk: ${{ matrix.dart }}
       - uses: actions/checkout@v4
       - run: dart --version
-      - run: dart pub get
-      - run: dart run tool/run_ci.dart
+      - run: dart pub global activate dev_build
+      - run: dart pub global run dev_build:run_ci
