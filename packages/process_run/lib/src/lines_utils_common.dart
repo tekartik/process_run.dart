@@ -135,6 +135,8 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
       // Last one
       addCurrentLine();
       ctlr.close();
+    }, onError: (Object e, StackTrace st) {
+      ctlr.addError(e, st);
     });
   }, onCancel: () {
     subscription?.cancel();

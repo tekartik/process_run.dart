@@ -12,7 +12,8 @@ void main() {
     late ShellEnvironment env;
     setUpAll(() {
       env = ShellEnvironment()
-        ..aliases['streamer'] = 'dart run ${shellArgument(streamerScriptPath)}';
+        ..aliases['streamer'] = 'dart run ${shellArgument(streamerScriptPath)}'
+        ..aliases['echo'] = 'dart run ${shellArgument(echoScriptPath)}';
     });
     test('stream all', () async {
       var ctlr = ShellLinesController();
@@ -45,5 +46,34 @@ void main() {
         // Should fail
       }
     }, timeout: const Timeout(Duration(milliseconds: 30000)));
+    test('addError', () async {
+      var ctlr = ShellLinesController();
+      var completer = Completer<bool>();
+      ctlr.stream.listen((event) {
+        fail('should not be called');
+      }, onError: (Object e) {
+        expect(e, 'test');
+        completer.complete(true);
+      });
+      ctlr.sink.addError('test');
+
+      await completer.future;
+      ctlr.close();
+    });
+    test('shell error', () async {
+      var ctlr = ShellLinesController();
+      var completer = Completer<bool>();
+      ctlr.stream.listen((event) {}, onError: (Object e) {
+        var shellException = e as ShellException;
+        expect(shellException.result!.exitCode, 1);
+        //expect(e, 'test');
+        completer.complete(true);
+      });
+      var shell = Shell(stdout: ctlr.sink, environment: env);
+      await shell
+          .run('echo --exit-code 1')
+          .then((_) => ctlr.close(), onError: ctlr.sink.addError);
+      await completer.future;
+    });
   });
 }
