@@ -1,7 +1,8 @@
-## 0.13.3
+## 0.13.3+1
 
 * Fix finding `flutter` on windows in unit tests
 * Remove `charcode` dependency.
+* Propage added errors in `ShellLinesController`
 
 ## 0.13.2
 
