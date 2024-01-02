@@ -1,6 +1,8 @@
-## 0.14.0
+## 0.14.0+1
 
 * No longer replace `\` by `\\` before splitting arguments
+* Fix backslash handling when splitting a command with a different behavior on Windows and Mac/Linux 
+  (backslash is not an escape character on Windows)
 
 ## 0.13.3+1
 
