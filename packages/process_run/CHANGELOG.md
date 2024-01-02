@@ -1,3 +1,7 @@
+## 0.14.0
+
+* No longer replace `\` by `\\` before splitting arguments
+
 ## 0.13.3+1
 
 * Fix finding `flutter` on windows in unit tests
