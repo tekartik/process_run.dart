@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
-import 'package:process_run/src/io/shell_words.dart' as io show shellSplitImpl;
+import 'package:process_run/src/io/shell_words.dart' as io
+    show shellSplitImpl, shellSplitWindowsImpl;
 import 'package:process_run/src/shell_environment.dart';
 
 import 'bin/shell/import.dart';
@@ -207,7 +208,9 @@ bool fixRunInShell(bool? runInShell, String executable) {
 }
 
 /// Use io package shellSplit implementation
-List<String> shellSplit(String command) => io.shellSplitImpl(command);
+List<String> shellSplit(String command) => context.style == windows.style
+    ? io.shellSplitWindowsImpl(command)
+    : io.shellSplitImpl(command);
 
 /// Inverse of shell split
 String shellJoin(List<String> parts) =>

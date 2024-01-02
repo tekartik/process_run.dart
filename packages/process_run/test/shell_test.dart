@@ -147,8 +147,13 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
 
 ''');
 
-      expect(results[0].stdout.toString().trim(), r'a/bc/d');
-      expect(results[1].stdout.toString().trim(), r'a/\b c/\d');
+      if (Platform.isWindows) {
+        expect(results[0].stdout.toString().trim(), r'a/\bc/\d');
+        expect(results[1].stdout.toString().trim(), r'a/\b c/\d');
+      } else {
+        expect(results[0].stdout.toString().trim(), r'a/bc/d');
+        expect(results[1].stdout.toString().trim(), r'a/\b c/\d');
+      }
       expect(results.length, 2);
     });
     test('dart', () async {
@@ -400,7 +405,11 @@ dart current_dir.dart
     test('escape backslash', () async {
       var shell = Shell(verbose: debug);
       var results = await shell.run(r'echo "\\"');
-      expect(results[0].stdout.toString().trim(), '\\');
+      if (Platform.isWindows) {
+        expect(results[0].stdout.toString().trim(), r'\\');
+      } else {
+        expect(results[0].stdout.toString().trim(), r'\');
+      }
     });
     test('others', () async {
       try {

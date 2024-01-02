@@ -4,6 +4,7 @@ library process_run.echo_test;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart';
 import 'package:process_run/process_run.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/dartbin_impl.dart';
@@ -11,10 +12,14 @@ import 'package:test/test.dart';
 
 import 'process_run_test_common.dart';
 
-var echo = '$resolvedDartExecutable run example/echo.dart';
+var echo =
+    '$resolvedDartExecutable run ${shellArgument(join("example", "echo.dart"))}';
 
 void main() {
   group('echo', () {
+    test('run echo', () async {
+      await run('$echo --stdout test');
+    });
     Future runCheck(
       Object? Function(ProcessResult result) check,
       String executable,

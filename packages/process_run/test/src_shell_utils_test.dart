@@ -63,7 +63,11 @@ void main() {
 
     test('shellSplit', () {
       // We differ from io implementation
-      expect(shellSplit(r'"\\"'), [r'\']);
+      if (Platform.isWindows) {
+        expect(shellSplit(r'"\\"'), [r'\\']);
+      } else {
+        expect(shellSplit(r'"\\"'), [r'\']);
+      }
       expect(shellSplit('Hello  world'), ['Hello', 'world']);
       expect(shellSplit('"Hello  world"'), ['Hello  world']);
       expect(shellSplit("'Hello  world'"), ['Hello  world']);
