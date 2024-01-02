@@ -56,7 +56,7 @@ void defineTests() {
         // Dart SDK version: 2.9.0-21.2.beta (beta) (Fri Jul 10 17:39:56 2020 +0200) on "linux_x64"
         // After 2.15.0
         // Dart SDK version: 2.15.0-82.0.dev (dev) (Sat Sep 4 03:33:09 2021 -0700) on "linux_x64"
-      });
+      }, skip: 'dart might not be in the path');
 
       test('run', () async {
         final result = await Process.run(dartExecutable!, ['--version']);

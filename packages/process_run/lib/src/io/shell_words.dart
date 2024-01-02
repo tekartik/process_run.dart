@@ -21,7 +21,7 @@ import 'package:string_scanner/string_scanner.dart';
 /// This will discard any comments at the end of [command].
 ///
 /// Throws a [FormatException] if [command] isn't a valid shell command.
-List<String> shellSplit(String command) {
+List<String> shellSplitImpl(String command) {
   final scanner = StringScanner(command);
   final results = <String>[];
   final token = StringBuffer();

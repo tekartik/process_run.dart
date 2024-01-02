@@ -18,7 +18,7 @@ import 'hex_utils.dart';
 @Deprecated('Dev only, used when uncommenting debug = devTrue')
 bool devTrue = true;
 
-//bool debug = devTrue;
+// bool debug = devTrue;
 bool debug = false;
 
 // To set in both variable for a full empty environment
@@ -147,7 +147,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
 
 ''');
 
-      expect(results[0].stdout.toString().trim(), r'a/\bc/\d');
+      expect(results[0].stdout.toString().trim(), r'a/bc/d');
       expect(results[1].stdout.toString().trim(), r'a/\b c/\d');
       expect(results.length, 2);
     });
@@ -399,7 +399,7 @@ dart current_dir.dart
 
     test('escape backslash', () async {
       var shell = Shell(verbose: debug);
-      var results = await shell.run('''echo "\\"''');
+      var results = await shell.run(r'echo "\\"');
       expect(results[0].stdout.toString().trim(), '\\');
     });
     test('others', () async {
