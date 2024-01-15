@@ -86,6 +86,7 @@ Future<List<ProcessResult>> run(
 ///  dart --version
 ///  git status
 /// ''');
+/// ```
 ///
 /// Compared to the async version, it is not possible to kill the spawn process nor to
 /// feed any input.
