@@ -43,6 +43,9 @@ await run('echo ${shellArgument('Hello world')}');
 
 ## Running the script in synchronous mode
 
+`runSync` and `runExecutableArgumentsSync` are available since 0.14.1 in the global space and in the `Shell` class.
+They are synchronous version of `run` and `runExecutableArguments` respectively with some limitations.
+
 The synchronous mode is useful for testing. It is not recommended for production use as
 it is a synchronous call and will block until the child process terminates.
 
@@ -54,6 +57,12 @@ var result = results.first;
 print('output: "${result.outText.trim()}" exitCode: ${result.exitCode}');
 // should display: output: "Hello world" exitCode: 0
 ```
+
+**Warning**:
+- You cannot feed any stdin to the child process.
+- You cannot kill a synchronous child process.
+- Available since 0.14.1
+- Recommended for testing only, it is a synchronous call and will block until the child process terminates.
 
 ### Handling errors
 
