@@ -19,7 +19,7 @@ export 'shell_common.dart' show shellDebug;
 ///
 /// Commands can be split by line.
 ///
-/// Commands can be on multiple line if ending with ' ^' or ' \'.
+/// Commands can be on multiple line if ending with ` ^` or `` \``.
 ///
 /// Returns a list of executed command line results. Verbose by default.
 ///
@@ -74,7 +74,7 @@ Future<List<ProcessResult>> run(
 ///
 /// Commands can be split by line.
 ///
-/// Commands can be on multiple line if ending with ' ^' or ' \'.
+/// Commands can be on multiple line if ending with ` ^` or `` \``.
 ///
 /// Returns a list of executed command line results. Verbose by default.
 ///
@@ -339,8 +339,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   /// Commands can be split by line.
   ///
-  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
-  /// must be escaped too so you might have to enter \\).
+  /// Commands can be on multiple line if ending with ` ^` or `` \``.
   ///
   /// Returns a list of executed command line results.
   ///
@@ -392,12 +391,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   /// Commands can be split by line.
   ///
-  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
-  /// must be escaped too so you might have to enter \\).
+  /// Commands can be on multiple line if ending with ` ^` or `` \``.
   ///
   /// Returns a list of executed command line results.
-  ///
-  /// [onProcess] is called for each started process.
   ///
   /// Compare to the async version, it is not possible to kill the spawn process nor to
   /// feed any input.

@@ -48,8 +48,8 @@ abstract class ShellCore {
   ///
   /// Commands can be splitted by line.
   ///
-  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
-  /// must be escaped too so you might have to enter \\).
+  /// Commands can be on multiple line if ending with ` ^` or `` \``. (note that ``\``
+  /// must be escaped too so you might have to enter ``\\``).
   ///
   /// Returns a list of executed command line results.
   ///
@@ -100,8 +100,8 @@ abstract class ShellCoreSync {
   ///
   /// Commands can be split by line.
   ///
-  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
-  /// must be escaped too so you might have to enter \\).
+  /// Commands can be on multiple line if ending with ` ^` or `` \``.  (note that ``\``
+  /// must be escaped too so you might have to enter ``\\``).
   ///
   /// Returns a list of executed command line results.
   ///
