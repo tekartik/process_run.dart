@@ -162,6 +162,12 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       expect(results.length, 1);
       expect(results.first.exitCode, 0);
     });
+    test('sync dart', () async {
+      var shell = Shell(verbose: debug);
+      var results = shell.runSync('''dart --version''');
+      expect(results.length, 1);
+      expect(results.first.exitCode, 0);
+    });
 
     test('dart runExecutableArguments', () async {
       var shell = Shell(verbose: debug);
@@ -585,6 +591,10 @@ _tekartik_dummy_app_that_does_not_exits
         (await sh.runExecutableArguments(dartExecutable!, ['--version']))
             .stderr
             .toString());
+    var resolvedVersionSync = parseDartBinVersionOutput(
+        (sh.runExecutableArgumentsSync(dartExecutable!, ['--version']))
+            .stderr
+            .toString());
     var whichVersion = parseDartBinVersionOutput(
         (await sh.runExecutableArguments(whichDart!, ['--version']))
             .stderr
@@ -595,6 +605,7 @@ _tekartik_dummy_app_that_does_not_exits
             .toString());
     expect(version, resolvedVersion);
     expect(version, whichVersion);
+    expect(version, resolvedVersionSync);
   });
 
   test('verbose non ascii char', () async {

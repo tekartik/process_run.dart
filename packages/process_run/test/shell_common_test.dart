@@ -153,6 +153,21 @@ class ShellMock with ShellMixin implements Shell {
   }
 
   @override
+  ProcessResult runExecutableArgumentsSync(
+    String executable,
+    List<String> arguments,
+  ) {
+    // TODO: implement runExecutableArguments
+    throw UnimplementedError();
+  }
+
+  @override
+  List<ProcessResult> runSync(String script) {
+    // TODO: implement runSync
+    throw UnimplementedError();
+  }
+
+  @override
   late final ShellOptions options;
 }
 

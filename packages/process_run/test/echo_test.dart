@@ -52,6 +52,15 @@ void main() {
           stderrEncoding: stderrEncoding,
           stdout: stdout);
       check(result);
+      result = runExecutableArgumentsSync(executable, arguments,
+          workingDirectory: workingDirectory,
+          environment: environment,
+          includeParentEnvironment: includeParentEnvironment,
+          runInShell: runInShell,
+          stdoutEncoding: stdoutEncoding,
+          stderrEncoding: stderrEncoding,
+          stdout: stdout);
+      check(result);
     }
 
     test('stdout', () async {

@@ -36,6 +36,9 @@ void main() {
       promptTerminate;
       prompt;
       run;
+      runSync;
+      runExecutableArguments;
+      runExecutableArgumentsSync;
       Shell;
       ShellOptions;
       ShellException;

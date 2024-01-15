@@ -36,28 +36,6 @@ var shellDebug = false; // devWarning(true); // false
 /// A list of ProcessResult is returned
 ///
 abstract class ShellCore {
-  /*
-  ShellCore(
-          {ShellOptions? options,
-          Map<String, String>? environment,
-
-          /// Compat, prefer options
-          bool? verbose,
-          Encoding? stdoutEncoding,
-          Encoding? stderrEncoding,
-          StreamSink<List<int>>? stdout,
-          StreamSink<List<int>>? stderr,
-          bool? runInShell}) =>
-      shellContext.newShell(
-          options: options?.clone(
-              verbose: verbose,
-              stderrEncoding: stderrEncoding,
-              stdoutEncoding: stdoutEncoding,
-              runInShell: runInShell,
-              stdout: stdout,
-              stderr: stderr),
-          environment: environment);*/
-
   /// Kills the current running process.
   ///
   /// Returns `true` if the signal is successfully delivered to the process.
@@ -114,6 +92,32 @@ abstract class ShellCore {
 
   /// Shell context.
   ShellContext get context;
+}
+
+abstract class ShellCoreSync {
+  ///
+  /// Run one or multiple plain text command(s).
+  ///
+  /// Commands can be split by line.
+  ///
+  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
+  /// must be escaped too so you might have to enter \\).
+  ///
+  /// Returns a list of executed command line results.
+  ///
+  /// Compared to the async version, it is not possible to kill the spawn process nor to
+  /// feed any input.
+  ///
+  List<ProcessResult> runSync(String script);
+
+  /// Run a single [executable] with [arguments], resolving the [executable] if needed.
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  ///
+  /// Compared to the async version, it is not possible to kill the spawn process nor to
+  /// feed any input.
+  ProcessResult runExecutableArgumentsSync(
+      String executable, List<String> arguments);
 }
 
 /// Shell options.
@@ -248,7 +252,7 @@ Future<String?> which(String command,
 }
 
 /// Default missing implementation.
-mixin ShellMixin implements ShellCore {
+mixin ShellMixin implements ShellCore, ShellCoreSync {
   // Set lazily after newShell;
   @override
   late ShellContext context;

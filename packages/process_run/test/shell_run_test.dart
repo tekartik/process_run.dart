@@ -45,6 +45,15 @@ void main() {
           verbose: false);
     });
 
+    test('sync --version', () async {
+      var result = runSync('dart --version',
+              throwOnError: false, verbose: false, commandVerbose: true)
+          .first;
+      stdout.writeln('stdout: ${result.stdout.toString().trim()}');
+      stdout.writeln('stderr: ${result.stderr.toString().trim()}');
+      stdout.writeln('exitCode: ${result.exitCode}');
+    });
+
     test('--version', () async {
       for (var bin in [
         // 'dartdoc', deprecated
@@ -63,6 +72,7 @@ void main() {
         stdout.writeln('exitCode: ${result.exitCode}');
       }
     });
+
     test('dart compile', () async {
       var bin = 'build/native/info.exe';
       await Directory(dirname(bin)).create(recursive: true);

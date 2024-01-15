@@ -189,6 +189,106 @@ Future<ProcessResult> runExecutableArguments(
   return result;
 }
 
+///
+/// if [commandVerbose] or [verbose] is true, display the command.
+/// if [verbose] is true, stream stdout & stdin
+///
+/// Compared to the async version, it is not possible to kill the spawn process nor to
+/// feed any input.
+ProcessResult runExecutableArgumentsSync(
+    String executable, List<String> arguments,
+    {String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool? runInShell,
+    Encoding? stdoutEncoding = systemEncoding,
+    Encoding? stderrEncoding = systemEncoding,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool? verbose,
+    bool? commandVerbose}) {
+  if (verbose == true) {
+    commandVerbose = true;
+    stdout ??= io.stdout;
+    stderr ??= io.stderr;
+  }
+
+  if (commandVerbose == true) {
+    utils.streamSinkWriteln(stdout ?? io.stdout,
+        '\$ ${executableArgumentsToString(executable, arguments)}',
+        encoding: stdoutEncoding);
+  }
+
+  // Build our environment
+  var shellEnvironment = ShellEnvironment.full(
+      environment: environment,
+      includeParentEnvironment: includeParentEnvironment);
+
+  // Default is the full command
+  var executableShortName = executable;
+
+  // Find executable if needed, i.e. if it is only a name
+  if (basename(executable) == executable) {
+    // Try to find it in path or use it as is
+    executable = utils.findExecutableSync(executable, shellEnvironment.paths) ??
+        executable;
+  } else {
+    // resolve locally
+    executable = utils.findExecutableSync(basename(executable), [
+          join(workingDirectory ?? Directory.current.path, dirname(executable))
+        ]) ??
+        executable;
+  }
+
+  // Fix runInShell on windows (force run in shell for non-.exe)
+  runInShell = utils.fixRunInShell(runInShell, executable);
+
+  io.ProcessResult result;
+  try {
+    result = Process.runSync(
+      executable,
+      arguments,
+      environment: shellEnvironment,
+      includeParentEnvironment: false,
+      runInShell: runInShell,
+      workingDirectory: workingDirectory,
+      stdoutEncoding: stdoutEncoding,
+      stderrEncoding: stderrEncoding,
+    );
+  } catch (e) {
+    if (verbose == true) {
+      io.stderr.writeln(e);
+      io.stderr.writeln(
+          '\$ ${executableArgumentsToString(executableShortName, arguments)}');
+      io.stderr.writeln(
+          'workingDirectory: ${workingDirectory ?? Directory.current.path}');
+    }
+    rethrow;
+  }
+
+  List<int> outputToIntList(dynamic data, Encoding? encoding) {
+    if (data is List<int>) {
+      return data;
+    } else if (data is String && encoding != null) {
+      return encoding.encode(data);
+    } else {
+      throw 'Unexpected data type: ${data.runtimeType}';
+    }
+  }
+
+  if (stdout != null) {
+    var out = outputToIntList(result.stdout, stdoutEncoding);
+    stdout.add(out);
+  }
+
+  if (stderr != null) {
+    var err = outputToIntList(result.stderr, stderrEncoding);
+    stderr.add(err);
+  }
+
+  return result;
+}
+
 /// Command runner. not exported
 
 /// Execute a predefined ProcessCmd command

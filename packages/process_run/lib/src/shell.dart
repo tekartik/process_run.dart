@@ -3,11 +3,12 @@ import 'dart:io' as io;
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/shell.dart' as impl;
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell_common.dart'
-    show ShellCore, ShellOptions, shellDebug;
+    show ShellCore, ShellCoreSync, ShellOptions, shellDebug;
 import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -16,7 +17,7 @@ export 'shell_common.dart' show shellDebug;
 ///
 /// Run one or multiple plain text command(s).
 ///
-/// Commands can be splitted by line.
+/// Commands can be split by line.
 ///
 /// Commands can be on multiple line if ending with ' ^' or ' \'.
 ///
@@ -68,6 +69,62 @@ Future<List<ProcessResult>> run(
       .run(script, onProcess: onProcess);
 }
 
+///
+/// Run one or multiple plain text command(s).
+///
+/// Commands can be split by line.
+///
+/// Commands can be on multiple line if ending with ' ^' or ' \'.
+///
+/// Returns a list of executed command line results. Verbose by default.
+///
+///
+/// ```dart
+/// await run('flutter build');
+/// await run('dart --version');
+/// await run('''
+///  dart --version
+///  git status
+/// ''');
+///
+/// Compared to the async version, it is not possible to kill the spawn process nor to
+/// feed any input.
+/// ```
+List<ProcessResult> runSync(
+  String script, {
+  bool throwOnError = true,
+  String? workingDirectory,
+  Map<String, String>? environment,
+  bool includeParentEnvironment = true,
+  bool? runInShell,
+  Encoding stdoutEncoding = systemEncoding,
+  Encoding stderrEncoding = systemEncoding,
+  StreamSink<List<int>>? stdout,
+  StreamSink<List<int>>? stderr,
+  bool verbose = true,
+
+  // Default to true
+  bool? commandVerbose,
+  // Default to true if verbose is true
+  bool? commentVerbose,
+}) {
+  return Shell(
+          throwOnError: throwOnError,
+          workingDirectory: workingDirectory,
+          environment: environment,
+          includeParentEnvironment: includeParentEnvironment,
+          runInShell: runInShell,
+          stdoutEncoding: stdoutEncoding,
+          stderrEncoding: stderrEncoding,
+          stdin: stdin,
+          stdout: stdout,
+          stderr: stderr,
+          verbose: verbose,
+          commandVerbose: commandVerbose,
+          commentVerbose: commentVerbose)
+      .runSync(script);
+}
+
 /// Multiplatform Shell utility to run a script with multiple commands.
 ///
 /// Extra path/env can be loaded using ~/.config/tekartik/process_run/env.yaml
@@ -89,7 +146,7 @@ Future<List<ProcessResult>> run(
 ///
 /// A list of ProcessResult is returned
 ///
-abstract class Shell implements ShellCore {
+abstract class Shell implements ShellCore, ShellCoreSync {
   final ShellOptions _options;
 
   /// Incremental internal runId
@@ -279,7 +336,7 @@ abstract class Shell implements ShellCore {
   ///
   /// Run one or multiple plain text command(s).
   ///
-  /// Commands can be splitted by line.
+  /// Commands can be split by line.
   ///
   /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
   /// must be escaped too so you might have to enter \\).
@@ -329,6 +386,55 @@ abstract class Shell implements ShellCore {
     });
   }
 
+  ///
+  /// Run one or multiple plain text command(s).
+  ///
+  /// Commands can be split by line.
+  ///
+  /// Commands can be on multiple line if ending with ' ^' or ' \'. (note that \
+  /// must be escaped too so you might have to enter \\).
+  ///
+  /// Returns a list of executed command line results.
+  ///
+  /// [onProcess] is called for each started process.
+  ///
+  /// Compare to the async version, it is not possible to kill the spawn process nor to
+  /// feed any input.
+  ///
+  @override
+  List<ProcessResult> runSync(
+    String script,
+  ) {
+    var commands = scriptToCommands(script);
+
+    var processResults = <ProcessResult>[];
+    for (var command in commands) {
+      // Display the comments
+      if (isLineComment(command!)) {
+        if (_options.commentVerbose) {
+          stdout.writeln(command);
+        }
+        continue;
+      }
+      var parts = shellSplit(command);
+      var executable = parts[0];
+      var arguments = parts.sublist(1);
+
+      // Find alias
+      var alias = _options.environment.aliases[executable];
+      if (alias != null) {
+        // The alias itself should be split
+        parts = shellSplit(alias);
+        executable = parts[0];
+        arguments = [...parts.sublist(1), ...arguments];
+      }
+      var processResult = runExecutableArgumentsSync(executable, arguments);
+      processResults.add(processResult);
+    }
+
+    return processResults;
+  }
+
   final _runLock = Lock();
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
@@ -344,6 +450,24 @@ abstract class Shell implements ShellCore {
       return _lockedRunExecutableArguments(runId, executable, arguments,
           onProcess: onProcess);
     });
+  }
+
+  /// Run a single [executable] with [arguments], resolving the [executable] if needed.
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  ///
+  /// [onProcess] is called for each started process.
+  @override
+  ProcessResult runExecutableArgumentsSync(
+    String executable,
+    List<String> arguments,
+  ) {
+    var runId = ++_runId;
+    return _runExecutableArgumentsSync(
+      runId,
+      executable,
+      arguments,
+    );
   }
 
   Future<T> _runLocked<T>(FutureOr<T> Function(int runId) action) {
@@ -371,6 +495,76 @@ abstract class Shell implements ShellCore {
           .completeError(ShellException('Killed by framework', null));
     }
     _currentProcessResultCompleter = null;
+  }
+
+  /// Run a single [executable] with [arguments], resolving the [executable] if needed.
+  ///
+  /// Call onProcess upon process startup
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  ProcessResult _runExecutableArgumentsSync(
+    int runId,
+    String executable,
+    List<String> arguments,
+  ) {
+    var executableFullPath =
+        findExecutableSync(executable, _userPaths) ?? executable;
+    var processCmd = ProcessCmd(executableFullPath, arguments);
+    try {
+      _clearPreviousContext();
+
+      ProcessResult? processResult;
+
+      try {
+        if (shellDebug) {
+          print('$_runId: Before $processCmd');
+        }
+
+        processResult = impl.runExecutableArgumentsSync(
+            executableFullPath, arguments,
+            runInShell: _options.runInShell,
+            environment: _options.environment,
+            includeParentEnvironment: false,
+            stderrEncoding: _options.stderrEncoding ?? io.systemEncoding,
+            stdoutEncoding: _options.stdoutEncoding ?? io.systemEncoding,
+            workingDirectory: _options.workingDirectory);
+      } finally {
+        if (shellDebug) {
+          print(
+              '$_runId: After $executableFullPath exitCode ${processResult?.exitCode}');
+        }
+      }
+      // devPrint('After $processCmd');
+      if (_options.throwOnError && processResult.exitCode != 0) {
+        throw ShellException(
+            '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
+            processResult);
+      }
+      return processResult;
+    } on ProcessException catch (e) {
+      var stderr = _options.stderr ?? io.stderr;
+      void writeln([String? msg]) {
+        stderr.add(utf8.encode(msg ?? ''));
+        stderr.add(utf8.encode('\n'));
+      }
+
+      var workingDirectory =
+          _options.workingDirectory ?? Directory.current.path;
+
+      writeln();
+      if (!Directory(workingDirectory).existsSync()) {
+        writeln('Missing working directory $workingDirectory');
+      } else {
+        writeln('''
+  Check that $executableFullPath exists
+    command: $processCmd''');
+      }
+      writeln();
+
+      throw ShellException(
+          '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
+          null);
+    }
   }
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
