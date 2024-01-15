@@ -80,9 +80,9 @@ Future<List<ProcessResult>> run(
 ///
 ///
 /// ```dart
-/// await run('flutter build');
-/// await run('dart --version');
-/// await run('''
+/// runSync('flutter build');
+/// runSync('dart --version');
+/// runSync('''
 ///  dart --version
 ///  git status
 /// ''');
