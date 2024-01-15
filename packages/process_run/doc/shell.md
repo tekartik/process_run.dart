@@ -41,22 +41,19 @@ await run('echo "Hello world"');
 await run('echo ${shellArgument('Hello world')}');
 ```
 
-### Changing directory
+## Running the script in synchronous mode
 
-You can pushd/popd a directory
+The synchronous mode is useful for testing. It is not recommended for production use as
+it is a synchronous call and will block until the child process terminates.
 
-```dart
-shell = shell.pushd('example');
-
-await shell.run('''
-
-# Listing directory in the example folder
-dir
-
-''');
-shell = shell.popd();
+```dart     
+var shell = Shell();
+// This is a synchronous call and will block until the child process terminates.
+var results = shell.runSync('echo "Hello world"');
+var result = results.first;
+print('output: "${result.outText.trim()}" exitCode: ${result.exitCode}');
+// should display: output: "Hello world" exitCode: 0
 ```
-
 
 ### Handling errors
 

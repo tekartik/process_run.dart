@@ -1,3 +1,7 @@
+## 0.14.1
+
+* add `runSync` and `runExecutableArgumentsSync` to global space and to `Shell`
+
 ## 0.14.0+1
 
 * No longer replace `\` by `\\` before splitting arguments
