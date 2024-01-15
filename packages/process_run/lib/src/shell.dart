@@ -90,7 +90,6 @@ Future<List<ProcessResult>> run(
 ///
 /// Compared to the async version, it is not possible to kill the spawn process nor to
 /// feed any input.
-/// ```
 List<ProcessResult> runSync(
   String script, {
   bool throwOnError = true,
