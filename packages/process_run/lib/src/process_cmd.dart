@@ -11,8 +11,8 @@ class ProcessCmd {
   Map<String, String>? environment;
   bool includeParentEnvironment;
   bool? runInShell;
-  Encoding? stdoutEncoding;
-  Encoding? stderrEncoding;
+  Encoding stdoutEncoding;
+  Encoding stderrEncoding;
 
   ProcessCmd(this.executable, this.arguments,
       {this.workingDirectory,

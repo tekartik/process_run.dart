@@ -15,6 +15,17 @@ import 'package:test/test.dart';
 
 import 'hex_utils.dart';
 
+// Compiled version of echo.dart
+var echoExePath = join('.local', 'example', 'echo.exe');
+var echoExe = shellArgument(echoExePath);
+Future<void> ensureEchoExe() async {
+  if (!File(echoExe).existsSync()) {
+    await Directory(dirname(echoExePath)).create(recursive: true);
+    await run(
+        'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o $echoExe');
+  }
+}
+
 @Deprecated('Dev only, used when uncommenting debug = devTrue')
 bool devTrue = true;
 
@@ -78,18 +89,19 @@ void main() {
     });
 
     test('arguments', () async {
+      await ensureEchoExe();
       var shell = Shell(verbose: debug);
       var text = 'Hello  world';
       var results = await shell.run('''
 # this will print 'Helloworld'
-dart example/echo.dart -o Hello  world
-dart example/echo.dart -o $text
+$echoExe -o Hello  world
+$echoExe -o $text
 # this will print 'Hello  world'
-dart example/echo.dart -o 'Hello  world'
-dart example/echo.dart -o 'Hello  world'
-dart example/echo.dart -o ${shellArgument(text)}
-dart example/echo.dart -o 你好
-dart example/echo.dart -o éà
+$echoExe -o 'Hello  world'
+$echoExe -o 'Hello  world'
+$echoExe -o ${shellArgument(text)}
+$echoExe -o 你好
+$echoExe -o éà
 ''');
       expect(results[0].stdout.toString().trim(), 'Helloworld');
       expect(results[1].stdout.toString().trim(), 'Helloworld');
@@ -104,16 +116,6 @@ dart example/echo.dart -o éà
       }
       expect(results.length, 7);
     });
-
-    // Compiled version
-    var echoExe = shellArgument(join('.local', 'example', 'echo.exe'));
-    Future<void> ensureEchoExe() async {
-      if (!File(echoExe).existsSync()) {
-        await Directory(join('.local', 'example')).create(recursive: true);
-        await run(
-            'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o $echoExe');
-      }
-    }
 
     test('noStdoutResult/noStderrResult', () async {
       await ensureEchoExe();
@@ -139,8 +141,14 @@ dart example/echo.dart -o éà
       result = (await run(script, options: options)).first;
       expect(result.stdout, isNull);
       expect(result.stderr, 'Err');
-      result = (runSync(script, options: options)).first;
+      result = (await runExecutableArguments(
+          echoExe, ['-o', 'Out', '-e', 'Err'],
+          noStdoutResult: true));
+      expect(result.stdout, isNull);
+      expect(result.stderr, 'Err');
       // Not valid for runSync
+      result = (runSync(script, options: options)).first;
+
       expect(result.stdout, 'Out');
       expect(result.stderr, 'Err');
       options = ShellOptions(noStderrResult: true, verbose: false);
@@ -157,42 +165,44 @@ dart example/echo.dart -o éà
       await ensureEchoExe();
       var shell = Shell(verbose: debug, stdoutEncoding: utf8);
       var results = await shell.run('''
-dart example/echo.dart -o 你好
+$echoExe -o 你好
 ''');
       expect(results.outLines.toList()[0], '你好');
       expect(results.length, 1);
     });
 
     test('outLines, errLines', () async {
+      await ensureEchoExe();
       var shell = Shell(verbose: debug, runInShell: true);
 
       var results = await shell.run(
-          'dart example/echo.dart --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
+          '$echoExe --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
       expect(results.outLines, ['Hello', 'World']);
       expect(results[0].outLines, ['Hello', 'World']);
       expect(results.errLines, isEmpty);
 
-      results = await shell.run('dart example/echo.dart -e Hello');
+      results = await shell.run('$echoExe -e Hello');
       expect(results.outLines, isEmpty);
       expect(results.errLines, ['Hello']);
 
       results = await shell.run('''
 # This is a 2 commands file
 
-dart example/echo.dart -o Hello
+$echoExe -o Hello
 
-dart example/echo.dart -e World
+$echoExe -e World
 ''');
       expect(results.outLines, ['Hello']);
       expect(results.errLines, ['World']);
     });
 
     test('backslash', () async {
+      await ensureEchoExe();
       var shell = Shell(verbose: debug);
       var weirdText = r'a/\b c/\d';
       var results = await shell.run('''
-dart example/echo.dart -o $weirdText
-dart example/echo.dart -o ${shellArgument(weirdText)}
+$echoExe -o $weirdText
+$echoExe -o ${shellArgument(weirdText)}
 
 ''');
 
@@ -236,11 +246,12 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
     test('kill simple', () async {
       try {
         await () async {
-          var shell = Shell().cd('example');
-          await shell.run('dart run echo.dart --version');
+          await ensureEchoExe();
+          var shell = Shell();
+          await shell.run('$echoExe --version');
           late Future future;
           try {
-            future = shell.run('dart run echo.dart --wait 30000');
+            future = shell.run('$echoExe --wait 30000');
             await future.timeout(const Duration(milliseconds: 2500));
             fail('should fail');
           } on TimeoutException catch (_) {
@@ -263,12 +274,13 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
       }
     }, timeout: const Timeout(Duration(seconds: 50)));
     test('kill complex', () async {
+      await ensureEchoExe();
       try {
         await () async {
-          var shell = Shell().cd('example');
+          var shell = Shell();
           late Future future;
           try {
-            future = shell.run('dart echo.dart --wait 3000');
+            future = shell.run('$echoExe --wait 3000');
             await future.timeout(const Duration(milliseconds: 2000));
             fail('should fail');
           } on TimeoutException catch (_) {
@@ -280,12 +292,12 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
             await future;
             fail('should fail');
           } on ShellException catch (_) {
-            // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+            // 2: ShellException($echoExe--wait 3000, exitCode -15, workingDirectory:
             // devPrint('2: $e');
           }
 
           try {
-            var future = shell.run('dart echo.dart --wait 10000');
+            var future = shell.run('$echoExe --wait 10000');
             await Future<void>.delayed(const Duration(milliseconds: 3000));
             shell.kill();
             await future.timeout(const Duration(milliseconds: 8000));
@@ -297,7 +309,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           try {
             // Killing before calling
             future = shell
-                .run('dart echo.dart --wait 9000')
+                .run('$echoExe --wait 9000')
                 .timeout(const Duration(milliseconds: 7000));
             shell.kill();
             await future;
@@ -315,26 +327,26 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
 
     group('ShellLinesController', () {
       test('Shell Lines out', () async {
+        await ensureEchoExe();
         var linesController = ShellLinesController();
-        var shell =
-            Shell(stdout: linesController.sink, verbose: false).cd('example');
-        await shell.run('dart echo.dart some_text');
+        var shell = Shell(stdout: linesController.sink, verbose: false);
+        await shell.run('$echoExe some_text');
         linesController.close();
         expect(await linesController.stream.toList(), ['some_text']);
 
         linesController = ShellLinesController();
-        shell =
-            Shell(stdout: linesController.sink, verbose: false).cd('example');
-        await shell.run('dart echo.dart some_text1');
+        shell = Shell(stdout: linesController.sink, verbose: false);
+        await shell.run('$echoExe some_text1');
         await shell.run('''
-      dart echo.dart some_text2
-      dart echo.dart some_text3
+      $echoExe some_text2
+      $echoExe some_text3
       ''');
         linesController.close();
         expect(await linesController.stream.toList(),
             ['some_text1', 'some_text2', 'some_text3']);
       });
       test('pause', () async {
+        await ensureEchoExe();
         late ShellLinesController linesController;
         var lines = <String>[];
         late Shell shell;
@@ -344,8 +356,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
           lines.clear();
           subscription?.cancel();
           linesController = ShellLinesController();
-          shell =
-              Shell(stdout: linesController.sink, verbose: false).cd('example');
+          shell = Shell(stdout: linesController.sink, verbose: false);
           lines.clear();
           subscription = linesController.stream.listen((event) {
             // devPrint('line: $event');
@@ -354,25 +365,25 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         }
 
         init();
-        await shell.run('dart echo.dart some_text');
+        await shell.run('$echoExe some_text');
         expect(lines, ['some_text']);
 
         init();
         subscription?.pause();
-        await shell.run('dart echo.dart some_text');
+        await shell.run('$echoExe some_text');
         expect(lines, isEmpty);
 
         init();
 
-        await shell.run('dart echo.dart some_text1');
+        await shell.run('$echoExe some_text1');
         expect(lines, ['some_text1']);
         lines.clear();
 
         subscription!.pause();
         var count = 0;
         await shell.run('''
-      dart echo.dart some_text2
-      dart echo.dart some_text3
+      $echoExe some_text2
+      $echoExe some_text3
       ''', onProcess: (process) {
           count++;
           // devPrint('onProcess ${process.pid} (paused: $paused)');
@@ -385,7 +396,7 @@ dart example/echo.dart -o ${shellArgument(weirdText)}
         lines.clear();
         subscription!.resume();
         await shell.run('''
-      dart echo.dart some_text4
+      $echoExe some_text4
       ''');
         expect(lines.last, 'some_text4');
       });
@@ -658,17 +669,16 @@ _tekartik_dummy_app_that_does_not_exits
   });
 
   test('verbose non ascii char', () async {
+    await ensureEchoExe();
     var controller = ShellLinesController();
     var shell = Shell(
         stdout: controller.sink,
         verbose: true,
-        environment: ShellEnvironment()
-          ..aliases['echo'] = 'dart example/echo.dart -o');
+        environment: ShellEnvironment()..aliases['echo'] = '$echoExe -o');
     await shell.run('echo 你好é');
     controller.close();
     if (!Platform.isWindows) {
-      expect(await controller.stream.toList(),
-          ['\$ dart example/echo.dart -o 你好é', '你好é']);
+      expect(await controller.stream.toList(), ['\$ $echoExe -o 你好é', '你好é']);
     }
   });
 
