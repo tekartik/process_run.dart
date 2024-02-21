@@ -1,3 +1,8 @@
+## 0.14.2
+
+* add `noStdoutResult` and `noStderrResult` to `ShellOptions` and `runExecutableArguments` to avoid out of memory for 
+  very long output
+
 ## 0.14.1+3
 
 * add `runSync` and `runExecutableArgumentsSync` to global space and to `Shell`
