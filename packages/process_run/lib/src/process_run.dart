@@ -18,6 +18,9 @@ export 'shell_utils_io.dart' show executableArgumentsToString;
 ///
 /// Optional [onProcess(process)] is called to allow killing the process.
 ///
+/// If [noStdoutResult] is true, the result will not contain the stdout.
+/// If [noStderrResult] is true, the result will not contain the stderr.
+///
 /// Don't mess-up with the input and output for now here. only use it for kill.
 Future<ProcessResult> runExecutableArguments(
     String executable, List<String> arguments,
@@ -32,6 +35,8 @@ Future<ProcessResult> runExecutableArguments(
     StreamSink<List<int>>? stderr,
     bool? verbose,
     bool? commandVerbose,
+    bool? noStdoutResult,
+    bool? noStderrResult,
     void Function(Process process)? onProcess}) async {
   if (verbose == true) {
     commandVerbose = true;
@@ -137,8 +142,12 @@ Future<ProcessResult> runExecutableArguments(
     return list;
   }
 
-  var out = streamToResult(outCtlr.stream, stdoutEncoding);
-  var err = streamToResult(errCtlr.stream, stderrEncoding);
+  var out = (noStdoutResult ?? false)
+      ? Future.value(null)
+      : streamToResult(outCtlr.stream, stdoutEncoding);
+  var err = (noStderrResult ?? false)
+      ? Future.value(null)
+      : streamToResult(errCtlr.stream, stderrEncoding);
 
   process.stdout.listen((List<int> d) {
     if (stdout != null) {
@@ -303,6 +312,8 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
     Stream<List<int>>? stdin,
     StreamSink<List<int>>? stdout,
     StreamSink<List<int>>? stderr,
+    bool? noStdoutResult,
+    bool? noStderrResult,
     void Function(Process process)? onProcess}) async {
   if (verbose == true) {
     stdout ??= io.stdout;
@@ -328,6 +339,8 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
         stdin: stdin,
         stdout: stdout,
         stderr: stderr,
+        noStdoutResult: noStdoutResult,
+        noStderrResult: noStderrResult,
         onProcess: onProcess);
   } catch (e) {
     if (verbose == true) {

@@ -105,7 +105,56 @@ dart example/echo.dart -o éà
       expect(results.length, 7);
     });
 
+    // Compiled version
+    var echoExe = shellArgument(join('.local', 'example', 'echo.exe'));
+    Future<void> ensureEchoExe() async {
+      if (!File(echoExe).existsSync()) {
+        await Directory(join('.local', 'example')).create(recursive: true);
+        await run(
+            'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o $echoExe');
+      }
+    }
+
+    test('noStdoutResult/noStderrResult', () async {
+      await ensureEchoExe();
+      var options = ShellOptions(noStdoutResult: true, verbose: false);
+      var shell = Shell(options: options);
+      var script = '$echoExe -o Out -e Err';
+      var result = (await shell.run(script)).first;
+      expect(result.stdout, isNull);
+      expect(result.stderr, 'Err');
+      result = (await shell
+          .runExecutableArguments(echoExe, ['-o', 'Out', '-e', 'Err']));
+      expect(result.stdout, isNull);
+      expect(result.stderr, 'Err');
+      // Not valid for runSync
+      result = (shell.runSync(script)).first;
+      expect(result.stdout, 'Out');
+      expect(result.stderr, 'Err');
+      // Not valid for runExecutableArgumentsSync
+      result = (shell
+          .runExecutableArgumentsSync(echoExe, ['-o', 'Out', '-e', 'Err']));
+      expect(result.stdout, 'Out');
+      expect(result.stderr, 'Err');
+      result = (await run(script, options: options)).first;
+      expect(result.stdout, isNull);
+      expect(result.stderr, 'Err');
+      result = (runSync(script, options: options)).first;
+      // Not valid for runSync
+      expect(result.stdout, 'Out');
+      expect(result.stderr, 'Err');
+      options = ShellOptions(noStderrResult: true, verbose: false);
+      shell = Shell(options: options);
+      result = (await shell.run(script)).first;
+      expect(result.stdout, 'Out');
+      expect(result.stderr, isNull);
+      result = (await run(script, options: options)).first;
+      expect(result.stdout, 'Out');
+      expect(result.stderr, isNull);
+    });
+
     test('arguments utf8', () async {
+      await ensureEchoExe();
       var shell = Shell(verbose: debug, stdoutEncoding: utf8);
       var results = await shell.run('''
 dart example/echo.dart -o 你好

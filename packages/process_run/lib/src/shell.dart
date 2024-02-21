@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:path/path.dart';
-import 'package:process_run/shell.dart';
 import 'package:process_run/shell.dart' as impl;
+import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart';
@@ -23,6 +23,8 @@ export 'shell_common.dart' show shellDebug;
 ///
 /// Returns a list of executed command line results. Verbose by default.
 ///
+/// Prefer using [options] than the parameters. [options] overrides all other
+/// parameters but [onProcess].
 ///
 /// ```dart
 /// await run('flutter build');
@@ -50,6 +52,7 @@ Future<List<ProcessResult>> run(
   bool? commandVerbose,
   // Default to true if verbose is true
   bool? commentVerbose,
+  ShellOptions? options,
   void Function(Process process)? onProcess,
 }) {
   return Shell(
@@ -65,7 +68,8 @@ Future<List<ProcessResult>> run(
           stderr: stderr,
           verbose: verbose,
           commandVerbose: commandVerbose,
-          commentVerbose: commentVerbose)
+          commentVerbose: commentVerbose,
+          options: options)
       .run(script, onProcess: onProcess);
 }
 
@@ -107,6 +111,9 @@ List<ProcessResult> runSync(
   bool? commandVerbose,
   // Default to true if verbose is true
   bool? commentVerbose,
+
+  /// Override all other options parameters
+  ShellOptions? options,
 }) {
   return Shell(
           throwOnError: throwOnError,
@@ -121,7 +128,8 @@ List<ProcessResult> runSync(
           stderr: stderr,
           verbose: verbose,
           commandVerbose: commandVerbose,
-          commentVerbose: commentVerbose)
+          commentVerbose: commentVerbose,
+          options: options)
       .runSync(script);
 }
 
@@ -181,6 +189,8 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   /// if [verbose] is not false or [commentVerbose] is true, it will display the
   /// comments as well
+  ///
+  /// [options] overrides all other parameters
   factory Shell(
       {bool throwOnError = true,
       String? workingDirectory,
@@ -197,6 +207,8 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       bool? commandVerbose,
       // Default to false
       bool? commentVerbose,
+
+      /// Overrides all parameters
       ShellOptions? options}) {
     var shell = shellContext.newShell(
         options: options ??
@@ -227,26 +239,27 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
   /// Create a new shell
   @Deprecated('Use clone with options')
-  Shell clone(
-      {bool? throwOnError,
-      String? workingDirectory,
-      // Don't change environment
-      @Deprecated('Don\'t change map') Map<String, String>? environment,
+  Shell clone({
+    bool? throwOnError,
+    String? workingDirectory,
+    // Don't change environment
+    @Deprecated('Don\'t change map') Map<String, String>? environment,
 
-      /// Explicetely set e new environment
+    /// Explicetely set e new environment
 //      ShellEnvironment? shellEnvironment,
-      @Deprecated('Don\'t change includeParentEnvironment')
-      // Don't change includeParentEnvironment
-      bool? includeParentEnvironment,
-      bool? runInShell,
-      Encoding? stdoutEncoding,
-      Encoding? stderrEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool? verbose,
-      bool? commandVerbose,
-      bool? commentVerbose}) {
+    @Deprecated('Don\'t change includeParentEnvironment')
+    // Don't change includeParentEnvironment
+    bool? includeParentEnvironment,
+    bool? runInShell,
+    Encoding? stdoutEncoding,
+    Encoding? stderrEncoding,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool? verbose,
+    bool? commandVerbose,
+    bool? commentVerbose,
+  }) {
     var localShellEnvironment =
         // Compat
         (environment is ShellEnvironment ? environment : null);
@@ -601,7 +614,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
                 commandVerbose: _options.commandVerbose,
                 stderr: _options.stderr,
                 stdin: _options.stdin,
-                stdout: _options.stdout, onProcess: (process) {
+                stdout: _options.stdout,
+                noStdoutResult: _options.noStdoutResult,
+                noStderrResult: _options.noStderrResult, onProcess: (process) {
               _currentProcess = process;
               _currentProcessCmd = processCmd;
               _currentProcessRunId = runId;

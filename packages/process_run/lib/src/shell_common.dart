@@ -121,6 +121,8 @@ abstract class ShellCoreSync {
 }
 
 /// Shell options.
+///
+
 class ShellOptions {
   final bool _throwOnError;
   final String? _workingDirectory;
@@ -134,6 +136,8 @@ class ShellOptions {
   final bool _verbose;
   final bool _commandVerbose;
   final bool _commentVerbose;
+  final bool? _noStdoutResult;
+  final bool? _noStderrResult;
 
   late final ShellEnvironment? _environment;
 
@@ -164,24 +168,34 @@ class ShellOptions {
   /// default to true for non .exe files
   ///
   /// if [verbose] is not false or [commentVerbose] is true, it will display the
-  /// comments as well
-  ShellOptions(
-      {bool throwOnError = true,
-      String? workingDirectory,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true,
-      bool? runInShell,
-      Encoding? stdoutEncoding,
-      Encoding? stderrEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool verbose = true,
-      // Default to true
-      bool? commandVerbose,
-      // Default to false
-      bool? commentVerbose})
-      : _throwOnError = throwOnError,
+  /// comments as well.
+  ///
+  /// If [noStdoutResult] is true, stdout will be null in the ProcessResult result
+  /// of the run command (runSync will still contain it).
+  ///
+  /// If [noStderrResult] is true, stderr will be null in the ProcessResult result
+  /// of the run command (runSync will still contain it).
+  ShellOptions({
+    bool throwOnError = true,
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool? runInShell,
+    Encoding? stdoutEncoding,
+    Encoding? stderrEncoding,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool verbose = true,
+    // Default to true
+    bool? commandVerbose,
+    // Default to false
+    bool? commentVerbose,
+    // Default to false
+    bool? noStdoutResult,
+    // Default to false
+    bool? noStderrResult,
+  })  : _throwOnError = throwOnError,
         _workingDirectory = workingDirectory,
         _runInShell = runInShell,
         _stdoutEncoding = stdoutEncoding,
@@ -191,7 +205,9 @@ class ShellOptions {
         _stderr = stderr,
         _verbose = verbose,
         _commandVerbose = commandVerbose ?? verbose,
-        _commentVerbose = commentVerbose ?? false {
+        _commentVerbose = commentVerbose ?? false,
+        _noStderrResult = noStderrResult,
+        _noStdoutResult = noStdoutResult {
     _environment = ShellEnvironment.full(
         environment: environment,
         includeParentEnvironment: includeParentEnvironment);
@@ -212,6 +228,12 @@ class ShellOptions {
   /// True if it should throw if an error occurred.
   bool get throwOnError => _throwOnError;
 
+  /// True if ProcessResult should not contain stdout
+  bool? get noStdoutResult => _noStdoutResult;
+
+  /// True if ProcessResult should not contain stderr
+  bool? get noStderrResult => _noStderrResult;
+
   /// Create a new shell
   ShellOptions clone(
       {bool? throwOnError,
@@ -225,6 +247,8 @@ class ShellOptions {
       bool? verbose,
       bool? commandVerbose,
       bool? commentVerbose,
+      bool? noStdoutResult,
+      bool? noStderrResult,
       ShellEnvironment? shellEnvironment}) {
     return ShellOptions(
         verbose: verbose ?? _verbose,
@@ -238,7 +262,9 @@ class ShellOptions {
         stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
         throwOnError: throwOnError ?? _throwOnError,
         workingDirectory: workingDirectory ?? _workingDirectory,
-        environment: shellEnvironment);
+        environment: shellEnvironment,
+        noStdoutResult: noStdoutResult ?? _noStdoutResult,
+        noStderrResult: noStderrResult ?? _noStderrResult);
   }
 }
 
@@ -272,20 +298,21 @@ mixin ShellMixin implements ShellCore, ShellCoreSync {
   }
 
   @Deprecated('Use clone with options')
-  Shell clone(
-      {bool? throwOnError,
-      String? workingDirectory,
-      Map<String, String>? environment,
-      bool? includeParentEnvironment,
-      bool? runInShell,
-      Encoding? stdoutEncoding,
-      Encoding? stderrEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool? verbose,
-      bool? commandVerbose,
-      bool? commentVerbose}) {
+  Shell clone({
+    bool? throwOnError,
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool? includeParentEnvironment,
+    bool? runInShell,
+    Encoding? stdoutEncoding,
+    Encoding? stderrEncoding,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool? verbose,
+    bool? commandVerbose,
+    bool? commentVerbose,
+  }) {
     return cloneWithOptions(
       ShellOptions(
         throwOnError: throwOnError ?? options.throwOnError,
