@@ -30,7 +30,7 @@ bool get isFlutterSupportedSync => flutterExecutablePath != null;
 class FlutterCmd extends ProcessCmd {
   // Somehow flutter requires runInShell on Linux, does not hurt on windows
   FlutterCmd(List<String> arguments)
-      : super(flutterExecutablePath, arguments, runInShell: true);
+      : super(flutterExecutablePath!, arguments, runInShell: true);
 
   @override
   String toString() => executableArgumentsToString('flutter', arguments);

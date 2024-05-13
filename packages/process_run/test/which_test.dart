@@ -18,7 +18,7 @@ void main() {
       var dartExecutable = whichSync('dart', environment: env);
       expect(dartExecutable, isNotNull);
       print(dartExecutable);
-      var cmd = ProcessCmd(dartExecutable, ['--version']);
+      var cmd = ProcessCmd(dartExecutable!, ['--version']);
       final result = await runCmd(cmd);
       testDartVersionOutput(result);
     });

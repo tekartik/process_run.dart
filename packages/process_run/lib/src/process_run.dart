@@ -327,7 +327,7 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
   }
 
   try {
-    return await runExecutableArguments(cmd.executable!, cmd.arguments,
+    return await runExecutableArguments(cmd.executable, cmd.arguments,
         workingDirectory: cmd.workingDirectory,
         environment: cmd.environment,
         includeParentEnvironment: cmd.includeParentEnvironment,

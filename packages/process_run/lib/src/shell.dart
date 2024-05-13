@@ -700,7 +700,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 class _ProcessCmd extends ProcessCmd {
   final String executableShortName;
 
-  _ProcessCmd(String super.executable, super.arguments,
+  _ProcessCmd(super.executable, super.arguments,
       {required this.executableShortName});
 
   @override

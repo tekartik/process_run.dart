@@ -5,7 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:process_run/process_run.dart';
 
 class ProcessCmd {
-  String? executable;
+  String executable;
   List<String> arguments;
   String? workingDirectory;
   Map<String, String>? environment;

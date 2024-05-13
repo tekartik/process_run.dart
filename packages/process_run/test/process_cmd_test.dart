@@ -36,7 +36,7 @@ void main() {
       expect(cmd1, isNot(cmd2));
     });
     test('dart_cmd', () async {
-      final result = await runCmd(ProcessCmd(dartExecutable, ['--version']));
+      final result = await runCmd(ProcessCmd(dartExecutable!, ['--version']));
       testDartVersionOutput(result);
       // 'Dart VM version: 1.7.0-dev.4.5 (Thu Oct  9 01:44:31 2014) on 'linux_x64'\n'
     });
