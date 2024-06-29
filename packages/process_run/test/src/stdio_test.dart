@@ -1,3 +1,6 @@
+@TestOn('vm')
+library;
+
 import 'package:process_run/src/stdio/stdio.dart';
 import 'package:test/test.dart';
 
