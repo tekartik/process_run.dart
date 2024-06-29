@@ -1,4 +1,4 @@
-## 1.0.0-1
+## 1.0.0
 
 * add `ShellStdio` and `shellStdioLinesGrouper` to allow grouping stdout and stderr lines by zones.
 

@@ -1,12 +1,12 @@
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/run.dart';
-// ignore: import_of_legacy_library_into_null_safe
+import 'package:process_run/src/version.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'env.dart';
 import 'import.dart';
 
-Version shellBinVersion = Version(0, 2, 0);
+Version shellBinVersion = Version.parse(packageVersion);
 
 const flagHelp = 'help';
 const flagInfo = 'info';
