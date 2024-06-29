@@ -1,3 +1,7 @@
+## 1.0.0-0
+
+* add `ShellStdio` and `shellStdioLinesGrouper` to allow grouping stdout and stderr lines by zones.
+
 ## 0.14.2
 
 * add `noStdoutResult` and `noStderrResult` to `ShellOptions` and `runExecutableArguments` to avoid out of memory for 
