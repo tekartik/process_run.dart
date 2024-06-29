@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:io' as io;
-import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/io/io.dart' as io;
+import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell.dart';
 import 'package:process_run/src/shell_utils.dart' as utils;
 import 'package:process_run/src/shell_utils.dart';

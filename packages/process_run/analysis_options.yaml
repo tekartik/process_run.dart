@@ -21,6 +21,7 @@ analyzer:
 
 linter:
   rules:
+    # - public_member_api_docs
     - always_declare_return_types
     - avoid_dynamic_calls
     - avoid_slow_async_io

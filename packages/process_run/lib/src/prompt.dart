@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/io/io.dart';
+
 import 'shell_utils.dart';
 
 /// Get text

@@ -29,3 +29,43 @@ abstract class ShellContext {
     Map<String, String>? environment,
   });
 }
+
+mixin ShellContextMixin implements ShellContext {
+  @override
+  Encoding get encoding =>
+      throw UnimplementedError('ShellContextMixin.encoding');
+  @override
+  Shell newShell(
+      {ShellOptions? options,
+      Map<String, String>? environment,
+      bool includeParentEnvironment = true}) {
+    throw UnimplementedError('ShellContext.newShell');
+  }
+
+  @override
+  ShellEnvironment newShellEnvironment({Map<String, String>? environment}) {
+    throw UnimplementedError('ShellContext.newShellEnvironment');
+  }
+
+  @override
+  p.Context get path => throw UnimplementedError('ShellContext.path');
+
+  @override
+  ShellEnvironment get shellEnvironment =>
+      throw UnimplementedError('ShellContext.shellEnvironment');
+
+  @override
+  Future<String?> which(String command,
+      {ShellEnvironment? environment, bool includeParentEnvironment = true}) {
+    throw UnimplementedError('ShellContext.which');
+  }
+}
+
+/// In memory shell context.
+class ShellContextMemory with ShellContextMixin implements ShellContext {
+  @override
+  Encoding get encoding => utf8;
+}
+
+/// In memory shell context.
+final shellContextMemory = ShellContextMemory();

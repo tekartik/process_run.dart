@@ -279,7 +279,6 @@ Future<String?> which(String command,
 
 /// Default missing implementation.
 mixin ShellMixin implements ShellCore, ShellCoreSync {
-  // Set lazily after newShell;
   @override
   late ShellContext context;
 

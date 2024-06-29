@@ -5,7 +5,7 @@ library process_run.cmd_run;
 /// Command runner
 ///
 import 'dart:async';
-import 'dart:io';
+import 'package:process_run/src/io/io.dart';
 
 import 'package:process_run/src/process_run.dart';
 

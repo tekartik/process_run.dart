@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/io/io.dart';
 
 import 'dump.dart';
 

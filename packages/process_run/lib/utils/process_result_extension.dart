@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'package:process_run/src/io/io.dart';
 
 import 'package:process_run/src/lines_utils.dart';
 

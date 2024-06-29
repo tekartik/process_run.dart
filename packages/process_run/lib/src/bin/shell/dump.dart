@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:process_run/src/io/io.dart';
 
 void dumpStringMap(Map<String, String> map) {
   var keys = map.keys.toList()

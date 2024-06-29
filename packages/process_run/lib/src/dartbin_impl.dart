@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:path/path.dart';
+import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/user_config.dart';
 

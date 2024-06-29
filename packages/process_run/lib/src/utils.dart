@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'package:process_run/src/io/io.dart';
 
 String getShellCmdBinFileName(String command) =>
     '$command${Platform.isWindows ? '.bat' : ''}';

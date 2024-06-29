@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:process_run/src/characters.dart';
+import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/user_config.dart';
 
 class FileContent {

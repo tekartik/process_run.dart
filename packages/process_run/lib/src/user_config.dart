@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -7,6 +6,7 @@ import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/dartbin_impl.dart';
+import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/script_filename.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:yaml/yaml.dart';

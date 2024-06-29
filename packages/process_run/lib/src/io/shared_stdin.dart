@@ -4,9 +4,9 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:meta/meta.dart';
+import 'package:process_run/src/io/io.dart';
 
 /// A shared singleton instance of `dart:io`'s [stdin] stream.
 ///

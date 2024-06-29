@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:process_run/src/io/io.dart';
 
 /// 'flutter' => 'flutter.bat' (windows) or 'flutter'
 String getBashOrBatExecutableFilename(String command) {

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:path/path.dart';
+import 'package:process_run/src/io/io.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';

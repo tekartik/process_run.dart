@@ -1,10 +1,9 @@
-import 'dart:io';
-
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:args/args.dart';
 import 'package:meta/meta.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/io/io.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 

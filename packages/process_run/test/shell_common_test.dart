@@ -1,10 +1,8 @@
 library process_run.test.shell_common_api_test;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/src/context.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/env_utils.dart';
 import 'package:process_run/src/platform/platform.dart';
@@ -13,11 +11,7 @@ import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_environment_common.dart';
 import 'package:test/test.dart';
 
-class ShellContextMock implements ShellContext {
-  @override
-  // TODO: implement encoding
-  Encoding get encoding => throw UnimplementedError();
-
+class ShellContextMock with ShellContextMixin implements ShellContext {
   @override
   Shell newShell(
       {ShellOptions? options,
@@ -27,23 +21,7 @@ class ShellContextMock implements ShellContext {
   }
 
   @override
-  ShellEnvironment newShellEnvironment({Map<String, String>? environment}) {
-    // TODO: implement newShellEnvironment
-    throw UnimplementedError();
-  }
-
-  @override
-  Context get path => throw UnimplementedError();
-
-  @override
   final ShellEnvironment shellEnvironment = ShellEnvironmentMock();
-
-  @override
-  Future<String?> which(String command,
-      {ShellEnvironment? environment, bool includeParentEnvironment = true}) {
-    // TODO: implement which
-    throw UnimplementedError();
-  }
 }
 
 class ShellEnvironmentMock extends ShellEnvironmentBase

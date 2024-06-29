@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:process_run/shell.dart' as ds;
+import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell_common.dart';
 import 'package:process_run/src/shell_common_io.dart';
 import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_environment.dart' as io;
 
-class ShellContextIo implements ShellContext {
+class ShellContextIo with ShellContextMixin implements ShellContext {
   @override
   ShellEnvironment get shellEnvironment =>
       io.ShellEnvironment(environment: ds.shellEnvironment);

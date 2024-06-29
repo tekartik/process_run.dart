@@ -1,10 +1,9 @@
 import 'dart:convert';
-import 'dart:io' as io;
 
-import 'package:path/path.dart';
 import 'package:process_run/shell.dart' as impl;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
+import 'package:process_run/src/io/io.dart' as io;
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell_common.dart'
@@ -13,6 +12,9 @@ import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
 export 'shell_common.dart' show shellDebug;
+
+/// Shell on process callback
+typedef ShellOnProcessCallback = void Function(Process process);
 
 ///
 /// Run one or multiple plain text command(s).
@@ -53,7 +55,7 @@ Future<List<ProcessResult>> run(
   // Default to true if verbose is true
   bool? commentVerbose,
   ShellOptions? options,
-  void Function(Process process)? onProcess,
+  ShellOnProcessCallback? onProcess,
 }) {
   return Shell(
           throwOnError: throwOnError,
@@ -287,8 +289,8 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// Create new shell at the given path
   @override
   Shell cd(String path) {
-    if (isRelative(path)) {
-      path = join(_workingDirectoryPath, path);
+    if (context.path.isRelative(path)) {
+      path = context.path.join(_workingDirectoryPath, path);
     }
     if (_options.commandVerbose) {
       streamSinkWriteln(_options.stdout ?? stdout, '\$ cd $path',
@@ -359,7 +361,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   @override
   Future<List<ProcessResult>> run(String script,
-      {void Function(Process process)? onProcess}) {
+      {ShellOnProcessCallback? onProcess}) {
     // devPrint('Running $script');
     return _runLocked((runId) async {
       var commands = scriptToCommands(script);
@@ -584,6 +586,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   Future<ProcessResult> _lockedRunExecutableArguments(
       int runId, String executable, List<String> arguments,
       {void Function(Process process)? onProcess}) {
+    /// Global process handler.
     try {
       _clearPreviousContext();
       var completer =
@@ -608,6 +611,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           if (shellDebug) {
             print('$_runId: Before $processCmd');
           }
+
           try {
             processResult = await processCmdRun(processCmd,
                 verbose: _options.verbose,
