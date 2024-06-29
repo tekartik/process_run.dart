@@ -5,30 +5,58 @@ import 'dart:core';
 
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
+import 'package:process_run/src/io/io.dart' as io;
 import 'package:process_run/src/stdio/platform/platform.dart';
 
-class ShellStdioLinesGrouperIOSink implements IOSink {
-  bool get _isErr => type == StdioStreamType.err;
-  late final IOSink ioSink = _isErr ? ioStderr : ioStdout;
+class InMemoryIOSink with IOSinkMixin implements IOSink {
+  @override
   final StdioStreamType type;
 
-  @override
-  Encoding get encoding => ioSink.encoding;
-
-  ShellStdioLinesGrouperIOSink(this.type);
+  var data = <List<int>>[];
+  Iterable<String> get lines =>
+      LineSplitter.split(encoding.decode(data.expand((e) => e).toList()));
+  InMemoryIOSink(this.type);
 
   @override
   void add(core.List<core.int> data) {
-    var currentZoneId = _shellStdioLinesGrouper.currentZoneId;
-    var zoneId = _shellStdioLinesGrouper.zoneId;
+    this.data.add(data);
+  }
 
-    var isCurrent = currentZoneId == zoneId;
+  @override
+  String toString() => 'InMemoryIOSink($type)';
+}
 
-    var streamer = _shellStdioLinesGrouper.streamers[zoneId] ??=
-        ShellOutputLinesStreamerPlatform(current: isCurrent);
-    // devPrint('[$zoneId/$currentZoneId] Adding data ${encoding.decode(data).trim()}');
-    var sink = _isErr ? streamer.err : streamer.out;
-    sink.add(data);
+mixin IOSinkMixin implements IOSink {
+  bool get _isErr => type == StdioStreamType.err;
+  late final IOSink ioSinkDelegate = _isErr ? ioStderr : ioStdout;
+  StdioStreamType get type;
+  IOSink get ioSink => ioSinkDelegate;
+  @override
+  Encoding get encoding => ioSink.encoding;
+
+  @override
+  void write(core.Object? object) {
+    add(encoding.encode(object?.toString() ?? ''));
+  }
+
+  @override
+  void writeAll(core.Iterable objects, [core.String separator = '']) {
+    write(objects.join(separator));
+  }
+
+  @override
+  void writeCharCode(core.int charCode) {
+    write(String.fromCharCode(charCode));
+  }
+
+  @override
+  void writeln([core.Object? object = '']) {
+    write('$object\n');
+  }
+
+  @override
+  set encoding(Encoding encoding) {
+    throw core.UnsupportedError('ShellStdioIOSink encoding is read only');
   }
 
   @override
@@ -55,48 +83,58 @@ class ShellStdioLinesGrouperIOSink implements IOSink {
 
   @override
   async.Future flush() async {
-    // await ioSink.flush();
+    await ioSink.flush();
+  }
+}
+
+class ShellStdioLinesGrouperIOSink with IOSinkMixin implements IOSink {
+  final ShellStdioLinesGrouper grouper;
+  @override
+  final StdioStreamType type;
+  @override
+  late final IOSink ioSink;
+  ShellStdioLinesGrouperIOSink(this.grouper, this.type, {IOSink? ioSink}) {
+    this.ioSink = ioSink ?? super.ioSink;
   }
 
   @override
-  void write(core.Object? object) {
-    add(encoding.encode(object?.toString() ?? ''));
-  }
+  void add(core.List<core.int> data) {
+    var currentZoneId = _shellStdioLinesGrouper.currentZoneId;
+    var zoneId = _shellStdioLinesGrouper.zoneId;
 
-  @override
-  void writeAll(core.Iterable objects, [core.String separator = '']) {
-    write(objects.join(separator));
-  }
+    var isCurrent = currentZoneId == zoneId;
 
-  @override
-  void writeCharCode(core.int charCode) {
-    write(String.fromCharCode(charCode));
-  }
-
-  @override
-  void writeln([core.Object? object = '']) {
-    write('$object\n');
-  }
-
-  @override
-  set encoding(Encoding encoding) {
-    throw core.UnsupportedError('ShellStdioIOSink encoding is read only');
+    var streamer = _shellStdioLinesGrouper.streamers[zoneId] ??=
+        ShellOutputLinesStreamer(
+            current: isCurrent, stdout: grouper.stdout, stderr: grouper.stderr);
+    // devPrint('[$zoneId/$currentZoneId] Adding data ${encoding.decode(data).trim()}');
+    var sink = _isErr ? streamer.err : streamer.out;
+    sink.add(data);
   }
 }
 
 /// Group in zones.
-class _ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
+class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
+  /// Overriden mainly for testing.
+  final IOSink? stdout;
+
+  /// Overriden mainly for testing.
+  final IOSink? stderr;
   int? currentZoneId;
   final streamers = <int, ShellOutputLinesStreamer>{};
 
-  @override
-  late final out = ShellStdioLinesGrouperIOSink(StdioStreamType.out);
+  ShellStdioLinesGrouper({this.stdout, this.stderr});
 
   @override
-  late final err = ShellStdioLinesGrouperIOSink(StdioStreamType.err);
+  late final out =
+      ShellStdioLinesGrouperIOSink(this, StdioStreamType.out, ioSink: stdout);
+
+  @override
+  late final err =
+      ShellStdioLinesGrouperIOSink(this, StdioStreamType.err, ioSink: stderr);
 }
 
-final _shellStdioLinesGrouper = _ShellStdioLinesGrouper();
+final _shellStdioLinesGrouper = ShellStdioLinesGrouper();
 ShellStdio get shellStdioLinesGrouper => _shellStdioLinesGrouper;
 
 const _stdio = #tekartik_shell_stdio;
@@ -127,7 +165,10 @@ extension ShellStdioExt on ShellStdio {
     } finally {
       _inZoneCount--;
       var streamer = _shellStdioLinesGrouper.streamers[zoneId];
-      streamer?.close();
+      if (streamer != null) {
+        await Future<void>.value(); // await streamer.done;
+        streamer.close();
+      }
     }
   }
 }
@@ -163,17 +204,20 @@ class StdioStreamLine {
 }
 
 class ShellOutputLinesStreamerMemory with ShellOutputLinesStreamerMixin {
-  ShellOutputLinesStreamerMemory({bool? current = false}) {
+  //late final io.IOSink stdout;
+  //late final io.IOSink stderr;
+  ShellOutputLinesStreamerMemory(
+      {bool? current = false, io.IOSink? stdout, io.IOSink? stderr}) {
     this.current = current;
   }
 }
 
 mixin ShellOutputLinesStreamerMixin implements ShellOutputLinesStreamer {
   @override
-  StreamSink<List<int>> get err => outController.sink;
+  StreamSink<List<int>> get out => outController.sink;
 
   @override
-  StreamSink<List<int>> get out => outController.sink;
+  StreamSink<List<int>> get err => errController.sink;
 
   /// Current.
   bool get current => _current ?? false;
@@ -199,6 +243,11 @@ mixin ShellOutputLinesStreamerMixin implements ShellOutputLinesStreamer {
   }
 
   @override
+  Future<void> get done async {
+    await Future.wait([outController.done, errController.done]);
+  }
+
+  @override
   void close() {
     mixinDispose();
   }
@@ -213,9 +262,14 @@ abstract class ShellOutputLinesStreamer {
   StreamSink<List<int>> get err;
 
   /// default is io version.
-  factory ShellOutputLinesStreamer({bool? current = false}) {
-    return ShellOutputLinesStreamerPlatform(current: current);
+  factory ShellOutputLinesStreamer(
+      {bool? current = false, io.IOSink? stdout, io.IOSink? stderr}) {
+    return ShellOutputLinesStreamerPlatform(
+        current: current, stdout: stdout, stderr: stderr);
   }
+
+  /// Wait for the streamer to be done.
+  Future<void> get done;
 
   /// Close the streamer.
   void close();

@@ -2,6 +2,7 @@
 library;
 
 import 'package:process_run/process_run.dart';
+import 'package:process_run/src/stdio/stdio.dart';
 import 'package:process_run/stdio.dart';
 import 'package:test/test.dart';
 
@@ -9,7 +10,7 @@ import 'src/compile_echo.dart';
 
 void main() {
   group('shell_stdio_lines_grouper', () {
-    test('hello123', () async {
+    test('hello12', () async {
       var echo = await compileEchoExample();
 
       var options = ShellOptions(
@@ -45,7 +46,28 @@ echo --wait 100 --stdout hello2
       var stdio = shellStdioLinesGrouper;
       await Future.wait<List<ProcessResult>>(
           [stdio.runZoned(() => printHello123Slow()), printHello123Slow()]);
+
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var isMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: isMemoryStdout);
+      await Future.wait<List<ProcessResult>>(
+          [stdio.runZoned(() => printHello123Slow()), printHello123Slow()]);
+      // Not working yet
+      // expect(isMemoryStdout.lines, ['hello1', 'hello2', 'hello1', 'hello2', 'hello1', 'hello2']);
     });
-    test('ok', () {});
+    test('in memory stdout/stderr', () async {
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      var stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: inMemoryStdout);
+      await stdio.runZoned(() async {
+        stdout.writeln('test1');
+        stderr.writeln('test2');
+        stdout.writeln('test3');
+      });
+      expect(inMemoryStdout.lines, ['test1', 'test3']);
+      expect(inMemoryStderr.lines, ['test2']);
+    });
   });
 }

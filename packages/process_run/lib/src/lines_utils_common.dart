@@ -33,8 +33,11 @@ class ShellLinesController {
 
   ShellLinesController({Encoding? encoding}) {
     this.encoding = encoding ?? shellContext.encoding;
-    _controller = StreamController<List<int>>();
+    // Must be sync!
+    _controller = StreamController<List<int>>(sync: true);
   }
+
+  Future<void> get done => _controller.done;
 
   /// Write a string with the specified encoding.
   void write(String message) =>

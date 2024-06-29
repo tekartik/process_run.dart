@@ -139,14 +139,14 @@ Future main(List<String> arguments) async {
   if (stderrText != null) {
     stderr.write(stderrText);
     if (writeLine!) {
-      stdout.writeln();
+      stderr.writeln();
     }
   }
   final stderrHexTest = argsResult['stderr-hex'] as String?;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
     if (writeLine!) {
-      stdout.writeln();
+      stderr.writeln();
     }
   }
 

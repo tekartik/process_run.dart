@@ -6,9 +6,11 @@ import 'package:process_run/src/stdio/stdio.dart';
 class ShellOutputLinesStreamerIo
     with ShellOutputLinesStreamerMixin
     implements ShellOutputLinesStreamer {
+  late final io.IOSink stdout;
+  late final io.IOSink stderr;
   void log(String message) {
     if (current) {
-      io.stdout.writeln(message);
+      stdout.writeln(message);
     } else {
       lines.add(StdioStreamLine(StdioStreamType.out, message));
     }
@@ -16,14 +18,17 @@ class ShellOutputLinesStreamerIo
 
   void error(String message) {
     if (current) {
-      io.stderr.writeln(message);
+      stderr.writeln(message);
     } else {
       lines.add(StdioStreamLine(StdioStreamType.err, message));
     }
   }
 
   /// Stdio streamer.could become true at any moment!
-  ShellOutputLinesStreamerIo({bool? current = false}) {
+  ShellOutputLinesStreamerIo(
+      {bool? current = false, io.IOSink? stdout, io.IOSink? stderr}) {
+    this.stdout = stdout ?? io.ioStdout;
+    this.stderr = stderr ?? io.ioStderr;
     this.current = current;
     outController.stream.listen((line) {
       log(line);
@@ -40,9 +45,9 @@ class ShellOutputLinesStreamerIo
     if (!current) {
       for (var line in lines) {
         if (line.type == StdioStreamType.out) {
-          io.stdout.writeln(line.line);
+          stdout.writeln(line.line);
         } else {
-          io.stderr.writeln(line.line);
+          stderr.writeln(line.line);
         }
       }
     }
