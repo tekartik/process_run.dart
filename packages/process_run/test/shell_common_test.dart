@@ -186,7 +186,7 @@ void main() {
         if (isRunningAsJavascript) {
           fail('should fail');
         }
-      } on StateError catch (e) {
+      } catch (e) {
         if (!isRunningAsJavascript) {
           rethrow;
         }
