@@ -69,5 +69,46 @@ echo --wait 100 --stdout hello2
       expect(inMemoryStdout.lines, ['test1', 'test3']);
       expect(inMemoryStderr.lines, ['test2']);
     });
+
+    test('empty lines', () async {
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      var stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: inMemoryStdout);
+      await stdio.runZoned(() async {
+        stdout.writeln('test1');
+        stdout.writeln('');
+        stdout.writeln('test2');
+      });
+      expect(inMemoryStdout.lines, ['test1', '', 'test2']);
+    });
+
+    test('CRLF', () async {
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      var stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: inMemoryStdout);
+      await stdio.runZoned(() async {
+        stdout.write('test1\r\n');
+        stdout.write('test2\r');
+        stdout.write('test3\n');
+        stdout.writeln('test4');
+      });
+      expect(inMemoryStdout.lines, ['test1', 'test2', 'test3', 'test4']);
+    });
+
+    test('last lines', () async {
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      var stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: inMemoryStdout);
+      await stdio.runZoned(() async {
+        stdout.writeln('test1');
+        stdout.writeln('');
+        stdout.write('test');
+        stdout.write('2');
+      });
+      expect(inMemoryStdout.lines, ['test1', '', 'test2']);
+    });
   });
 }

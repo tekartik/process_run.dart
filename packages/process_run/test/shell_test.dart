@@ -10,10 +10,9 @@ import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/dartbin_cmd.dart'
     show parseDartBinVersionOutput;
+import 'package:process_run/src/utils/hex_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
-
-import 'hex_utils.dart';
 
 // Compiled version of echo.dart
 var echoExePath = join('.local', 'example', 'echo.exe');
