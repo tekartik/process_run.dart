@@ -262,7 +262,7 @@ class ShellOptions {
         stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
         throwOnError: throwOnError ?? _throwOnError,
         workingDirectory: workingDirectory ?? _workingDirectory,
-        environment: shellEnvironment,
+        environment: shellEnvironment ?? _environment,
         noStdoutResult: noStdoutResult ?? _noStdoutResult,
         noStderrResult: noStderrResult ?? _noStderrResult);
   }

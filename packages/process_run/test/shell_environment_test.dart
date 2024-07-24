@@ -319,6 +319,14 @@ void main() {
       shellEnvironment = prevEnv;
     }
   });
+
+  test('cd', () async {
+    var env = ShellEnvironment()..aliases['cd_alias'] = 'cd';
+    var shell = Shell(environment: env);
+    expect(shell.options.environment.aliases['cd_alias'], 'cd');
+    shell = shell.cd('test');
+    expect(shell.options.environment.aliases['cd_alias'], 'cd');
+  });
 }
 
 /// Better with non verbose shell.
