@@ -9,14 +9,16 @@ Future<void> writeCount(int count) async {
 }
 
 Future<void> main() async {
-  stdout.writeln('Counting 2,5,10');
+  stdout.writeln('Counting 5,1,3');
   shellStdioLinesGrouper.runZoned(() async {
-    await writeCount(2);
-  });
-  shellStdioLinesGrouper.runZoned(() async {
+    await Future<void>.delayed(Duration(milliseconds: 500));
     await writeCount(5);
   });
   shellStdioLinesGrouper.runZoned(() async {
-    await writeCount(10);
+    await Future<void>.delayed(Duration(milliseconds: 250));
+    await writeCount(1);
+  });
+  shellStdioLinesGrouper.runZoned(() async {
+    await writeCount(3);
   });
 }

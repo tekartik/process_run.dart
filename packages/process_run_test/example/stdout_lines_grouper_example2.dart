@@ -9,6 +9,7 @@ Future<void> writeCount(int count) async {
 }
 
 Future<void> main() async {
+  stdout.writeln('Counting 2,1');
   shellStdioLinesGrouper.runZoned(() async {
     await Future<void>.delayed(Duration(milliseconds: 500));
     await writeCount(2);

@@ -166,15 +166,34 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
     if (_debugLinesGrouper) {
       _log('_setCurrent $currentZoneId $streamerZoneIds');
     }
-    if (currentZoneId == null) {
-      var firstZoneId = streamerZoneIds.firstOrNull;
-      if (firstZoneId != null) {
-        streamers[firstZoneId]?.current = true;
-        currentZoneId = firstZoneId;
-        if (_debugLinesGrouper) {
-          _log('_setCurrent new $currentZoneId');
-        }
+    while (true) {
+      var nextZoneId = streamerZoneIds.firstOrNull;
+      var zoneId = currentZoneId ?? nextZoneId;
+      if (zoneId == null) {
+        break;
       }
+      var streamer = streamers[zoneId]!;
+      streamer.current = true;
+      if (_debugLinesGrouper) {
+        _log('_setCurrent new $zoneId');
+      }
+      if (streamer.isClosed) {
+        streamerZoneIds.remove(zoneId);
+        streamers.remove(zoneId);
+      } else {
+        break;
+      }
+      /*
+      if (currentZoneId == null) {
+        var firstZoneId = streamerZoneIds.firstOrNull;
+        if (firstZoneId != null) {
+          streamers[firstZoneId]?.current = true;
+          currentZoneId = firstZoneId;
+          if (_debugLinesGrouper) {
+            _log('_setCurrent new $currentZoneId');
+          }
+        }
+      }*/
     }
   }
 
@@ -192,12 +211,8 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
         try {
           return await action();
         } finally {
-          var streamer = streamers[zoneId];
-          streamer?.close();
-          if (currentZoneId == zoneId) {
-            streamerZoneIds.remove(zoneId);
-            currentZoneId = null;
-          }
+          var streamer = streamers[zoneId]!;
+          streamer.close();
           _setCurrent();
         }
       }, zoneValues: {_stdio: this, _id: zoneId});
@@ -308,6 +323,10 @@ mixin ShellOutputLinesStreamerMixin implements ShellOutputLinesStreamer {
   /// Err.
   final errController = ShellLinesController();
 
+  /// True if the streamer is closed.
+  @override
+  bool get isClosed => outController.isClosed;
+
   /// Dispose.
   void mixinDispose() {
     outController.close();
@@ -340,6 +359,9 @@ abstract class ShellOutputLinesStreamer {
 
   /// Get the current state.
   bool get current;
+
+  /// true if the streamer is closed
+  bool get isClosed;
 
   /// Set the current state.
   set current(bool current);

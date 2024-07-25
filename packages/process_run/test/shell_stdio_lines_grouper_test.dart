@@ -110,5 +110,47 @@ echo --wait 100 --stdout hello2
       });
       expect(inMemoryStdout.lines, ['test1', '', 'test2']);
     });
+
+    test('last done before first', () async {
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      var stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: inMemoryStdout);
+      var futures = <Future>[];
+      futures.add(stdio.runZoned(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        stdout.writeln('test1');
+      }));
+      futures.add(stdio.runZoned(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+        stdout.writeln('test2');
+      }));
+      futures.add(stdio.runZoned(() async {
+        stdout.writeln('test3');
+      }));
+      await Future.wait(futures);
+      expect(inMemoryStdout.lines, ['test1', 'test2', 'test3']);
+    });
+
+    test('first done before last', () async {
+      var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
+      var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
+      var stdio = ShellStdioLinesGrouper(
+          stderr: inMemoryStderr, stdout: inMemoryStdout);
+      var futures = <Future>[];
+      futures.add(stdio.runZoned(() async {
+        stdout.writeln('test1');
+      }));
+      futures.add(stdio.runZoned(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+        stdout.writeln('test2');
+      }));
+      futures.add(stdio.runZoned(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        stdout.writeln('test3');
+      }));
+      await Future.wait(futures);
+      expect(inMemoryStdout.lines, ['test1', 'test2', 'test3']);
+    });
   });
 }

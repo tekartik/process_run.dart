@@ -53,6 +53,9 @@ class ShellLinesController {
   Stream<String> get stream =>
       shellStreamLines(_controller.stream, encoding: encoding);
 
+  /// True if the controller is closed.
+  bool get isClosed => _controller.isClosed;
+
   /// Dispose the controller.
   void close() {
     _controller.close();
