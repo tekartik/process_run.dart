@@ -8,6 +8,10 @@ import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/io/io.dart' as io;
 import 'package:process_run/src/stdio/platform/platform.dart';
 
+// var _debugLinesGrouper = devWarning(true);
+const _debugLinesGrouper = false;
+var _log = print;
+
 /// In memory implementation of [IOSink]
 class InMemoryIOSink with IOSinkMixin implements IOSink {
   @override
@@ -117,13 +121,8 @@ class ShellStdioLinesGrouperIOSink with IOSinkMixin implements IOSink {
   @override
   void add(core.List<core.int> data) {
     var zoneId = grouper.zoneId;
-    var currentZoneId = grouper.currentZoneId ??= zoneId;
-
-    var isCurrent = currentZoneId == zoneId;
-
     var streamer = grouper.streamers[zoneId] ??= ShellOutputLinesStreamer(
-        current: isCurrent, stdout: grouper.stdout, stderr: grouper.stderr);
-    streamer.current = isCurrent;
+        stdout: grouper.stdout, stderr: grouper.stderr);
     // devPrint('[$zoneId/$currentZoneId] Adding data ${encoding.decode(data).trim()}');
     var sink = _isErr ? streamer.err : streamer.out;
     sink.add(data);
@@ -149,6 +148,9 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
   /// Streamers
   final streamers = <int, ShellOutputLinesStreamer>{};
 
+  /// Ordered streamer ids
+  final streamerZoneIds = <int>[];
+
   /// Group in zones.
   ShellStdioLinesGrouper({this.stdout, this.stderr});
 
@@ -159,6 +161,50 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
   @override
   late final err =
       ShellStdioLinesGrouperIOSink(this, StdioStreamType.err, ioSink: stderr);
+
+  void _setCurrent() {
+    if (_debugLinesGrouper) {
+      _log('_setCurrent $currentZoneId $streamerZoneIds');
+    }
+    if (currentZoneId == null) {
+      var firstZoneId = streamerZoneIds.firstOrNull;
+      if (firstZoneId != null) {
+        streamers[firstZoneId]?.current = true;
+        currentZoneId = firstZoneId;
+        if (_debugLinesGrouper) {
+          _log('_setCurrent new $currentZoneId');
+        }
+      }
+    }
+  }
+
+  /// Run in a zone, grouping lines
+  Future<T> _runZonedImpl<T>(Future<T> Function() action) async {
+    var zoneId = _nextZoneId();
+    streamers[zoneId] =
+        ShellOutputLinesStreamer(stdout: stdout, stderr: stderr);
+    streamerZoneIds.add(zoneId);
+    _setCurrent();
+
+    try {
+      _inZoneCount++;
+      return await async.runZoned(() async {
+        try {
+          return await action();
+        } finally {
+          var streamer = streamers[zoneId];
+          streamer?.close();
+          if (currentZoneId == zoneId) {
+            streamerZoneIds.remove(zoneId);
+            currentZoneId = null;
+          }
+          _setCurrent();
+        }
+      }, zoneValues: {_stdio: this, _id: zoneId});
+    } finally {
+      _inZoneCount--;
+    }
+  }
 }
 
 final _shellStdioLinesGrouper = ShellStdioLinesGrouper();
@@ -186,31 +232,8 @@ mixin ShellStdioMixin implements ShellStdio {}
 /// Shell stdio extension.
 extension ShellStdioExt on ShellStdio {
   /// Run in a zone, grouping lines
-  Future<T> runZoned<T>(Future<T> Function() action) async {
-    var zoneId = _nextZoneId();
-    try {
-      _inZoneCount++;
-      return await async.runZoned(() async {
-        try {
-          return await action();
-        } finally {
-          //devPrint('[$zoneId] Closing streamer');
-          var streamer = self.streamers[zoneId];
-          // devPrint('[$zoneId] Closing streamer $streamer');
-          if (streamer != null) {
-            await Future<void>.value();
-            // await streamer.done; handing
-            streamer.close();
-          }
-          if (self.currentZoneId == zoneId) {
-            self.currentZoneId = null;
-          }
-        }
-      }, zoneValues: {_stdio: this, _id: zoneId});
-    } finally {
-      _inZoneCount--;
-    }
-  }
+  Future<T> runZoned<T>(Future<T> Function() action) =>
+      self._runZonedImpl(action);
 }
 
 /// Shell stdio extension private.
@@ -251,6 +274,10 @@ class StdioStreamLine {
 class ShellOutputLinesStreamerMemory with ShellOutputLinesStreamerMixin {
   /// Memory implementation of [ShellOutputLinesStreamer]
   ShellOutputLinesStreamerMemory({io.IOSink? stdout, io.IOSink? stderr});
+
+  // No effect by default (in memory), overriden on io.
+  @override
+  void dump() {}
 }
 
 /// Mixin for [ShellOutputLinesStreamer]
@@ -307,8 +334,7 @@ abstract class ShellOutputLinesStreamer {
   StreamSink<List<int>> get err;
 
   /// default is io version.
-  factory ShellOutputLinesStreamer(
-      {bool? current = false, io.IOSink? stdout, io.IOSink? stderr}) {
+  factory ShellOutputLinesStreamer({io.IOSink? stdout, io.IOSink? stderr}) {
     return ShellOutputLinesStreamerPlatform(stdout: stdout, stderr: stderr);
   }
 
@@ -320,6 +346,9 @@ abstract class ShellOutputLinesStreamer {
 
   /// Wait for the streamer to be done.
   Future<void> get done;
+
+  /// Dump existing lines.
+  void dump();
 
   /// Close the streamer.
   void close();

@@ -13,10 +13,7 @@ Future<void> main() async {
     await writeCount(2);
   });
   shellStdioLinesGrouper.runZoned(() async {
-    await writeCount(1);
-  });
-  shellStdioLinesGrouper.runZoned(() async {
-    await writeCount(3);
+    await writeCount(5);
   });
   shellStdioLinesGrouper.runZoned(() async {
     await writeCount(10);

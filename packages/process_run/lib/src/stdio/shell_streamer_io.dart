@@ -26,7 +26,7 @@ class ShellOutputLinesStreamerIo
     if (this.current != current) {
       super.current = current;
       if (current == true) {
-        _dumpExisting();
+        dump();
       }
     }
   }
@@ -52,7 +52,9 @@ class ShellOutputLinesStreamerIo
     });
   }
 
-  void _dumpExisting() {
+  // No effect by default (in memory), overriden on io.
+  @override
+  void dump() {
     for (var line in lines) {
       if (line.type == StdioStreamType.out) {
         _stdout.writeln(line.line);
@@ -66,8 +68,5 @@ class ShellOutputLinesStreamerIo
   @override
   void close() {
     mixinDispose();
-    if (!current) {
-      _dumpExisting();
-    }
   }
 }

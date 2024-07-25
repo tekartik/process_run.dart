@@ -10,7 +10,9 @@ void main() {
       var shellStreamer = ShellOutputLinesStreamer();
       shellStreamer.out.add(utf8.encode('hi'));
       shellStreamer.err.add(utf8.encode('error'));
+      shellStreamer.out.add(utf8.encode('ho'));
 
+      shellStreamer.dump();
       shellStreamer.close();
     });
   });
