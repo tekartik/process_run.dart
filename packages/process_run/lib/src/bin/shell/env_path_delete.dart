@@ -5,7 +5,9 @@ import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Shell env path delete command.
 class ShellEnvPathDeleteCommand extends ShellEnvCommandBase {
+  /// Shell env path delete command.
   ShellEnvPathDeleteCommand()
       : super(
           name: 'delete',

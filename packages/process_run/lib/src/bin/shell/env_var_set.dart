@@ -4,10 +4,12 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_var_set_io.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Set an environment variable in a user/local config file
 class ShellEnvVarSetCommand extends ShellEnvCommandBase {
-  late final helper = ShellEnvVarSetIoHelper(
+  late final _helper = ShellEnvVarSetIoHelper(
       shell: Shell(), local: local, verbose: verbose ?? false);
 
+  /// Set an environment variable in a user/local config file
   ShellEnvVarSetCommand()
       : super(
           name: 'set',
@@ -29,7 +31,7 @@ class ShellEnvVarSetCommand extends ShellEnvCommandBase {
     } else {
       var name = rest[0];
       var value = rest.sublist(1).join(' ');
-      await helper.setValue(name, value);
+      await _helper.setValue(name, value);
 
       return true;
     }

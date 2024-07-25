@@ -5,7 +5,9 @@ import 'package:process_run/src/io/io.dart';
 
 import 'dump.dart';
 
+/// Shell env alias get command.
 class ShellEnvAliasGetCommand extends ShellEnvCommandBase {
+  /// Shell env alias get command.
   ShellEnvAliasGetCommand()
       : super(
           name: 'get',

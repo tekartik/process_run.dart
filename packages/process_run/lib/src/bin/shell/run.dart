@@ -4,11 +4,12 @@ import 'package:process_run/src/user_config.dart';
 
 import 'import.dart';
 
-/// pub run process_run:shell edit-env
+/// pub run process_run:shell run
 class ShellRunCommand extends ShellBinCommand {
+  /// pub run process_run:shell run
   ShellRunCommand()
       : super(
-            name: 'run', description: 'Run a command using user environment') {
+            name: commandRun, description: 'Run a command using user environment') {
     parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
   }
 

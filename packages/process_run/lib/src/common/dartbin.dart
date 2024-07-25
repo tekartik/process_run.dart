@@ -10,8 +10,10 @@ import 'package:pub_semver/pub_semver.dart';
 ///
 String? get dartExecutable => resolvedDartExecutable;
 
+/// Get dart bin directory path
 String get dartSdkBinDirPath => dirname(dartExecutable!);
 
+/// Get dart sdk directory path
 String get dartSdkDirPath => dirname(dartSdkBinDirPath);
 
 Version? _dartVersion;

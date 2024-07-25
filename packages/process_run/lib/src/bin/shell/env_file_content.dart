@@ -4,13 +4,17 @@ import 'package:process_run/src/characters.dart';
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/user_config.dart';
 
+/// File content helper
 class FileContent {
+  /// io file
   late File file;
 
+  /// File content helper
   FileContent(String path) {
     file = File(path);
   }
 
+  /// Read the file
   Future<bool> read() async {
     try {
       lines = LineSplitter.split(await file.readAsString()).toList();
@@ -21,6 +25,7 @@ class FileContent {
     }
   }
 
+  /// Find the index of the top level key
   int indexOfTopLevelKey(List<String> supportedKeys) {
     for (var key in supportedKeys) {
       for (var i = 0; i < lines!.length; i++) {
@@ -35,12 +40,14 @@ class FileContent {
     return -1;
   }
 
+  /// Write the file
   Future<void> write() async {
     var content = lines!.join(Platform.isWindows ? '\r\n' : '\n');
     await file.parent.create(recursive: true);
     await file.writeAsString(content, flush: true);
   }
 
+  /// Check if the list is a top level key
   static bool isTopLevelKey(String line) {
     if (startsWithWhitespace(line)) {
       return false;
@@ -92,29 +99,38 @@ class FileContent {
     return modified;
   }
 
+  /// lines
   List<String>? lines;
 }
 
+/// Env file content helper
 class EnvFileContent extends FileContent {
+  /// Env file content helper
   EnvFileContent(super.path);
 
+  /// add an alias
   bool addAlias(String alias, String command) =>
       writeKeyValue(userConfigAliasKeys, alias, value: command);
 
+  /// delete an alias
   bool deleteAlias(String alias) =>
       writeKeyValue(userConfigAliasKeys, alias, delete: true);
 
+  /// add a variable
   bool addVar(String key, String value) =>
       writeKeyValue(userConfigVarKeys, key, value: value);
 
+  /// delete a variable
   bool deleteVar(String key) =>
       writeKeyValue(userConfigVarKeys, key, delete: true);
 
   /// Put the paths at the top
   bool prependPaths(List<String> paths) => writePaths(paths);
 
+  /// Delete the paths
   bool deletePaths(List<String> paths) => writePaths(paths, delete: true);
 
+  /// Write paths
   bool writePaths(List<String> paths, {bool delete = false}) {
     // Remove alias header
     var index = indexOfTopLevelKey(userConfigPathKeys);

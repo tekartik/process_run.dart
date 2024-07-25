@@ -4,7 +4,9 @@ import 'package:process_run/src/io/io.dart';
 
 import 'env.dart';
 
+/// Shell env edit command.
 class ShellEnvEditCommand extends ShellEnvCommandBase {
+  /// Shell env edit command.
   ShellEnvEditCommand()
       : super(name: 'edit', description: 'Edit the environment file');
 

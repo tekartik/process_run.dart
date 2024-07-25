@@ -4,10 +4,12 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_var_delete_io.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Delete an environment variable from a user/local config file
 class ShellEnvVarDeleteCommand extends ShellEnvCommandBase {
-  late final helper = ShellEnvVarDeleteIoHelper(
+  late final _helper = ShellEnvVarDeleteIoHelper(
       shell: Shell(), local: local, verbose: verbose ?? false);
 
+  /// Delete an environment variable from a user/local config file
   ShellEnvVarDeleteCommand()
       : super(
           name: 'delete',
@@ -28,7 +30,7 @@ class ShellEnvVarDeleteCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 arguments expected');
       exit(1);
     } else {
-      await helper.deleteMulti(rest);
+      await _helper.deleteMulti(rest);
       return true;
     }
   }

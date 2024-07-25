@@ -32,10 +32,12 @@ int _hex2CodeUint8(int value) {
   return _hexCodeUint4(value);
 }
 
+/// Convert a byte to a hex string
 String byteToHex(int value) {
   return String.fromCharCodes([_hex1CodeUint8(value), _hex2CodeUint8(value)]);
 }
 
+/// Convert a list of bytes to a hex string
 String bytesToHex(List<int> bytes) {
   final sb = StringBuffer();
   for (final byte in bytes) {

@@ -7,29 +7,36 @@ import 'package:process_run/src/io/io.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
+/// Shell command base class
 class ShellBinCommand {
-  // Optional parent
+  /// Optional parent
   ShellBinCommand? parent;
+
+  /// Name of the command
   String name;
 
+  /// Default parser
   ArgParser get parser => _parser ??= ArgParser(allowTrailingOptions: false);
   FutureOr<bool> Function()? _onRun;
   ArgParser? _parser;
+
+  /// Parser results
   late ArgResults results;
   bool? _verbose;
 
-  // Set before run
+  /// Set before run
   bool? get verbose => _verbose ??= parent?.verbose;
 
   String? _description;
 
+  /// Description of the command
   String? get description => _description;
   Version? _version;
 
+  /// Version of the command
   Version? get version => _version ??= parent?.version;
 
-  // name
-  //   description
+  /// print the name and description
   void printNameDescription() {
     stdout.writeln('$name${parent != null ? '' : ' ${version.toString()}'}');
     if (description != null) {
@@ -37,6 +44,7 @@ class ShellBinCommand {
     }
   }
 
+  /// Print the usage
   void printUsage() {
     printNameDescription();
     stdout.writeln();
@@ -54,6 +62,7 @@ class ShellBinCommand {
     stdout.writeln();
   }
 
+  /// Print the base usage
   void printBaseUsage() {
     printNameDescription();
     if (_commands.isNotEmpty) {
@@ -65,6 +74,7 @@ class ShellBinCommand {
     }
   }
 
+  /// Parse the arguments
   ArgResults parse(List<String> arguments) {
     // Add missing common commands
     parser.addFlag(flagVersion,
@@ -74,6 +84,7 @@ class ShellBinCommand {
     return results = parser.parse(arguments);
   }
 
+  /// Parse and run the command
   @nonVirtual
   FutureOr<bool> parseAndRun(List<String> arguments) {
     parse(arguments);
@@ -82,6 +93,7 @@ class ShellBinCommand {
 
   final _commands = <String, ShellBinCommand>{};
 
+  /// Shell bin command
   ShellBinCommand(
       {required this.name,
       Version? version,
@@ -98,6 +110,7 @@ class ShellBinCommand {
     parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
   }
 
+  /// Add a command
   void addCommand(ShellBinCommand command) {
     parser.addCommand(command.name, command.parser);
     _commands[command.name] = command;
@@ -118,6 +131,7 @@ class ShellBinCommand {
   /// Get a flag
   bool? getFlag(String name) => results[name] as bool?;
 
+  /// Run
   @nonVirtual
   FutureOr<bool> run() async {
     // Handle version first

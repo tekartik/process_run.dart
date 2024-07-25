@@ -26,29 +26,12 @@ void main() {
     });
     test('others', () async {
       expect((await runCmd(DartCmd(['--help']))).exitCode, 0);
-      var exitCode = (await runCmd(
-              DartFmtCmd(// ignore: deprecated_member_use_from_same_package
-                  ['--help'])))
-          .exitCode;
-      if (!Platform.isWindows) {
-        // Somehow the exit code is 1 on windows
-        expect(exitCode, 0);
-      }
-      // expect((await runCmd(DartAnalyzerCmd(['--help']))).exitCode, 0);
-      // expect((await runCmd(DartDevcCmd(['--help']))).exitCode, 0);
       expect((await runCmd(PubCmd(['--help']))).exitCode, 0);
       //expect((await runCmd(DartDevkCmd(['--help']))).exitCode, 0);
     });
 
     test('toString', () {
       expect(PubCmd(['--help']).toString(), 'dart pub --help');
-      // expect(DartDocCmd(['--help']).toString(), 'dartdoc --help');
-      // ignore: deprecated_member_use_from_same_package
-      expect(Dart2JsCmd(['--help']).toString(), 'dart2js --help');
-      // expect(DartDevcCmd(['--help']).toString(), 'dartdevc --help');
-      //expect(DartAnalyzerCmd(['--help']).toString(), 'dartanalyzer --help');
-      expect(DartFmtCmd(// ignore: deprecated_member_use_from_same_package
-          ['--help']).toString(), 'dart format --help');
       expect(DartCmd(['--help']).toString(), 'dart --help');
     });
 

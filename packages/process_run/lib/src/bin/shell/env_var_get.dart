@@ -5,9 +5,11 @@ import 'package:process_run/src/io/io.dart';
 
 import 'dump.dart';
 
+/// Get an environment variable from a user/local config file
 class ShellEnvVarGetCommand extends ShellEnvCommandBase {
-  late final helper = ShellEnvVarGetIoHelper();
+  late final _helper = ShellEnvVarGetIoHelper();
 
+  /// Get an environment variable from a user/local config file
   ShellEnvVarGetCommand()
       : super(
           name: 'get',
@@ -30,7 +32,7 @@ class ShellEnvVarGetCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 arguments expected');
       exit(1);
     } else {
-      var map = helper.getMulti(rest);
+      var map = _helper.getMulti(rest);
       if (map.isEmpty) {
         stdout.writeln('not found');
       } else {

@@ -15,7 +15,9 @@ import 'env_path.dart';
 import 'env_var.dart';
 import 'import.dart';
 
+/// Shell env command base
 class ShellEnvCommandBase extends ShellBinCommand {
+  /// Shell env command base
   ShellEnvCommandBase({required super.name, super.description}) {
     parser.addFlag(flagLocal,
         abbr: 'l', help: 'Use local env', negatable: false, defaultsTo: true);
@@ -23,14 +25,17 @@ class ShellEnvCommandBase extends ShellBinCommand {
         abbr: 'u', help: 'Use user env instead of local env', negatable: false);
   }
 
+  /// Local env
   bool get local {
     final user = results[flagUser] as bool;
     final local = !user;
     return local;
   }
 
+  /// Local/User label
   String get label => local ? 'local' : 'user';
 
+  /// Read or Create the env file content
   Future<EnvFileContent> envFileReadOrCreate({bool write = false}) async {
     var fileContent = EnvFileContent(_envFilePath!);
     if (!await fileContent.read()) {
@@ -42,6 +47,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
     return fileContent;
   }
 
+  /// Env file path
   String? get envFilePath => _envFilePath;
 
   String? get _envFilePath => local
@@ -50,6 +56,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
 
   List<String>? _sampleFileContent;
 
+  /// Sample file content
   List<String> get sampleFileContent => _sampleFileContent ??= () {
         var content = local
             ? '''
@@ -92,10 +99,12 @@ class ShellEnvCommandBase extends ShellBinCommand {
       }();
 }
 
+/// Shell env command
 class ShellEnvCommand extends ShellEnvCommandBase {
+  /// Shell env command
   ShellEnvCommand()
       : super(
-            name: 'env',
+            name: commandEnv,
             description:
                 'Manipulate local and global env vars, paths and aliases') {
     addCommand(ShellEnvVarCommand());

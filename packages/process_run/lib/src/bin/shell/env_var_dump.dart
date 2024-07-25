@@ -2,7 +2,9 @@ import 'package:process_run/shell.dart';
 
 import 'import.dart';
 
+/// Dump environment variable
 class ShellEnvVarDumpCommand extends ShellBinCommand {
+  /// Dump environment variable
   ShellEnvVarDumpCommand()
       : super(name: 'dump', description: 'Dump environment variable');
 

@@ -5,7 +5,9 @@ import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Shell env alias delete command.
 class ShellEnvAliasDeleteCommand extends ShellEnvCommandBase {
+  /// Shell env alias delete command.
   ShellEnvAliasDeleteCommand()
       : super(
           name: 'delete',

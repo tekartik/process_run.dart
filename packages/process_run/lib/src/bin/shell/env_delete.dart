@@ -5,7 +5,9 @@ import 'package:process_run/src/io/io.dart';
 
 import 'env.dart';
 
+/// Shell env delete command.
 class ShellEnvDeleteCommand extends ShellEnvCommandBase {
+  /// Shell env delete command.
   ShellEnvDeleteCommand()
       : super(name: 'delete', description: 'Delete the environment file') {
     parser.addFlag(flagForce,

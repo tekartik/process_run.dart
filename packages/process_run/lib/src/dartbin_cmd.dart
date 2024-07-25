@@ -9,6 +9,7 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'common/import.dart';
 
+/// dart bin file name
 String dartBinFileName = 'dart${Platform.isWindows ? '.exe' : ''}';
 
 /// Call dart executable
@@ -16,40 +17,8 @@ String dartBinFileName = 'dart${Platform.isWindows ? '.exe' : ''}';
 /// To prevent 'Observatory server failed to start after 1 tries' when
 /// running from an idea use: includeParentEnvironment = false
 class DartCmd extends _DartBinCmd {
+  /// Call dart executable
   DartCmd(List<String> arguments) : super(dartBinFileName, arguments);
-}
-
-/// dartfmt command
-@Deprecated('dartfmt is deprecated itself, use dart format')
-class DartFmtCmd extends DartCmd {
-  DartFmtCmd(List<String> arguments) : super(['format', ...arguments]);
-}
-
-/// dartanalyzer
-@Deprecated('dartanalyzer is deprecated itself, use dart analyze')
-class DartAnalyzerCmd extends _DartBinCmd {
-  DartAnalyzerCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('dartanalyzer'), arguments);
-}
-
-/// dart2js
-@Deprecated('Use dart compile js')
-class Dart2JsCmd extends _DartBinCmd {
-  Dart2JsCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('dart2js'), arguments);
-}
-
-/// dartdoc
-@Deprecated('dartfmt is deprecated itself, user dart doc')
-class DartDocCmd extends _DartBinCmd {
-  DartDocCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('dartdoc'), arguments);
-}
-
-/// dartdevc
-class DartDevcCmd extends _DartBinCmd {
-  DartDevcCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('dartdevc'), arguments);
 }
 
 /// pub

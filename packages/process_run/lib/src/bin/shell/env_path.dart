@@ -5,7 +5,9 @@ import 'env_path_delete.dart';
 import 'env_path_get.dart';
 import 'import.dart';
 
+/// Path operations
 class ShellEnvPathCommand extends ShellBinCommand {
+  /// Path operations
   ShellEnvPathCommand() : super(name: 'path', description: 'Path operations') {
     addCommand(ShellEnvPathDumpCommand());
     addCommand(ShellEnvPathPrependCommand());

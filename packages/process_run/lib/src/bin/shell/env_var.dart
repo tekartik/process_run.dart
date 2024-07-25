@@ -5,10 +5,12 @@ import 'env_var_get.dart';
 import 'env_var_set.dart';
 import 'import.dart';
 
+/// Shell env var command.
 class ShellEnvVarCommand extends ShellBinCommand {
+  /// Shell env var command.
   ShellEnvVarCommand()
       : super(
-            name: 'var',
+            name: commandEnvVar,
             description: 'Manipulate local and global env variables') {
     addCommand(ShellEnvVarDumpCommand());
     addCommand(ShellEnvVarSetCommand());

@@ -1,6 +1,8 @@
 /// Development helpers to generate warning in code
 library;
 
+import 'package:meta/meta.dart';
+
 void _devPrint(Object object) {
   if (_devPrintEnabled) {
     print(object);
@@ -13,6 +15,8 @@ bool _devPrintEnabled = true;
 set devPrintEnabled(bool enabled) => _devPrintEnabled = enabled;
 
 @Deprecated('Dev only')
+
+/// Print only in dev mode
 void devPrint(Object? object) {
   if (_devPrintEnabled) {
     print(object);
@@ -20,6 +24,8 @@ void devPrint(Object? object) {
 }
 
 @Deprecated('Dev only')
+
+/// Warning in dev mode
 T devWarning<T>(T t) => t;
 
 void _devError([Object? msg]) {
@@ -36,11 +42,16 @@ void _devError([Object? msg]) {
 }
 
 @Deprecated('Dev only')
+
+/// Error in dev mode
 void devError([String? msg]) => _devError(msg);
 
-// exported for testing
+/// exported for testing
+@visibleForTesting
 void debugDevPrint(Object object) => _devPrint(object);
 
+/// exported for testing
+@visibleForTesting
 void debugDevError(Object object) => _devError(object);
 
 set debugDevPrintEnabled(bool enabled) => _devPrintEnabled = enabled;

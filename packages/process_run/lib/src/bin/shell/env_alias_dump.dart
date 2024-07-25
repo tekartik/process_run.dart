@@ -3,7 +3,9 @@ import 'package:process_run/src/utils.dart';
 
 import 'import.dart';
 
+/// Shell env alias dump command.
 class ShellEnvAliasDumpCommand extends ShellBinCommand {
+  /// Shell env alias dump command.
   ShellEnvAliasDumpCommand()
       : super(name: 'dump', description: 'Dump process_run aliases');
 

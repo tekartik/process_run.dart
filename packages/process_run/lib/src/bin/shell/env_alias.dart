@@ -5,9 +5,11 @@ import 'env_alias_delete.dart';
 import 'env_alias_get.dart';
 import 'import.dart';
 
+/// Alias operations
 class ShellEnvAliasCommand extends ShellBinCommand {
+  /// Alias operations
   ShellEnvAliasCommand()
-      : super(name: 'alias', description: 'Alias operations') {
+      : super(name: commandEnvAliases, description: 'Alias operations') {
     addCommand(ShellEnvAliasDumpCommand());
     addCommand(ShellEnvAliasSetCommand());
     addCommand(ShellEnvAliasGetCommand());

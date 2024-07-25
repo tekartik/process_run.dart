@@ -97,6 +97,7 @@ class EnvFileConfig {
   final Map<String, String> vars;
   final Map<String, String> aliases;
 
+  /// Env file config
   EnvFileConfig(List<String>? paths, Map<String, String>? vars,
       Map<String, String>? aliases)
       : paths = paths ?? <String>[],
@@ -276,6 +277,7 @@ void userLoadEnvFile(String path) {
 }
 
 // private
+/// Update userPaths and userEnvironment
 void userLoadConfigMap(Map map) {
   userLoadEnvFileConfig(loadFromMap(map));
 }

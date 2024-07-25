@@ -4,7 +4,9 @@ import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Shell env path get command.
 class ShellEnvPathGetCommand extends ShellEnvCommandBase {
+  /// Shell env path get command.
   ShellEnvPathGetCommand()
       : super(
           name: 'get',

@@ -6,32 +6,64 @@ import 'package:pub_semver/pub_semver.dart';
 import 'env.dart';
 import 'import.dart';
 
+/// The shell bin version
 Version shellBinVersion = Version.parse(packageVersion);
 
+/// Help flag
 const flagHelp = 'help';
+
+/// Info flag
 const flagInfo = 'info';
+
+/// Local flag
 const flagLocal = 'local';
+
+/// User flag
 const flagUser = 'user';
-// Force an action
+
+/// Force an action
 const flagForce = 'force';
+
+/// Delete flag
 const flagDelete = 'delete';
+
+/// Verbose flag
 const flagVerbose = 'verbose';
+
+/// Version flag
 const flagVersion = 'version';
 
+/// Command edit-env
 const commandEdit = 'edit-env';
+
+/// Command run
 const commandRun = 'run';
+
+/// Command env
 const commandEnv = 'env';
 
+/// Command env edit
 const commandEnvEdit = 'edit';
+
+/// Command env var
 const commandEnvVar = 'var';
+
+/// Command env var dump
 const commandEnvVarDump = 'dump';
+
+/// Command env path
 const commandEnvPath = 'path';
+
+/// Command env aliases
 const commandEnvAliases = 'alias';
 
+/// Script shortcut
 String get script => 'ds';
 
+/// Main shell command
 class MainShellCommand extends ShellBinCommand {
-  MainShellCommand() : super(name: 'ds', version: shellBinVersion) {
+  /// Main shell command
+  MainShellCommand() : super(name: script, version: shellBinVersion) {
     addCommand(ShellEnvCommand());
     addCommand(ShellRunCommand());
   }
@@ -77,6 +109,7 @@ ds env edit
   }
 }
 
+/// Main shell command
 final mainCommand = MainShellCommand();
 
 ///
