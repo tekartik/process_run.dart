@@ -8,6 +8,7 @@ import 'package:process_run/src/shell_common_io.dart';
 import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_environment.dart' as io;
 
+/// Shell context io
 class ShellContextIo with ShellContextMixin implements ShellContext {
   @override
   ShellEnvironment get shellEnvironment =>

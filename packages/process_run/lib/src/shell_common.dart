@@ -12,6 +12,7 @@ export 'package:process_run/shell.dart'
 
 export 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
 
+/// shell debug flag (dev only)
 var shellDebug = false; // devWarning(true); // false
 
 /// Multiplatform Shell utility to run a script with multiple commands.
@@ -94,6 +95,7 @@ abstract class ShellCore {
   ShellContext get context;
 }
 
+/// Sync version of [ShellCore].
 abstract class ShellCoreSync {
   ///
   /// Run one or multiple plain text command(s).
@@ -294,40 +296,5 @@ mixin ShellMixin implements ShellCore, ShellCoreSync {
   Shell cloneWithOptions(ShellOptions options) {
     var shell = context.newShell(options: options);
     return shell;
-  }
-
-  @Deprecated('Use clone with options')
-  Shell clone({
-    bool? throwOnError,
-    String? workingDirectory,
-    Map<String, String>? environment,
-    bool? includeParentEnvironment,
-    bool? runInShell,
-    Encoding? stdoutEncoding,
-    Encoding? stderrEncoding,
-    Stream<List<int>>? stdin,
-    StreamSink<List<int>>? stdout,
-    StreamSink<List<int>>? stderr,
-    bool? verbose,
-    bool? commandVerbose,
-    bool? commentVerbose,
-  }) {
-    return cloneWithOptions(
-      ShellOptions(
-        throwOnError: throwOnError ?? options.throwOnError,
-        workingDirectory: workingDirectory ?? options.workingDirectory,
-        environment: environment ?? options.environment,
-        includeParentEnvironment: includeParentEnvironment ?? true,
-        runInShell: runInShell ?? options.runInShell,
-        stdoutEncoding: stdoutEncoding ?? options.stdoutEncoding,
-        stderrEncoding: stderrEncoding ?? options.stderrEncoding,
-        stdin: stdin ?? options.stdin,
-        stdout: stdout ?? options.stdout,
-        stderr: stderr ?? options.stderr,
-        verbose: verbose ?? options.verbose,
-        commandVerbose: commandVerbose ?? options.commandVerbose,
-        commentVerbose: commentVerbose ?? options.commentVerbose,
-      ),
-    );
   }
 }

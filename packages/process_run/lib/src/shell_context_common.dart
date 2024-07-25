@@ -25,11 +25,13 @@ abstract class ShellContext {
       @Deprecated('Use options') Map<String, String>? environment,
       @Deprecated('Use options') bool includeParentEnvironment = true});
 
+  /// New shell environment
   ShellEnvironment newShellEnvironment({
     Map<String, String>? environment,
   });
 }
 
+/// Shell context mixin
 mixin ShellContextMixin implements ShellContext {
   @override
   Encoding get encoding =>

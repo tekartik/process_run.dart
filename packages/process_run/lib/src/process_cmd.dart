@@ -4,16 +4,33 @@ import 'package:collection/collection.dart';
 import 'package:process_run/process_run.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Process command
 class ProcessCmd {
+  /// Executable
   String executable;
+
+  /// Arguments
   List<String> arguments;
+
+  /// Working directory
   String? workingDirectory;
+
+  /// Environment
   Map<String, String>? environment;
+
+  /// Include parent environment
   bool includeParentEnvironment;
+
+  /// Run in shell
   bool? runInShell;
+
+  /// Standard output encoding
   Encoding stdoutEncoding;
+
+  /// Standard error encoding
   Encoding stderrEncoding;
 
+  /// Process command
   ProcessCmd(this.executable, this.arguments,
       {this.workingDirectory,
       this.environment,
@@ -22,6 +39,7 @@ class ProcessCmd {
       this.stdoutEncoding = systemEncoding,
       this.stderrEncoding = systemEncoding});
 
+  /// Clone
   ProcessCmd clone() => ProcessCmd(executable, arguments,
       workingDirectory: workingDirectory,
       environment: environment,
@@ -46,24 +64,6 @@ class ProcessCmd {
   String toString() => executableArgumentsToString(executable, arguments);
 }
 
-// Use ProcessCmd instead
-@Deprecated('Use ProcessCmd instead')
-ProcessCmd processCmd(String executable, List<String> arguments,
-    {String? workingDirectory,
-    Map<String, String>? environment,
-    bool includeParentEnvironment = true,
-    bool? runInShell,
-    Encoding stdoutEncoding = systemEncoding,
-    Encoding stderrEncoding = systemEncoding}) {
-  return ProcessCmd(executable, arguments,
-      workingDirectory: workingDirectory,
-      environment: environment,
-      includeParentEnvironment: includeParentEnvironment,
-      runInShell: runInShell,
-      stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding);
-}
-
 bool _isNotEmpty(Object? stdout) {
   if (stdout is List) {
     return stdout.isNotEmpty;
@@ -73,6 +73,7 @@ bool _isNotEmpty(Object? stdout) {
   return (stdout != null);
 }
 
+/// Process result debug string
 String processResultToDebugString(ProcessResult result) {
   final sb = StringBuffer();
   sb.writeln('exitCode: ${result.exitCode}');
@@ -85,6 +86,7 @@ String processResultToDebugString(ProcessResult result) {
   return sb.toString();
 }
 
+/// Process command debug string
 String processCmdToDebugString(ProcessCmd cmd) {
   final sb = StringBuffer();
   if (cmd.workingDirectory != null) {

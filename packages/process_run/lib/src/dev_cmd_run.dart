@@ -4,6 +4,8 @@ import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/io/io.dart';
 
 @Deprecated('Deb only, verbose')
+
+/// dev only run command
 Future<ProcessResult> devRunCmd(ProcessCmd cmd,
     {bool? verbose,
     bool? commandVerbose,

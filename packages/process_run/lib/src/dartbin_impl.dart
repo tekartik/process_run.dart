@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell_utils.dart';
@@ -5,12 +6,16 @@ import 'package:process_run/src/user_config.dart';
 
 bool _dartExecutableLock = false;
 
+/// Force using the which command to find dart executable (debug only)
+@visibleForTesting
 var debugDartExecutableForceWhich = false;
 
+/// find dart executable
 String? findDartExecutableSync(List<String> paths) {
   return findExecutableSync('dart', paths);
 }
 
+/// Resolve dart executable from environment
 String? resolveDartExecutable({Map<String, String>? environment}) {
   if (!_dartExecutableLock) {
     _dartExecutableLock = true;
@@ -33,7 +38,7 @@ String? resolveDartExecutable({Map<String, String>? environment}) {
   }
 }
 
-// Find dart in the cache dir
+/// Find dart in the cache dir of flutter
 String? findFlutterDartExecutableSync(String path) {
   return findDartExecutableSync([join(path, 'cache', 'dart-sdk', 'bin')]);
 }
@@ -54,6 +59,7 @@ String? get resolvedDartExecutable => _resolvedDartExecutable ??= () {
 
 String? _platformResolvedExecutable;
 
+/// resolved executable from platform
 String? get platformResolvedExecutable {
   if (!debugDartExecutableForceWhich) {
     return _platformResolvedExecutable ??= () {

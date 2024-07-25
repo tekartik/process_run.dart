@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/io/io.dart';
-import 'package:process_run/src/utils.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
@@ -23,13 +22,8 @@ class DartCmd extends _DartBinCmd {
 
 /// pub
 class PubCmd extends DartCmd {
+  /// Call pub executable
   PubCmd(List<String> arguments) : super(['pub', ...arguments]);
-}
-
-@Deprecated('Not supported anymore')
-class DartDevkCmd extends _DartBinCmd {
-  DartDevkCmd(List<String> arguments)
-      : super(getShellCmdBinFileName('dartdevk'), arguments);
 }
 
 class _DartBinCmd extends ProcessCmd {
@@ -42,10 +36,12 @@ class _DartBinCmd extends ProcessCmd {
   String toString() => executableArgumentsToString(binName, arguments);
 }
 
+/// pub run
 class PubRunCmd extends PubCmd {
   final String _command;
   final List<String> _arguments;
 
+  /// Call pub run
   PubRunCmd(this._command, this._arguments)
       : super(['run', _command, ..._arguments]);
 
@@ -53,10 +49,12 @@ class PubRunCmd extends PubCmd {
   String toString() => executableArgumentsToString(_command, _arguments);
 }
 
+/// pub global run
 class PubGlobalRunCmd extends PubCmd {
   final String _command;
   final List<String> _arguments;
 
+  /// Call pub global run
   PubGlobalRunCmd(this._command, this._arguments)
       : super(['global', 'run', _command, ..._arguments]);
 
@@ -64,6 +62,7 @@ class PubGlobalRunCmd extends PubCmd {
   String toString() => executableArgumentsToString(_command, _arguments);
 }
 
+/// Parse the text from Platform.version
 Version parsePlatformVersion(String text) {
   return Version.parse(text.split(' ').first);
 }

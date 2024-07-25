@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:process_run/src/shell_environment.dart';
 
+/// Find the command according to the [paths] or env variables (`PATH`)
 Future<String?> which(String command,
     {@Deprecated('Use environment') Map<String, String>? env,
     Map<String, String>? environment,

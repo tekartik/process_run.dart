@@ -3,8 +3,6 @@ library process_run.dartbin_cmd_test;
 
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/bin/shell/import.dart';
-// ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 

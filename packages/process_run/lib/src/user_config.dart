@@ -22,6 +22,7 @@ var userConfigVarKeys = ['var', 'vars'];
 /// Supported alias keys
 var userConfigAliasKeys = ['alias', 'aliases'];
 
+/// User config.
 class UserConfig {
   /// never null
   final Map<String, String> vars;
@@ -32,6 +33,7 @@ class UserConfig {
   /// never null
   final Map<String, String> aliases;
 
+  /// User config
   UserConfig(
       {Map<String, String>? vars,
       List<String>? paths,
@@ -45,8 +47,10 @@ class UserConfig {
       '${vars.length} vars ${paths.length} paths ${aliases.length} aliases';
 }
 
+///  User config
 UserConfig? _userConfig;
 
+/// Get the user config
 UserConfig get userConfig =>
     _userConfig ??
     () {
@@ -85,16 +89,24 @@ Map<String, String> get userEnvironment => ShellEnvironment.empty()
   ..aliases.addAll(userConfig.aliases)
   ..paths.addAll(userConfig.paths);
 
-// Test only
 @protected
+
+/// Reset user config
+@visibleForTesting
 void resetUserConfig() {
   shellEnvironment = null;
   _userConfig = null;
 }
 
+/// Env file config
 class EnvFileConfig {
+  /// paths
   final List<String> paths;
+
+  /// vars
   final Map<String, String> vars;
+
+  /// aliases
   final Map<String, String> aliases;
 
   /// Env file config
@@ -110,9 +122,11 @@ class EnvFileConfig {
   /// Has vars, paths or aliases.
   bool get isNotEmpty => !isEmpty;
 
+  /// Debug map
   Map<String, dynamic> toDebugMap() =>
       <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
 
+  /// Load from path
   Future<EnvFileConfig> loadFromPath(String path) async {
     return _loadFromPath(path);
   }
@@ -291,6 +305,7 @@ void userLoadEnv(
 }
 
 // private
+/// load user env file config
 void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   var config = userConfig;
   var paths = List<String>.from(config.paths);
@@ -390,7 +405,7 @@ UserConfig getUserConfig(Map<String, String>? environment) {
       paths: shEnv.paths, vars: shEnv.vars, aliases: shEnv.aliases);
 }
 
-// Fix environment with global settings and current dart sdk
+/// get users paths
 List<String> getUserPaths(Map<String, String> environment) =>
     getUserConfig(environment).paths;
 
@@ -412,6 +427,5 @@ String getLocalEnvFilePath([Map<String, String>? environment]) {
   return join(Directory.current.path, subDir);
 }
 
+/// Default location of the local env file
 final localEnvFilePathDefault = joinAll(['.local', 'ds_env.yaml']);
-final localEnvFilePathDefaultOld =
-    joinAll(['.dart_tool', 'process_run', 'env.yaml']);

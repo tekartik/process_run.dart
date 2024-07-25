@@ -239,49 +239,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   @override
   ShellOptions get options => _options;
 
-  /// Create a new shell
-  @Deprecated('Use clone with options')
-  Shell clone({
-    bool? throwOnError,
-    String? workingDirectory,
-    // Don't change environment
-    @Deprecated('Don\'t change map') Map<String, String>? environment,
-
-    /// Explicetely set e new environment
-//      ShellEnvironment? shellEnvironment,
-    @Deprecated('Don\'t change includeParentEnvironment')
-    // Don't change includeParentEnvironment
-    bool? includeParentEnvironment,
-    bool? runInShell,
-    Encoding? stdoutEncoding,
-    Encoding? stderrEncoding,
-    Stream<List<int>>? stdin,
-    StreamSink<List<int>>? stdout,
-    StreamSink<List<int>>? stderr,
-    bool? verbose,
-    bool? commandVerbose,
-    bool? commentVerbose,
-  }) {
-    var localShellEnvironment =
-        // Compat
-        (environment is ShellEnvironment ? environment : null);
-    return Shell(
-        options: options.clone(
-      throwOnError: throwOnError,
-      workingDirectory: workingDirectory,
-      runInShell: runInShell,
-      stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding,
-      stdin: stdin,
-      stderr: stderr,
-      stdout: stdout,
-      commentVerbose: commentVerbose,
-      commandVerbose: commandVerbose,
-      shellEnvironment: localShellEnvironment,
-      verbose: verbose,
-    ));
-  }
-
   /// non null
   String get _workingDirectoryPath =>
       _options.workingDirectory ?? Directory.current.path;
@@ -714,9 +671,13 @@ class _ProcessCmd extends ProcessCmd {
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class ShellException implements Exception {
+  /// Process result
   final ProcessResult? result;
+
+  /// Exception message
   final String message;
 
+  /// Shell exception
   ShellException(this.message, this.result);
 
   @override

@@ -186,6 +186,7 @@ List<String>? _windowsPathExts;
 List<String> get windowsPathExts => _windowsPathExts ??=
     environmentGetWindowsPathExt(platformEnvironment) ?? windowsDefaultPathExt;
 
+/// Get the PATHEXT environment variable (windows)
 List<String>? environmentGetWindowsPathExt(
         Map<String, String> platformEnvironment) =>
     platformEnvironment['PATHEXT']
@@ -308,6 +309,7 @@ List<String>? _platformEnvironmentPaths;
 List<String> get platformEnvironmentPaths =>
     _platformEnvironmentPaths ??= _getEnvironmentPaths(platformEnvironment);
 
+/// Get environment paths
 List<String> getEnvironmentPaths([Map<String, String>? environment]) {
   if (environment == null) {
     return platformEnvironmentPaths;

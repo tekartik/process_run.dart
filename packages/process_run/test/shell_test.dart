@@ -728,10 +728,4 @@ _tekartik_dummy_app_that_does_not_exits
     expect(shell.path, 'a/b');
     expect(shell.options.workingDirectory, 'a/b');
   });
-  test('clone', () async {
-    // ignore: deprecated_member_use_from_same_package
-    var shell = Shell().clone(workingDirectory: 'a/b');
-    expect(shell.path, 'a/b');
-    expect(shell.options.workingDirectory, 'a/b');
-  });
 }

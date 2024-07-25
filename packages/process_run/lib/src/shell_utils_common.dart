@@ -8,12 +8,19 @@ import 'package:process_run/src/platform/platform.dart';
 import 'characters.dart';
 import 'shell_utils.dart' as shell_utils;
 
+/// windows common executable extensions
 const windowsDefaultPathExt = <String>['.exe', '.bat', '.cmd', '.com'];
 
+/// windows env path separator
 const String windowsEnvPathSeparator = ';';
+
+/// posix env path separator
 const String posixEnvPathSeparator = ':';
+
+/// env path key
 const envPathKey = 'PATH';
 
+/// Get the env path separator
 String get envPathSeparator =>
     platformIoIsWindows ? windowsEnvPathSeparator : posixEnvPathSeparator;
 

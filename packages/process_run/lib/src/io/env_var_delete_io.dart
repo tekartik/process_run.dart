@@ -5,10 +5,13 @@ import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_io.dart';
 import 'package:process_run/src/io/io.dart';
 
+/// Helper to delete environment variables
 class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
+  /// Helper to delete environment variables
   ShellEnvVarDeleteIoHelper(
       {required super.shell, required super.local, required super.verbose});
 
+  /// delete multiple environment variables
   Future<ShellEnvironment> deleteMulti(List<String> keys) async {
     var fileContent = await envFileReadOrCreate();
     var modified = false;

@@ -19,8 +19,11 @@ set flutterExecutablePath(String? path) {
 }
 
 @Deprecated('Dev only')
+
+/// Flutter command
 ProcessCmd flutterCmd(List<String> arguments) => FlutterCmd(arguments);
 
+/// true if flutter is supported
 bool get isFlutterSupported => isFlutterSupportedSync;
 
 /// true if flutter is supported
@@ -28,7 +31,7 @@ bool get isFlutterSupportedSync => flutterExecutablePath != null;
 
 /// build a flutter command
 class FlutterCmd extends ProcessCmd {
-  // Somehow flutter requires runInShell on Linux, does not hurt on windows
+  /// Somehow flutter requires runInShell on Linux, does not hurt on windows
   FlutterCmd(List<String> arguments)
       : super(flutterExecutablePath!, arguments, runInShell: true);
 
@@ -36,7 +39,7 @@ class FlutterCmd extends ProcessCmd {
   String toString() => executableArgumentsToString('flutter', arguments);
 }
 
-// to deprecate
+/// to deprecate, get flutter bin version
 Future<Version?> getFlutterVersion() => getFlutterBinVersion();
 
 /// Get flutter version.
@@ -53,13 +56,16 @@ Future<String?> getFlutterBinChannel() async =>
 
 FlutterBinInfo? _flutterBinInfo;
 
+/// Get flutter bin info
 Future<FlutterBinInfo?> getFlutterBinInfo() async =>
     _flutterBinInfo ??= await _getFlutterBinInfo();
 
 /// Parse flutter information
 abstract class FlutterBinInfo {
+  /// Channel (dev, beta, master, stable)
   String? get channel;
 
+  /// Version
   Version? get version;
 
   /// First line is sufficient
@@ -95,20 +101,20 @@ abstract class FlutterBinInfo {
       }
     }
     if (version != null || channel != null) {
-      return FlutterBinInfoImpl(version: version, channel: channel);
+      return _FlutterBinInfoImpl(version: version, channel: channel);
     }
     return null;
   }
 }
 
-class FlutterBinInfoImpl implements FlutterBinInfo {
+class _FlutterBinInfoImpl implements FlutterBinInfo {
   @override
   final String? channel;
 
   @override
   final Version? version;
 
-  FlutterBinInfoImpl({this.channel, this.version});
+  _FlutterBinInfoImpl({this.channel, this.version});
 }
 
 /// Get flutter info.

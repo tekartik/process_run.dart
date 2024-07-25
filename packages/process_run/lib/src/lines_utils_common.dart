@@ -28,15 +28,18 @@ import 'common/import.dart';
 /// }
 /// ```
 class ShellLinesController {
+  /// Encoding to use
   late final Encoding encoding;
   late StreamController<List<int>> _controller;
 
+  /// Create a shell lines controller.
   ShellLinesController({Encoding? encoding}) {
     this.encoding = encoding ?? shellContext.encoding;
     // Must be sync!
     _controller = StreamController<List<int>>(sync: true);
   }
 
+  /// Future when done
   Future<void> get done => _controller.done;
 
   /// Write a string with the specified encoding.
@@ -55,6 +58,7 @@ class ShellLinesController {
     _controller.close();
   }
 
+  /// Write a line.
   void writeln(String message) {
     write('$message\n');
   }

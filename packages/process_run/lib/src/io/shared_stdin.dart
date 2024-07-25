@@ -33,6 +33,7 @@ class SharedStdIn extends Stream<List<int>> {
   var _terminated = false;
   final Stream<List<int>> _originalStream;
 
+  /// Creates a new [SharedStdIn] instance.
   SharedStdIn([Stream<List<int>>? stream]) : _originalStream = stream ?? stdin;
 
   /// Returns a future that completes with the next line.

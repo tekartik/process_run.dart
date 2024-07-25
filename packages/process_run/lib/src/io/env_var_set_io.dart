@@ -7,11 +7,13 @@ import 'package:process_run/src/io/env_io.dart';
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell_common.dart';
 
+/// Helper to set environment variables
 class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
   /// Local should be true by default
   ShellEnvVarSetIoHelper(
       {required super.shell, required super.local, super.verbose = true});
 
+  /// Set a single environment variable
   Future<ShellEnvironment> setValue(String name, String? value) async {
     if (verbose) {
       stdout.writeln('file $label: $envFilePath');

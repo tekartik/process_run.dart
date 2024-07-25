@@ -46,7 +46,8 @@ String bytesToHex(List<int> bytes) {
   return sb.toString();
 }
 
-// It safely ignores non hex data so it can contain spaces or line feed
+/// Convert a hex string to a list of bytes
+/// It safely ignores non hex data so it can contain spaces or line feed
 List<int> hexToBytes(String text) {
   final bytes = <int>[];
   int? firstNibble;

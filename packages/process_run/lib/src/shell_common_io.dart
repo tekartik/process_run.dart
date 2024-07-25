@@ -3,7 +3,9 @@ import 'package:process_run/src/io/env_var_set_io.dart';
 
 import 'shell_common.dart';
 
+/// Shell implementation using io.
 class ShellIo extends Shell with ShellMixin {
+  /// Shell implementation using io.
   ShellIo({
     required ShellOptions options,
   }) : super.implWithOptions(options);
@@ -18,9 +20,12 @@ class ShellIo extends Shell with ShellMixin {
   }
 }
 
+/// Shell exception io
 class ShellExceptionIo implements ShellException {
+  /// implementation
   final io.ShellException impl;
 
+  /// Shell exception io
   ShellExceptionIo(this.impl);
 
   @override
