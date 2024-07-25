@@ -5,21 +5,16 @@ import 'package:process_run/src/shell_environment.dart';
 
 /// Find the command according to the [paths] or env variables (`PATH`)
 Future<String?> which(String command,
-    {@Deprecated('Use environment') Map<String, String>? env,
-    Map<String, String>? environment,
+    {Map<String, String>? environment,
     bool includeParentEnvironment = true}) async {
   return whichSync(command,
-      // ignore: deprecated_member_use, deprecated_member_use_from_same_package
-      env: env,
       environment: environment,
       includeParentEnvironment: includeParentEnvironment);
 }
 
 /// Find the command according to the [paths] or env variables (`PATH`)
 String? whichSync(String command,
-    {@Deprecated('Use environment') Map<String, String>? env,
-    Map<String, String>? environment,
-    bool includeParentEnvironment = true}) {
+    {Map<String, String>? environment, bool includeParentEnvironment = true}) {
   // only valid for single commands
   if (basename(command) != command) {
     return null;

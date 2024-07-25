@@ -22,10 +22,9 @@ abstract class ShellContext {
 
   /// New shell must set itself as a shell Context, shell environement is
   /// no longer relevent.
-  Shell newShell(
-      {ShellOptions? options,
-      @Deprecated('Use options') Map<String, String>? environment,
-      @Deprecated('Use options') bool includeParentEnvironment = true});
+  Shell newShell({
+    ShellOptions? options,
+  });
 
   /// New shell environment
   ShellEnvironment newShellEnvironment({

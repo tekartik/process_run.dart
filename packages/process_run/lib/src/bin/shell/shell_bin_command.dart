@@ -99,7 +99,6 @@ class ShellBinCommand {
       Version? version,
       ArgParser? parser,
       ShellBinCommand? parent,
-      @Deprecated('Do no user') FutureOr<bool> Function()? onRun,
       String? description}) {
     _onRun = onRun;
     _parser = parser;

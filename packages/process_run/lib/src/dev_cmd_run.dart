@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/src/io/io.dart';
 
-@Deprecated('Deb only, verbose')
-
 /// dev only run command
+@Deprecated('Dev only, verbose')
 Future<ProcessResult> devRunCmd(ProcessCmd cmd,
     {bool? verbose,
     bool? commandVerbose,

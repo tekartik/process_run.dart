@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Remove deprecated methods
+
 ## 1.0.0+3
 
 * add `ShellStdio` and `shellStdioLinesGrouper` to allow grouping stdout and stderr lines by zones.
