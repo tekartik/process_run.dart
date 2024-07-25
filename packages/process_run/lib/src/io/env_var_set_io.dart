@@ -5,7 +5,6 @@ import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/env_io.dart';
 import 'package:process_run/src/io/io.dart';
-import 'package:process_run/src/shell_common.dart';
 
 /// Helper to set environment variables
 class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {

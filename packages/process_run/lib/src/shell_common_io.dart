@@ -1,6 +1,7 @@
 import 'package:process_run/shell.dart' as io;
 import 'package:process_run/src/io/env_var_set_io.dart';
-
+import 'package:process_run/src/shell.dart';
+import 'bin/shell/import.dart';
 import 'shell_common.dart';
 
 /// Shell implementation using io.

@@ -155,6 +155,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
             addToCurrentLine(data.sublist(start, data.length));
           }
         }, onDone: () {
+          // devPrint('onDone');
           // Last one
           addCurrentLine();
           ctlr.close();
@@ -163,6 +164,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
         });
       },
       onCancel: () {
+        // devPrint('onCancel');
         subscription?.cancel();
       },
       sync: true);

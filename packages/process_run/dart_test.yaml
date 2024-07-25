@@ -1,4 +1,5 @@
 platforms:
   - vm
   - node
+  - chrome
 concurrency: 1

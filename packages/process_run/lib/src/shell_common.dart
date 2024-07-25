@@ -7,11 +7,6 @@ import 'package:process_run/src/shell_context_common.dart';
 
 import 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
 
-export 'package:process_run/shell.dart'
-    show Shell, ShellException, ShellEnvironment;
-
-export 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
-
 /// shell debug flag (dev only)
 var shellDebug = false; // devWarning(true); // false
 
@@ -124,7 +119,6 @@ abstract class ShellCoreSync {
 
 /// Shell options.
 ///
-
 class ShellOptions {
   final bool _throwOnError;
   final String? _workingDirectory;

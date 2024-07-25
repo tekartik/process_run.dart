@@ -1,12 +1,14 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:process_run/shell.dart';
+//import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
-import 'package:process_run/src/shell_utils_common.dart';
+import 'package:process_run/src/shell_environment.dart';
 //import 'package:process_run/shell.dart';
 //import 'package:process_run/src/common/import.dart';
-//import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/shell_utils_common.dart';
+
 export 'package:process_run/shell.dart' show ShellEnvironment;
 
 /// Shell environment ordered paths helper. Changes the PATH variable
@@ -365,7 +367,7 @@ abstract class ShellEnvironmentCore with MapMixin<String, String> {
   /// `paths` and `vars` key
   Map<String, dynamic> toJson();
 
-  /*
+/*
   /// Create a new shell environment from the current shellEnvironment.
   ///
   /// Defaults create a full parent environment.

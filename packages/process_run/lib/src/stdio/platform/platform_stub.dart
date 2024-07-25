@@ -1,5 +1,7 @@
 import 'package:process_run/src/stdio/stdio.dart';
 
+/// Shell streamer platform implementation.
 class ShellOutputLinesStreamerPlatform extends ShellOutputLinesStreamerMemory {
-  ShellOutputLinesStreamerPlatform({super.current, super.stdout, super.stderr});
+  /// Shell streamer platform implementation.
+  ShellOutputLinesStreamerPlatform({super.stdout, super.stderr});
 }

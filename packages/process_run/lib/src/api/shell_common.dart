@@ -5,14 +5,7 @@ export 'package:process_run/src/process_result_common_extension.dart'
         ProcessRunProcessResultsExt,
         ProcessRunProcessResultExt,
         ProcessRunProcessExt;
-export 'package:process_run/src/shell_common.dart'
-    show
-        Process,
-        ProcessResult,
-        ProcessSignal,
-        ShellOptions,
-        Shell,
-        ShellException;
+export 'package:process_run/src/shell_common.dart' show ShellOptions;
 export 'package:process_run/src/shell_environment_common.dart'
     show
         shellEnvironment,
@@ -22,3 +15,5 @@ export 'package:process_run/src/shell_environment_common.dart'
         ShellEnvironmentPaths;
 export 'package:process_run/src/shell_utils_common.dart'
     show shellArgument, shellArguments;
+export 'package:process_run/stdio.dart'
+    show Process, ProcessResult, ProcessSignal;

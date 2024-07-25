@@ -9,7 +9,8 @@ class ShellRunCommand extends ShellBinCommand {
   /// pub run process_run:shell run
   ShellRunCommand()
       : super(
-            name: commandRun, description: 'Run a command using user environment') {
+            name: commandRun,
+            description: 'Run a command using user environment') {
     parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
   }
 

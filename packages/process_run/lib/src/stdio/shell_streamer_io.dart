@@ -6,30 +6,44 @@ import 'package:process_run/src/stdio/stdio.dart';
 class ShellOutputLinesStreamerIo
     with ShellOutputLinesStreamerMixin
     implements ShellOutputLinesStreamer {
-  late final io.IOSink stdout;
-  late final io.IOSink stderr;
+  /// stdout.
+  late final io.IOSink _stdout;
+
+  /// stderr.
+  late final io.IOSink _stderr;
+
+  /// Log an info message.
   void log(String message) {
     if (current) {
-      stdout.writeln(message);
+      _stdout.writeln(message);
     } else {
       lines.add(StdioStreamLine(StdioStreamType.out, message));
     }
   }
 
+  @override
+  set current(bool current) {
+    if (this.current != current) {
+      super.current = current;
+      if (current == true) {
+        _dumpExisting();
+      }
+    }
+  }
+
+  /// Log an error message.
   void error(String message) {
     if (current) {
-      stderr.writeln(message);
+      _stderr.writeln(message);
     } else {
       lines.add(StdioStreamLine(StdioStreamType.err, message));
     }
   }
 
   /// Stdio streamer.could become true at any moment!
-  ShellOutputLinesStreamerIo(
-      {bool? current = false, io.IOSink? stdout, io.IOSink? stderr}) {
-    this.stdout = stdout ?? io.ioStdout;
-    this.stderr = stderr ?? io.ioStderr;
-    this.current = current;
+  ShellOutputLinesStreamerIo({io.IOSink? stdout, io.IOSink? stderr}) {
+    _stdout = stdout ?? io.ioStdout;
+    _stderr = stderr ?? io.ioStderr;
     outController.stream.listen((line) {
       log(line);
     });
@@ -38,18 +52,22 @@ class ShellOutputLinesStreamerIo
     });
   }
 
+  void _dumpExisting() {
+    for (var line in lines) {
+      if (line.type == StdioStreamType.out) {
+        _stdout.writeln(line.line);
+      } else {
+        _stderr.writeln(line.line);
+      }
+    }
+  }
+
   /// Close.
   @override
   void close() {
     mixinDispose();
     if (!current) {
-      for (var line in lines) {
-        if (line.type == StdioStreamType.out) {
-          stdout.writeln(line.line);
-        } else {
-          stderr.writeln(line.line);
-        }
-      }
+      _dumpExisting();
     }
   }
 }

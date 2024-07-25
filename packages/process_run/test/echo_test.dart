@@ -71,6 +71,13 @@ void main() {
         expect(result.exitCode, 0);
       }
 
+      void checkOutWriteLine(ProcessResult result) {
+        expect(result.stderr, '');
+        expect(result.stdout, 'out\n');
+        expect(result.pid, isNotNull);
+        expect(result.exitCode, 0);
+      }
+
       void checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, '');
@@ -81,6 +88,8 @@ void main() {
       await runCheck(
           checkOut, dartExecutable!, [echoScriptPath, '--stdout', 'out']);
       await runCheck(checkEmpty, dartExecutable!, [echoScriptPath]);
+      await runCheck(checkOutWriteLine, dartExecutable!,
+          [echoScriptPath, '--stdout', 'out', '--write-line']);
     });
 
     test('stdout_bin', () async {
@@ -135,6 +144,13 @@ void main() {
         expect(result.exitCode, 0);
       }
 
+      void checkErrWriteLine(ProcessResult result) {
+        expect(result.stderr, 'err\n');
+        expect(result.stdout, '');
+        expect(result.pid, isNotNull);
+        expect(result.exitCode, 0);
+      }
+
       void checkEmpty(ProcessResult result) {
         expect(result.stderr, '');
         expect(result.stdout, '');
@@ -143,8 +159,15 @@ void main() {
       }
 
       await runCheck(
-          checkErr, dartExecutable!, [echoScriptPath, '--stderr', 'err'],
-          stdout: stdout);
+        checkErr,
+        dartExecutable!,
+        [echoScriptPath, '--stderr', 'err'],
+      );
+      await runCheck(
+        checkErrWriteLine,
+        dartExecutable!,
+        [echoScriptPath, '--stderr', 'err', '--write-line'],
+      );
       await runCheck(checkEmpty, dartExecutable!, [echoScriptPath]);
     });
 

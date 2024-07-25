@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:process_run/src/shell_common.dart';
-
+import 'bin/shell/import.dart';
 import 'lines_utils.dart';
 
 /// run response helper.
@@ -44,8 +43,8 @@ extension ProcessRunProcessResultExt on ProcessResult {
 /// Process helper.
 extension ProcessRunProcessExt on Process {
   /// Out lines stream
-  Stream<String> get outLines => shellStreamLines(stdout);
+  Stream<String> get outLines => shellStreamLines(this.stdout);
 
   /// Err lines stream
-  Stream<String> get errLines => shellStreamLines(stderr);
+  Stream<String> get errLines => shellStreamLines(this.stderr);
 }

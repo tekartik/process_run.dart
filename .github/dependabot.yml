@@ -3,14 +3,17 @@
 version: 2
 
 enable-beta-ecosystems: true
+
 updates:
   - package-ecosystem: "pub"
     directory: "packages/process_run"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pub"
+    directory: "packages/process_run_test"
     schedule:
       interval: "monthly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
-    labels:
-      - autosubmit

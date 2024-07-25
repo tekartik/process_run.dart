@@ -2,8 +2,8 @@
 library;
 
 import 'package:process_run/process_run.dart';
+import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/stdio/stdio.dart';
-import 'package:process_run/stdio.dart';
 import 'package:test/test.dart';
 
 import 'src/compile_echo.dart';

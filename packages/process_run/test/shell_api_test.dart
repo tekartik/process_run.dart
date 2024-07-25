@@ -1,37 +1,35 @@
-@TestOn('vm')
-library process_run.test.shell_api_test;
-
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/env_utils.dart' show kDartIsWeb;
 import 'package:test/test.dart';
 
 void main() {
   group('shell_api_test', () {
     test('public', () {
       // ignore_for_file: unnecessary_statements
-      sharedStdIn;
-      dartVersion;
-      dartChannel;
-      dartExecutable;
+      if (!kDartIsWeb) {
+        sharedStdIn;
+        dartVersion;
+        dartChannel;
+        dartExecutable;
 
-      userHomePath;
-      userAppDataPath;
+        userHomePath;
+        userAppDataPath;
+        shellEnvironment;
+        platformEnvironment;
+        userPaths;
+        userEnvironment;
+        isFlutterSupportedSync;
+        isFlutterSupported;
+      }
       shellArgument;
-      shellEnvironment;
-      platformEnvironment;
       shellArguments;
       shellExecutableArguments;
-      userPaths;
-      userEnvironment;
       userLoadEnvFile;
       userLoadEnv;
-
       getFlutterBinVersion;
       getFlutterBinChannel;
-      isFlutterSupported;
-      isFlutterSupportedSync;
       ShellLinesController;
       shellStreamLines;
-
       promptConfirm;
       promptTerminate;
       prompt;
@@ -51,12 +49,10 @@ void main() {
       ProcessRunProcessResultsExt(null)?.outText;
       ProcessRunProcessResultExt(null)?.outText;
       ProcessRunProcessExt(null)?.outLines;
-
       // process_cmd
       ProcessCmd;
       processResultToDebugString;
       processCmdToDebugString;
-
       // shell_utils
       stringToArguments;
     });

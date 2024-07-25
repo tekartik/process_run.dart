@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:path/path.dart' as p;
+import 'package:process_run/src/shell.dart';
 import 'package:process_run/src/shell_common.dart';
+import 'package:process_run/src/shell_environment.dart';
 
 /// abstract shell context
 abstract class ShellContext {
