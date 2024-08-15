@@ -7,7 +7,8 @@ void main() {
   // This is a synchronous call and will block until the child process terminates.
   var results = shell.runSync('echo "Hello world"');
   var result = results.first;
-  print('output: "${result.outText.trim()}" exitCode: ${result.exitCode}');
+  stdout.writeln(
+      'output: "${result.outText.trim()}" exitCode: ${result.exitCode}');
   // should display: output: "Hello world" exitCode: 0
 
   // Run the command

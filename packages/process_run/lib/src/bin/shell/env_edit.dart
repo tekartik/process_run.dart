@@ -13,7 +13,7 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
   @override
   FutureOr<bool> onRun() async {
     if (verbose!) {
-      print('envFilePath: $envFilePath');
+      stdout.writeln('envFilePath: $envFilePath');
     }
     await envFileReadOrCreate(write: true);
 
@@ -41,7 +41,7 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
       await doRun('vi ${shellArgument(envFilePath!)}');
       return true;
     }
-    print('no editor found');
+    stdout.writeln('no editor found');
     return false;
   }
 }

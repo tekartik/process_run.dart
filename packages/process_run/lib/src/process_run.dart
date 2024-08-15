@@ -82,6 +82,7 @@ Future<ProcessResult> runExecutableArguments(
         includeParentEnvironment: false,
         runInShell: runInShell);
     if (shellDebug) {
+      // ignore: avoid_print
       print('process: ${process.pid}');
     }
     if (onProcess != null) {
@@ -92,8 +93,10 @@ Future<ProcessResult> runExecutableArguments(
       () async {
         try {
           var exitCode = await process.exitCode;
+          // ignore: avoid_print
           print('process: ${process.pid} exitCode $exitCode');
         } catch (e) {
+          // ignore: avoid_print
           print('process: ${process.pid} Error $e waiting exit code');
         }
       }();

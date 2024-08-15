@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/stdio.dart';
 
 Future main() async {
-  print('dart: ${await which('dart')}');
+  stdout.writeln('dart: ${await which('dart')}');
   var dartBinVersion = await getDartBinVersion();
-  print('dartBinVersion: $dartBinVersion');
+  stdout.writeln('dartBinVersion: $dartBinVersion');
   await Shell().run('dart --version');
 }

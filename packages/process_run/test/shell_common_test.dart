@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 library process_run.test.shell_common_api_test;
 
 import 'dart:async';

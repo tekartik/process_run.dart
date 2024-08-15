@@ -25,7 +25,7 @@ class ShellOutputLinesStreamerIo
   set current(bool current) {
     if (this.current != current) {
       super.current = current;
-      if (current == true) {
+      if (current) {
         dump();
       }
     }

@@ -87,6 +87,7 @@ Future main(List<String> arguments) async {
       await Future<void>.delayed(Duration(microseconds: delay));
     }
     index++;
+    // ignore: avoid_print
     print('[$index]');
   }
 

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 @TestOn('vm')
 library process_run.dartdoc_test;
 

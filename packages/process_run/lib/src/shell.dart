@@ -455,6 +455,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
   void _clearPreviousContext() {
     if (shellDebug) {
+      // ignore: avoid_print
       print(
           'Clear previous context ${_currentProcessResultCompleter?.isCompleted}');
     }
@@ -485,6 +486,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
       try {
         if (shellDebug) {
+          // ignore: avoid_print
           print('$_runId: Before $processCmd');
         }
 
@@ -498,6 +500,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
             workingDirectory: _options.workingDirectory);
       } finally {
         if (shellDebug) {
+          // ignore: avoid_print
           print(
               '$_runId: After $executableFullPath exitCode ${processResult?.exitCode}');
         }
@@ -566,6 +569,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         try {
           // devPrint(_options.environment.keys.where((element) => element.contains('TEKARTIK')));
           if (shellDebug) {
+            // ignore: avoid_print
             print('$_runId: Before $processCmd');
           }
 
@@ -582,6 +586,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
               _currentProcessCmd = processCmd;
               _currentProcessRunId = runId;
               if (shellDebug) {
+                // ignore: avoid_print
                 print('onProcess ${_currentProcessToString()}');
               }
               if (onProcess != null) {
@@ -589,6 +594,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
               }
               if (_killedRunId >= _runId) {
                 if (shellDebug) {
+                  // ignore: avoid_print
                   print('shell was killed');
                 }
                 _kill();
@@ -597,6 +603,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
             });
           } finally {
             if (shellDebug) {
+              // ignore: avoid_print
               print(
                   '$_runId: After $processCmd exitCode ${processResult?.exitCode}');
             }
@@ -637,6 +644,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
       run().then((value) {
         if (shellDebug) {
+          // ignore: avoid_print
           print('$runId: done');
         }
         if (!completer.isCompleted) {
@@ -644,6 +652,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         }
       }).catchError((Object e) {
         if (shellDebug) {
+          // ignore: avoid_print
           print('$runId: error $e');
         }
         if (!completer.isCompleted) {

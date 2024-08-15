@@ -87,6 +87,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
           ctlr.add(encoding!.decode(currentLine!));
         } catch (_) {
           // Ignore bad encoding
+          // ignore: avoid_print
           print('ignoring: $currentLine');
         }
       }
@@ -97,6 +98,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
   ctlr = StreamController<String>(
       onPause: () {
         if (shellDebug) {
+          // ignore: avoid_print
           print('onPause (paused: ${subscription?.isPaused})');
         }
         // Last one

@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 
 void _devPrint(Object object) {
   if (_devPrintEnabled) {
+    // ignore: avoid_print
     print(object);
   }
 }
@@ -14,11 +15,11 @@ bool _devPrintEnabled = true;
 @Deprecated('Dev only')
 set devPrintEnabled(bool enabled) => _devPrintEnabled = enabled;
 
-@Deprecated('Dev only')
-
 /// Print only in dev mode
+@Deprecated('Dev only')
 void devPrint(Object? object) {
   if (_devPrintEnabled) {
+    // ignore: avoid_print
     print(object);
   }
 }
@@ -34,7 +35,9 @@ void _devError([Object? msg]) {
     throw UnsupportedError('$msg');
   } catch (e, st) {
     if (_devPrintEnabled) {
+      // ignore: avoid_print
       print('# ERROR $msg');
+      // ignore: avoid_print
       print(st);
     }
     rethrow;

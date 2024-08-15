@@ -18,7 +18,7 @@ class ShellEnvDeleteCommand extends ShellEnvCommandBase {
   FutureOr<bool> onRun() async {
     var path = envFilePath;
     if (verbose!) {
-      print('envFilePath: $path');
+      stdout.writeln('envFilePath: $path');
     }
     var force = getFlag(flagForce)!;
 

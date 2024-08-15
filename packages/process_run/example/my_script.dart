@@ -1,3 +1,5 @@
+import 'package:process_run/stdio.dart';
+
 void main(List<String> arguments) {
-  print(arguments);
+  stdout.writeln(arguments);
 }

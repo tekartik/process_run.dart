@@ -64,7 +64,7 @@ class ShellRunCommand extends ShellBinCommand {
       exit(1);
     }
     if (verbose!) {
-      print('command: $command');
+      stdout.writeln('command: $command');
     }
     await run(command);
     return true;

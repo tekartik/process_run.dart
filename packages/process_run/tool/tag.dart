@@ -6,8 +6,8 @@ import 'package:process_run/shell.dart';
 Future main() async {
   var shell = Shell();
   var version = await getPackageVersion();
-  print('Version $version');
-  print('Tap anything or CTRL-C: $version');
+  stdout.writeln('Version $version');
+  stdout.writeln('Tap anything or CTRL-C: $version');
 
   await stdin.first;
   await shell.run('''
