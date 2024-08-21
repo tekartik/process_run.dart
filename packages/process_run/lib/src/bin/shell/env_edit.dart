@@ -12,7 +12,7 @@ class ShellEnvEditCommand extends ShellEnvCommandBase {
 
   @override
   FutureOr<bool> onRun() async {
-    if (verbose!) {
+    if (verbose) {
       stdout.writeln('envFilePath: $envFilePath');
     }
     await envFileReadOrCreate(write: true);

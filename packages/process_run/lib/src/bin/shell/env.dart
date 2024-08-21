@@ -11,6 +11,7 @@ import 'package:process_run/src/user_config.dart';
 import 'env_alias.dart';
 import 'env_delete.dart';
 import 'env_file_content.dart';
+import 'env_info.dart';
 import 'env_path.dart';
 import 'env_var.dart';
 import 'import.dart';
@@ -27,7 +28,13 @@ class ShellEnvCommandBase extends ShellBinCommand {
 
   /// Local env
   bool get local {
-    final user = results[flagUser] as bool;
+    if (!results.wasParsed(flagUser)) {
+      var parent = this.parent;
+      if (parent is ShellEnvCommandBase) {
+        return parent.local;
+      }
+    }
+    final user = results.flag(flagUser);
     final local = !user;
     return local;
   }
@@ -113,6 +120,8 @@ class ShellEnvCommand extends ShellEnvCommandBase {
 
     addCommand(ShellEnvAliasCommand());
     addCommand(ShellEnvPathCommand());
+    addCommand(ShellEnvInfoCommand());
+
     parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
   }
 

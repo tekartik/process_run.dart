@@ -27,7 +27,7 @@ class ShellEnvPathPrependCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 path argument expected');
       exit(1);
     } else {
-      if (verbose!) {
+      if (verbose) {
         stdout.writeln('before: ${jsonEncode(ShellEnvironment().paths)}');
       }
       var fileContent = await envFileReadOrCreate();
@@ -36,7 +36,7 @@ class ShellEnvPathPrependCommand extends ShellEnvCommandBase {
       }
       // Force reload
       shellEnvironment = null;
-      if (verbose!) {
+      if (verbose) {
         stdout.writeln('After: ${jsonEncode(ShellEnvironment().paths)}');
       }
       return true;

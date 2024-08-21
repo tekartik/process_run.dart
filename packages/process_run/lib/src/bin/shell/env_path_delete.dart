@@ -27,7 +27,7 @@ class ShellEnvPathDeleteCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 1 path argument expected');
       exit(1);
     } else {
-      if (verbose!) {
+      if (verbose) {
         stdout.writeln('File $label: $envFilePath');
         stdout.writeln('before: ${jsonEncode(ShellEnvironment().paths)}');
       }
@@ -37,7 +37,7 @@ class ShellEnvPathDeleteCommand extends ShellEnvCommandBase {
       }
       // Force reload
       shellEnvironment = null;
-      if (verbose!) {
+      if (verbose) {
         stdout.writeln('After: ${jsonEncode(ShellEnvironment().paths)}');
       }
       return true;

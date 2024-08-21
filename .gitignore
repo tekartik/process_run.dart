@@ -5,3 +5,8 @@
 
 # Local files
 .local/
+
+# Workaround for analyser issue, allow project at root
+/pubspec.lock
+/pubspec.yaml
+/.dart_tool/

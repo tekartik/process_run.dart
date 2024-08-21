@@ -17,10 +17,10 @@ class ShellEnvDeleteCommand extends ShellEnvCommandBase {
   @override
   FutureOr<bool> onRun() async {
     var path = envFilePath;
-    if (verbose!) {
+    if (verbose) {
       stdout.writeln('envFilePath: $path');
     }
-    var force = getFlag(flagForce)!;
+    var force = getFlag(flagForce);
 
     if (force ||
         await promptConfirm('Confirm that you want to delete file ($label)')) {

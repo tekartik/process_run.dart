@@ -1,3 +1,8 @@
+## 1.2.0-0
+
+* Export ShellBinCommand
+* requires dart 3.5
+
 ## 1.1.0
 
 * Remove deprecated methods

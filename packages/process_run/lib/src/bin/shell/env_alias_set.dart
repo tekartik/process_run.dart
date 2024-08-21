@@ -27,7 +27,7 @@ class ShellEnvAliasSetCommand extends ShellEnvCommandBase {
       stderr.writeln('At least 2 arguments expected');
       exit(1);
     } else {
-      if (verbose!) {
+      if (verbose) {
         stdout.writeln('file $label: $envFilePath');
         stdout.writeln('before: ${jsonEncode(ShellEnvironment().aliases)}');
       }
@@ -39,7 +39,7 @@ class ShellEnvAliasSetCommand extends ShellEnvCommandBase {
       }
       // Force reload
       shellEnvironment = null;
-      if (verbose!) {
+      if (verbose) {
         stdout.writeln('After: ${jsonEncode(ShellEnvironment().aliases)}');
       }
       return true;

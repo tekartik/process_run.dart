@@ -25,7 +25,7 @@ class ShellBinCommand {
   bool? _verbose;
 
   /// Set before run
-  bool? get verbose => _verbose ??= parent?.verbose;
+  bool get verbose => _verbose ??= parent?.verbose ?? false;
 
   String? _description;
 
@@ -76,12 +76,12 @@ class ShellBinCommand {
 
   /// Parse the arguments
   ArgResults parse(List<String> arguments) {
-    // Add missing common commands
-    parser.addFlag(flagVersion,
-        help: 'Print the command version', negatable: false);
-    parser.addFlag(flagVerbose,
-        abbr: 'v', help: 'Verbose mode', negatable: false);
-    return results = parser.parse(arguments);
+    results = parser.parse(arguments);
+    if (parent == null) {
+      // Handle verbose
+      _verbose = getFlag(flagVerbose);
+    }
+    return results;
   }
 
   /// Parse and run the command
@@ -100,12 +100,19 @@ class ShellBinCommand {
       ArgParser? parser,
       ShellBinCommand? parent,
       String? description}) {
-    _onRun = onRun;
+    //_onRun = onRun;
     _parser = parser;
     _description = description;
     _version = version;
     // read or create
     parser = this.parser;
+    // Add missing common commands
+    if (parent == null) {
+      parser.addFlag(flagVersion,
+          help: 'Print the command version', negatable: false);
+      parser.addFlag(flagVerbose,
+          abbr: 'v', help: 'Verbose mode', negatable: false);
+    }
     parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
   }
 
@@ -128,7 +135,7 @@ class ShellBinCommand {
   }
 
   /// Get a flag
-  bool? getFlag(String name) => results[name] as bool?;
+  bool getFlag(String name) => results.flag(name);
 
   /// Run
   @nonVirtual
@@ -138,7 +145,7 @@ class ShellBinCommand {
       // Handle verbose
       _verbose = getFlag(flagVerbose);
 
-      final hasVersion = getFlag(flagVersion)!;
+      final hasVersion = getFlag(flagVersion);
       if (hasVersion) {
         stdout.writeln(version);
         return true;
