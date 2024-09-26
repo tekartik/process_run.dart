@@ -11,7 +11,7 @@
 /// {@canonicalFor shell_utils.userHomePath}
 /// {@canonicalFor user_config.userPaths}
 /// {@canonicalFor process_run.runExecutableArguments}
-library process_run.shell;
+library;
 
 export 'package:process_run/dartbin.dart'
     show

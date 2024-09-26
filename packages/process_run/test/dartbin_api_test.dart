@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.dartbin_api_test;
+library;
 
 import 'package:process_run/dartbin.dart';
 import 'package:test/test.dart';

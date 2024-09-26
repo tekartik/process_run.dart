@@ -1,4 +1,4 @@
-library process_run.src.shell_utils_io;
+library;
 
 import 'package:path/path.dart';
 import 'package:process_run/src/io/io.dart';

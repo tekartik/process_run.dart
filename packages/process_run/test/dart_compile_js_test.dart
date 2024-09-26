@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.dart2js_test;
+library;
 
 import 'dart:io';
 import 'dart:mirrors';

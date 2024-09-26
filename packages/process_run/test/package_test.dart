@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.pub_test;
+library;
 
 import 'package:path/path.dart';
 import 'package:process_run/package/package.dart';

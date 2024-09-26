@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run_test_windows_test;
+library;
 
 import 'dart:io';
 

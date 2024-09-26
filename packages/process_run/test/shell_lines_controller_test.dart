@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.test.shell_test;
+library;
 
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';

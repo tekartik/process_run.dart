@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.dartbin_cmd_test;
+library;
 
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';

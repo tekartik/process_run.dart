@@ -1,4 +1,4 @@
-library process_run.test.shell_common_api_test;
+library;
 
 import 'package:process_run/src/mixin/shell_common.dart';
 import 'package:test/test.dart';

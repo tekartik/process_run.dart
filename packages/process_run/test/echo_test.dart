@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.echo_test;
+library;
 
 import 'dart:convert';
 import 'dart:io';

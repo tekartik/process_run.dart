@@ -1,5 +1,5 @@
 /// Prefer using shell
-library process_run.cmd_run;
+library;
 
 ///
 /// Command runner

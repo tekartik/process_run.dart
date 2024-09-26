@@ -7,7 +7,7 @@
 /// {@canonicalFor dartbin.dartChannel}
 /// {@canonicalFor dartbin.dartExecutable}
 /// {@canonicalFor dartbin.dartVersion}
-library process_run.dartbin;
+library;
 
 export 'package:process_run/src/flutterbin_cmd.dart'
     show

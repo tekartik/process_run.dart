@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.test.process_cmd_api_test;
+library;
 
 import 'package:process_run/process_cmd.dart';
 import 'package:test/test.dart';

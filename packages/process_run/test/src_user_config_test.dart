@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.test.src_user_config_test;
+library;
 
 import 'dart:io';
 

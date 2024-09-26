@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-library process_run.test.shell_common_api_test;
+library;
 
 import 'dart:async';
 import 'dart:io';

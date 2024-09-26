@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
 @TestOn('vm')
-library process_run.test.shell_run_test;
+library;
 
 import 'dart:io';
 

@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.flutterbin_cmd_test;
+library;
 
 import 'package:process_run/src/flutterbin_cmd.dart';
 // ignore: import_of_legacy_library_into_null_safe

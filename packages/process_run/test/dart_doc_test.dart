@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 
 @TestOn('vm')
-library process_run.dartdoc_test;
+library;
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';

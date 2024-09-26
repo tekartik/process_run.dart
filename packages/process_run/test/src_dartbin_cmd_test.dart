@@ -1,6 +1,6 @@
 // TODO non vm
 //@TestOn('vm')
-library process_run.test.src_dart_bin_cmd_test;
+library;
 
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/src/dartbin_cmd.dart'

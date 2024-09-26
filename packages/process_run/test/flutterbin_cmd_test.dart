@@ -1,5 +1,5 @@
 @TestOn('vm')
-library process_run.flutterbin_cmd_test;
+library;
 
 import 'dart:io';
 
