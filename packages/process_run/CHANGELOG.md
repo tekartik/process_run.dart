@@ -1,4 +1,4 @@
-## 1.2.0+2
+## 1.2.0+3
 
 * Export ShellBinCommand
 * requires dart 3.5
