@@ -1,13 +1,12 @@
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/run.dart';
 import 'package:process_run/src/version.dart';
-import 'package:pub_semver/pub_semver.dart';
 
 import 'env.dart';
 import 'import.dart';
 
 /// The shell bin version
-Version shellBinVersion = Version.parse(packageVersion);
+final shellBinVersion = packageVersion;
 
 /// Help flag
 const flagHelp = 'help';
