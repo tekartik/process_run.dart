@@ -103,11 +103,11 @@ Future<ProcessResult> runExecutableArguments(
     }
   } catch (e) {
     if (verbose == true) {
-      io.stderr.writeln(e);
-      io.stderr.writeln(
-          '\$ ${executableArgumentsToString(executableShortName, arguments)}');
-      io.stderr.writeln(
-          'workingDirectory: ${workingDirectory ?? Directory.current.path}');
+      dumpException(
+          executable: executableShortName,
+          arguments: arguments,
+          exception: e,
+          workingDirectory: workingDirectory);
     }
     rethrow;
   }
@@ -269,11 +269,11 @@ ProcessResult runExecutableArgumentsSync(
     );
   } catch (e) {
     if (verbose == true) {
-      io.stderr.writeln(e);
-      io.stderr.writeln(
-          '\$ ${executableArgumentsToString(executableShortName, arguments)}');
-      io.stderr.writeln(
-          'workingDirectory: ${workingDirectory ?? Directory.current.path}');
+      dumpException(
+          executable: executableShortName,
+          arguments: arguments,
+          exception: e,
+          workingDirectory: workingDirectory);
     }
     rethrow;
   }
@@ -347,11 +347,24 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
         onProcess: onProcess);
   } catch (e) {
     if (verbose == true) {
-      io.stderr.writeln(e);
-      io.stderr.writeln('\$ $cmd');
-      io.stderr.writeln(
-          'workingDirectory: ${cmd.workingDirectory ?? Directory.current.path}');
+      dumpException(
+          executable: cmd.executable,
+          arguments: cmd.arguments,
+          exception: e,
+          workingDirectory: cmd.workingDirectory);
     }
     rethrow;
   }
+}
+
+/// Dump the exception to stderr
+void dumpException(
+    {required String executable,
+    required List<String> arguments,
+    required Object exception,
+    String? workingDirectory}) {
+  io.stderr.writeln(exception);
+  io.stderr.writeln('\$ ${executableArgumentsToString(executable, arguments)}');
+  io.stderr.writeln(
+      'workingDirectory: ${normalize(absolute(workingDirectory ?? Directory.current.path))}');
 }
