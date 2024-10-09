@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Add `ShellLinesController.binaryStream` to allow processing binary data and allow using it for stdin.
+* 
 ## 1.2.0+3
 
 * Export ShellBinCommand
