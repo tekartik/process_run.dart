@@ -7,7 +7,9 @@ import 'package:process_run/src/shell_utils_common.dart';
 
 import 'common/import.dart';
 
-/// Basic shell lines controller.
+/// Basic bi-directionnal shell lines controller.
+///
+/// Use either sink for stdout/stderr or binaryStream for stdin
 ///
 /// Usage:
 /// ```dart
@@ -55,6 +57,9 @@ class ShellLinesController {
 
   /// True if the controller is closed.
   bool get isClosed => _controller.isClosed;
+
+  /// The binary stream to listen to, that can be passed to stdin
+  Stream<List<int>> get binaryStream => _controller.stream;
 
   /// Dispose the controller.
   void close() {
