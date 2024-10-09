@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/version.dart';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
@@ -51,10 +52,11 @@ Future main(List<String> arguments) async {
     return int.tryParse(value?.toString() ?? '');
   }
 
-  final help = argsResult['help'] as bool;
+  final help = argsResult.flag('help');
   final count = parseInt(argsResult['count']);
   final delay = parseInt(argsResult[udelayOption]);
   final timeout = parseInt(argsResult['timeout']);
+  final version = argsResult.flag('version');
 
   void printUsage() {
     stdout.writeln('Streamer utility');
@@ -66,6 +68,11 @@ Future main(List<String> arguments) async {
     stdout.writeln();
     stdout.writeln('Global options:');
     stdout.writeln(parser.usage);
+  }
+
+  if (version) {
+    stdout.write(packageVersion);
+    return;
   }
 
   if (help) {

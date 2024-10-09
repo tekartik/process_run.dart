@@ -9,6 +9,7 @@ import 'package:args/args.dart';
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
+import 'package:process_run/src/version.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
@@ -70,10 +71,15 @@ Future main(List<String> arguments) async {
     return int.tryParse(value?.toString() ?? '');
   }
 
-  final help = argsResult['help'] as bool;
-  final verbose = argsResult['verbose'] as bool?;
+  final help = argsResult.flag('help');
+  final version = argsResult.flag('version');
   final wait = parseInt(argsResult['wait']);
-  final writeLine = argsResult['write-line'] as bool?;
+  final writeLine = argsResult.flag('write-line');
+
+  if (version) {
+    stdout.write(packageVersion);
+    return;
+  }
 
   if (wait != null) {
     await Future<void>.delayed(Duration(milliseconds: wait));
@@ -106,16 +112,11 @@ Future main(List<String> arguments) async {
 
   // handle stdin if asked for it
   if (argsResult['stdin'] as bool) {
-    // devPrint('reading stdin $stdin');
-    if (verbose!) {
-      //stderr.writeln('stdin  $stdin');
-      //stderr.writeln('stdin  ${await stdin..isEmpty}');
-    }
     final lineSync = stdin.readLineSync();
     if (lineSync != null) {
       stdout.write(lineSync);
     }
-    if (writeLine!) {
+    if (writeLine) {
       stdout.writeln();
     }
   }
@@ -123,14 +124,14 @@ Future main(List<String> arguments) async {
   final outputText = argsResult['stdout'] as String?;
   if (outputText != null) {
     stdout.write(outputText);
-    if (writeLine!) {
+    if (writeLine) {
       stdout.writeln();
     }
   }
   final hexOutputText = argsResult['stdout-hex'] as String?;
   if (hexOutputText != null) {
     stdout.add(hexToBytes(hexOutputText));
-    if (writeLine!) {
+    if (writeLine) {
       stdout.writeln();
     }
   }
@@ -138,14 +139,14 @@ Future main(List<String> arguments) async {
   final stderrText = argsResult['stderr'] as String?;
   if (stderrText != null) {
     stderr.write(stderrText);
-    if (writeLine!) {
+    if (writeLine) {
       stderr.writeln();
     }
   }
   final stderrHexTest = argsResult['stderr-hex'] as String?;
   if (stderrHexTest != null) {
     stderr.add(hexToBytes(stderrHexTest));
-    if (writeLine!) {
+    if (writeLine) {
       stderr.writeln();
     }
   }
@@ -153,7 +154,7 @@ Future main(List<String> arguments) async {
   final envVar = argsResult['stdout-env'] as String?;
   if (envVar != null) {
     stdout.write(Platform.environment[envVar] ?? '');
-    if (writeLine!) {
+    if (writeLine) {
       stdout.writeln();
     }
   }

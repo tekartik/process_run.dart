@@ -5,15 +5,16 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:test/test.dart';
 
-import 'process_run_test_common.dart';
+import 'src/compile_echo.dart';
+import 'src/compile_streamer.dart';
 
 void main() {
   group('ShellLinesController', () {
     late ShellEnvironment env;
-    setUpAll(() {
+    setUpAll(() async {
       env = ShellEnvironment()
-        ..aliases['streamer'] = 'dart run ${shellArgument(streamerScriptPath)}'
-        ..aliases['echo'] = 'dart run ${shellArgument(echoScriptPath)}';
+        ..aliases['streamer'] = await compileStreamerExample()
+        ..aliases['echo'] = await compileEchoExample();
     });
     test('stream all', () async {
       var ctlr = ShellLinesController();
@@ -74,6 +75,25 @@ void main() {
           .run('echo --exit-code 1')
           .then((_) => ctlr.close(), onError: ctlr.sink.addError);
       await completer.future;
+    });
+    test('shell stdin', () async {
+      var ctlr = ShellLinesController();
+      var inputController = ShellLinesController();
+      var completer = Completer<bool>();
+      ctlr.stream.listen((event) {
+        if (event == 'stdin_done') {
+          completer.complete(true);
+        }
+      });
+      var shell = Shell(
+          stdout: ctlr.sink,
+          stdin: inputController.binaryStream,
+          environment: env);
+      var done = shell.run('echo --stdin --write-line --verbose');
+      inputController.writeln('stdin_done');
+      inputController.close();
+      await completer.future;
+      await done;
     });
   });
 }
