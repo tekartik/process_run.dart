@@ -249,6 +249,12 @@ void main() {
         'vars': {'VAR1': 'var1'},
         'aliases': {'alias1': 'command1'}
       });
+      var jsonText = jsonEncode(basicEnv.toJson());
+      expect(jsonDecode(jsonText), basicEnv.toJson());
+
+      var env = ShellEnvironment();
+      jsonText = jsonEncode(env.toJson());
+      expect(jsonDecode(jsonText), env.toJson());
     });
     test('fromJson', () async {
       expect(
