@@ -1,3 +1,4 @@
+import 'package:process_run/src/bin/shell/env.dart';
 import 'package:process_run/src/bin/shell/env_var_delete.dart';
 import 'package:process_run/src/bin/shell/env_var_dump.dart';
 
@@ -6,7 +7,7 @@ import 'env_var_set.dart';
 import 'import.dart';
 
 /// Shell env var command.
-class ShellEnvVarCommand extends ShellBinCommand {
+class ShellEnvVarCommand extends ShellEnvCommandBase {
   /// Shell env var command.
   ShellEnvVarCommand()
       : super(

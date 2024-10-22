@@ -26,17 +26,20 @@ class ShellEnvCommandBase extends ShellBinCommand {
         abbr: 'u', help: 'Use user env instead of local env', negatable: false);
   }
 
-  /// Local env
+  /// Local env (default)
   bool get local {
-    if (!results.wasParsed(flagUser)) {
-      var parent = this.parent;
-      if (parent is ShellEnvCommandBase) {
-        return parent.local;
-      }
+    if (results.wasParsed(flagUser)) {
+      final user = results.flag(flagUser);
+      return !user;
     }
-    final user = results.flag(flagUser);
-    final local = !user;
-    return local;
+    if (results.wasParsed(flagLocal)) {
+      return results.flag(flagLocal);
+    }
+    var parent = this.parent;
+    if (parent is ShellEnvCommandBase) {
+      return parent.local;
+    }
+    return true;
   }
 
   /// Local/User label

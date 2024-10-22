@@ -1,6 +1,7 @@
-## 1.2.1
+## 1.2.1+1
 
 * Add `ShellLinesController.binaryStream` to allow processing binary data and allow using it for stdin.
+* Fix `--user` flag handling in `ds` executable.
 
 ## 1.2.0+3
 
