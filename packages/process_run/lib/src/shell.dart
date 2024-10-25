@@ -292,9 +292,26 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
   bool _kill() {
     if (_currentProcess != null) {
-      io.stderr.writeln('killing $_killedRunId, ${_currentProcessToString()}');
-      var result = _currentProcess!.kill(_killedProcessSignal);
-      _clearPreviousContext();
+      bool result;
+      try {
+        io.stderr.writeln(
+            'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal');
+
+        /// Workaround for linux when using sigkill to kill the children processes too
+        if (io.Platform.isLinux &&
+            _killedProcessSignal == ProcessSignal.sigkill) {
+          /// Kill the children
+          var pid = _currentProcess!.pid;
+          // Kill children process
+          runExecutableArgumentsSync('pkill', ['-P', '$pid']);
+        }
+
+        /// kill the parent process
+        result = _currentProcess!.kill(_killedProcessSignal);
+        _clearPreviousContext();
+      } catch (_) {
+        result = false;
+      }
       return result;
     } else if (_currentProcessResultCompleter != null) {
       _clearPreviousContext();

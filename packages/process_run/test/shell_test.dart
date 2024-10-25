@@ -274,6 +274,31 @@ $echoExe -o ${shellArgument(weirdText)}
         stderr.writeln('Allowed: could happen on CI');
       }
     }, timeout: const Timeout(Duration(seconds: 50)));
+
+    test('kill SIGKILL', () async {
+      try {
+        await () async {
+          await ensureEchoExe();
+          var shell = Shell();
+          await shell.run('$echoExe --version');
+          late Future future;
+          try {
+            future = shell.run('$echoExe --wait 30000');
+          } on TimeoutException catch (_) {}
+          try {
+            shell.kill(ProcessSignal.sigkill);
+            await future;
+            fail('should fail');
+          } on ShellException catch (_) {
+            // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
+          }
+        }()
+            .timeout(const Duration(seconds: 30));
+      } on TimeoutException catch (e) {
+        stderr.writeln('TimeOutException $e');
+        stderr.writeln('Allowed: could happen on CI');
+      }
+    }, timeout: const Timeout(Duration(seconds: 50)));
     test('kill complex', () async {
       await ensureEchoExe();
       try {
