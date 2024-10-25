@@ -1,3 +1,7 @@
+## 1.2.2-0
+
+* Special kill behavior on linux when using sigkill (kills all children too)
+
 ## 1.2.1+1
 
 * Add `ShellLinesController.binaryStream` to allow processing binary data and allow using it for stdin.
