@@ -300,10 +300,12 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         /// Workaround for linux when using sigkill to kill the children processes too
         if (io.Platform.isLinux &&
             _killedProcessSignal == ProcessSignal.sigkill) {
-          /// Kill the children
-          var pid = _currentProcess!.pid;
-          // Kill children process
-          runExecutableArgumentsSync('pkill', ['-P', '$pid']);
+          try {
+            /// Kill the children
+            var pid = _currentProcess!.pid;
+            // Kill children process
+            runExecutableArgumentsSync('pkill', ['-P', '$pid']);
+          } catch (_) {}
         }
 
         /// kill the parent process
