@@ -309,7 +309,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           } else if (io.Platform.isWindows) {
             try {
               /// Kill the children
-              var pid = _currentProcess!.pid;
               // Kill children process
               // /pid <processID>	Specifies the process ID of the process to be terminated.
               // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.

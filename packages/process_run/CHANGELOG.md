@@ -1,6 +1,6 @@
-## 1.2.2-0
+## 1.2.2
 
-* Special kill behavior on linux when using sigkill (kills all children too)
+* Special kill behavior on linux, mac and windows when using sigkill (kills all children too)
 
 ## 1.2.1+1
 
