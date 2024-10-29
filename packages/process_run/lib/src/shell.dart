@@ -298,7 +298,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
             'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal');
 
         /// Workaround for linux when using sigkill to kill the children processes too
-        if (io.Platform.isLinux &&
+        if ((io.Platform.isLinux || io.Platform.isMacOS) &&
             _killedProcessSignal == ProcessSignal.sigkill) {
           try {
             /// Kill the children
