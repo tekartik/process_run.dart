@@ -297,19 +297,35 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         io.stderr.writeln(
             'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal');
 
-        /// Workaround for linux when using sigkill to kill the children processes too
-        if ((io.Platform.isLinux || io.Platform.isMacOS) &&
-            _killedProcessSignal == ProcessSignal.sigkill) {
-          try {
-            /// Kill the children
-            var pid = _currentProcess!.pid;
-            // Kill children process
-            runExecutableArgumentsSync('pkill', ['-P', '$pid']);
-          } catch (_) {}
+        if (_killedProcessSignal == ProcessSignal.sigkill) {
+          var pid = _currentProcess!.pid;
+
+          /// Workaround when using sigkill to kill the children processes too
+          if (io.Platform.isLinux || io.Platform.isMacOS) {
+            try {
+              /// Kill the children
+              runExecutableArgumentsSync('pkill', ['-P', '$pid']);
+            } catch (_) {}
+          } else if (io.Platform.isWindows) {
+            try {
+              /// Kill the children
+              var pid = _currentProcess!.pid;
+              // Kill children process
+              // /pid <processID>	Specifies the process ID of the process to be terminated.
+              // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.
+              // /t	Ends the specified process and any child processes started by it.
+              runExecutableArgumentsSync(
+                  'taskkill', ['/t', '/f', '/pid', '$pid']);
+            } catch (_) {}
+          }
         }
 
-        /// kill the parent process
-        result = _currentProcess!.kill(_killedProcessSignal);
+        try {
+          /// kill the parent process
+          result = _currentProcess!.kill(_killedProcessSignal);
+        } catch (_) {
+          result = false;
+        }
         _clearPreviousContext();
       } catch (_) {
         result = false;

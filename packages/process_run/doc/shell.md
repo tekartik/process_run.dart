@@ -96,7 +96,7 @@ $ alias ds='dart pub global run process_run:shell'
  
 ### Helper
 
-`ShellLinesController` allows listeninging line from a command line script.
+`ShellLinesController` allows listening line from a command line script.
 
 ```dart
 var controller = ShellLinesController();
@@ -202,3 +202,12 @@ Then run your commands via `osascript` like so:
 ```
 
 That will prompt for the user to type his password and then will run the script.
+
+### Killing a shell
+
+You can kill a shell using the `kill()` method. It will kill the shell and all its spawn children.
+By default its uses `ProcessSignal.sigterm` signal. You can specify a different signal using the `signal` parameter.
+
+A special trick is made when `ProcessSignal.sigkill` used as it will force killing all children processes on Windows (taskkill), MacOS and Linux (pkill).
+As I was experiencing with `dhttpd`, killing the process was not really killing the server so using `sigkill` (and so taskkill and pkill) was properly
+killing the server.
