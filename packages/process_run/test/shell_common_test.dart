@@ -113,7 +113,7 @@ class ShellMock with ShellMixin implements Shell {
 
   @override
   Future<List<ProcessResult>> run(String script,
-      {void Function(Process process)? onProcess}) async {
+      {ShellOnProcessCallback? onProcess}) async {
     scripts.add(script);
     // Take "hola" from "echo hola"
     var outLines = [script.split(' ').last];
@@ -127,7 +127,7 @@ class ShellMock with ShellMixin implements Shell {
   @override
   Future<ProcessResult> runExecutableArguments(
       String executable, List<String> arguments,
-      {void Function(Process process)? onProcess}) {
+      {ShellOnProcessCallback? onProcess}) {
     // TODO: implement runExecutableArguments
     throw UnimplementedError();
   }

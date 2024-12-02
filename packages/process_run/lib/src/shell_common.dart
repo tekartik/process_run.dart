@@ -5,7 +5,7 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_context_common.dart';
 
-import 'io/io_import.dart' show ProcessResult, Process, ProcessSignal;
+import 'io/io_import.dart' show ProcessResult, ProcessSignal;
 
 /// shell debug flag (dev only)
 var shellDebug = false; // devWarning(true); // false
@@ -52,7 +52,7 @@ abstract class ShellCore {
   /// [onProcess] is called for each started process.
   ///
   Future<List<ProcessResult>> run(String script,
-      {void Function(Process process)? onProcess});
+      {ShellOnProcessCallback? onProcess});
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
@@ -61,7 +61,7 @@ abstract class ShellCore {
   /// [onProcess] is called for each started process.
   Future<ProcessResult> runExecutableArguments(
       String executable, List<String> arguments,
-      {void Function(Process process)? onProcess});
+      {ShellOnProcessCallback? onProcess});
 
   /// Create new shell at the given path
   Shell cd(String path);

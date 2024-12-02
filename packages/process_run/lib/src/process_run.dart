@@ -37,7 +37,7 @@ Future<ProcessResult> runExecutableArguments(
     bool? commandVerbose,
     bool? noStdoutResult,
     bool? noStderrResult,
-    void Function(Process process)? onProcess}) async {
+    ShellOnProcessCallback? onProcess}) async {
   if (verbose == true) {
     commandVerbose = true;
     stdout ??= io.stdout;
@@ -317,7 +317,7 @@ Future<ProcessResult> processCmdRun(ProcessCmd cmd,
     StreamSink<List<int>>? stderr,
     bool? noStdoutResult,
     bool? noStderrResult,
-    void Function(Process process)? onProcess}) async {
+    ShellOnProcessCallback? onProcess}) async {
   if (verbose == true) {
     stdout ??= io.stdout;
     stderr ??= io.stderr;

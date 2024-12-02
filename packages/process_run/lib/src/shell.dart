@@ -447,7 +447,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   @override
   Future<ProcessResult> runExecutableArguments(
       String executable, List<String> arguments,
-      {void Function(Process process)? onProcess}) async {
+      {ShellOnProcessCallback? onProcess}) async {
     return _runLocked((runId) async {
       return _lockedRunExecutableArguments(runId, executable, arguments,
           onProcess: onProcess);
@@ -579,7 +579,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// Returns a process result (or throw if specified in the shell).
   Future<ProcessResult> _lockedRunExecutableArguments(
       int runId, String executable, List<String> arguments,
-      {void Function(Process process)? onProcess}) {
+      {ShellOnProcessCallback? onProcess}) {
     /// Global process handler.
     try {
       _clearPreviousContext();
