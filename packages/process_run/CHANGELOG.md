@@ -1,6 +1,7 @@
-## 1.2.2
+## 1.2.2+1
 
 * Special kill behavior on linux, mac and windows when using sigkill (kills all children too)
+* Export `ShellOnProcessCallback`
 
 ## 1.2.1+1
 
