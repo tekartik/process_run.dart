@@ -49,6 +49,4 @@ linter:
     - test_types_in_equals
     - throw_in_finally
     - unawaited_futures
-    - unintended_html_in_doc_comment
     - unnecessary_statements
-    - unsafe_html
