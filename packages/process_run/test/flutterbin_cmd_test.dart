@@ -69,8 +69,10 @@ void main() {
     }, skip: !isFlutterSupportedSync);
 
     test('which', () {
-      expect(basename(whichSync('flutter')!),
-          getBashOrBatExecutableFilename('flutter'));
+      expect(
+        basename(whichSync('flutter')!),
+        getBashOrBatExecutableFilename('flutter'),
+      );
     }, skip: !isFlutterSupportedSync);
   });
 }

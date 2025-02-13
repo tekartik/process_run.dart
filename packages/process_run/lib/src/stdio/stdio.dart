@@ -121,8 +121,11 @@ class ShellStdioLinesGrouperIOSink with IOSinkMixin implements IOSink {
   @override
   void add(core.List<core.int> data) {
     var zoneId = grouper.zoneId;
-    var streamer = grouper.streamers[zoneId] ??= ShellOutputLinesStreamer(
-        stdout: grouper.stdout, stderr: grouper.stderr);
+    var streamer =
+        grouper.streamers[zoneId] ??= ShellOutputLinesStreamer(
+          stdout: grouper.stdout,
+          stderr: grouper.stderr,
+        );
     // devPrint('[$zoneId/$currentZoneId] Adding data ${encoding.decode(data).trim()}');
     var sink = _isErr ? streamer.err : streamer.out;
     sink.add(data);
@@ -155,12 +158,18 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
   ShellStdioLinesGrouper({this.stdout, this.stderr});
 
   @override
-  late final out =
-      ShellStdioLinesGrouperIOSink(this, StdioStreamType.out, ioSink: stdout);
+  late final out = ShellStdioLinesGrouperIOSink(
+    this,
+    StdioStreamType.out,
+    ioSink: stdout,
+  );
 
   @override
-  late final err =
-      ShellStdioLinesGrouperIOSink(this, StdioStreamType.err, ioSink: stderr);
+  late final err = ShellStdioLinesGrouperIOSink(
+    this,
+    StdioStreamType.err,
+    ioSink: stderr,
+  );
 
   void _setCurrent() {
     if (_debugLinesGrouper) {
@@ -200,8 +209,10 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
   /// Run in a zone, grouping lines
   Future<T> _runZonedImpl<T>(Future<T> Function() action) async {
     var zoneId = _nextZoneId();
-    streamers[zoneId] =
-        ShellOutputLinesStreamer(stdout: stdout, stderr: stderr);
+    streamers[zoneId] = ShellOutputLinesStreamer(
+      stdout: stdout,
+      stderr: stderr,
+    );
     streamerZoneIds.add(zoneId);
     _setCurrent();
 
@@ -270,7 +281,7 @@ enum StdioStreamType {
   out,
 
   /// Err
-  err
+  err,
 }
 
 /// Stdio stream line.

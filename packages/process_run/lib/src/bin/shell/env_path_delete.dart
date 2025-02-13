@@ -9,10 +9,10 @@ import 'package:process_run/src/io/io.dart';
 class ShellEnvPathDeleteCommand extends ShellEnvCommandBase {
   /// Shell env path delete command.
   ShellEnvPathDeleteCommand()
-      : super(
-          name: 'delete',
-          description: 'Delete paths for executable lookup in config file',
-        );
+    : super(
+        name: 'delete',
+        description: 'Delete paths for executable lookup in config file',
+      );
 
   @override
   void printUsage() {

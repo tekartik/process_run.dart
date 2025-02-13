@@ -9,10 +9,7 @@ import 'dump.dart';
 class ShellEnvAliasGetCommand extends ShellEnvCommandBase {
   /// Shell env alias get command.
   ShellEnvAliasGetCommand()
-      : super(
-          name: 'get',
-          description: 'Get an alias from the config file',
-        );
+    : super(name: 'get', description: 'Get an alias from the config file');
 
   @override
   void printUsage() {

@@ -108,7 +108,7 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
   final Map<String, String> _map;
 
   ShellEnvironmentAliases._([Map<String, String>? map])
-      : _map = map ?? <String, String>{};
+    : _map = map ?? <String, String>{};
 
   /// the other object takes precedence, vars are added
   void merge(ShellEnvironmentAliases other) {
@@ -367,7 +367,7 @@ abstract class ShellEnvironmentCore with MapMixin<String, String> {
   /// `paths` and `vars` key
   Map<String, dynamic> toJson();
 
-/*
+  /*
   /// Create a new shell environment from the current shellEnvironment.
   ///
   /// Defaults create a full parent environment.

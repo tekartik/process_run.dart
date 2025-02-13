@@ -7,7 +7,7 @@ import 'import.dart';
 class ShellEnvAliasDumpCommand extends ShellBinCommand {
   /// Shell env alias dump command.
   ShellEnvAliasDumpCommand()
-      : super(name: 'dump', description: 'Dump process_run aliases');
+    : super(name: 'dump', description: 'Dump process_run aliases');
 
   @override
   FutureOr<bool> onRun() async {

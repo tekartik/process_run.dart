@@ -7,15 +7,19 @@ import 'shell_common.dart';
 /// Shell implementation using io.
 class ShellIo extends Shell with ShellMixin {
   /// Shell implementation using io.
-  ShellIo({
-    required ShellOptions options,
-  }) : super.implWithOptions(options);
+  ShellIo({required ShellOptions options}) : super.implWithOptions(options);
 
   @override
-  Future<io.Shell> shellVarOverride(String name, String? value,
-      {bool? local}) async {
+  Future<io.Shell> shellVarOverride(
+    String name,
+    String? value, {
+    bool? local,
+  }) async {
     var helper = ShellEnvVarSetIoHelper(
-        shell: this, local: local ?? true, verbose: options.verbose);
+      shell: this,
+      local: local ?? true,
+      verbose: options.verbose,
+    );
     var env = await helper.setValue(name, value);
     return context.newShell(options: options.clone(shellEnvironment: env));
   }

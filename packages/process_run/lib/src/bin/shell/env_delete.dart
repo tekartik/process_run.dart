@@ -9,9 +9,13 @@ import 'env.dart';
 class ShellEnvDeleteCommand extends ShellEnvCommandBase {
   /// Shell env delete command.
   ShellEnvDeleteCommand()
-      : super(name: 'delete', description: 'Delete the environment file') {
-    parser.addFlag(flagForce,
-        abbr: 'f', help: 'Force deletion, no prompt', negatable: false);
+    : super(name: 'delete', description: 'Delete the environment file') {
+    parser.addFlag(
+      flagForce,
+      abbr: 'f',
+      help: 'Force deletion, no prompt',
+      negatable: false,
+    );
   }
 
   @override

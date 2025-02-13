@@ -48,9 +48,14 @@ void main() {
       expect(whichSync('current_dir', environment: empty), isNull);
 
       expect(
-          basename(whichSync('current_dir',
-              environment: <String, String>{'PATH': join('test', 'src')})!),
-          Platform.isWindows ? 'current_dir.bat' : 'current_dir');
+        basename(
+          whichSync(
+            'current_dir',
+            environment: <String, String>{'PATH': join('test', 'src')},
+          )!,
+        ),
+        Platform.isWindows ? 'current_dir.bat' : 'current_dir',
+      );
     });
 
     test('dart_env', () async {

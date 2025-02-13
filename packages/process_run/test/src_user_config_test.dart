@@ -24,7 +24,7 @@ void main() {
       var path2 = dummyEnvPath2;
       var userConfig = getUserConfig(<String, String>{
         userEnvFilePathEnvKey: path1,
-        localEnvFilePathEnvKey: path2
+        localEnvFilePathEnvKey: path2,
       });
       expect(userConfig.vars, {
         'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path1,
@@ -33,7 +33,7 @@ void main() {
       expect(userConfig.paths, [
         if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
           getFlutterAncestorPath(dartSdkBinDirPath),
-        dartSdkBinDirPath
+        dartSdkBinDirPath,
       ]);
 
       // user only
@@ -46,17 +46,23 @@ void main() {
       // user only
       userConfig = getUserConfig(<String, String>{
         localEnvFilePathEnvKey: path1,
-        userEnvFilePathEnvKey: path1
+        userEnvFilePathEnvKey: path1,
       });
       expect(
-          userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'], path1);
+        userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'],
+        path1,
+      );
     });
     test('overriding local env file name', () {
       //print(a);
-      var path =
-          join('test', 'data', 'test_user_env1_local_env_file_override.yaml');
-      var userConfig =
-          getUserConfig(<String, String>{userEnvFilePathEnvKey: path});
+      var path = join(
+        'test',
+        'data',
+        'test_user_env1_local_env_file_override.yaml',
+      );
+      var userConfig = getUserConfig(<String, String>{
+        userEnvFilePathEnvKey: path,
+      });
       expect(userConfig.aliases['test'], 'test alias');
     });
 
@@ -65,36 +71,44 @@ void main() {
       var path = join('test', 'data', 'test_env1.yaml');
       var userConfig = getUserConfig(<String, String>{
         userEnvFilePathEnvKey: path,
-        localEnvFilePathEnvKey: dummyEnvPath1
+        localEnvFilePathEnvKey: dummyEnvPath1,
       });
       expect(userConfig.vars, {
         'TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH': path,
         'TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH': dummyEnvPath1,
         'test': '1',
       });
-      expect(userConfig.paths,
-          [...getExpectedPartPaths(newEnvNoOverride()), 'my_path']);
-      var shEnv = ShellEnvironment.empty()
-        ..paths.addAll(userConfig.paths)
-        ..vars.addAll(userConfig.vars);
+      expect(userConfig.paths, [
+        ...getExpectedPartPaths(newEnvNoOverride()),
+        'my_path',
+      ]);
+      var shEnv =
+          ShellEnvironment.empty()
+            ..paths.addAll(userConfig.paths)
+            ..vars.addAll(userConfig.vars);
       expect(shEnv['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'], path);
       expect(shEnv['test'], '1');
       expect(
-          shEnv['PATH'],
-          [...expectedDartPaths, 'my_path']
-              .join(Platform.isWindows ? ';' : ':'));
+        shEnv['PATH'],
+        [...expectedDartPaths, 'my_path'].join(Platform.isWindows ? ';' : ':'),
+      );
     });
 
     test('config no overload', () async {
-      var env = Map<String, String>.from(platformEnvironment)
-        ..[userEnvFilePathEnvKey] = dummyEnvPath1
-        ..[localEnvFilePathEnvKey] = dummyEnvPath1;
+      var env =
+          Map<String, String>.from(platformEnvironment)
+            ..[userEnvFilePathEnvKey] = dummyEnvPath1
+            ..[localEnvFilePathEnvKey] = dummyEnvPath1;
       var userConfig = getUserConfig(env);
 
-      expect(userConfig.vars['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'],
-          dummyEnvPath1);
-      expect(userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'],
-          dummyEnvPath1);
+      expect(
+        userConfig.vars['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'],
+        dummyEnvPath1,
+      );
+      expect(
+        userConfig.vars['TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH'],
+        dummyEnvPath1,
+      );
     });
 
     test('config order', () async {
@@ -103,17 +117,14 @@ void main() {
       var path = join('test', 'data', 'test_env1.yaml');
       var userConfig = getUserConfig(<String, String>{
         userEnvFilePathEnvKey: path,
-        localEnvFilePathEnvKey: dummyEnvPath1
+        localEnvFilePathEnvKey: dummyEnvPath1,
       });
       expect(userConfig.paths, [...expectedDartPaths, 'my_path']);
       userConfig = getUserConfig(<String, String>{
         userEnvFilePathEnvKey: dummyEnvPath1,
-        localEnvFilePathEnvKey: path
+        localEnvFilePathEnvKey: path,
       });
-      expect(userConfig.paths, [
-        'my_path',
-        ...expectedDartPaths,
-      ]);
+      expect(userConfig.paths, ['my_path', ...expectedDartPaths]);
     });
 
     test('userLoadConfigFile', () async {
@@ -136,12 +147,12 @@ void main() {
 
       //print(a);
       userLoadConfigMap({
-        'vars': {'test': '1'}
+        'vars': {'test': '1'},
       });
       expect(userConfig.vars, {'test': '1', 'PATH': ''});
       expect(userConfig.paths, isEmpty);
       userLoadConfigMap({
-        'path': ['my_path']
+        'path': ['my_path'],
       });
       expect(userConfig.vars, {'test': '1', 'PATH': 'my_path'});
       expect(userConfig.paths, ['my_path']);
@@ -151,55 +162,59 @@ void main() {
       userConfig = UserConfig();
 
       userLoadConfigMap({
-        'path': ['my_path']
+        'path': ['my_path'],
       });
       expect(userConfig.vars, {'PATH': 'my_path'});
       expect(userConfig.paths, ['my_path']);
       userLoadConfigMap({
-        'path': ['my_path']
+        'path': ['my_path'],
       });
       expect(userConfig.vars, {'PATH': 'my_path'});
       expect(userConfig.paths, ['my_path']);
       userLoadConfigMap({
-        'path': ['other_path']
+        'path': ['other_path'],
       });
       expect(userConfig.vars, {
-        'PATH': ['other_path', 'my_path'].join(envPathSeparator)
+        'PATH': ['other_path', 'my_path'].join(envPathSeparator),
       });
       expect(userConfig.paths, ['other_path', 'my_path']);
       userLoadConfigMap({
-        'path': ['other_path']
+        'path': ['other_path'],
       });
       expect(userConfig.vars, {
-        'PATH': ['other_path', 'my_path'].join(envPathSeparator)
+        'PATH': ['other_path', 'my_path'].join(envPathSeparator),
       });
       expect(userConfig.paths, ['other_path', 'my_path']);
       userLoadConfigMap({'path': <Object?>[]});
       expect(userConfig.vars, {
-        'PATH': ['other_path', 'my_path'].join(envPathSeparator)
+        'PATH': ['other_path', 'my_path'].join(envPathSeparator),
       });
       expect(userConfig.paths, ['other_path', 'my_path']);
       userLoadConfigMap({
-        'path': ['my_path']
+        'path': ['my_path'],
       });
       expect(userConfig.paths, ['my_path', 'other_path', 'my_path']);
     });
 
     test('loadFromMap', () async {
       var config = loadFromMap({
-        'var': {'test': 1}
+        'var': {'test': 1},
       });
       expect(config.paths, <Object?>[]);
       expect(config.vars, {'test': '1'});
     });
 
     test('flutter ancestor', () async {
-      expect(getFlutterAncestorPath(join('bin', 'cache', 'dart-sdk', 'bin')),
-          'bin');
       expect(
-          getFlutterAncestorPath(
-              join('flutter', 'bin', 'cache', 'dart-sdk', 'bin')),
-          join('flutter', 'bin'));
+        getFlutterAncestorPath(join('bin', 'cache', 'dart-sdk', 'bin')),
+        'bin',
+      );
+      expect(
+        getFlutterAncestorPath(
+          join('flutter', 'bin', 'cache', 'dart-sdk', 'bin'),
+        ),
+        join('flutter', 'bin'),
+      );
     });
 
     test('loadFromMap missing file', () async {

@@ -59,8 +59,12 @@ class FileContent {
   }
 
   /// Supported top level [parentKeys]
-  bool writeKeyValue(List<String> parentKeys, String key,
-      {bool delete = false, String? value}) {
+  bool writeKeyValue(
+    List<String> parentKeys,
+    String key, {
+    bool delete = false,
+    String? value,
+  }) {
     // Remove alias header
     var modified = false;
     var insertTopLevelKey = false;

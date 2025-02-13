@@ -18,8 +18,11 @@ prompt
 
   // Create a new shell
   var echoEnv = ShellEnvironment()..aliases.addAll(commonAliases);
-  echoAndPromptShell =
-      Shell(environment: echoEnv, stdin: sharedStdIn, commandVerbose: false);
+  echoAndPromptShell = Shell(
+    environment: echoEnv,
+    stdin: sharedStdIn,
+    commandVerbose: false,
+  );
   await echoAndPromptShell.run('''
 # Wait for input
 write "Third time"

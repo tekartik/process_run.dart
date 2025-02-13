@@ -16,8 +16,11 @@ class ShellEnvIoHelper {
   final bool verbose;
 
   /// Create a helper
-  ShellEnvIoHelper(
-      {required this.shell, required this.local, required this.verbose});
+  ShellEnvIoHelper({
+    required this.shell,
+    required this.local,
+    required this.verbose,
+  });
 
   /// Label
   String get label => local ? 'local' : 'user';
@@ -37,16 +40,19 @@ class ShellEnvIoHelper {
   /// Get the environment file path
   String? get envFilePath => _envFilePath;
 
-  String? get _envFilePath => local
-      ? getLocalEnvFilePath(shell.options.environment)
-      : getUserEnvFilePath(shell.options.environment);
+  String? get _envFilePath =>
+      local
+          ? getLocalEnvFilePath(shell.options.environment)
+          : getUserEnvFilePath(shell.options.environment);
 
   List<String>? _sampleFileContent;
 
   /// Sample file content
-  List<String> get sampleFileContent => _sampleFileContent ??= () {
-        var content = local
-            ? '''
+  List<String> get sampleFileContent =>
+      _sampleFileContent ??= () {
+        var content =
+            local
+                ? '''
 # Local Environment path and variable for `Shell.run` calls.
 #
 # `path(s)` is a list of path, `var(s)` is a key/value map.
@@ -62,7 +68,7 @@ class ShellEnvIoHelper {
 # alias:
 #   qr: /path/to/my_qr_app
   '''
-            : '''
+                : '''
 # Environment path and variable for `Shell.run` calls.
 #
 # `path` is a list of path, `var` is a key/value map.

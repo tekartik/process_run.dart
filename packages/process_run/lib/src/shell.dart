@@ -58,21 +58,21 @@ Future<List<ProcessResult>> run(
   ShellOnProcessCallback? onProcess,
 }) {
   return Shell(
-          throwOnError: throwOnError,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment,
-          runInShell: runInShell,
-          stdoutEncoding: stdoutEncoding,
-          stderrEncoding: stderrEncoding,
-          stdin: stdin,
-          stdout: stdout,
-          stderr: stderr,
-          verbose: verbose,
-          commandVerbose: commandVerbose,
-          commentVerbose: commentVerbose,
-          options: options)
-      .run(script, onProcess: onProcess);
+    throwOnError: throwOnError,
+    workingDirectory: workingDirectory,
+    environment: environment,
+    includeParentEnvironment: includeParentEnvironment,
+    runInShell: runInShell,
+    stdoutEncoding: stdoutEncoding,
+    stderrEncoding: stderrEncoding,
+    stdin: stdin,
+    stdout: stdout,
+    stderr: stderr,
+    verbose: verbose,
+    commandVerbose: commandVerbose,
+    commentVerbose: commentVerbose,
+    options: options,
+  ).run(script, onProcess: onProcess);
 }
 
 ///
@@ -118,21 +118,21 @@ List<ProcessResult> runSync(
   ShellOptions? options,
 }) {
   return Shell(
-          throwOnError: throwOnError,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment,
-          runInShell: runInShell,
-          stdoutEncoding: stdoutEncoding,
-          stderrEncoding: stderrEncoding,
-          stdin: stdin,
-          stdout: stdout,
-          stderr: stderr,
-          verbose: verbose,
-          commandVerbose: commandVerbose,
-          commentVerbose: commentVerbose,
-          options: options)
-      .runSync(script);
+    throwOnError: throwOnError,
+    workingDirectory: workingDirectory,
+    environment: environment,
+    includeParentEnvironment: includeParentEnvironment,
+    runInShell: runInShell,
+    stdoutEncoding: stdoutEncoding,
+    stderrEncoding: stderrEncoding,
+    stdin: stdin,
+    stdout: stdout,
+    stderr: stderr,
+    verbose: verbose,
+    commandVerbose: commandVerbose,
+    commentVerbose: commentVerbose,
+    options: options,
+  ).runSync(script);
 }
 
 /// Multiplatform Shell utility to run a script with multiple commands.
@@ -193,41 +193,45 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// comments as well
   ///
   /// [options] overrides all other parameters
-  factory Shell(
-      {bool throwOnError = true,
-      String? workingDirectory,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true,
-      bool? runInShell,
-      Encoding stdoutEncoding = systemEncoding,
-      Encoding stderrEncoding = systemEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool verbose = true,
-      // Default to true
-      bool? commandVerbose,
-      // Default to false
-      bool? commentVerbose,
+  factory Shell({
+    bool throwOnError = true,
+    String? workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    bool? runInShell,
+    Encoding stdoutEncoding = systemEncoding,
+    Encoding stderrEncoding = systemEncoding,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool verbose = true,
+    // Default to true
+    bool? commandVerbose,
+    // Default to false
+    bool? commentVerbose,
 
-      /// Overrides all parameters
-      ShellOptions? options}) {
+    /// Overrides all parameters
+    ShellOptions? options,
+  }) {
     var shell = shellContext.newShell(
-        options: options ??
-            ShellOptions(
-                verbose: verbose,
-                stdin: stdin,
-                stdout: stdout,
-                stderr: stderr,
-                throwOnError: throwOnError,
-                workingDirectory: workingDirectory,
-                runInShell: runInShell,
-                commandVerbose: commandVerbose ?? verbose,
-                environment: environment,
-                includeParentEnvironment: includeParentEnvironment,
-                commentVerbose: commentVerbose ?? false,
-                stderrEncoding: stderrEncoding,
-                stdoutEncoding: stdoutEncoding));
+      options:
+          options ??
+          ShellOptions(
+            verbose: verbose,
+            stdin: stdin,
+            stdout: stdout,
+            stderr: stderr,
+            throwOnError: throwOnError,
+            workingDirectory: workingDirectory,
+            runInShell: runInShell,
+            commandVerbose: commandVerbose ?? verbose,
+            environment: environment,
+            includeParentEnvironment: includeParentEnvironment,
+            commentVerbose: commentVerbose ?? false,
+            stderrEncoding: stderrEncoding,
+            stdoutEncoding: stdoutEncoding,
+          ),
+    );
     return shell;
   }
 
@@ -250,8 +254,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       path = context.path.join(_workingDirectoryPath, path);
     }
     if (_options.commandVerbose) {
-      streamSinkWriteln(_options.stdout ?? stdout, '\$ cd $path',
-          encoding: _options.stdoutEncoding);
+      streamSinkWriteln(
+        _options.stdout ?? stdout,
+        '\$ cd $path',
+        encoding: _options.stdoutEncoding,
+      );
     }
     return cloneWithOptions(options.clone(workingDirectory: path));
   }
@@ -295,7 +302,8 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       bool result;
       try {
         io.stderr.writeln(
-            'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal');
+          'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal',
+        );
 
         if (_killedProcessSignal == ProcessSignal.sigkill) {
           var pid = _currentProcess!.pid;
@@ -313,8 +321,12 @@ abstract class Shell implements ShellCore, ShellCoreSync {
               // /pid <processID>	Specifies the process ID of the process to be terminated.
               // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.
               // /t	Ends the specified process and any child processes started by it.
-              runExecutableArgumentsSync(
-                  'taskkill', ['/t', '/f', '/pid', '$pid']);
+              runExecutableArgumentsSync('taskkill', [
+                '/t',
+                '/f',
+                '/pid',
+                '$pid',
+              ]);
             } catch (_) {}
           }
         }
@@ -351,8 +363,10 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// [onProcess] is called for each started process.
   ///
   @override
-  Future<List<ProcessResult>> run(String script,
-      {ShellOnProcessCallback? onProcess}) {
+  Future<List<ProcessResult>> run(
+    String script, {
+    ShellOnProcessCallback? onProcess,
+  }) {
     // devPrint('Running $script');
     return _runLocked((runId) async {
       var commands = scriptToCommands(script);
@@ -382,8 +396,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           arguments = [...parts.sublist(1), ...arguments];
         }
         var processResult = await _lockedRunExecutableArguments(
-            runId, executable, arguments,
-            onProcess: onProcess);
+          runId,
+          executable,
+          arguments,
+          onProcess: onProcess,
+        );
         processResults.add(processResult);
       }
 
@@ -404,9 +421,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// feed any input.
   ///
   @override
-  List<ProcessResult> runSync(
-    String script,
-  ) {
+  List<ProcessResult> runSync(String script) {
     var commands = scriptToCommands(script);
 
     var processResults = <ProcessResult>[];
@@ -446,11 +461,17 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// [onProcess] is called for each started process.
   @override
   Future<ProcessResult> runExecutableArguments(
-      String executable, List<String> arguments,
-      {ShellOnProcessCallback? onProcess}) async {
+    String executable,
+    List<String> arguments, {
+    ShellOnProcessCallback? onProcess,
+  }) async {
     return _runLocked((runId) async {
-      return _lockedRunExecutableArguments(runId, executable, arguments,
-          onProcess: onProcess);
+      return _lockedRunExecutableArguments(
+        runId,
+        executable,
+        arguments,
+        onProcess: onProcess,
+      );
     });
   }
 
@@ -465,11 +486,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     List<String> arguments,
   ) {
     var runId = ++_runId;
-    return _runExecutableArgumentsSync(
-      runId,
-      executable,
-      arguments,
-    );
+    return _runExecutableArgumentsSync(runId, executable, arguments);
   }
 
   Future<T> _runLocked<T>(FutureOr<T> Function(int runId) action) {
@@ -491,11 +508,13 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     if (shellDebug) {
       // ignore: avoid_print
       print(
-          'Clear previous context ${_currentProcessResultCompleter?.isCompleted}');
+        'Clear previous context ${_currentProcessResultCompleter?.isCompleted}',
+      );
     }
     if (!(_currentProcessResultCompleter?.isCompleted ?? true)) {
-      _currentProcessResultCompleter!
-          .completeError(ShellException('Killed by framework', null));
+      _currentProcessResultCompleter!.completeError(
+        ShellException('Killed by framework', null),
+      );
     }
     _currentProcessResultCompleter = null;
   }
@@ -525,25 +544,29 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         }
 
         processResult = impl.runExecutableArgumentsSync(
-            executableFullPath, arguments,
-            runInShell: _options.runInShell,
-            environment: _options.environment,
-            includeParentEnvironment: false,
-            stderrEncoding: _options.stderrEncoding ?? io.systemEncoding,
-            stdoutEncoding: _options.stdoutEncoding ?? io.systemEncoding,
-            workingDirectory: _options.workingDirectory);
+          executableFullPath,
+          arguments,
+          runInShell: _options.runInShell,
+          environment: _options.environment,
+          includeParentEnvironment: false,
+          stderrEncoding: _options.stderrEncoding ?? io.systemEncoding,
+          stdoutEncoding: _options.stdoutEncoding ?? io.systemEncoding,
+          workingDirectory: _options.workingDirectory,
+        );
       } finally {
         if (shellDebug) {
           // ignore: avoid_print
           print(
-              '$_runId: After $executableFullPath exitCode ${processResult?.exitCode}');
+            '$_runId: After $executableFullPath exitCode ${processResult?.exitCode}',
+          );
         }
       }
       // devPrint('After $processCmd');
       if (_options.throwOnError && processResult.exitCode != 0) {
         throw ShellException(
-            '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
-            processResult);
+          '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
+          processResult,
+        );
       }
       return processResult;
     } on ProcessException catch (e) {
@@ -567,8 +590,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       writeln();
 
       throw ShellException(
-          '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
-          null);
+        '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
+        null,
+      );
     }
   }
 
@@ -578,8 +602,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   /// Returns a process result (or throw if specified in the shell).
   Future<ProcessResult> _lockedRunExecutableArguments(
-      int runId, String executable, List<String> arguments,
-      {ShellOnProcessCallback? onProcess}) {
+    int runId,
+    String executable,
+    List<String> arguments, {
+    ShellOnProcessCallback? onProcess,
+  }) {
     /// Global process handler.
     try {
       _clearPreviousContext();
@@ -592,14 +619,18 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         var executableFullPath =
             findExecutableSync(executable, _userPaths) ?? executable;
 
-        var processCmd = _ProcessCmd(executableFullPath, arguments,
-            executableShortName: executable)
-          ..runInShell = _options.runInShell
-          ..environment = _options.environment
-          ..includeParentEnvironment = false
-          ..stderrEncoding = _options.stderrEncoding ?? io.systemEncoding
-          ..stdoutEncoding = _options.stdoutEncoding ?? io.systemEncoding
-          ..workingDirectory = _options.workingDirectory;
+        var processCmd =
+            _ProcessCmd(
+                executableFullPath,
+                arguments,
+                executableShortName: executable,
+              )
+              ..runInShell = _options.runInShell
+              ..environment = _options.environment
+              ..includeParentEnvironment = false
+              ..stderrEncoding = _options.stderrEncoding ?? io.systemEncoding
+              ..stdoutEncoding = _options.stdoutEncoding ?? io.systemEncoding
+              ..workingDirectory = _options.workingDirectory;
         try {
           // devPrint(_options.environment.keys.where((element) => element.contains('TEKARTIK')));
           if (shellDebug) {
@@ -608,45 +639,50 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           }
 
           try {
-            processResult = await processCmdRun(processCmd,
-                verbose: _options.verbose,
-                commandVerbose: _options.commandVerbose,
-                stderr: _options.stderr,
-                stdin: _options.stdin,
-                stdout: _options.stdout,
-                noStdoutResult: _options.noStdoutResult,
-                noStderrResult: _options.noStderrResult, onProcess: (process) {
-              _currentProcess = process;
-              _currentProcessCmd = processCmd;
-              _currentProcessRunId = runId;
-              if (shellDebug) {
-                // ignore: avoid_print
-                print('onProcess ${_currentProcessToString()}');
-              }
-              if (onProcess != null) {
-                onProcess(process);
-              }
-              if (_killedRunId >= _runId) {
+            processResult = await processCmdRun(
+              processCmd,
+              verbose: _options.verbose,
+              commandVerbose: _options.commandVerbose,
+              stderr: _options.stderr,
+              stdin: _options.stdin,
+              stdout: _options.stdout,
+              noStdoutResult: _options.noStdoutResult,
+              noStderrResult: _options.noStderrResult,
+              onProcess: (process) {
+                _currentProcess = process;
+                _currentProcessCmd = processCmd;
+                _currentProcessRunId = runId;
                 if (shellDebug) {
                   // ignore: avoid_print
-                  print('shell was killed');
+                  print('onProcess ${_currentProcessToString()}');
                 }
-                _kill();
-                return;
-              }
-            });
+                if (onProcess != null) {
+                  onProcess(process);
+                }
+                if (_killedRunId >= _runId) {
+                  if (shellDebug) {
+                    // ignore: avoid_print
+                    print('shell was killed');
+                  }
+                  _kill();
+                  return;
+                }
+              },
+            );
           } finally {
             if (shellDebug) {
               // ignore: avoid_print
               print(
-                  '$_runId: After $processCmd exitCode ${processResult?.exitCode}');
+                '$_runId: After $processCmd exitCode ${processResult?.exitCode}',
+              );
             }
           }
           // devPrint('After $processCmd');
           if (_options.throwOnError && processResult.exitCode != 0) {
             throw ShellException(
-                '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
-                processResult);
+              '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
+              processResult,
+            );
           }
         } on ProcessException catch (e) {
           var stderr = _options.stderr ?? io.stderr;
@@ -669,30 +705,33 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           writeln();
 
           throw ShellException(
-              '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
-              null);
+            '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
+            null,
+          );
         }
 
         return processResult;
       }
 
-      run().then((value) {
-        if (shellDebug) {
-          // ignore: avoid_print
-          print('$runId: done');
-        }
-        if (!completer.isCompleted) {
-          completer.complete(value);
-        }
-      }).catchError((Object e) {
-        if (shellDebug) {
-          // ignore: avoid_print
-          print('$runId: error $e');
-        }
-        if (!completer.isCompleted) {
-          completer.completeError(e);
-        }
-      });
+      run()
+          .then((value) {
+            if (shellDebug) {
+              // ignore: avoid_print
+              print('$runId: done');
+            }
+            if (!completer.isCompleted) {
+              completer.complete(value);
+            }
+          })
+          .catchError((Object e) {
+            if (shellDebug) {
+              // ignore: avoid_print
+              print('$runId: error $e');
+            }
+            if (!completer.isCompleted) {
+              completer.completeError(e);
+            }
+          });
       return completer.future;
     } finally {
       _currentProcess = null;
@@ -704,8 +743,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 class _ProcessCmd extends ProcessCmd {
   final String executableShortName;
 
-  _ProcessCmd(super.executable, super.arguments,
-      {required this.executableShortName});
+  _ProcessCmd(
+    super.executable,
+    super.arguments, {
+    required this.executableShortName,
+  });
 
   @override
   String toString() =>

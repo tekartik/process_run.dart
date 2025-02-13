@@ -73,14 +73,17 @@ void main() {
         stderrEncoding: stderrEncoding,
       );
       check(result);
-      result = await runExecutableArguments(executable, arguments,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment,
-          runInShell: runInShell,
-          stdoutEncoding: stdoutEncoding,
-          stderrEncoding: stderrEncoding,
-          stdout: stdout);
+      result = await runExecutableArguments(
+        executable,
+        arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment,
+        runInShell: runInShell,
+        stdoutEncoding: stdoutEncoding,
+        stderrEncoding: stderrEncoding,
+        stdout: stdout,
+      );
       check(result);
     }
 
@@ -99,8 +102,11 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          checkOut, dartExecutable!, [echoScriptPath, '--stdout', 'out']);
+      await runCheck(checkOut, dartExecutable!, [
+        echoScriptPath,
+        '--stdout',
+        'out',
+      ]);
       await runCheck(checkEmpty, dartExecutable!, [echoScriptPath]);
     });
 
@@ -119,11 +125,14 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          check123, dartExecutable!, [echoScriptPath, '--stdout-hex', '010203'],
-          stdoutEncoding: null);
-      await runCheck(checkEmpty, dartExecutable!, [echoScriptPath],
-          stdoutEncoding: null);
+      await runCheck(check123, dartExecutable!, [
+        echoScriptPath,
+        '--stdout-hex',
+        '010203',
+      ], stdoutEncoding: null);
+      await runCheck(checkEmpty, dartExecutable!, [
+        echoScriptPath,
+      ], stdoutEncoding: null);
     });
 
     test('stderr', () async {
@@ -141,17 +150,20 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          checkErr, dartExecutable!, [echoScriptPath, '--stderr', 'err'],
-          stdout: stdout);
+      await runCheck(checkErr, dartExecutable!, [
+        echoScriptPath,
+        '--stderr',
+        'err',
+      ], stdout: stdout);
       await runCheck(checkEmpty, dartExecutable!, [echoScriptPath]);
     });
 
     test('stdin', () async {
       final inCtrl = StreamController<List<int>>();
-      final processResultFuture = runExecutableArguments(
-          dartExecutable!, [echoScriptPath, '--stdin'],
-          stdin: inCtrl.stream);
+      final processResultFuture = runExecutableArguments(dartExecutable!, [
+        echoScriptPath,
+        '--stdin',
+      ], stdin: inCtrl.stream);
       inCtrl.add('in'.codeUnits);
       await inCtrl.close();
       final result = await processResultFuture;
@@ -177,11 +189,14 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          check123, dartExecutable!, [echoScriptPath, '--stderr-hex', '010203'],
-          stderrEncoding: null);
-      await runCheck(checkEmpty, dartExecutable!, [echoScriptPath],
-          stderrEncoding: null);
+      await runCheck(check123, dartExecutable!, [
+        echoScriptPath,
+        '--stderr-hex',
+        '010203',
+      ], stderrEncoding: null);
+      await runCheck(checkEmpty, dartExecutable!, [
+        echoScriptPath,
+      ], stderrEncoding: null);
     });
 
     test('exitCode', () async {
@@ -199,8 +214,11 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          check123, dartExecutable!, [echoScriptPath, '--exit-code', '123']);
+      await runCheck(check123, dartExecutable!, [
+        echoScriptPath,
+        '--exit-code',
+        '123',
+      ]);
       await runCheck(check0, dartExecutable!, [echoScriptPath]);
     });
 
@@ -212,8 +230,11 @@ void main() {
         expect(result.exitCode, 255);
       }
 
-      await runCheck(
-          check, dartExecutable!, [echoScriptPath, '--exit-code', 'crash']);
+      await runCheck(check, dartExecutable!, [
+        echoScriptPath,
+        '--exit-code',
+        'crash',
+      ]);
     });
 
     test('invalid_executable', () async {
@@ -259,12 +280,16 @@ void main() {
     test('relative', () async {
       if (Platform.isWindows) {
         var result = await runExecutableArguments(
-            join('test', 'src', 'current_dir.bat'), []);
+          join('test', 'src', 'current_dir.bat'),
+          [],
+        );
         expect(result.exitCode, 0);
         expect(result.stdout.toString().trim(), Directory.current.path);
       } else {
         var result = await runExecutableArguments(
-            join('test', 'src', 'current_dir'), []);
+          join('test', 'src', 'current_dir'),
+          [],
+        );
         expect(result.exitCode, 0);
         expect(result.stdout.toString().trim(), Directory.current.path);
       }
@@ -272,8 +297,9 @@ void main() {
 
     test('system_command', () async {
       // read pubspec.yaml
-      final lines = const LineSplitter()
-          .convert(await File(join(projectTop, 'pubspec.yaml')).readAsString());
+      final lines = const LineSplitter().convert(
+        await File(join(projectTop, 'pubspec.yaml')).readAsString(),
+      );
 
       void check(ProcessResult result) {
         expect(const LineSplitter().convert(result.stdout.toString()), lines);
@@ -286,11 +312,17 @@ void main() {
       // use 'type' on windows
 
       if (Platform.isWindows) {
-        await runCheck(check, 'type', ['pubspec.yaml'],
-            workingDirectory: projectTop, runInShell: true);
+        await runCheck(
+          check,
+          'type',
+          ['pubspec.yaml'],
+          workingDirectory: projectTop,
+          runInShell: true,
+        );
       } else {
-        await runCheck(check, 'cat', ['pubspec.yaml'],
-            workingDirectory: projectTop);
+        await runCheck(check, 'cat', [
+          'pubspec.yaml',
+        ], workingDirectory: projectTop);
       }
     });
 
@@ -301,18 +333,19 @@ void main() {
       env[envPathKey] = '${dirname(path)}$envPathSeparator${env[envPathKey]}';
       print(env[envPathKey]);
       var result = await runExecutableArguments(
-          'space in binary$basicScriptExecutableExtension', [],
-          environment: env);
+        'space in binary$basicScriptExecutableExtension',
+        [],
+        environment: env,
+      );
       expect(result.stdout.toString().trim(), 'Hello');
 
       expect(
-          (await Shell(environment: env, verbose: false)
-                  .run(shellArgument('space in binary')))
-              .first
-              .stdout
-              .toString()
-              .trim(),
-          'Hello');
+        (await Shell(
+          environment: env,
+          verbose: false,
+        ).run(shellArgument('space in binary'))).first.stdout.toString().trim(),
+        'Hello',
+      );
     });
     test('space in path', () async {
       var path = '.dart_tool/process_run/test/space in path/binary';
@@ -321,17 +354,19 @@ void main() {
       env[envPathKey] = '${dirname(path)}$envPathSeparator${env[envPathKey]}';
       print(env[envPathKey]);
       var result = await runExecutableArguments(
-          'binary$basicScriptExecutableExtension', [],
-          environment: env);
+        'binary$basicScriptExecutableExtension',
+        [],
+        environment: env,
+      );
       expect(result.stdout.toString().trim(), 'Hello');
 
       expect(
-          (await Shell(environment: env, verbose: false).run('binary'))
-              .first
-              .stdout
-              .toString()
-              .trim(),
-          'Hello');
+        (await Shell(
+          environment: env,
+          verbose: false,
+        ).run('binary')).first.stdout.toString().trim(),
+        'Hello',
+      );
     });
     test('windows_system_command', () async {
       if (Platform.isWindows) {

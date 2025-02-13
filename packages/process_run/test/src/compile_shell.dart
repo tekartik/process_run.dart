@@ -28,7 +28,8 @@ Future<String> compileShellBin({bool force = false}) async {
   if (!File(dsExePath).existsSync() || force) {
     Directory(dsExeDir).createSync(recursive: true);
     await shell.run(
-        'dart compile exe ${shellArgument(join('bin', 'shell.dart'))} -o ${shellArgument(dsExePath)}');
+      'dart compile exe ${shellArgument(join('bin', 'shell.dart'))} -o ${shellArgument(dsExePath)}',
+    );
   }
   return dsExePath;
 }

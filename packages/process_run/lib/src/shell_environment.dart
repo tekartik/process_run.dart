@@ -25,9 +25,10 @@ class ShellEnvironment extends common.ShellEnvironmentBase {
 
   /// From a run start content, includeParentEnvironment should later be set
   /// to false
-  factory ShellEnvironment.full(
-      {Map<String, String>? environment,
-      bool includeParentEnvironment = true}) {
+  factory ShellEnvironment.full({
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+  }) {
     ShellEnvironment newEnvironment;
     // devPrint(environment?.keys.where((element) => element.contains('TEKA')));
     if (includeParentEnvironment) {
@@ -53,10 +54,7 @@ class ShellEnvironment extends common.ShellEnvironmentBase {
 
   /// Find a [command] path location in the environment
   String? whichSync(String command) {
-    return findExecutableSync(
-      command,
-      paths,
-    );
+    return findExecutableSync(command, paths);
   }
 
   /// Find a [command] path location in the environment

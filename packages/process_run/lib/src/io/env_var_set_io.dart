@@ -9,8 +9,11 @@ import 'package:process_run/src/io/io.dart';
 /// Helper to set environment variables
 class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
   /// Local should be true by default
-  ShellEnvVarSetIoHelper(
-      {required super.shell, required super.local, super.verbose = true});
+  ShellEnvVarSetIoHelper({
+    required super.shell,
+    required super.local,
+    super.verbose = true,
+  });
 
   /// Set a single environment variable
   Future<ShellEnvironment> setValue(String name, String? value) async {
@@ -37,7 +40,8 @@ class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
     }
     // reload
     var newShellEnvironment = shell.context.newShellEnvironment(
-        environment: ShellEnvironment(environment: shell.options.environment));
+      environment: ShellEnvironment(environment: shell.options.environment),
+    );
     if (value == null) {
       newShellEnvironment.vars.remove(name);
     } else {

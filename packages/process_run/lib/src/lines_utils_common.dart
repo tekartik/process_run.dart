@@ -73,8 +73,10 @@ class ShellLinesController {
 }
 
 /// Basic line streaming. Assuming system encoding
-Stream<String> shellStreamLines(Stream<List<int>> stream,
-    {Encoding? encoding}) {
+Stream<String> shellStreamLines(
+  Stream<List<int>> stream, {
+  Encoding? encoding,
+}) {
   encoding ??= shellContext.encoding;
   StreamSubscription? subscription;
   List<int>? currentLine;
@@ -101,35 +103,36 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
   }
 
   ctlr = StreamController<String>(
-      onPause: () {
-        if (shellDebug) {
-          // ignore: avoid_print
-          print('onPause (paused: ${subscription?.isPaused})');
+    onPause: () {
+      if (shellDebug) {
+        // ignore: avoid_print
+        print('onPause (paused: ${subscription?.isPaused})');
+      }
+      // Last one
+      addCurrentLine();
+      subscription?.pause();
+    },
+    onResume: () {
+      // devPrint('onResume (paused: $paused)');
+      if (subscription?.isPaused ?? false) {
+        subscription?.resume();
+      }
+    },
+    onListen: () {
+      void addToCurrentLine(List<int> data) {
+        if (currentLine == null) {
+          currentLine = data;
+        } else {
+          var newCurrentLine = Uint8List(currentLine!.length + data.length);
+          newCurrentLine.setAll(0, currentLine!);
+          newCurrentLine.setAll(currentLine!.length, data);
+          currentLine = newCurrentLine;
         }
-        // Last one
-        addCurrentLine();
-        subscription?.pause();
-      },
-      onResume: () {
-        // devPrint('onResume (paused: $paused)');
-        if (subscription?.isPaused ?? false) {
-          subscription?.resume();
-        }
-      },
-      onListen: () {
-        void addToCurrentLine(List<int> data) {
-          if (currentLine == null) {
-            currentLine = data;
-          } else {
-            var newCurrentLine = Uint8List(currentLine!.length + data.length);
-            newCurrentLine.setAll(0, currentLine!);
-            newCurrentLine.setAll(currentLine!.length, data);
-            currentLine = newCurrentLine;
-          }
-        }
+      }
 
-        var lastWasCR = false;
-        subscription = stream.listen((data) {
+      var lastWasCR = false;
+      subscription = stream.listen(
+        (data) {
           var paused = subscription?.isPaused ?? false;
           // devPrint('read $data (paused: $paused)');
           if (paused) {
@@ -154,7 +157,7 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
               addToCurrentLine(data.sublist(start, i));
               addCurrentLine();
 
-// Skip it
+              // Skip it
               start = i + 1;
             } else {
               lastWasCR = false;
@@ -164,20 +167,24 @@ Stream<String> shellStreamLines(Stream<List<int>> stream,
           if (data.length > start) {
             addToCurrentLine(data.sublist(start, data.length));
           }
-        }, onDone: () {
+        },
+        onDone: () {
           // devPrint('onDone');
           // Last one
           addCurrentLine();
           ctlr.close();
-        }, onError: (Object e, StackTrace st) {
+        },
+        onError: (Object e, StackTrace st) {
           ctlr.addError(e, st);
-        });
-      },
-      onCancel: () {
-        // devPrint('onCancel');
-        subscription?.cancel();
-      },
-      sync: true);
+        },
+      );
+    },
+    onCancel: () {
+      // devPrint('onCancel');
+      subscription?.cancel();
+    },
+    sync: true,
+  );
 
   return ctlr.stream;
 }

@@ -51,8 +51,10 @@ abstract class ShellCore {
   ///
   /// [onProcess] is called for each started process.
   ///
-  Future<List<ProcessResult>> run(String script,
-      {ShellOnProcessCallback? onProcess});
+  Future<List<ProcessResult>> run(
+    String script, {
+    ShellOnProcessCallback? onProcess,
+  });
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
@@ -60,8 +62,10 @@ abstract class ShellCore {
   ///
   /// [onProcess] is called for each started process.
   Future<ProcessResult> runExecutableArguments(
-      String executable, List<String> arguments,
-      {ShellOnProcessCallback? onProcess});
+    String executable,
+    List<String> arguments, {
+    ShellOnProcessCallback? onProcess,
+  });
 
   /// Create new shell at the given path
   Shell cd(String path);
@@ -114,7 +118,9 @@ abstract class ShellCoreSync {
   /// Compared to the async version, it is not possible to kill the spawn process nor to
   /// feed any input.
   ProcessResult runExecutableArgumentsSync(
-      String executable, List<String> arguments);
+    String executable,
+    List<String> arguments,
+  );
 }
 
 /// Shell options.
@@ -191,22 +197,23 @@ class ShellOptions {
     bool? noStdoutResult,
     // Default to false
     bool? noStderrResult,
-  })  : _throwOnError = throwOnError,
-        _workingDirectory = workingDirectory,
-        _runInShell = runInShell,
-        _stdoutEncoding = stdoutEncoding,
-        _stderrEncoding = stderrEncoding,
-        _stdin = stdin,
-        _stdout = stdout,
-        _stderr = stderr,
-        _verbose = verbose,
-        _commandVerbose = commandVerbose ?? verbose,
-        _commentVerbose = commentVerbose ?? false,
-        _noStderrResult = noStderrResult,
-        _noStdoutResult = noStdoutResult {
+  }) : _throwOnError = throwOnError,
+       _workingDirectory = workingDirectory,
+       _runInShell = runInShell,
+       _stdoutEncoding = stdoutEncoding,
+       _stderrEncoding = stderrEncoding,
+       _stdin = stdin,
+       _stdout = stdout,
+       _stderr = stderr,
+       _verbose = verbose,
+       _commandVerbose = commandVerbose ?? verbose,
+       _commentVerbose = commentVerbose ?? false,
+       _noStderrResult = noStderrResult,
+       _noStdoutResult = noStdoutResult {
     _environment = ShellEnvironment.full(
-        environment: environment,
-        includeParentEnvironment: includeParentEnvironment);
+      environment: environment,
+      includeParentEnvironment: includeParentEnvironment,
+    );
   }
 
   /// True if commands are displayed.
@@ -231,46 +238,52 @@ class ShellOptions {
   bool? get noStderrResult => _noStderrResult;
 
   /// Create a new shell
-  ShellOptions clone(
-      {bool? throwOnError,
-      String? workingDirectory,
-      bool? runInShell,
-      Encoding? stdoutEncoding,
-      Encoding? stderrEncoding,
-      Stream<List<int>>? stdin,
-      StreamSink<List<int>>? stdout,
-      StreamSink<List<int>>? stderr,
-      bool? verbose,
-      bool? commandVerbose,
-      bool? commentVerbose,
-      bool? noStdoutResult,
-      bool? noStderrResult,
-      ShellEnvironment? shellEnvironment}) {
+  ShellOptions clone({
+    bool? throwOnError,
+    String? workingDirectory,
+    bool? runInShell,
+    Encoding? stdoutEncoding,
+    Encoding? stderrEncoding,
+    Stream<List<int>>? stdin,
+    StreamSink<List<int>>? stdout,
+    StreamSink<List<int>>? stderr,
+    bool? verbose,
+    bool? commandVerbose,
+    bool? commentVerbose,
+    bool? noStdoutResult,
+    bool? noStderrResult,
+    ShellEnvironment? shellEnvironment,
+  }) {
     return ShellOptions(
-        verbose: verbose ?? _verbose,
-        runInShell: runInShell ?? _runInShell,
-        commandVerbose: commandVerbose ?? _commandVerbose,
-        commentVerbose: commentVerbose ?? _commentVerbose,
-        stderr: stderr ?? _stderr,
-        stderrEncoding: stderrEncoding ?? _stderrEncoding,
-        stdin: stdin ?? _stdin,
-        stdout: stdout ?? _stdout,
-        stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
-        throwOnError: throwOnError ?? _throwOnError,
-        workingDirectory: workingDirectory ?? _workingDirectory,
-        environment: shellEnvironment ?? _environment,
-        noStdoutResult: noStdoutResult ?? _noStdoutResult,
-        noStderrResult: noStderrResult ?? _noStderrResult);
+      verbose: verbose ?? _verbose,
+      runInShell: runInShell ?? _runInShell,
+      commandVerbose: commandVerbose ?? _commandVerbose,
+      commentVerbose: commentVerbose ?? _commentVerbose,
+      stderr: stderr ?? _stderr,
+      stderrEncoding: stderrEncoding ?? _stderrEncoding,
+      stdin: stdin ?? _stdin,
+      stdout: stdout ?? _stdout,
+      stdoutEncoding: stdoutEncoding ?? _stdoutEncoding,
+      throwOnError: throwOnError ?? _throwOnError,
+      workingDirectory: workingDirectory ?? _workingDirectory,
+      environment: shellEnvironment ?? _environment,
+      noStdoutResult: noStdoutResult ?? _noStdoutResult,
+      noStderrResult: noStderrResult ?? _noStderrResult,
+    );
   }
 }
 
 /// Which common implementation
-Future<String?> which(String command,
-    {ShellEnvironment? environment,
-    bool includeParentEnvironment = true}) async {
-  return shellContext.which(command,
-      environment: environment,
-      includeParentEnvironment: includeParentEnvironment);
+Future<String?> which(
+  String command, {
+  ShellEnvironment? environment,
+  bool includeParentEnvironment = true,
+}) async {
+  return shellContext.which(
+    command,
+    environment: environment,
+    includeParentEnvironment: includeParentEnvironment,
+  );
 }
 
 /// Default missing implementation.

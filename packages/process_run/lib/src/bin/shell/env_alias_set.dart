@@ -9,10 +9,7 @@ import 'package:process_run/src/io/io.dart';
 class ShellEnvAliasSetCommand extends ShellEnvCommandBase {
   /// Shell env alias set command.
   ShellEnvAliasSetCommand()
-      : super(
-          name: 'set',
-          description: 'Set process_run alias',
-        );
+    : super(name: 'set', description: 'Set process_run alias');
 
   @override
   void printUsage() {

@@ -11,10 +11,7 @@ class ShellEnvVarGetCommand extends ShellEnvCommandBase {
 
   /// Get an environment variable from a user/local config file
   ShellEnvVarGetCommand()
-      : super(
-          name: 'get',
-          description: 'Get environment variable',
-        );
+    : super(name: 'get', description: 'Get environment variable');
 
   @override
   void printUsage() {

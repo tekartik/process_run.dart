@@ -43,23 +43,29 @@ void main() {
         stderrEncoding: stderrEncoding,
       );
       check(result);
-      result = await runExecutableArguments(executable, arguments,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment,
-          runInShell: runInShell,
-          stdoutEncoding: stdoutEncoding,
-          stderrEncoding: stderrEncoding,
-          stdout: stdout);
+      result = await runExecutableArguments(
+        executable,
+        arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment,
+        runInShell: runInShell,
+        stdoutEncoding: stdoutEncoding,
+        stderrEncoding: stderrEncoding,
+        stdout: stdout,
+      );
       check(result);
-      result = runExecutableArgumentsSync(executable, arguments,
-          workingDirectory: workingDirectory,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment,
-          runInShell: runInShell,
-          stdoutEncoding: stdoutEncoding,
-          stderrEncoding: stderrEncoding,
-          stdout: stdout);
+      result = runExecutableArgumentsSync(
+        executable,
+        arguments,
+        workingDirectory: workingDirectory,
+        environment: environment,
+        includeParentEnvironment: includeParentEnvironment,
+        runInShell: runInShell,
+        stdoutEncoding: stdoutEncoding,
+        stderrEncoding: stderrEncoding,
+        stdout: stdout,
+      );
       check(result);
     }
 
@@ -85,11 +91,18 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          checkOut, dartExecutable!, [echoScriptPath, '--stdout', 'out']);
+      await runCheck(checkOut, dartExecutable!, [
+        echoScriptPath,
+        '--stdout',
+        'out',
+      ]);
       await runCheck(checkEmpty, dartExecutable!, [echoScriptPath]);
-      await runCheck(checkOutWriteLine, dartExecutable!,
-          [echoScriptPath, '--stdout', 'out', '--write-line']);
+      await runCheck(checkOutWriteLine, dartExecutable!, [
+        echoScriptPath,
+        '--stdout',
+        'out',
+        '--write-line',
+      ]);
     });
 
     test('stdout_bin', () async {
@@ -107,31 +120,39 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          check123, dartExecutable!, [echoScriptPath, '--stdout-hex', '010203'],
-          stdoutEncoding: null);
-      await runCheck(checkEmpty, dartExecutable!, [echoScriptPath],
-          stdoutEncoding: null);
+      await runCheck(check123, dartExecutable!, [
+        echoScriptPath,
+        '--stdout-hex',
+        '010203',
+      ], stdoutEncoding: null);
+      await runCheck(checkEmpty, dartExecutable!, [
+        echoScriptPath,
+      ], stdoutEncoding: null);
     });
 
     group('stdout_env', () {
       test('var', () async {
-        var result = await runExecutableArguments(
-            dartExecutable!, [echoScriptPath, '--stdout-env', 'PATH']);
+        var result = await runExecutableArguments(dartExecutable!, [
+          echoScriptPath,
+          '--stdout-env',
+          'PATH',
+        ]);
         //devPrint(result.stdout.toString());
         expect(result.stdout.toString().trim(), isNotEmpty);
 
         result = await runExecutableArguments(dartExecutable!, [
           echoScriptPath,
           '--stdout-env',
-          '__dummy_that_will_never_exists__'
+          '__dummy_that_will_never_exists__',
         ]);
         //devPrint(result.stdout.toString());
         expect(result.stdout.toString().trim(), isEmpty);
 
         result = await runExecutableArguments(
-            dartExecutable!, [echoScriptPath, '--stdout-env', '__CUSTOM'],
-            environment: <String, String>{'__CUSTOM': '12345'});
+          dartExecutable!,
+          [echoScriptPath, '--stdout-env', '__CUSTOM'],
+          environment: <String, String>{'__CUSTOM': '12345'},
+        );
         expect(result.stdout.toString().trim(), '12345');
       });
     });
@@ -158,24 +179,26 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-        checkErr,
-        dartExecutable!,
-        [echoScriptPath, '--stderr', 'err'],
-      );
-      await runCheck(
-        checkErrWriteLine,
-        dartExecutable!,
-        [echoScriptPath, '--stderr', 'err', '--write-line'],
-      );
+      await runCheck(checkErr, dartExecutable!, [
+        echoScriptPath,
+        '--stderr',
+        'err',
+      ]);
+      await runCheck(checkErrWriteLine, dartExecutable!, [
+        echoScriptPath,
+        '--stderr',
+        'err',
+        '--write-line',
+      ]);
       await runCheck(checkEmpty, dartExecutable!, [echoScriptPath]);
     });
 
     test('stdin', () async {
       final inCtrl = StreamController<List<int>>();
-      final processResultFuture = runExecutableArguments(
-          dartExecutable!, [echoScriptPath, '--stdin'],
-          stdin: inCtrl.stream);
+      final processResultFuture = runExecutableArguments(dartExecutable!, [
+        echoScriptPath,
+        '--stdin',
+      ], stdin: inCtrl.stream);
       inCtrl.add('in'.codeUnits);
       await inCtrl.close();
       final result = await processResultFuture;
@@ -201,11 +224,14 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          check123, dartExecutable!, [echoScriptPath, '--stderr-hex', '010203'],
-          stderrEncoding: null);
-      await runCheck(checkEmpty, dartExecutable!, [echoScriptPath],
-          stderrEncoding: null);
+      await runCheck(check123, dartExecutable!, [
+        echoScriptPath,
+        '--stderr-hex',
+        '010203',
+      ], stderrEncoding: null);
+      await runCheck(checkEmpty, dartExecutable!, [
+        echoScriptPath,
+      ], stderrEncoding: null);
     });
 
     test('exitCode', () async {
@@ -223,8 +249,11 @@ void main() {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(
-          check123, dartExecutable!, [echoScriptPath, '--exit-code', '123']);
+      await runCheck(check123, dartExecutable!, [
+        echoScriptPath,
+        '--exit-code',
+        '123',
+      ]);
       await runCheck(check0, dartExecutable!, [echoScriptPath]);
     });
 
@@ -236,8 +265,11 @@ void main() {
         expect(result.exitCode, 255);
       }
 
-      await runCheck(
-          check, dartExecutable!, [echoScriptPath, '--exit-code', 'crash']);
+      await runCheck(check, dartExecutable!, [
+        echoScriptPath,
+        '--exit-code',
+        'crash',
+      ]);
     });
   });
 }

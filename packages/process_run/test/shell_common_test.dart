@@ -15,10 +15,11 @@ import 'package:test/test.dart';
 
 class ShellContextMock with ShellContextMixin implements ShellContext {
   @override
-  Shell newShell(
-      {ShellOptions? options,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true}) {
+  Shell newShell({
+    ShellOptions? options,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+  }) {
     return ShellMock(options: options, context: this);
   }
 
@@ -76,8 +77,10 @@ class ProcessMock implements Process {
   Stream<List<int>> get stdout => throw UnimplementedError();
 }
 
-var shellOptionsMock =
-    ShellOptions(environment: {}, includeParentEnvironment: false);
+var shellOptionsMock = ShellOptions(
+  environment: {},
+  includeParentEnvironment: false,
+);
 
 class ShellMock with ShellMixin implements Shell {
   var scripts = <String>[];
@@ -112,8 +115,10 @@ class ShellMock with ShellMixin implements Shell {
   }
 
   @override
-  Future<List<ProcessResult>> run(String script,
-      {ShellOnProcessCallback? onProcess}) async {
+  Future<List<ProcessResult>> run(
+    String script, {
+    ShellOnProcessCallback? onProcess,
+  }) async {
     scripts.add(script);
     // Take "hola" from "echo hola"
     var outLines = [script.split(' ').last];
@@ -126,8 +131,10 @@ class ShellMock with ShellMixin implements Shell {
 
   @override
   Future<ProcessResult> runExecutableArguments(
-      String executable, List<String> arguments,
-      {ShellOnProcessCallback? onProcess}) {
+    String executable,
+    List<String> arguments, {
+    ShellOnProcessCallback? onProcess,
+  }) {
     // TODO: implement runExecutableArguments
     throw UnimplementedError();
   }
@@ -154,9 +161,12 @@ class ShellMock with ShellMixin implements Shell {
 void main() {
   group('shell_common_test', () {
     Future<void> testLinuxEcho(Shell shell) async {
-      var results = await shell.run('echo hola', onProcess: (process) {
-        process.kill();
-      });
+      var results = await shell.run(
+        'echo hola',
+        onProcess: (process) {
+          process.kill();
+        },
+      );
       expect(results.first.exitCode, 0);
 
       var outLines = results.outLines;
@@ -206,10 +216,13 @@ void main() {
       //expect(shell.scripts, ['hola']);
     });
     test('cloneWithOptions', () async {
-      var shell = ShellMock().cloneWithOptions(ShellOptions(
+      var shell = ShellMock().cloneWithOptions(
+        ShellOptions(
           workingDirectory: 'a/b',
           environment: {},
-          includeParentEnvironment: false));
+          includeParentEnvironment: false,
+        ),
+      );
       expect(shell.path, 'a/b');
       expect(shell.options.workingDirectory, 'a/b');
     });

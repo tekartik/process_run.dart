@@ -34,13 +34,13 @@ class UserConfig {
   final Map<String, String> aliases;
 
   /// User config
-  UserConfig(
-      {Map<String, String>? vars,
-      List<String>? paths,
-      Map<String, String>? aliases})
-      : vars = vars ?? <String, String>{},
-        paths = paths ?? <String>[],
-        aliases = aliases ?? <String, String>{};
+  UserConfig({
+    Map<String, String>? vars,
+    List<String>? paths,
+    Map<String, String>? aliases,
+  }) : vars = vars ?? <String, String>{},
+       paths = paths ?? <String>[],
+       aliases = aliases ?? <String, String>{};
 
   @override
   String toString() =>
@@ -84,13 +84,13 @@ List<String> get userPaths => userConfig.paths;
 /// [userEnvironment] must be explicitly used as it could contain sensitive
 /// information.
 ///
-Map<String, String> get userEnvironment => ShellEnvironment.empty()
-  ..vars.addAll(userConfig.vars)
-  ..aliases.addAll(userConfig.aliases)
-  ..paths.addAll(userConfig.paths);
+Map<String, String> get userEnvironment =>
+    ShellEnvironment.empty()
+      ..vars.addAll(userConfig.vars)
+      ..aliases.addAll(userConfig.aliases)
+      ..paths.addAll(userConfig.paths);
 
 @protected
-
 /// Reset user config
 @visibleForTesting
 void resetUserConfig() {
@@ -110,11 +110,13 @@ class EnvFileConfig {
   final Map<String, String> aliases;
 
   /// Env file config
-  EnvFileConfig(List<String>? paths, Map<String, String>? vars,
-      Map<String, String>? aliases)
-      : paths = paths ?? <String>[],
-        vars = vars ?? <String, String>{},
-        aliases = aliases ?? <String, String>{};
+  EnvFileConfig(
+    List<String>? paths,
+    Map<String, String>? vars,
+    Map<String, String>? aliases,
+  ) : paths = paths ?? <String>[],
+      vars = vars ?? <String, String>{},
+      aliases = aliases ?? <String, String>{};
 
   /// Has no vars, paths nor aliases.
   bool get isEmpty => paths.isEmpty && vars.isEmpty && aliases.isEmpty;
@@ -123,8 +125,11 @@ class EnvFileConfig {
   bool get isNotEmpty => !isEmpty;
 
   /// Debug map
-  Map<String, dynamic> toDebugMap() =>
-      <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
+  Map<String, dynamic> toDebugMap() => <String, dynamic>{
+    'paths': paths,
+    'vars': vars,
+    'aliases': aliases,
+  };
 
   /// Load from path
   Future<EnvFileConfig> loadFromPath(String path) async {
@@ -297,10 +302,11 @@ void userLoadConfigMap(Map map) {
 }
 
 /// Only specify the vars to override and the paths to add
-void userLoadEnv(
-    {Map<String, String>? vars,
-    List<String>? paths,
-    Map<String, String>? aliases}) {
+void userLoadEnv({
+  Map<String, String>? vars,
+  List<String>? paths,
+  Map<String, String>? aliases,
+}) {
   userLoadEnvFileConfig(EnvFileConfig(paths, vars, aliases));
 }
 
@@ -313,7 +319,9 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   var added = envFileConfig;
   // devPrint('adding config: $config');
   if (const ListEquality<Object?>().equals(
-      paths.sublist(0, min(added.paths.length, paths.length)), added.paths)) {
+    paths.sublist(0, min(added.paths.length, paths.length)),
+    added.paths,
+  )) {
     // don't add if already in same order at the beginning
   } else {
     paths.insertAll(0, added.paths);
@@ -348,8 +356,9 @@ String? getFlutterAncestorPath(String dartSdkBinDirPath) {
   // Second test, check if flutter is at path in this case
   // dart sdk comes from flutter dart path
   try {
-    if (File(join(dartSdkBinDirPath, getBashOrBatExecutableFilename('flutter')))
-        .existsSync()) {
+    if (File(
+      join(dartSdkBinDirPath, getBashOrBatExecutableFilename('flutter')),
+    ).existsSync()) {
       return dartSdkBinDirPath;
     }
   } catch (_) {}
@@ -402,7 +411,10 @@ UserConfig getUserConfig(Map<String, String>? environment) {
   addConfig(getLocalEnvFilePath(shEnv));
 
   return UserConfig(
-      paths: shEnv.paths, vars: shEnv.vars, aliases: shEnv.aliases);
+    paths: shEnv.paths,
+    vars: shEnv.vars,
+    aliases: shEnv.aliases,
+  );
 }
 
 /// get users paths

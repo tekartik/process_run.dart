@@ -6,16 +6,19 @@ import 'package:process_run/src/io/io.dart';
 
 /// Delete an environment variable from a user/local config file
 class ShellEnvVarDeleteCommand extends ShellEnvCommandBase {
-  late final _helper =
-      ShellEnvVarDeleteIoHelper(shell: Shell(), local: local, verbose: verbose);
+  late final _helper = ShellEnvVarDeleteIoHelper(
+    shell: Shell(),
+    local: local,
+    verbose: verbose,
+  );
 
   /// Delete an environment variable from a user/local config file
   ShellEnvVarDeleteCommand()
-      : super(
-          name: 'delete',
-          description:
-              'Delete an environment variable from a user/local config file',
-        );
+    : super(
+        name: 'delete',
+        description:
+            'Delete an environment variable from a user/local config file',
+      );
 
   @override
   void printUsage() {

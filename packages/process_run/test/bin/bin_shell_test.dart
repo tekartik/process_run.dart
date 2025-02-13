@@ -10,14 +10,16 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 var shell = Shell(
-    environment: ShellEnvironment()..aliases['ds'] = 'dart run bin/shell.dart',
-    verbose: false);
+  environment: ShellEnvironment()..aliases['ds'] = 'dart run bin/shell.dart',
+  verbose: false,
+);
 
 var safeLocalEnvFile = '.dart_tool/process_run/test/test_local_env3_safe.yaml';
 
-var safeShellEnvironment = ShellEnvironment()
-  ..aliases['ds'] = 'dart run bin/shell.dart'
-  ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
+var safeShellEnvironment =
+    ShellEnvironment()
+      ..aliases['ds'] = 'dart run bin/shell.dart'
+      ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
 
 Shell get safeShell => Shell(environment: safeShellEnvironment, verbose: false);
 
@@ -115,9 +117,9 @@ void main() {
         expect(fileContent.addAlias('a1', 'v1'), true);
         expect(fileContent.lines, ['alias:', '  a1: v1']);
         expect(
-            true,
-            fileContent.addAlias(
-                'a1', 'v1')); // yes even if not changed, we don't know
+          true,
+          fileContent.addAlias('a1', 'v1'),
+        ); // yes even if not changed, we don't know
         expect(fileContent.lines, ['alias:', '  a1: v1']);
         fileContent.deleteAlias('a1');
         expect(fileContent.lines, ['alias:']);

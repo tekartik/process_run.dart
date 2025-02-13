@@ -69,17 +69,20 @@ void defineTests() {
       test('dartExecutable_path', () {
         expect(isAbsolute(dartExecutable!), isTrue);
         expect(
-            Directory(join(dirname(dartExecutable!), 'snapshots')).existsSync(),
-            isTrue);
+          Directory(join(dirname(dartExecutable!), 'snapshots')).existsSync(),
+          isTrue,
+        );
       });
 
       test('flutterDart', () async {
         if (isFlutterSupportedSync) {
           try {
             expect(
-                dirname(findFlutterDartExecutableSync(
-                    dirname(flutterExecutablePath!))!),
-                endsWith(join('cache', 'dart-sdk', 'bin')));
+              dirname(
+                findFlutterDartExecutableSync(dirname(flutterExecutablePath!))!,
+              ),
+              endsWith(join('cache', 'dart-sdk', 'bin')),
+            );
           } finally {
             resolvedDartExecutable = null;
             debugDartExecutableForceWhich = false;
@@ -87,19 +90,26 @@ void defineTests() {
         }
       });
 
-      test('dart_empty_param', () async {
-        final result = await Process.run(dartExecutable!, []);
-        if (dartVersion > Version(2, 10, 0, pre: '1')) {
-          // Not yet in 2.9.0-21
-          // Ok in 2.10.0-1.0.dev
-          expect(result.exitCode, 0,
+      test(
+        'dart_empty_param',
+        () async {
+          final result = await Process.run(dartExecutable!, []);
+          if (dartVersion > Version(2, 10, 0, pre: '1')) {
+            // Not yet in 2.9.0-21
+            // Ok in 2.10.0-1.0.dev
+            expect(
+              result.exitCode,
+              0,
               reason:
-                  'dartVersion empty param not exitcode 0 yet in $dartVersion, exit code 255 in <=2.9.0 to check');
-        } else {
-          // pre 2.9 behavior
-          expect(result.exitCode, 255);
-        }
-      }, skip: 'dart without params hangs on dev now 2020/10/31');
+                  'dartVersion empty param not exitcode 0 yet in $dartVersion, exit code 255 in <=2.9.0 to check',
+            );
+          } else {
+            // pre 2.9 behavior
+            expect(result.exitCode, 255);
+          }
+        },
+        skip: 'dart without params hangs on dev now 2020/10/31',
+      );
     });
 
     test('which', () {
@@ -107,8 +117,10 @@ void defineTests() {
       // might not be in path during the test
       if (whichDart != null) {
         if (Platform.isWindows) {
-          expect(['dart.exe', 'dart.bat'],
-              contains(basename(whichDart).toLowerCase()));
+          expect([
+            'dart.exe',
+            'dart.bat',
+          ], contains(basename(whichDart).toLowerCase()));
         } else {
           expect(basename(whichDart), getBashOrExeExecutableFilename('dart'));
         }
@@ -122,7 +134,9 @@ void defineTests() {
         try {
           resolvedDartExecutable = null;
           expect(
-              resolveDartExecutable(environment: <String, String>{}), isNull);
+            resolveDartExecutable(environment: <String, String>{}),
+            isNull,
+          );
         } catch (e) {
           print(e);
         }
@@ -145,18 +159,26 @@ void defineTests() {
 
           resolvedDartExecutable = null;
           expect(
-              dirname(resolveDartExecutable(environment: <String, String>{
-                'PATH': dirname(flutterExecutablePath!)
-              })!),
-              endsWith(join('cache', 'dart-sdk', 'bin')));
+            dirname(
+              resolveDartExecutable(
+                environment: <String, String>{
+                  'PATH': dirname(flutterExecutablePath!),
+                },
+              )!,
+            ),
+            endsWith(join('cache', 'dart-sdk', 'bin')),
+          );
 
           expect(resolveDartExecutable(), isNotNull);
 
           // Dart from flutter
-          if (dirname(dartExecutable!)
-              .contains(dirname(flutterExecutablePath!))) {
+          if (dirname(
+            dartExecutable!,
+          ).contains(dirname(flutterExecutablePath!))) {
             expect(
-                dartSdkBinDirPath, endsWith(join('cache', 'dart-sdk', 'bin')));
+              dartSdkBinDirPath,
+              endsWith(join('cache', 'dart-sdk', 'bin')),
+            );
           }
         } finally {
           resolvedDartExecutable = null;

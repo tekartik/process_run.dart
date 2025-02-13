@@ -25,7 +25,6 @@ void devPrint(Object? object) {
 }
 
 @Deprecated('Dev only')
-
 /// Warning in dev mode
 T devWarning<T>(T t) => t;
 
@@ -45,7 +44,6 @@ void _devError([Object? msg]) {
 }
 
 @Deprecated('Dev only')
-
 /// Error in dev mode
 void devError([String? msg]) => _devError(msg);
 

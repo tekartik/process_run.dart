@@ -8,10 +8,7 @@ import 'package:process_run/src/io/io.dart';
 class ShellEnvPathGetCommand extends ShellEnvCommandBase {
   /// Shell env path get command.
   ShellEnvPathGetCommand()
-      : super(
-          name: 'get',
-          description: 'Get the paths from environment',
-        );
+    : super(name: 'get', description: 'Get the paths from environment');
 
   @override
   void printUsage() {
@@ -34,10 +31,11 @@ class ShellEnvPathGetCommand extends ShellEnvCommandBase {
       if (verbose) {
         stdout.writeln('File $label: $envFilePath');
       }
-      dumpStringList(ShellEnvironment()
-          .paths
-          .where((element) => paths.contains(element))
-          .toList());
+      dumpStringList(
+        ShellEnvironment().paths
+            .where((element) => paths.contains(element))
+            .toList(),
+      );
 
       return true;
     }

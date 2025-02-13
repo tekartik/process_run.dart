@@ -9,7 +9,7 @@ import 'import.dart';
 class ShellEnvAliasCommand extends ShellBinCommand {
   /// Alias operations
   ShellEnvAliasCommand()
-      : super(name: commandEnvAliases, description: 'Alias operations') {
+    : super(name: commandEnvAliases, description: 'Alias operations') {
     addCommand(ShellEnvAliasDumpCommand());
     addCommand(ShellEnvAliasSetCommand());
     addCommand(ShellEnvAliasGetCommand());

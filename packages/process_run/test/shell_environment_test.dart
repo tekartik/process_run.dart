@@ -42,7 +42,7 @@ void main() {
 
       expect(env, {
         'VAR1': 'var1',
-        'PATH': (Platform.isWindows ? 'path1;path2' : 'path1:path2')
+        'PATH': (Platform.isWindows ? 'path1;path2' : 'path1:path2'),
       });
     });
 
@@ -60,15 +60,10 @@ void main() {
       expect(env, {'PATH': 'path1', 'VAR2': 'var2', 'VAR3': 'var3'});
       env.vars.remove('VAR2');
       env.vars.remove('VAR4');
-      expect(env, {
-        'PATH': 'path1',
-        'VAR3': 'var3',
-      });
+      expect(env, {'PATH': 'path1', 'VAR3': 'var3'});
       env.paths.remove('path1');
       env.paths.remove('path2');
-      expect(env, {
-        'VAR3': 'var3',
-      });
+      expect(env, {'VAR3': 'var3'});
     });
     test('prepend', () {
       var env = ShellEnvironment.empty();
@@ -77,7 +72,7 @@ void main() {
       env.paths.remove('path3');
 
       expect(env, {
-        envPathKey: ['path1', 'path2'].join(envPathSeparator)
+        envPathKey: ['path1', 'path2'].join(envPathSeparator),
       });
     });
 
@@ -90,7 +85,7 @@ void main() {
       env.paths.remove('path3');
 
       expect(env, {
-        envPathKey: ['path1', 'test', 'path2'].join(envPathSeparator)
+        envPathKey: ['path1', 'test', 'path2'].join(envPathSeparator),
       });
     });
 
@@ -98,8 +93,9 @@ void main() {
       var prevEnv = shellEnvironment;
       expect(shellEnvironment, isNotEmpty);
       var shell = Shell(verbose: false);
-      var env = ShellEnvironment()
-        ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
+      var env =
+          ShellEnvironment()
+            ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
 
       var result = await getEchoEnv(shell);
 
@@ -124,8 +120,9 @@ void main() {
     }); // not working
 
     test('local vars', () async {
-      var env = ShellEnvironment()
-        ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
+      var env =
+          ShellEnvironment()
+            ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
       var localShell = Shell(environment: env, verbose: false);
       var shell = Shell(verbose: false);
 
@@ -133,27 +130,33 @@ void main() {
       expect(result.vars['TEST_PROCESS_RUN_VAR1'], isNull);
 
       var resultWithParent = await getEchoEnv(localShell);
-      expect(resultWithParent.vars['TEST_PROCESS_RUN_VAR1'],
-          'test_process_run_value1');
+      expect(
+        resultWithParent.vars['TEST_PROCESS_RUN_VAR1'],
+        'test_process_run_value1',
+      );
 
       localShell = Shell(environment: env, includeParentEnvironment: false);
       var resultWithoutParent = await getEchoEnv(localShell);
-      expect(resultWithoutParent.vars['TEST_PROCESS_RUN_VAR1'],
-          'test_process_run_value1');
+      expect(
+        resultWithoutParent.vars['TEST_PROCESS_RUN_VAR1'],
+        'test_process_run_value1',
+      );
     });
 
     test('local one var', () async {
       try {
-        var env = ShellEnvironment.empty()
-          ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
+        var env =
+            ShellEnvironment.empty()
+              ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
         var shell = Shell(environment: env, verbose: false);
 
         print(await getEchoEnv(shell));
 
         shell = Shell(
-            environment: env,
-            includeParentEnvironment: false,
-            verbose: true); // This should be small
+          environment: env,
+          includeParentEnvironment: false,
+          verbose: true,
+        ); // This should be small
         var resultWithoutParent = await getEchoEnv(shell);
         print(resultWithoutParent);
 
@@ -211,30 +214,32 @@ void main() {
         shellEnvironment = prevEnv;
       }
     });
-    test('local empty include parent', () async {
-      var git = 'git';
-      if (await which(git) != null) {
-        var env = ShellEnvironment.empty();
-        expect(await env.which(git), isNull);
-        var shell = Shell(
+    test(
+      'local empty include parent',
+      () async {
+        var git = 'git';
+        if (await which(git) != null) {
+          var env = ShellEnvironment.empty();
+          expect(await env.which(git), isNull);
+          var shell = Shell(
             environment: env,
-            includeParentEnvironment:
-                false); // Shell(environment: env, includeParentEnvironment: false);
+            includeParentEnvironment: false,
+          ); // Shell(environment: env, includeParentEnvironment: false);
 
-        try {
+          try {
+            await shell.run('git --version');
+            fail('Should fail');
+          } catch (e) {
+            expect(e, isNot(const TypeMatcher<TestFailure>()));
+          }
+
+          shell = Shell(environment: env, includeParentEnvironment: true);
+
           await shell.run('git --version');
-          fail('Should fail');
-        } catch (e) {
-          expect(e, isNot(const TypeMatcher<TestFailure>()));
         }
-
-        shell = Shell(environment: env, includeParentEnvironment: true);
-
-        await shell.run('git --version');
-      }
-    },
-        skip:
-            true); // It does not seem to prevent calling git although not in the path
+      },
+      skip: true,
+    ); // It does not seem to prevent calling git although not in the path
     test('equals', () async {
       expect(ShellEnvironment.empty(), ShellEnvironment.empty());
     });
@@ -242,12 +247,12 @@ void main() {
       expect(ShellEnvironment.empty().toJson(), {
         'paths': <String>[],
         'vars': <Object?, Object?>{},
-        'aliases': <Object?, Object?>{}
+        'aliases': <Object?, Object?>{},
       });
       expect(basicEnv.toJson(), {
         'paths': ['path1'],
         'vars': {'VAR1': 'var1'},
-        'aliases': {'alias1': 'command1'}
+        'aliases': {'alias1': 'command1'},
       });
       var jsonText = jsonEncode(basicEnv.toJson());
       expect(jsonDecode(jsonText), basicEnv.toJson());
@@ -258,12 +263,13 @@ void main() {
     });
     test('fromJson', () async {
       expect(
-          ShellEnvironment.fromJson({
-            'paths': ['path1'],
-            'vars': {'VAR1': 'var1'},
-            'aliases': {'alias1': 'command1'}
-          }),
-          basicEnv);
+        ShellEnvironment.fromJson({
+          'paths': ['path1'],
+          'vars': {'VAR1': 'var1'},
+          'aliases': {'alias1': 'command1'},
+        }),
+        basicEnv,
+      );
       expect(ShellEnvironment.fromJson({}), emptyEnv);
     });
     test('merge', () {
@@ -275,25 +281,27 @@ void main() {
       var envOther = ShellEnvironment.empty();
 
       envOther.vars.addAll({'VAR2': 'new_value2', 'VAR3': 'var3'});
-      envOther.paths.addAll([
-        'path_first',
-        'path_second',
-        'path_third',
-      ]);
+      envOther.paths.addAll(['path_first', 'path_second', 'path_third']);
       env.merge(envOther);
       expect(env, {
         'VAR1': 'var1',
         'VAR2': 'new_value2',
-        'PATH': ['path_first', 'path_second', 'path_third', 'path_fourth']
-            .join(envPathSeparator),
-        'VAR3': 'var3'
+        'PATH': [
+          'path_first',
+          'path_second',
+          'path_third',
+          'path_fourth',
+        ].join(envPathSeparator),
+        'VAR3': 'var3',
       });
     });
     test('path merge', () {
       var paths = ShellEnvironment().paths;
       paths.merge(paths);
       var env = ShellEnvironment.full(
-          environment: shellEnvironment, includeParentEnvironment: true);
+        environment: shellEnvironment,
+        includeParentEnvironment: true,
+      );
       paths = env.paths;
       paths.merge(paths);
 
@@ -340,5 +348,6 @@ void main() {
 /// Better with non verbose shell.
 Future<ShellEnvironment> getEchoEnv(Shell shell) async {
   return ShellEnvironment.fromJson(
-      jsonDecode((await shell.run('$echo --all-env')).outLines.join()) as Map?);
+    jsonDecode((await shell.run('$echo --all-env')).outLines.join()) as Map?,
+  );
 }

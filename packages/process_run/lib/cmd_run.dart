@@ -68,15 +68,18 @@ export 'src/webdev.dart' show WebDevCmd;
 /// stdout/error if [verbose] is true.
 /// [verbose] implies [commandVerbose]
 ///
-Future<ProcessResult> runCmd(ProcessCmd cmd,
-        {bool? verbose,
-        bool? commandVerbose,
-        Stream<List<int>>? stdin,
-        StreamSink<List<int>>? stdout,
-        StreamSink<List<int>>? stderr}) =>
-    processCmdRun(cmd,
-        verbose: verbose,
-        commandVerbose: commandVerbose,
-        stdin: stdin,
-        stdout: stdout,
-        stderr: stderr);
+Future<ProcessResult> runCmd(
+  ProcessCmd cmd, {
+  bool? verbose,
+  bool? commandVerbose,
+  Stream<List<int>>? stdin,
+  StreamSink<List<int>>? stdout,
+  StreamSink<List<int>>? stderr,
+}) => processCmdRun(
+  cmd,
+  verbose: verbose,
+  commandVerbose: commandVerbose,
+  stdin: stdin,
+  stdout: stdout,
+  stderr: stderr,
+);

@@ -33,24 +33,34 @@ void main() {
     });
     test('userEnvironment', () async {
       await run(
-          'dart example/echo.dart ${shellArgument(stringTruncate(userEnvironment.toString(), 1500))}',
-          verbose: false);
+        'dart example/echo.dart ${shellArgument(stringTruncate(userEnvironment.toString(), 1500))}',
+        verbose: false,
+      );
 
-      expect(userEnvironment.length,
-          greaterThanOrEqualTo(shellEnvironment.length));
-      expect(userEnvironment.length,
-          greaterThanOrEqualTo(platformEnvironment.length));
+      expect(
+        userEnvironment.length,
+        greaterThanOrEqualTo(shellEnvironment.length),
+      );
+      expect(
+        userEnvironment.length,
+        greaterThanOrEqualTo(platformEnvironment.length),
+      );
     });
     test('shellEnvironment', () async {
       await run(
-          'dart example/echo.dart ${shellArgument(stringTruncate(shellEnvironment.toString(), 1500))}',
-          verbose: false);
+        'dart example/echo.dart ${shellArgument(stringTruncate(shellEnvironment.toString(), 1500))}',
+        verbose: false,
+      );
     });
 
     test('sync --version', () async {
-      var result = runSync('dart --version',
-              throwOnError: false, verbose: false, commandVerbose: true)
-          .first;
+      var result =
+          runSync(
+            'dart --version',
+            throwOnError: false,
+            verbose: false,
+            commandVerbose: true,
+          ).first;
       stdout.writeln('stdout: ${result.stdout.toString().trim()}');
       stdout.writeln('stderr: ${result.stderr.toString().trim()}');
       stdout.writeln('exitCode: ${result.exitCode}');
@@ -66,9 +76,13 @@ void main() {
         // 'dartanalyzer', deprecated
       ]) {
         stdout.writeln('');
-        var result = (await run('$bin --version',
-                throwOnError: false, verbose: false, commandVerbose: true))
-            .first;
+        var result =
+            (await run(
+              '$bin --version',
+              throwOnError: false,
+              verbose: false,
+              commandVerbose: true,
+            )).first;
         stdout.writeln('stdout: ${result.stdout.toString().trim()}');
         stdout.writeln('stderr: ${result.stderr.toString().trim()}');
         stdout.writeln('exitCode: ${result.exitCode}');
@@ -85,12 +99,16 @@ void main() {
     });
     test('throwOnError', () async {
       var verbose = false; // devWarning(true);
-      var env = ShellEnvironment()
-        ..aliases['echo'] = 'dart run ${shellArgument(echoScriptPath)}';
+      var env =
+          ShellEnvironment()
+            ..aliases['echo'] = 'dart run ${shellArgument(echoScriptPath)}';
 
       // Prevent error to be thrown if exitCode is not 0
-      var shell =
-          Shell(throwOnError: false, verbose: verbose, environment: env);
+      var shell = Shell(
+        throwOnError: false,
+        verbose: verbose,
+        environment: env,
+      );
       // This won't throw
       var exitCode = (await shell.run('echo --exit-code 1')).first.exitCode;
       expect(exitCode, 1);

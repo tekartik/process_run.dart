@@ -12,9 +12,10 @@ void main() {
   group('ShellLinesController', () {
     late ShellEnvironment env;
     setUpAll(() async {
-      env = ShellEnvironment()
-        ..aliases['streamer'] = await compileStreamerExample()
-        ..aliases['echo'] = await compileEchoExample();
+      env =
+          ShellEnvironment()
+            ..aliases['streamer'] = await compileStreamerExample()
+            ..aliases['echo'] = await compileEchoExample();
     });
     test('stream all', () async {
       var ctlr = ShellLinesController();
@@ -50,12 +51,15 @@ void main() {
     test('addError', () async {
       var ctlr = ShellLinesController();
       var completer = Completer<bool>();
-      ctlr.stream.listen((event) {
-        fail('should not be called');
-      }, onError: (Object e) {
-        expect(e, 'test');
-        completer.complete(true);
-      });
+      ctlr.stream.listen(
+        (event) {
+          fail('should not be called');
+        },
+        onError: (Object e) {
+          expect(e, 'test');
+          completer.complete(true);
+        },
+      );
       ctlr.sink.addError('test');
 
       await completer.future;
@@ -64,12 +68,15 @@ void main() {
     test('shell error', () async {
       var ctlr = ShellLinesController();
       var completer = Completer<bool>();
-      ctlr.stream.listen((event) {}, onError: (Object e) {
-        var shellException = e as ShellException;
-        expect(shellException.result!.exitCode, 1);
-        //expect(e, 'test');
-        completer.complete(true);
-      });
+      ctlr.stream.listen(
+        (event) {},
+        onError: (Object e) {
+          var shellException = e as ShellException;
+          expect(shellException.result!.exitCode, 1);
+          //expect(e, 'test');
+          completer.complete(true);
+        },
+      );
       var shell = Shell(stdout: ctlr.sink, environment: env);
       await shell
           .run('echo --exit-code 1')
@@ -86,9 +93,10 @@ void main() {
         }
       });
       var shell = Shell(
-          stdout: ctlr.sink,
-          stdin: inputController.binaryStream,
-          environment: env);
+        stdout: ctlr.sink,
+        stdin: inputController.binaryStream,
+        environment: env,
+      );
       var done = shell.run('echo --stdin --write-line --verbose');
       inputController.writeln('stdin_done');
       inputController.close();

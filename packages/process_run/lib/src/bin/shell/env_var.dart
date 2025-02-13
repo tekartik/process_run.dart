@@ -10,9 +10,10 @@ import 'import.dart';
 class ShellEnvVarCommand extends ShellEnvCommandBase {
   /// Shell env var command.
   ShellEnvVarCommand()
-      : super(
-            name: commandEnvVar,
-            description: 'Manipulate local and global env variables') {
+    : super(
+        name: commandEnvVar,
+        description: 'Manipulate local and global env variables',
+      ) {
     addCommand(ShellEnvVarDumpCommand());
     addCommand(ShellEnvVarSetCommand());
     addCommand(ShellEnvVarGetCommand());

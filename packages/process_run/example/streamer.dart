@@ -37,14 +37,29 @@ Future main(List<String> arguments) async {
   final parser = ArgParser(allowTrailingOptions: false);
   parser.addFlag('help', abbr: 'h', help: 'Usage help', negatable: false);
   // parser.addFlag('verbose', abbr: 'v', help: 'Verbose', negatable: false);
-  parser.addOption(udelayOption,
-      abbr: 'd', help: 'delay in microseconds', defaultsTo: null);
-  parser.addOption('count',
-      abbr: 'c', help: 'count of print', defaultsTo: null);
-  parser.addOption('timeout',
-      abbr: 't', help: 'timeout in millis', defaultsTo: null);
-  parser.addFlag('version',
-      help: 'Print the command version', negatable: false);
+  parser.addOption(
+    udelayOption,
+    abbr: 'd',
+    help: 'delay in microseconds',
+    defaultsTo: null,
+  );
+  parser.addOption(
+    'count',
+    abbr: 'c',
+    help: 'count of print',
+    defaultsTo: null,
+  );
+  parser.addOption(
+    'timeout',
+    abbr: 't',
+    help: 'timeout in millis',
+    defaultsTo: null,
+  );
+  parser.addFlag(
+    'version',
+    help: 'Print the command version',
+    negatable: false,
+  );
 
   final argsResult = parser.parse(arguments);
 

@@ -6,13 +6,14 @@ import 'import.dart';
 class ShellEnvVarDumpCommand extends ShellBinCommand {
   /// Dump environment variable
   ShellEnvVarDumpCommand()
-      : super(name: 'dump', description: 'Dump environment variable');
+    : super(name: 'dump', description: 'Dump environment variable');
 
   @override
   FutureOr<bool> onRun() async {
     var vars = ShellEnvironment().vars;
-    var keys = vars.keys.toList()
-      ..sort((t1, t2) => t1.toLowerCase().compareTo(t2.toLowerCase()));
+    var keys =
+        vars.keys.toList()
+          ..sort((t1, t2) => t1.toLowerCase().compareTo(t2.toLowerCase()));
     for (var key in keys) {
       var value = vars[key];
       stdout.writeln('$key: $value');

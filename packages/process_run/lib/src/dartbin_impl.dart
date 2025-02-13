@@ -20,8 +20,9 @@ String? resolveDartExecutable({Map<String, String>? environment}) {
   if (!_dartExecutableLock) {
     _dartExecutableLock = true;
     try {
-      var dartExecutable =
-          findDartExecutableSync(getUserPaths(environment ?? userEnvironment));
+      var dartExecutable = findDartExecutableSync(
+        getUserPaths(environment ?? userEnvironment),
+      );
       // Handle the flutter case
       if (dartExecutable != null) {
         return findFlutterDartExecutableSync(dirname(dartExecutable)) ??
@@ -48,7 +49,8 @@ String? _resolvedDartExecutable;
 ///
 /// Get dart vm either from executable or using the which command
 ///
-String? get resolvedDartExecutable => _resolvedDartExecutable ??= () {
+String? get resolvedDartExecutable =>
+    _resolvedDartExecutable ??= () {
       var executable = platformResolvedExecutable;
       if (executable != null) {
         return executable;

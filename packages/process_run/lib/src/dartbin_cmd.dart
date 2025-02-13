@@ -30,7 +30,7 @@ class _DartBinCmd extends ProcessCmd {
   final String binName;
 
   _DartBinCmd(this.binName, List<String> arguments)
-      : super(join(dartSdkBinDirPath, binName), arguments);
+    : super(join(dartSdkBinDirPath, binName), arguments);
 
   @override
   String toString() => executableArgumentsToString(binName, arguments);
@@ -43,7 +43,7 @@ class PubRunCmd extends PubCmd {
 
   /// Call pub run
   PubRunCmd(this._command, this._arguments)
-      : super(['run', _command, ..._arguments]);
+    : super(['run', _command, ..._arguments]);
 
   @override
   String toString() => executableArgumentsToString(_command, _arguments);
@@ -56,7 +56,7 @@ class PubGlobalRunCmd extends PubCmd {
 
   /// Call pub global run
   PubGlobalRunCmd(this._command, this._arguments)
-      : super(['global', 'run', _command, ..._arguments]);
+    : super(['global', 'run', _command, ..._arguments]);
 
   @override
   String toString() => executableArgumentsToString(_command, _arguments);
@@ -87,8 +87,9 @@ Future<Version?> getDartBinVersion() async {
   // $ dart --version
   // Linux: Dart VM version: 2.7.0 (Unknown timestamp) on "linux_x64"
 
-  var result =
-      await runExecutableArguments('dart', ['--version'], verbose: false);
+  var result = await runExecutableArguments('dart', [
+    '--version',
+  ], verbose: false);
 
   // Take from stderr first
   var version = parseDartBinVersionOutput(result.stderr.toString().trim());

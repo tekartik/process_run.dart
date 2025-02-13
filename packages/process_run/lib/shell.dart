@@ -51,7 +51,6 @@ export 'src/process_cmd.dart'
     show
         processCmdToDebugString,
         processResultToDebugString,
-
         /// Deprecated
         ProcessCmd;
 export 'src/process_run.dart'

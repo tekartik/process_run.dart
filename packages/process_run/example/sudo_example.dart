@@ -9,10 +9,11 @@ void main(List<String> arguments) async {
   /// Use an alias for simplicity (only need to refer to sudo instead of sudo --stdin
   var env = ShellEnvironment()..aliases['sudo'] = 'sudo --stdin';
   var shell = Shell(
-      stdin: sharedStdIn,
-      // lsof return exitCode 1 if not found
-      environment: env,
-      throwOnError: false);
+    stdin: sharedStdIn,
+    // lsof return exitCode 1 if not found
+    environment: env,
+    throwOnError: false,
+  );
 
   await shell.run('sudo lsof -i:22');
   // second time should not ask for password

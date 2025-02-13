@@ -14,8 +14,9 @@ void main() {
       var echo = await compileEchoExample();
 
       var options = ShellOptions(
-          verbose: false,
-          environment: ShellEnvironment()..aliases['echo'] = echo);
+        verbose: false,
+        environment: ShellEnvironment()..aliases['echo'] = echo,
+      );
       var lines =
           (await Shell(options: options).run('echo --stdout test')).outLines;
       expect(lines, ['test']);
@@ -44,15 +45,21 @@ echo --wait 100 --stdout hello2
       // await printHello123Slow();
 
       var stdio = shellStdioLinesGrouper;
-      await Future.wait<List<ProcessResult>>(
-          [stdio.runZoned(() => printHello123Slow()), printHello123Slow()]);
+      await Future.wait<List<ProcessResult>>([
+        stdio.runZoned(() => printHello123Slow()),
+        printHello123Slow(),
+      ]);
 
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var isMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: isMemoryStdout);
-      await Future.wait<List<ProcessResult>>(
-          [stdio.runZoned(() => printHello123Slow()), printHello123Slow()]);
+        stderr: inMemoryStderr,
+        stdout: isMemoryStdout,
+      );
+      await Future.wait<List<ProcessResult>>([
+        stdio.runZoned(() => printHello123Slow()),
+        printHello123Slow(),
+      ]);
       // Not working yet
       // expect(isMemoryStdout.lines, ['hello1', 'hello2', 'hello1', 'hello2', 'hello1', 'hello2']);
     });
@@ -60,7 +67,9 @@ echo --wait 100 --stdout hello2
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       var stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: inMemoryStdout);
+        stderr: inMemoryStderr,
+        stdout: inMemoryStdout,
+      );
       await stdio.runZoned(() async {
         stdout.writeln('test1');
         stderr.writeln('test2');
@@ -74,7 +83,9 @@ echo --wait 100 --stdout hello2
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       var stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: inMemoryStdout);
+        stderr: inMemoryStderr,
+        stdout: inMemoryStdout,
+      );
       await stdio.runZoned(() async {
         stdout.writeln('test1');
         stdout.writeln('');
@@ -87,7 +98,9 @@ echo --wait 100 --stdout hello2
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       var stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: inMemoryStdout);
+        stderr: inMemoryStderr,
+        stdout: inMemoryStdout,
+      );
       await stdio.runZoned(() async {
         stdout.write('test1\r\n');
         stdout.write('test2\r');
@@ -101,7 +114,9 @@ echo --wait 100 --stdout hello2
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       var stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: inMemoryStdout);
+        stderr: inMemoryStderr,
+        stdout: inMemoryStdout,
+      );
       await stdio.runZoned(() async {
         stdout.writeln('test1');
         stdout.writeln('');
@@ -115,19 +130,27 @@ echo --wait 100 --stdout hello2
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       var stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: inMemoryStdout);
+        stderr: inMemoryStderr,
+        stdout: inMemoryStdout,
+      );
       var futures = <Future>[];
-      futures.add(stdio.runZoned(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-        stdout.writeln('test1');
-      }));
-      futures.add(stdio.runZoned(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-        stdout.writeln('test2');
-      }));
-      futures.add(stdio.runZoned(() async {
-        stdout.writeln('test3');
-      }));
+      futures.add(
+        stdio.runZoned(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+          stdout.writeln('test1');
+        }),
+      );
+      futures.add(
+        stdio.runZoned(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 5));
+          stdout.writeln('test2');
+        }),
+      );
+      futures.add(
+        stdio.runZoned(() async {
+          stdout.writeln('test3');
+        }),
+      );
       await Future.wait(futures);
       expect(inMemoryStdout.lines, ['test1', 'test2', 'test3']);
     });
@@ -136,19 +159,27 @@ echo --wait 100 --stdout hello2
       var inMemoryStderr = InMemoryIOSink(StdioStreamType.err);
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       var stdio = ShellStdioLinesGrouper(
-          stderr: inMemoryStderr, stdout: inMemoryStdout);
+        stderr: inMemoryStderr,
+        stdout: inMemoryStdout,
+      );
       var futures = <Future>[];
-      futures.add(stdio.runZoned(() async {
-        stdout.writeln('test1');
-      }));
-      futures.add(stdio.runZoned(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-        stdout.writeln('test2');
-      }));
-      futures.add(stdio.runZoned(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 100));
-        stdout.writeln('test3');
-      }));
+      futures.add(
+        stdio.runZoned(() async {
+          stdout.writeln('test1');
+        }),
+      );
+      futures.add(
+        stdio.runZoned(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 5));
+          stdout.writeln('test2');
+        }),
+      );
+      futures.add(
+        stdio.runZoned(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+          stdout.writeln('test3');
+        }),
+      );
       await Future.wait(futures);
       expect(inMemoryStdout.lines, ['test1', 'test2', 'test3']);
     });

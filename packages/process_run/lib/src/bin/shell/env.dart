@@ -20,10 +20,19 @@ import 'import.dart';
 class ShellEnvCommandBase extends ShellBinCommand {
   /// Shell env command base
   ShellEnvCommandBase({required super.name, super.description}) {
-    parser.addFlag(flagLocal,
-        abbr: 'l', help: 'Use local env', negatable: false, defaultsTo: true);
-    parser.addFlag(flagUser,
-        abbr: 'u', help: 'Use user env instead of local env', negatable: false);
+    parser.addFlag(
+      flagLocal,
+      abbr: 'l',
+      help: 'Use local env',
+      negatable: false,
+      defaultsTo: true,
+    );
+    parser.addFlag(
+      flagUser,
+      abbr: 'u',
+      help: 'Use user env instead of local env',
+      negatable: false,
+    );
   }
 
   /// Local env (default)
@@ -60,16 +69,19 @@ class ShellEnvCommandBase extends ShellBinCommand {
   /// Env file path
   String? get envFilePath => _envFilePath;
 
-  String? get _envFilePath => local
-      ? getLocalEnvFilePath(userEnvironment)
-      : getUserEnvFilePath(userEnvironment);
+  String? get _envFilePath =>
+      local
+          ? getLocalEnvFilePath(userEnvironment)
+          : getUserEnvFilePath(userEnvironment);
 
   List<String>? _sampleFileContent;
 
   /// Sample file content
-  List<String> get sampleFileContent => _sampleFileContent ??= () {
-        var content = local
-            ? '''
+  List<String> get sampleFileContent =>
+      _sampleFileContent ??= () {
+        var content =
+            local
+                ? '''
 # Local Environment path and variable for `Shell.run` calls.
 #
 # `path(s)` is a list of path, `var(s)` is a key/value map.
@@ -85,7 +97,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
 # alias:
 #   qr: /path/to/my_qr_app
   '''
-            : '''
+                : '''
 # Environment path and variable for `Shell.run` calls.
 #
 # `path` is a list of path, `var` is a key/value map.
@@ -113,10 +125,10 @@ class ShellEnvCommandBase extends ShellBinCommand {
 class ShellEnvCommand extends ShellEnvCommandBase {
   /// Shell env command
   ShellEnvCommand()
-      : super(
-            name: commandEnv,
-            description:
-                'Manipulate local and global env vars, paths and aliases') {
+    : super(
+        name: commandEnv,
+        description: 'Manipulate local and global env vars, paths and aliases',
+      ) {
     addCommand(ShellEnvVarCommand());
     addCommand(ShellEnvEditCommand());
     addCommand(ShellEnvDeleteCommand());

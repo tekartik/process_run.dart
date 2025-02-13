@@ -14,8 +14,12 @@ void main() {
     test('scriptToCommands', () {
       expect(scriptToCommands(''), isEmpty);
       // expect(scriptToCommands('\\'), ['\\']);
-      expect(scriptToCommands(' e\n#\n # comment\nf \n '),
-          ['e', '#', '# comment', 'f']);
+      expect(scriptToCommands(' e\n#\n # comment\nf \n '), [
+        'e',
+        '#',
+        '# comment',
+        'f',
+      ]);
     });
 
     test('isLineToBeContinued', () {
@@ -46,18 +50,19 @@ void main() {
 
     test('environmentFilterOutVmOptions', () {
       var env = {
-        'DART_VM_OPTIONS': '--pause-isolates-on-start --enable-vm-service:51156'
+        'DART_VM_OPTIONS':
+            '--pause-isolates-on-start --enable-vm-service:51156',
       };
       env = environmentFilterOutVmOptions(env);
       expect(env, isEmpty);
       env = {
         'DART_VM_OPTIONS': '--enable-vm-service:51156',
-        'TEKARTIK_DART_VM_OPTIONS': '--profile'
+        'TEKARTIK_DART_VM_OPTIONS': '--profile',
       };
       env = environmentFilterOutVmOptions(env);
       expect(env, {
         'TEKARTIK_DART_VM_OPTIONS': '--profile',
-        'DART_VM_OPTIONS': '--profile'
+        'DART_VM_OPTIONS': '--profile',
       });
     });
 
@@ -72,17 +77,19 @@ void main() {
       expect(shellSplit('"Hello  world"'), ['Hello  world']);
       expect(shellSplit("'Hello  world'"), ['Hello  world']);
       expect(
-          shellSplit(
-              'curl --location --request POST "https://postman-echo.com/post" --data "This is expected to be sent back as part of response body."'),
-          [
-            'curl',
-            '--location',
-            '--request',
-            'POST',
-            'https://postman-echo.com/post',
-            '--data',
-            'This is expected to be sent back as part of response body.'
-          ]);
+        shellSplit(
+          'curl --location --request POST "https://postman-echo.com/post" --data "This is expected to be sent back as part of response body."',
+        ),
+        [
+          'curl',
+          '--location',
+          '--request',
+          'POST',
+          'https://postman-echo.com/post',
+          '--data',
+          'This is expected to be sent back as part of response body.',
+        ],
+      );
     });
 
     test('shellJoin', () {
@@ -114,23 +121,32 @@ void main() {
     });
 
     test('various', () {
-      expect(scriptToCommands('''
+      expect(
+        scriptToCommands('''
      a ^
      
      b
-    '''), ['a', 'b']);
-      expect(scriptToCommands('''
+    '''),
+        ['a', 'b'],
+      );
+      expect(
+        scriptToCommands('''
      a ^
      b
      
      c
-    '''), ['a b', 'c']);
-      expect(scriptToCommands('''
+    '''),
+        ['a b', 'c'],
+      );
+      expect(
+        scriptToCommands('''
 a ^
  "b" ^
  "c" d
 e
-    '''), ['a "b" "c" d', 'e']);
+    '''),
+        ['a "b" "c" d', 'e'],
+      );
     });
 
     test('streamSinkWrite', () async {

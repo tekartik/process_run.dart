@@ -11,8 +11,11 @@ abstract class ShellContext {
   ShellEnvironment get shellEnvironment;
 
   /// Which command.
-  Future<String?> which(String command,
-      {ShellEnvironment? environment, bool includeParentEnvironment = true});
+  Future<String?> which(
+    String command, {
+    ShellEnvironment? environment,
+    bool includeParentEnvironment = true,
+  });
 
   /// Path context.
   p.Context get path;
@@ -22,14 +25,10 @@ abstract class ShellContext {
 
   /// New shell must set itself as a shell Context, shell environement is
   /// no longer relevent.
-  Shell newShell({
-    ShellOptions? options,
-  });
+  Shell newShell({ShellOptions? options});
 
   /// New shell environment
-  ShellEnvironment newShellEnvironment({
-    Map<String, String>? environment,
-  });
+  ShellEnvironment newShellEnvironment({Map<String, String>? environment});
 }
 
 /// Shell context mixin
@@ -38,10 +37,11 @@ mixin ShellContextMixin implements ShellContext {
   Encoding get encoding =>
       throw UnimplementedError('ShellContextMixin.encoding');
   @override
-  Shell newShell(
-      {ShellOptions? options,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true}) {
+  Shell newShell({
+    ShellOptions? options,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+  }) {
     throw UnimplementedError('ShellContext.newShell');
   }
 
@@ -58,8 +58,11 @@ mixin ShellContextMixin implements ShellContext {
       throw UnimplementedError('ShellContext.shellEnvironment');
 
   @override
-  Future<String?> which(String command,
-      {ShellEnvironment? environment, bool includeParentEnvironment = true}) {
+  Future<String?> which(
+    String command, {
+    ShellEnvironment? environment,
+    bool includeParentEnvironment = true,
+  }) {
     throw UnimplementedError('ShellContext.which');
   }
 }

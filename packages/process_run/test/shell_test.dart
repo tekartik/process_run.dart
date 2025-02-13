@@ -23,7 +23,8 @@ Future<void> ensureEchoExe() async {
   if (!File(echoExe).existsSync()) {
     await Directory(dirname(echoExePath)).create(recursive: true);
     await run(
-        'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o $echoExe');
+      'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o $echoExe',
+    );
   }
 }
 
@@ -36,11 +37,12 @@ bool debug = false;
 // To set in both variable for a full empty environment
 var dummyEnvPath = join('test', 'data', 'test_env.yaml_dummy');
 
-ShellEnvironment newEnvNoOverride() =>
-    ShellEnvironment(environment: <String, String>{
-      userEnvFilePathEnvKey: dummyEnvPath,
-      localEnvFilePathEnvKey: dummyEnvPath
-    });
+ShellEnvironment newEnvNoOverride() => ShellEnvironment(
+  environment: <String, String>{
+    userEnvFilePathEnvKey: dummyEnvPath,
+    localEnvFilePathEnvKey: dummyEnvPath,
+  },
+);
 
 void main() {
   group('Shell', () {
@@ -126,8 +128,12 @@ $echoExe -o éà
       var result = (await shell.run(script)).first;
       expect(result.stdout, isNull);
       expect(result.stderr, 'Err');
-      result = (await shell
-          .runExecutableArguments(echoExe, ['-o', 'Out', '-e', 'Err']));
+      result = (await shell.runExecutableArguments(echoExe, [
+        '-o',
+        'Out',
+        '-e',
+        'Err',
+      ]));
       expect(result.stdout, isNull);
       expect(result.stderr, 'Err');
       // Not valid for runSync
@@ -135,16 +141,23 @@ $echoExe -o éà
       expect(result.stdout, 'Out');
       expect(result.stderr, 'Err');
       // Not valid for runExecutableArgumentsSync
-      result = (shell
-          .runExecutableArgumentsSync(echoExe, ['-o', 'Out', '-e', 'Err']));
+      result = (shell.runExecutableArgumentsSync(echoExe, [
+        '-o',
+        'Out',
+        '-e',
+        'Err',
+      ]));
       expect(result.stdout, 'Out');
       expect(result.stderr, 'Err');
       result = (await run(script, options: options)).first;
       expect(result.stdout, isNull);
       expect(result.stderr, 'Err');
-      result = (await runExecutableArguments(
-          echoExe, ['-o', 'Out', '-e', 'Err'],
-          noStdoutResult: true));
+      result = (await runExecutableArguments(echoExe, [
+        '-o',
+        'Out',
+        '-e',
+        'Err',
+      ], noStdoutResult: true));
       expect(result.stdout, isNull);
       expect(result.stderr, 'Err');
       // Not valid for runSync
@@ -177,7 +190,8 @@ $echoExe -o 你好
       var shell = Shell(verbose: debug, runInShell: true);
 
       var results = await shell.run(
-          '$echoExe --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}');
+        '$echoExe --stdout-hex ${bytesToHex(utf8.encode('Hello\nWorld'))}',
+      );
       expect(results.outLines, ['Hello', 'World']);
       expect(results[0].outLines, ['Hello', 'World']);
       expect(results.errLines, isEmpty);
@@ -267,8 +281,7 @@ $echoExe -o ${shellArgument(weirdText)}
             // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
             // devPrint('2: $_');
           }
-        }()
-            .timeout(const Duration(seconds: 30));
+        }().timeout(const Duration(seconds: 30));
       } on TimeoutException catch (e) {
         stderr.writeln('TimeOutException $e');
         stderr.writeln('Allowed: could happen on CI');
@@ -292,8 +305,7 @@ $echoExe -o ${shellArgument(weirdText)}
           } on ShellException catch (_) {
             // 2: ShellException(dart echo.dart --wait 3000, exitCode -15, workingDirectory:
           }
-        }()
-            .timeout(const Duration(seconds: 30));
+        }().timeout(const Duration(seconds: 30));
       } on TimeoutException catch (e) {
         stderr.writeln('TimeOutException $e');
         stderr.writeln('Allowed: could happen on CI');
@@ -343,8 +355,7 @@ $echoExe -o ${shellArgument(weirdText)}
           } on ShellException catch (_) {
             // devPrint('3: $e');
           }
-        }()
-            .timeout(const Duration(seconds: 40));
+        }().timeout(const Duration(seconds: 40));
       } on TimeoutException catch (e) {
         stderr.writeln('TimeOutException $e');
         stderr.writeln('Allowed: could happen on CI');
@@ -368,8 +379,11 @@ $echoExe -o ${shellArgument(weirdText)}
       $echoExe some_text3
       ''');
         linesController.close();
-        expect(await linesController.stream.toList(),
-            ['some_text1', 'some_text2', 'some_text3']);
+        expect(await linesController.stream.toList(), [
+          'some_text1',
+          'some_text2',
+          'some_text3',
+        ]);
       });
       test('pause', () async {
         await ensureEchoExe();
@@ -407,16 +421,19 @@ $echoExe -o ${shellArgument(weirdText)}
 
         subscription!.pause();
         var count = 0;
-        await shell.run('''
+        await shell.run(
+          '''
       $echoExe some_text2
       $echoExe some_text3
-      ''', onProcess: (process) {
-          count++;
-          // devPrint('onProcess ${process.pid} (paused: $paused)');
-          process.exitCode.then((exitCode) {
-            expect(exitCode, 0);
-          });
-        });
+      ''',
+          onProcess: (process) {
+            count++;
+            // devPrint('onProcess ${process.pid} (paused: $paused)');
+            process.exitCode.then((exitCode) {
+              expect(exitCode, 0);
+            });
+          },
+        );
         expect(count, 2);
         expect(lines, isEmpty);
         lines.clear();
@@ -438,8 +455,10 @@ $echoExe -o ${shellArgument(weirdText)}
       results = await shell.cd('test/src').run('''
 dart current_dir.dart
 ''');
-      expect(results[0].stdout.toString().trim(),
-          join(Directory.current.path, 'test', 'src'));
+      expect(
+        results[0].stdout.toString().trim(),
+        join(Directory.current.path, 'test', 'src'),
+      );
     });
 
     test('path', () {
@@ -456,8 +475,10 @@ dart current_dir.dart
 
       shell = shell.pushd('test/src');
       results = await shell.run('dart current_dir.dart');
-      expect(results[0].stdout.toString().trim(),
-          join(Directory.current.path, 'test', 'src'));
+      expect(
+        results[0].stdout.toString().trim(),
+        join(Directory.current.path, 'test', 'src'),
+      );
 
       // pop once
       shell = shell.popd();
@@ -534,7 +555,8 @@ _tekartik_dummy_app_that_does_not_exits
     await testCommand('flutter --version'); // flutter.bat on windows
     await testCommand('dart --version'); // dart.exe on windows
     await testCommand(
-        '${shellArgument(dartExecutable!)} --version'); // dart.exe on windows
+      '${shellArgument(dartExecutable!)} --version',
+    ); // dart.exe on windows
     if (dartVersion < Version(2, 17, 0, pre: '0')) {
       await testCommand('pub --version'); // dart.exe on windows
     }
@@ -555,18 +577,22 @@ _tekartik_dummy_app_that_does_not_exits
 
     // Write to file
     await file.writeAsString(
-        (await shell.run('echo Hello world')).first.stdout.toString());
+      (await shell.run('echo Hello world')).first.stdout.toString(),
+    );
 
     // Append to file
     await file.writeAsString(
-        (await shell.run('echo Hello world')).first.stdout.toString(),
-        mode: FileMode.append);
+      (await shell.run('echo Hello world')).first.stdout.toString(),
+      mode: FileMode.append,
+    );
 
     try {
       // Update 2024-11-17 Windows used to have different separator.
       var separator = '\n';
-      expect(await file.readAsString(),
-          'Hello world${separator}Hello world$separator');
+      expect(
+        await file.readAsString(),
+        'Hello world${separator}Hello world$separator',
+      );
       if (Platform.isWindows) {
         stdout.writeln('report: echo output \\n');
       }
@@ -574,8 +600,10 @@ _tekartik_dummy_app_that_does_not_exits
       if (Platform.isWindows) {
         // Old test
         var separator = Platform.isWindows ? '\r\n' : '\n';
-        expect(await file.readAsString(),
-            'Hello world${separator}Hello world$separator');
+        expect(
+          await file.readAsString(),
+          'Hello world${separator}Hello world$separator',
+        );
         if (Platform.isWindows) {
           stdout.writeln('report: echo output \\r\\n');
         }
@@ -636,31 +664,38 @@ _tekartik_dummy_app_that_does_not_exits
     // TODO test on other platform
     if (Platform.isLinux) {
       var environment = {
-        'PATH': '${absolute('test/src')}:${platformEnvironment['PATH']}'
+        'PATH': '${absolute('test/src')}:${platformEnvironment['PATH']}',
       };
       print(environment);
-      var shell =
-          Shell(environment: environment, includeParentEnvironment: false);
+      var shell = Shell(
+        environment: environment,
+        includeParentEnvironment: false,
+      );
       await shell.run('current_dir');
     }
   });
-  test('flutter_resolve', () async {
-    // Edge case finding flutter from dart
-    if (Platform.isLinux) {
-      var paths = platformEnvironment['PATH']!.split(':')
-        ..removeWhere((element) => element.endsWith('flutter/bin'));
+  test(
+    'flutter_resolve',
+    () async {
+      // Edge case finding flutter from dart
+      if (Platform.isLinux) {
+        var paths = platformEnvironment['PATH']!.split(':')
+          ..removeWhere((element) => element.endsWith('flutter/bin'));
 
-      paths.insert(0, dartSdkBinDirPath);
-      print(paths);
-      var environment = {'PATH': paths.join(':')};
-      print(environment);
-      var shell =
-          Shell(environment: environment, includeParentEnvironment: false);
-      await shell.run('flutter --version');
-    }
-  },
-      // skip: !isFlutterSupportedSync ||
-      skip: true);
+        paths.insert(0, dartSdkBinDirPath);
+        print(paths);
+        var environment = {'PATH': paths.join(':')};
+        print(environment);
+        var shell = Shell(
+          environment: environment,
+          includeParentEnvironment: false,
+        );
+        await shell.run('flutter --version');
+      }
+    },
+    // skip: !isFlutterSupportedSync ||
+    skip: true,
+  );
   // This is plain wrong now...assumed dart below flutter which will no longer be the case
 
   test('flutter info', () async {
@@ -674,21 +709,25 @@ _tekartik_dummy_app_that_does_not_exits
 
     var whichDart = await which('dart');
     var resolvedVersion = parseDartBinVersionOutput(
-        (await sh.runExecutableArguments(dartExecutable!, ['--version']))
-            .stderr
-            .toString());
+      (await sh.runExecutableArguments(dartExecutable!, [
+        '--version',
+      ])).stderr.toString(),
+    );
     var resolvedVersionSync = parseDartBinVersionOutput(
-        (sh.runExecutableArgumentsSync(dartExecutable!, ['--version']))
-            .stderr
-            .toString());
+      (sh.runExecutableArgumentsSync(dartExecutable!, [
+        '--version',
+      ])).stderr.toString(),
+    );
     var whichVersion = parseDartBinVersionOutput(
-        (await sh.runExecutableArguments(whichDart!, ['--version']))
-            .stderr
-            .toString());
+      (await sh.runExecutableArguments(whichDart!, [
+        '--version',
+      ])).stderr.toString(),
+    );
     var version = parseDartBinVersionOutput(
-        (await sh.runExecutableArguments('dart', ['--version']))
-            .stderr
-            .toString());
+      (await sh.runExecutableArguments('dart', [
+        '--version',
+      ])).stderr.toString(),
+    );
     expect(version, resolvedVersion);
     expect(version, whichVersion);
     expect(version, resolvedVersionSync);
@@ -698,9 +737,10 @@ _tekartik_dummy_app_that_does_not_exits
     await ensureEchoExe();
     var controller = ShellLinesController();
     var shell = Shell(
-        stdout: controller.sink,
-        verbose: true,
-        environment: ShellEnvironment()..aliases['echo'] = '$echoExe -o');
+      stdout: controller.sink,
+      verbose: true,
+      environment: ShellEnvironment()..aliases['echo'] = '$echoExe -o',
+    );
     await shell.run('echo 你好é');
     controller.close();
     if (!Platform.isWindows) {
@@ -712,10 +752,11 @@ _tekartik_dummy_app_that_does_not_exits
     var localFile = '.dart_tool/process_run/test/local1.yaml';
     var userFile = '.dart_tool/process_run/test/user1.yaml';
     var dsCommand = 'dart run bin/shell.dart';
-    var safeShellEnvironment = ShellEnvironment()
-      ..aliases['ds'] = dsCommand
-      ..vars[userEnvFilePathEnvKey] = userFile
-      ..vars[localEnvFilePathEnvKey] = localFile;
+    var safeShellEnvironment =
+        ShellEnvironment()
+          ..aliases['ds'] = dsCommand
+          ..vars[userEnvFilePathEnvKey] = userFile
+          ..vars[localEnvFilePathEnvKey] = localFile;
 
     var shell = Shell(environment: safeShellEnvironment, verbose: true);
     expect(shell.options.environment.aliases['ds'], dsCommand);

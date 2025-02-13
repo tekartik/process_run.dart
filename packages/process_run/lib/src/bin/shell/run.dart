@@ -8,9 +8,10 @@ import 'import.dart';
 class ShellRunCommand extends ShellBinCommand {
   /// pub run process_run:shell run
   ShellRunCommand()
-      : super(
-            name: commandRun,
-            description: 'Run a command using user environment') {
+    : super(
+        name: commandRun,
+        description: 'Run a command using user environment',
+      ) {
     parser.addFlag(flagInfo, abbr: 'i', help: 'display info', negatable: false);
   }
 
@@ -20,7 +21,8 @@ class ShellRunCommand extends ShellBinCommand {
     stdout.writeln();
     stdout.writeln('Usage: $script run <command>');
     stdout.writeln(
-        '  command being a command line as a single argument, examples:');
+      '  command being a command line as a single argument, examples:',
+    );
     stdout.writeln("  - 'firebase deploy'");
     stdout.writeln('  - script.bat');
     stdout.writeln('  - script.sh');

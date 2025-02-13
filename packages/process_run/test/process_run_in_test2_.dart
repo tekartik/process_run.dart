@@ -13,13 +13,15 @@ import 'process_run_test_common.dart';
 Future main() async {
   print("Please enter 'hi'");
   var result = await runExecutableArguments(
-    dartExecutable!, [echoScriptPath, '--stdin'],
+    dartExecutable!,
+    [echoScriptPath, '--stdin'],
     //stdin: testStdin);
   );
   print('out: ${result.stdout}');
   print("Please enter 'ho'");
   result = await runExecutableArguments(
-    dartExecutable!, [echoScriptPath, '--stdin'],
+    dartExecutable!,
+    [echoScriptPath, '--stdin'],
     //stdin: testStdin);
   );
   print('out: ${result.stdout}');

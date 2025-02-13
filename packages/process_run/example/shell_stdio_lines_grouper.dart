@@ -6,7 +6,9 @@ void main() async {
   var echo = await compileEchoExample();
 
   var options = ShellOptions(
-      verbose: true, environment: ShellEnvironment()..aliases['echo'] = echo);
+    verbose: true,
+    environment: ShellEnvironment()..aliases['echo'] = echo,
+  );
 
   Future<void> printHello12345Slow() async {
     var shell = Shell(options: options);
@@ -23,6 +25,6 @@ echo --wait 100 --stderr hello3 --write-line
   var stdio = shellStdioLinesGrouper;
   await Future.wait<void>([
     stdio.runZoned(() => printHello12345Slow()),
-    stdio.runZoned(() => printHello12345Slow())
+    stdio.runZoned(() => printHello12345Slow()),
   ]);
 }

@@ -18,12 +18,15 @@ class ShellContextIo with ShellContextMixin implements ShellContext {
   p.Context get path => p.context;
 
   @override
-  Future<String?> which(String command,
-          {ShellEnvironment? environment,
-          bool includeParentEnvironment = true}) =>
-      ds.which(command,
-          environment: environment,
-          includeParentEnvironment: includeParentEnvironment);
+  Future<String?> which(
+    String command, {
+    ShellEnvironment? environment,
+    bool includeParentEnvironment = true,
+  }) => ds.which(
+    command,
+    environment: environment,
+    includeParentEnvironment: includeParentEnvironment,
+  );
 
   @override
   Encoding get encoding => systemEncoding;
@@ -34,10 +37,11 @@ class ShellContextIo with ShellContextMixin implements ShellContext {
   }
 
   @override
-  Shell newShell(
-      {ShellOptions? options,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true}) {
+  Shell newShell({
+    ShellOptions? options,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+  }) {
     var ioShell = ShellIo(options: options ?? ShellOptions());
     ioShell.context = this;
     return ioShell;

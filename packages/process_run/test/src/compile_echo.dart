@@ -24,7 +24,8 @@ Future<String> compileEchoExample({bool force = false}) async {
   if (!needCompile && file.existsSync()) {
     try {
       var version = Version.parse(
-          (await shell.run('$echoExePath --version')).outText.trim());
+        (await shell.run('$echoExePath --version')).outText.trim(),
+      );
       if (version != packageVersion) {
         needCompile = true;
       } else {
@@ -38,7 +39,8 @@ Future<String> compileEchoExample({bool force = false}) async {
   if (needCompile) {
     Directory(echoExeDir).createSync(recursive: true);
     await shell.run(
-        'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o ${shellArgument(echoExePath)}');
+      'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o ${shellArgument(echoExePath)}',
+    );
   }
   return echoExePath;
 }

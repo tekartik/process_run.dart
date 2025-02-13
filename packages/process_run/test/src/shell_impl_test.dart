@@ -18,14 +18,14 @@ import '../shell_test.dart';
 var expectedDartPaths = [
   if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
     getFlutterAncestorPath(dartSdkBinDirPath),
-  dartSdkBinDirPath
+  dartSdkBinDirPath,
 ];
 
 List<String?> getExpectedPartPaths(ShellEnvironment environment) {
   return [
     if (getFlutterAncestorPath(dartSdkBinDirPath) != null)
       getFlutterAncestorPath(dartSdkBinDirPath),
-    dartSdkBinDirPath
+    dartSdkBinDirPath,
   ];
 }
 
@@ -65,10 +65,11 @@ void main() {
 
     test('null HOME', () async {
       try {
-        var env = Map<String, String>.from(platformEnvironment)
-          ..remove('HOME')
-          ..remove('USERPROFILE')
-          ..remove('APPDATA');
+        var env =
+            Map<String, String>.from(platformEnvironment)
+              ..remove('HOME')
+              ..remove('USERPROFILE')
+              ..remove('APPDATA');
         platformEnvironment = env;
         expect(userHomePath, '~');
         expect(userAppDataPath, join('~', '.config'));
@@ -94,38 +95,53 @@ void main() {
     test('userEnvironment in dart context', () async {
       try {
         platformEnvironment = newEnvNoOverride();
-        expect(userPaths,
-            getExpectedPartPaths(shellEnvironment as ShellEnvironment));
+        expect(
+          userPaths,
+          getExpectedPartPaths(shellEnvironment as ShellEnvironment),
+        );
       } finally {
         platformEnvironment = null;
       }
     });
 
     var localFlutterExecutablePath = flutterExecutablePath;
-    test('userEnvironment in flutter context', () async {
-      try {
-        var flutterBinDirPath = dirname(localFlutterExecutablePath!);
-        platformEnvironment = newEnvNoOverride()
-          ..paths.prepend(flutterBinDirPath);
+    test(
+      'userEnvironment in flutter context',
+      () async {
+        try {
+          var flutterBinDirPath = dirname(localFlutterExecutablePath!);
+          platformEnvironment =
+              newEnvNoOverride()..paths.prepend(flutterBinDirPath);
 
-        // '/opt/app/flutter/dev/flutter/bin',
-        // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
-        if (dartSdkBinDirPath.contains(flutterBinDirPath)) {
-          expect(userPaths,
-              [dirname(localFlutterExecutablePath), dartSdkBinDirPath]);
-        } else {
-          expect(userPaths,
-              [dartSdkBinDirPath, dirname(localFlutterExecutablePath)]);
+          // '/opt/app/flutter/dev/flutter/bin',
+          // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
+          if (dartSdkBinDirPath.contains(flutterBinDirPath)) {
+            expect(userPaths, [
+              dirname(localFlutterExecutablePath),
+              dartSdkBinDirPath,
+            ]);
+          } else {
+            expect(userPaths, [
+              dartSdkBinDirPath,
+              dirname(localFlutterExecutablePath),
+            ]);
+          }
+        } finally {
+          platformEnvironment = null;
         }
-      } finally {
-        platformEnvironment = null;
-      }
-    }, skip: localFlutterExecutablePath == null);
+      },
+      skip: localFlutterExecutablePath == null,
+    );
 
     test('userEnvironment', () async {
       try {
-        var filePath =
-            join('.dart_tool', 'process_run', 'test', 'user_env', 'env.yaml');
+        var filePath = join(
+          '.dart_tool',
+          'process_run',
+          'test',
+          'user_env',
+          'env.yaml',
+        );
         resetUserConfig();
         await Directory(dirname(filePath)).create(recursive: true);
         await File(filePath).writeAsString('''
@@ -157,7 +173,7 @@ void main() {
         platformEnvironment = <String, String>{
           userEnvFilePathEnvKey: filePath,
           localEnvFilePathEnvKey: configFileEmptyPath,
-          userHomePathEnvKey: getTestAbsPath()
+          userHomePathEnvKey: getTestAbsPath(),
         };
         // expect(getUserEnvFilePath(shellEnvironment), filePath);
         expect(userPaths, [
@@ -186,15 +202,12 @@ void main() {
         // empty environment
         platformEnvironment = <String, String>{
           userEnvFilePathEnvKey: configFileEmptyPath,
-          localEnvFilePathEnvKey: configFileEmptyPath
+          localEnvFilePathEnvKey: configFileEmptyPath,
         };
 
         var dartBinDir = dirname(dartExecutable!);
         var flutterDir = getFlutterAncestorPath(dartSdkBinDirPath);
-        expect(userPaths, [
-          if (flutterDir != null) flutterDir,
-          dartBinDir,
-        ]);
+        expect(userPaths, [if (flutterDir != null) flutterDir, dartBinDir]);
         expect(dirname((await which('dart'))!), flutterDir ?? dartBinDir);
       } finally {
         platformEnvironment = null;
@@ -203,8 +216,13 @@ void main() {
 
     test('user env in shell', () async {
       try {
-        var filePath = join('.dart_tool', 'process_run', 'test',
-            'user_env_in_shell', 'env.yaml');
+        var filePath = join(
+          '.dart_tool',
+          'process_run',
+          'test',
+          'user_env_in_shell',
+          'env.yaml',
+        );
         resetUserConfig();
         await Directory(dirname(filePath)).create(recursive: true);
         await File(filePath).writeAsString('''
@@ -217,72 +235,65 @@ void main() {
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '1');
 
         var shell = Shell(verbose: false);
-        var result = (await shell.run('$echo --stdout-env PATH'))
-            .first
-            .stdout
-            .toString()
-            .trim();
+        var result =
+            (await shell.run(
+              '$echo --stdout-env PATH',
+            )).first.stdout.toString().trim();
         expect(result, isNotEmpty);
 
         result =
-            (await shell.run('$echo --stdout-env _dummy_that_will_never_exist'))
-                .first
-                .stdout
-                .toString()
-                .trim();
+            (await shell.run(
+              '$echo --stdout-env _dummy_that_will_never_exist',
+            )).first.stdout.toString().trim();
         expect(result, isEmpty);
 
         result =
-            (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
-                .first
-                .stdout
-                .toString()
-                .trim();
+            (await shell.run(
+              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+            )).first.stdout.toString().trim();
         // Default environment is user environment
         expect(result, '1');
 
         shell = Shell(
-            verbose: false,
-            environment: platformEnvironment,
-            includeParentEnvironment: false);
+          verbose: false,
+          environment: platformEnvironment,
+          includeParentEnvironment: false,
+        );
         result =
-            (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
-                .first
-                .stdout
-                .toString()
-                .trim();
+            (await shell.run(
+              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+            )).first.stdout.toString().trim();
         expect(result, isEmpty);
         shell = Shell(
-            verbose: false,
-            environment: userEnvironment,
-            includeParentEnvironment: false);
+          verbose: false,
+          environment: userEnvironment,
+          includeParentEnvironment: false,
+        );
         result =
-            (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
-                .first
-                .stdout
-                .toString()
-                .trim();
+            (await shell.run(
+              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+            )).first.stdout.toString().trim();
         expect(result, '1');
         shell = Shell(
-            verbose: false,
-            environment: shellEnvironment,
-            includeParentEnvironment: false);
+          verbose: false,
+          environment: shellEnvironment,
+          includeParentEnvironment: false,
+        );
         result =
-            (await shell.run('$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST'))
-                .first
-                .stdout
-                .toString()
-                .trim();
+            (await shell.run(
+              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+            )).first.stdout.toString().trim();
         expect(result, '1');
-        shell = Shell(verbose: true, environment: <String, String>{
-          '_TEKARTIK_PROCESS_RUN_TEST': '78910'
-        });
+        shell = Shell(
+          verbose: true,
+          environment: <String, String>{'_TEKARTIK_PROCESS_RUN_TEST': '78910'},
+        );
 
         try {
-          var lines = (await shell.run(
-            '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-          ))
-              .outLines;
+          var lines =
+              (await shell.run(
+                '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+              )).outLines;
           result = lines.last;
           expect(result, '78910', reason: lines.join('\n'));
         } catch (e) {
@@ -312,20 +323,22 @@ void main() {
       // expect(platformEnvironment, isNot({'test': '1'}));
       //TODO test on other platform
       if (Platform.isLinux) {
-        var out = (await Shell(verbose: false).run('$linuxEnvCommand'))
-            .map((result) => result.stdout.toString())
-            .join('\n');
+        var out = (await Shell(verbose: false).run(
+          '$linuxEnvCommand',
+        )).map((result) => result.stdout.toString()).join('\n');
         expect(out, contains('test=1'));
       } else if (Platform.isWindows) {
         try {
           //TODO test on other platform
-          var out = (await Shell(verbose: false).run('echo test=%test%'))
-              .map((result) => result.stdout.toString())
-              .join('\n');
+          var out = (await Shell(verbose: false).run(
+            'echo test=%test%',
+          )).map((result) => result.stdout.toString()).join('\n');
           expect(out, contains('test=1'));
         } on TestFailure catch (e) {
-          stderr.writeln('%var% seems to start failing $e\n'
-              '...to investigate or simple drop as it is a windows inconsistency');
+          stderr.writeln(
+            '%var% seems to start failing $e\n'
+            '...to investigate or simple drop as it is a windows inconsistency',
+          );
         }
       }
       userConfig = UserConfig(vars: <String, String>{'test': '2'});

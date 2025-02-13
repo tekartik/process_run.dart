@@ -14,8 +14,9 @@ void main() {
     setUpAll(() async {
       var dsExePath = await compileShellBin(force: false);
       shell = Shell(
-          environment: ShellEnvironment()..aliases['ds'] = dsExePath,
-          verbose: false);
+        environment: ShellEnvironment()..aliases['ds'] = dsExePath,
+        verbose: false,
+      );
     });
     test('version', () async {
       var output = (await shell.run('ds --version')).outText.trim();

@@ -8,7 +8,8 @@ void main() {
   var results = shell.runSync('echo "Hello world"');
   var result = results.first;
   stdout.writeln(
-      'output: "${result.outText.trim()}" exitCode: ${result.exitCode}');
+    'output: "${result.outText.trim()}" exitCode: ${result.exitCode}',
+  );
   // should display: output: "Hello world" exitCode: 0
 
   // Run the command

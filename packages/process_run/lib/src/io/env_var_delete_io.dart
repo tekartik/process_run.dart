@@ -8,8 +8,11 @@ import 'package:process_run/src/io/io.dart';
 /// Helper to delete environment variables
 class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
   /// Helper to delete environment variables
-  ShellEnvVarDeleteIoHelper(
-      {required super.shell, required super.local, required super.verbose});
+  ShellEnvVarDeleteIoHelper({
+    required super.shell,
+    required super.local,
+    required super.verbose,
+  });
 
   /// delete multiple environment variables
   Future<ShellEnvironment> deleteMulti(List<String> keys) async {
@@ -31,7 +34,8 @@ class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
 
     // Convenient fix, although it could be wrong...
     var newShellEnvironment = shell.context.newShellEnvironment(
-        environment: ShellEnvironment(environment: shell.options.environment));
+      environment: ShellEnvironment(environment: shell.options.environment),
+    );
 
     newShellEnvironment.vars.removeWhere((name, _) => keys.contains(name));
 

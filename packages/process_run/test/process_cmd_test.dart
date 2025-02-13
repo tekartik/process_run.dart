@@ -44,14 +44,19 @@ void main() {
     test('system_command', () async {
       // read pubspec.yaml
       final lines = LineSplitter.split(
-          await File(join(projectTop, 'pubspec.yaml')).readAsString());
+        await File(join(projectTop, 'pubspec.yaml')).readAsString(),
+      );
 
       // use 'cat' on mac and linux
       // use 'type' on windows
       ProcessCmd cmd;
       if (Platform.isWindows) {
-        cmd = ProcessCmd('type', ['pubspec.yaml'],
-            workingDirectory: projectTop, runInShell: true);
+        cmd = ProcessCmd(
+          'type',
+          ['pubspec.yaml'],
+          workingDirectory: projectTop,
+          runInShell: true,
+        );
       } else {
         cmd = ProcessCmd('cat', ['pubspec.yaml'], workingDirectory: projectTop);
       }
@@ -65,25 +70,33 @@ void main() {
 
     test('processResultToDebugString', () {
       expect(
-          LineSplitter.split(
-              processResultToDebugString(ProcessResult(1, 0, 'out', 'err'))),
-          ['exitCode: 0', 'out: out', 'err: err']);
+        LineSplitter.split(
+          processResultToDebugString(ProcessResult(1, 0, 'out', 'err')),
+        ),
+        ['exitCode: 0', 'out: out', 'err: err'],
+      );
       expect(
-          LineSplitter.split(processResultToDebugString(
-              ProcessResult(2, 1, 'testout', 'testerr'))),
-          ['exitCode: 1', 'out: testout', 'err: testerr']);
+        LineSplitter.split(
+          processResultToDebugString(ProcessResult(2, 1, 'testout', 'testerr')),
+        ),
+        ['exitCode: 1', 'out: testout', 'err: testerr'],
+      );
     });
 
     test('processCmdToDebugString', () {
       expect(
-          LineSplitter.split(
-              processCmdToDebugString(ProcessCmd('cmd', ['arg']))),
-          ['cmd: cmd arg']);
+        LineSplitter.split(processCmdToDebugString(ProcessCmd('cmd', ['arg']))),
+        ['cmd: cmd arg'],
+      );
 
       expect(
-          LineSplitter.split(processCmdToDebugString(
-              ProcessCmd('cmd', ['arg'])..workingDirectory = 'dir')),
-          ['dir: dir', 'cmd: cmd arg']);
+        LineSplitter.split(
+          processCmdToDebugString(
+            ProcessCmd('cmd', ['arg'])..workingDirectory = 'dir',
+          ),
+        ),
+        ['dir: dir', 'cmd: cmd arg'],
+      );
     });
   });
 }

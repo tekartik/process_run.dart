@@ -76,8 +76,9 @@ Future createEchoExecutable(String path) async {
     await Directory(dirname(path)).create(recursive: true);
   } catch (_) {}
   var fullPath = '$path$basicScriptExecutableExtension';
-  await File(fullPath)
-      .writeAsString(Platform.isWindows ? '@echo Hello' : 'echo Hello');
+  await File(
+    fullPath,
+  ).writeAsString(Platform.isWindows ? '@echo Hello' : 'echo Hello');
   if (Platform.isLinux || Platform.isMacOS) {
     await Shell().run('chmod +x ${shellArgument(fullPath)}');
   }

@@ -8,7 +8,7 @@ import 'env.dart';
 class ShellEnvEditCommand extends ShellEnvCommandBase {
   /// Shell env edit command.
   ShellEnvEditCommand()
-      : super(name: 'edit', description: 'Edit the environment file');
+    : super(name: 'edit', description: 'Edit the environment file');
 
   @override
   FutureOr<bool> onRun() async {

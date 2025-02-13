@@ -7,7 +7,7 @@ import 'import.dart';
 class ShellEnvInfoCommand extends ShellBinCommand {
   /// pub run process_run:shell run
   ShellEnvInfoCommand()
-      : super(name: 'info', description: 'Display environment info');
+    : super(name: 'info', description: 'Display environment info');
 
   @override
   void printUsage() {

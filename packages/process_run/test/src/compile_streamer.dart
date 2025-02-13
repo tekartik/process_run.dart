@@ -24,8 +24,9 @@ Future<String> compileStreamerExample({bool force = false}) async {
   }
   if (!needCompile && file.existsSync()) {
     try {
-      var version =
-          Version.parse((await shell.run('$exe --version')).outText.trim());
+      var version = Version.parse(
+        (await shell.run('$exe --version')).outText.trim(),
+      );
       if (version != packageVersion) {
         needCompile = true;
       } else {
@@ -39,7 +40,8 @@ Future<String> compileStreamerExample({bool force = false}) async {
   if (needCompile) {
     Directory(exeDir).createSync(recursive: true);
     await shell.run(
-        'dart compile exe ${shellArgument(join('example', 'streamer.dart'))} -o ${shellArgument(exe)}');
+      'dart compile exe ${shellArgument(join('example', 'streamer.dart'))} -o ${shellArgument(exe)}',
+    );
   }
   return exe;
 }

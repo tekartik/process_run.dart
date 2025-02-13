@@ -31,22 +31,28 @@ class ProcessCmd {
   Encoding stderrEncoding;
 
   /// Process command
-  ProcessCmd(this.executable, this.arguments,
-      {this.workingDirectory,
-      this.environment,
-      this.includeParentEnvironment = true,
-      this.runInShell,
-      this.stdoutEncoding = systemEncoding,
-      this.stderrEncoding = systemEncoding});
+  ProcessCmd(
+    this.executable,
+    this.arguments, {
+    this.workingDirectory,
+    this.environment,
+    this.includeParentEnvironment = true,
+    this.runInShell,
+    this.stdoutEncoding = systemEncoding,
+    this.stderrEncoding = systemEncoding,
+  });
 
   /// Clone
-  ProcessCmd clone() => ProcessCmd(executable, arguments,
-      workingDirectory: workingDirectory,
-      environment: environment,
-      includeParentEnvironment: includeParentEnvironment,
-      runInShell: runInShell,
-      stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding);
+  ProcessCmd clone() => ProcessCmd(
+    executable,
+    arguments,
+    workingDirectory: workingDirectory,
+    environment: environment,
+    includeParentEnvironment: includeParentEnvironment,
+    runInShell: runInShell,
+    stdoutEncoding: stdoutEncoding,
+    stderrEncoding: stderrEncoding,
+  );
 
   @override
   int get hashCode => executable.hashCode;

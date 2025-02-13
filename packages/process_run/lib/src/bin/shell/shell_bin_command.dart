@@ -94,12 +94,13 @@ class ShellBinCommand {
   final _commands = <String, ShellBinCommand>{};
 
   /// Shell bin command
-  ShellBinCommand(
-      {required this.name,
-      Version? version,
-      ArgParser? parser,
-      ShellBinCommand? parent,
-      String? description}) {
+  ShellBinCommand({
+    required this.name,
+    Version? version,
+    ArgParser? parser,
+    ShellBinCommand? parent,
+    String? description,
+  }) {
     //_onRun = onRun;
     _parser = parser;
     _description = description;
@@ -108,10 +109,17 @@ class ShellBinCommand {
     parser = this.parser;
     // Add missing common commands
     if (parent == null) {
-      parser.addFlag(flagVersion,
-          help: 'Print the command version', negatable: false);
-      parser.addFlag(flagVerbose,
-          abbr: 'v', help: 'Verbose mode', negatable: false);
+      parser.addFlag(
+        flagVersion,
+        help: 'Print the command version',
+        negatable: false,
+      );
+      parser.addFlag(
+        flagVerbose,
+        abbr: 'v',
+        help: 'Verbose mode',
+        negatable: false,
+      );
     }
     parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
   }

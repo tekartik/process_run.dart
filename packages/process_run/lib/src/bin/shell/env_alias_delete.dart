@@ -9,10 +9,10 @@ import 'package:process_run/src/io/io.dart';
 class ShellEnvAliasDeleteCommand extends ShellEnvCommandBase {
   /// Shell env alias delete command.
   ShellEnvAliasDeleteCommand()
-      : super(
-          name: 'delete',
-          description: 'Delete an alias from a user/local config file',
-        );
+    : super(
+        name: 'delete',
+        description: 'Delete an alias from a user/local config file',
+      );
 
   @override
   void printUsage() {

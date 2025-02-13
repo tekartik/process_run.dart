@@ -18,18 +18,24 @@ void defineTests() {
 
       try {
         // Try output-dir first
-        final result = await runExecutableArguments('dart',
-            ['doc', '--output-dir', join(testOut, 'dartdoc_build'), '.'],
-            verbose: true);
+        final result = await runExecutableArguments('dart', [
+          'doc',
+          '--output-dir',
+          join(testOut, 'dartdoc_build'),
+          '.',
+        ], verbose: true);
         //expect(result.stdout, contains('dartdoc'));
         expect(result.exitCode, 0);
       } catch (e) {
         // New for dev?
         print('failed with --output-dir: $e');
         // Try output-dir first
-        final result = await runExecutableArguments(
-            'dart', ['doc', '--output', join(testOut, 'dartdoc_build'), '.'],
-            verbose: true);
+        final result = await runExecutableArguments('dart', [
+          'doc',
+          '--output',
+          join(testOut, 'dartdoc_build'),
+          '.',
+        ], verbose: true);
         //expect(result.stdout, contains('dartdoc'));
         expect(result.exitCode, 0);
       }

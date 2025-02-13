@@ -9,10 +9,7 @@ import 'package:process_run/src/io/io.dart';
 class ShellEnvPathPrependCommand extends ShellEnvCommandBase {
   /// Shell env path prepend command.
   ShellEnvPathPrependCommand()
-      : super(
-          name: 'prepend',
-          description: 'Prepend path for executable lookup',
-        );
+    : super(name: 'prepend', description: 'Prepend path for executable lookup');
 
   @override
   void printUsage() {
