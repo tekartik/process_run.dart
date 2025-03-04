@@ -20,29 +20,45 @@ void main() {
       // ignore: unnecessary_statements
       getFlutterBinVersion;
     });
-    test('flutterDart', () {
-      expect(flutterExecutablePath, isNotNull);
-      expect(flutterDartExecutablePath, isNotNull);
-    });
-    test('run_version', () async {
-      //print(flutterExecutablePath);
-      ProcessCmd cmd = FlutterCmd(['--version']);
-      // expect(cmd.executable, flutterExecutablePath);
-      expect(cmd.arguments, ['--version']);
-      final result = await runCmd(cmd);
-      expect(result.outText.toLowerCase(), contains('dart'));
-      expect(result.outText.toLowerCase(), contains('revision'));
-      expect(result.outText.toLowerCase(), contains('flutter'));
+    group('flutter', () {
+      test('flutterDart', () {
+        expect(flutterExecutablePath, isNotNull);
+        expect(flutterDartExecutablePath, isNotNull);
+      });
+      test('dart', () async {
+        var flutterDir = dirname((await which('flutter'))!);
+        // New in 2.9
+        expect(File(join(flutterDir, 'dart')).existsSync(), isTrue);
+        getFlutterAncestorPath(flutterDir);
+        expect(getFlutterAncestorPath(flutterDir), flutterDir);
+      });
 
-      // Whatever ship stable
-      expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));
-      expect(await getFlutterBinChannel(), isNotNull);
-    }, skip: !isFlutterSupportedSync);
+      test('which', () {
+        expect(
+          basename(whichSync('flutter')!),
+          getBashOrBatExecutableFilename('flutter'),
+        );
+      });
+      test('run_version', () async {
+        //print(flutterExecutablePath);
+        ProcessCmd cmd = FlutterCmd(['--version']);
+        // expect(cmd.executable, flutterExecutablePath);
+        expect(cmd.arguments, ['--version']);
+        final result = await runCmd(cmd);
+        expect(result.outText.toLowerCase(), contains('dart'));
+        expect(result.outText.toLowerCase(), contains('revision'));
+        expect(result.outText.toLowerCase(), contains('flutter'));
 
-    test('version & channel', () async {
-      // Whatever ship stable
-      expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));
-      expect(await getFlutterBinChannel(), isNotNull);
+        // Whatever ship stable
+        expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));
+        expect(await getFlutterBinChannel(), isNotNull);
+      });
+
+      test('version & channel', () async {
+        // Whatever ship stable
+        expect(await getFlutterBinVersion(), greaterThan(Version(1, 10, 0)));
+        expect(await getFlutterBinChannel(), isNotNull);
+      });
     }, skip: !isFlutterSupportedSync);
 
     test('get version', () async {
@@ -65,20 +81,5 @@ void main() {
         shellEnvironment = null;
       }
     });
-
-    test('dart', () async {
-      var flutterDir = dirname((await which('flutter'))!);
-      // New in 2.9
-      expect(File(join(flutterDir, 'dart')).existsSync(), isTrue);
-      getFlutterAncestorPath(flutterDir);
-      expect(getFlutterAncestorPath(flutterDir), flutterDir);
-    }, skip: !isFlutterSupportedSync);
-
-    test('which', () {
-      expect(
-        basename(whichSync('flutter')!),
-        getBashOrBatExecutableFilename('flutter'),
-      );
-    }, skip: !isFlutterSupportedSync);
   });
 }
