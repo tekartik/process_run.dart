@@ -46,4 +46,9 @@ class ShellContextIo with ShellContextMixin implements ShellContext {
     ioShell.context = this;
     return ioShell;
   }
+
+  @override
+  String toString() {
+    return 'ShellContextIo()';
+  }
 }

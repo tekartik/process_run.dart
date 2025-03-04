@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:process_run/cmd_run.dart' show flutterExecutablePath;
 import 'package:process_run/shell.dart';
 import 'package:process_run/stdio.dart';
 

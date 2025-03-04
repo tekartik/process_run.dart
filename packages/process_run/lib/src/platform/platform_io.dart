@@ -11,4 +11,5 @@ bool get platformIoIsWindows => Platform.isWindows;
 final shellContextIo = ShellContextIo();
 
 /// Get the global shell context
-ShellContext get shellContext => shellContextPlatformOrNull ??= shellContextIo;
+ShellContext get shellContextDefault =>
+    shellContextPlatformOrNull ??= shellContextIo;

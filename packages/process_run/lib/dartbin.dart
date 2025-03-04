@@ -14,6 +14,8 @@ export 'package:process_run/src/flutterbin_cmd.dart'
         getFlutterBinVersion,
         getFlutterBinChannel,
         isFlutterSupported,
+        flutterDartExecutablePath,
+        flutterExecutablePath,
         isFlutterSupportedSync;
 
 export 'src/common/dartbin.dart';

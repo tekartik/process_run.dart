@@ -6,7 +6,6 @@ library;
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:process_run/cmd_run.dart' show flutterExecutablePath;
 import 'package:process_run/dartbin.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/dartbin_impl.dart'

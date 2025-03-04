@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
 //import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
+import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_environment.dart';
 //import 'package:process_run/shell.dart';
 //import 'package:process_run/src/common/import.dart';
@@ -379,4 +381,11 @@ abstract class ShellEnvironmentCore with MapMixin<String, String> {
     return shellContext.newShellEnvironment(environment: environment);
   }
    */
+}
+
+/// Shell environment extension
+extension ShellEnvironmentCommonExt on ShellEnvironment {
+  /// Run in a zone,
+  Future<T> runZoned<T>(Future<T> Function() action) =>
+      shellContext.copyWith(shellEnvironment: this).runZoned(action);
 }

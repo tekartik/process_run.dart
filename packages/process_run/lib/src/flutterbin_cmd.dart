@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
+import 'package:process_run/src/dartbin_impl.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
@@ -9,6 +11,15 @@ String? _flutterExecutablePath;
 /// Resolved flutter path if found
 String? get flutterExecutablePath =>
     _flutterExecutablePath ??= whichSync('flutter');
+
+/// Resolved flutter dart path if found
+String? get flutterDartExecutablePath {
+  var flutterPath = flutterExecutablePath;
+  if (flutterPath != null) {
+    return findFlutterDartExecutableSync(dirname(flutterPath));
+  }
+  return null;
+}
 
 /// Test only
 @Deprecated('Dev only')

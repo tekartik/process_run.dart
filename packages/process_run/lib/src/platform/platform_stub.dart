@@ -5,5 +5,5 @@ import 'package:process_run/src/shell_context_common.dart';
 bool get platformIoIsWindows => false;
 
 /// Never null
-ShellContext get shellContext =>
+ShellContext get shellContextDefault =>
     shellContextPlatformOrNull ??= shellContextMemory;

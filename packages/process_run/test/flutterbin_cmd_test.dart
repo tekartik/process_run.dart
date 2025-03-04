@@ -6,8 +6,10 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/script_filename.dart';
-import 'package:process_run/src/user_config.dart';
+
+import 'package:process_run/src/script_filename.dart'
+    show getBashOrBatExecutableFilename;
+import 'package:process_run/src/user_config.dart' show getFlutterAncestorPath;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
@@ -17,6 +19,10 @@ void main() {
     test('api', () {
       // ignore: unnecessary_statements
       getFlutterBinVersion;
+    });
+    test('flutterDart', () {
+      expect(flutterExecutablePath, isNotNull);
+      expect(flutterDartExecutablePath, isNotNull);
     });
     test('run_version', () async {
       //print(flutterExecutablePath);

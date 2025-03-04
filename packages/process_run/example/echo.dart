@@ -90,6 +90,7 @@ Future main(List<String> arguments) async {
   parser.addFlag(
     'all-env',
     help: 'Display all environment (vars and paths) in json pretty print',
+    negatable: false,
   );
   parser.addOption('exit-code', abbr: 'x', help: 'Exit code to return');
   parser.addFlag(

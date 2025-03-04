@@ -23,7 +23,6 @@ export 'package:process_run/dartbin.dart'
         dartChannelDev,
         dartChannelMaster;
 export 'package:process_run/src/api/shell_common.dart' show ShellOptions;
-
 // We reuse io sharedStdIn definition.
 export 'package:process_run/src/io/shared_stdin.dart' show sharedStdIn;
 export 'package:process_run/src/shell_utils.dart'
@@ -45,7 +44,9 @@ export 'dartbin.dart'
         getFlutterBinVersion,
         getFlutterBinChannel,
         isFlutterSupported,
-        isFlutterSupportedSync;
+        isFlutterSupportedSync,
+        flutterDartExecutablePath,
+        flutterExecutablePath;
 export 'src/lines_utils.dart' show ShellLinesController, shellStreamLines;
 export 'src/process_cmd.dart'
     show
@@ -67,6 +68,7 @@ export 'src/shell_environment.dart'
         ShellEnvironmentPaths,
         ShellEnvironmentVars,
         ShellEnvironmentAliases;
+export 'src/shell_environment_common.dart' show ShellEnvironmentCommonExt;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
     show

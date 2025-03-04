@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_context_common.dart';
 
 /// Global platform shell context, if any.
@@ -14,3 +15,6 @@ set shellContext(ShellContext shellContext) =>
 void clearShellContext() {
   shellContextPlatformOrNull = null;
 }
+
+/// Shell context for the current zone or platform
+ShellContext get shellContext => zonedShellContextOrNull ?? shellContextDefault;

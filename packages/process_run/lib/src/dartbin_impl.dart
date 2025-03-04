@@ -23,7 +23,8 @@ String? resolveDartExecutable({Map<String, String>? environment}) {
       var dartExecutable = findDartExecutableSync(
         getUserPaths(environment ?? userEnvironment),
       );
-      // Handle the flutter case
+      // Handle the flutter case when dart was in the same folder than flutter
+      // TODO: check in 2025
       if (dartExecutable != null) {
         return findFlutterDartExecutableSync(dirname(dartExecutable)) ??
             dartExecutable;
