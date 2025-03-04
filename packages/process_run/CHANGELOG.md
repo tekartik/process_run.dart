@@ -1,3 +1,7 @@
+## 1.2.4
+
+* Allow running in a zoned environment context.
+
 ## 1.2.3
 
 * Requires dart 3.7

@@ -351,7 +351,6 @@ void main() {
       for (var i = 0; i < 10; i++) {
         await Future<void>.delayed(const Duration(milliseconds: 1));
         var readVar = ShellEnvironment().vars['test'];
-        print('$readVar vs $expected');
         expect(readVar, expected);
       }
     }

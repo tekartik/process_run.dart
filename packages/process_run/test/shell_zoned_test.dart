@@ -23,10 +23,13 @@ Future<void> main() async {
           await Future<void>.delayed(const Duration(milliseconds: 1));
 
           var readVar = ShellEnvironment().vars[varName];
-          print('$readVar vs $expected');
           expect(readVar, expected);
         }
-        var output = (await run('echo --stdout-env $varName')).outText.trim();
+        var output =
+            (await run(
+              'echo --stdout-env $varName',
+              verbose: false,
+            )).outText.trim();
         expect(output, expected);
       }
 
