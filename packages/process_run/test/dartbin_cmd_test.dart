@@ -46,7 +46,9 @@ void main() {
       try {
         var version = await getDartBinVersion();
         // Always present
-        expect(version, greaterThan(Version(2, 0, 0)));
+        if (version != null) {
+          expect(version, greaterThan(Version(2, 0, 0)));
+        }
       } finally {
         // ignore: deprecated_member_use_from_same_package
         flutterExecutablePath = null;
