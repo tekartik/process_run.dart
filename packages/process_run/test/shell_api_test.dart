@@ -1,3 +1,5 @@
+// ignore_for_file: dead_code
+
 import 'dart:io' as io;
 
 import 'package:process_run/shell.dart';
