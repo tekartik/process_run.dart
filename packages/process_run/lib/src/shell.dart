@@ -610,8 +610,8 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     /// Global process handler.
     try {
       _clearPreviousContext();
-      var completer =
-          _currentProcessResultCompleter = Completer<ProcessResult>();
+      var completer = _currentProcessResultCompleter =
+          Completer<ProcessResult>();
 
       Future<ProcessResult?> run() async {
         ProcessResult? processResult;

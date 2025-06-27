@@ -15,8 +15,10 @@ Future<String> prompt(String? text, {Stream<List<int>>? stdin}) async {
 /// Get text
 Future<String> _promptGetText({Stream<List<int>>? stdin}) async {
   stdin ??= sharedStdIn;
-  final input =
-      await stdin.transform(utf8.decoder).transform(const LineSplitter()).first;
+  final input = await stdin
+      .transform(utf8.decoder)
+      .transform(const LineSplitter())
+      .first;
   // devPrint('input: $input');
   return input;
 }

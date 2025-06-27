@@ -16,10 +16,9 @@ var shell = Shell(
 
 var safeLocalEnvFile = '.dart_tool/process_run/test/test_local_env3_safe.yaml';
 
-var safeShellEnvironment =
-    ShellEnvironment()
-      ..aliases['ds'] = 'dart run bin/shell.dart'
-      ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
+var safeShellEnvironment = ShellEnvironment()
+  ..aliases['ds'] = 'dart run bin/shell.dart'
+  ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env3_safe.yaml';
 
 Shell get safeShell => Shell(environment: safeShellEnvironment, verbose: false);
 

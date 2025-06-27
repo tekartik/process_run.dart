@@ -136,10 +136,9 @@ extension ShellContextExt on ShellContext {
 }
 
 /// Overriden shell stdio if any.
-ShellContext? get zonedShellContextOrNull =>
-    _inZoneCount > 0
-        ? async.Zone.current[_shellContextZoneVar] as ShellContext?
-        : null;
+ShellContext? get zonedShellContextOrNull => _inZoneCount > 0
+    ? async.Zone.current[_shellContextZoneVar] as ShellContext?
+    : null;
 const _shellContextZoneVar = #tekartik_shell_context;
 
 /// In memory shell context.

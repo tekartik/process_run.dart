@@ -121,11 +121,10 @@ class ShellStdioLinesGrouperIOSink with IOSinkMixin implements IOSink {
   @override
   void add(core.List<core.int> data) {
     var zoneId = grouper.zoneId;
-    var streamer =
-        grouper.streamers[zoneId] ??= ShellOutputLinesStreamer(
-          stdout: grouper.stdout,
-          stderr: grouper.stderr,
-        );
+    var streamer = grouper.streamers[zoneId] ??= ShellOutputLinesStreamer(
+      stdout: grouper.stdout,
+      stderr: grouper.stderr,
+    );
     // devPrint('[$zoneId/$currentZoneId] Adding data ${encoding.decode(data).trim()}');
     var sink = _isErr ? streamer.err : streamer.out;
     sink.add(data);

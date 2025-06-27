@@ -50,15 +50,14 @@ String? _resolvedDartExecutable;
 ///
 /// Get dart vm either from executable or using the which command
 ///
-String? get resolvedDartExecutable =>
-    _resolvedDartExecutable ??= () {
-      var executable = platformResolvedExecutable;
-      if (executable != null) {
-        return executable;
-      }
+String? get resolvedDartExecutable => _resolvedDartExecutable ??= () {
+  var executable = platformResolvedExecutable;
+  if (executable != null) {
+    return executable;
+  }
 
-      return resolveDartExecutable();
-    }();
+  return resolveDartExecutable();
+}();
 
 String? _platformResolvedExecutable;
 

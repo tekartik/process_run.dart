@@ -241,9 +241,8 @@ List<String> shellSplitWindowsImpl(String command) {
 /// quote matching the one at position [openingQuote] is missing.
 void _checkUnmatchedQuote(StringScanner scanner, int openingQuote) {
   if (!scanner.isDone) return;
-  final type =
-      scanner.substring(openingQuote, openingQuote + 1) == '"'
-          ? 'double'
-          : 'single';
+  final type = scanner.substring(openingQuote, openingQuote + 1) == '"'
+      ? 'double'
+      : 'single';
   scanner.error('Unmatched $type quote.', position: openingQuote, length: 1);
 }

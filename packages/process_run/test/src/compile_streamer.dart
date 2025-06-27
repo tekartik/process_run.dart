@@ -9,8 +9,9 @@ var _streamerVersionOk = false;
 
 /// Return the executable path.
 Future<String> compileStreamerExample({bool force = false}) async {
-  var folder =
-      Platform.isWindows ? 'windows' : (Platform.isMacOS ? 'macos' : 'linux');
+  var folder = Platform.isWindows
+      ? 'windows'
+      : (Platform.isMacOS ? 'macos' : 'linux');
   var exeExtension = Platform.isWindows ? '.exe' : '';
   var exe = join('build', folder, 'process_run_streamer$exeExtension');
   var exeDir = dirname(exe);

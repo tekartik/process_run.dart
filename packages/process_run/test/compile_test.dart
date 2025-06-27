@@ -18,18 +18,16 @@ void main() {
       var echoExeName = basename(echoExePath);
 
       // Try path access
-      var lines =
-          (await Shell(
-            verbose: false,
-          ).run('${shellArgument(echoExePath)} --stdout test')).outLines;
+      var lines = (await Shell(
+        verbose: false,
+      ).run('${shellArgument(echoExePath)} --stdout test')).outLines;
       expect(lines, ['test']);
 
       // Try using alias
-      lines =
-          (await Shell(
-            verbose: false,
-            environment: ShellEnvironment()..aliases['echo'] = echoExePath,
-          ).run('echo --stdout test')).outLines;
+      lines = (await Shell(
+        verbose: false,
+        environment: ShellEnvironment()..aliases['echo'] = echoExePath,
+      ).run('echo --stdout test')).outLines;
       expect(lines, ['test']);
 
       // Try using alias in options
@@ -37,26 +35,27 @@ void main() {
         verbose: false,
         environment: ShellEnvironment()..aliases['echo'] = echoExePath,
       );
-      lines =
-          (await Shell(options: options).run('echo --stdout test')).outLines;
+      lines = (await Shell(
+        options: options,
+      ).run('echo --stdout test')).outLines;
       expect(lines, ['test']);
       // Try using alias
       lines =
           (await Shell(
-            verbose: false,
-            environment: ShellEnvironment()..aliases['echo'] = echoExePath,
-          ).run('''
+                verbose: false,
+                environment: ShellEnvironment()..aliases['echo'] = echoExePath,
+              ).run('''
 echo --stdout test1
 echo --stdout test2
-        ''')).outLines;
+        '''))
+              .outLines;
       expect(lines, ['test1', 'test2']);
 
       // Try relative access
       var exePathShell = Shell(workingDirectory: echoExeDir, verbose: false);
-      lines =
-          (await exePathShell.run(
-            '${shellArgument(join('.', echoExeName))} --stdout test',
-          )).outLines;
+      lines = (await exePathShell.run(
+        '${shellArgument(join('.', echoExeName))} --stdout test',
+      )).outLines;
       expect(lines, ['test']);
 
       // Without using a relative path, this should fail

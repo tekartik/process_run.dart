@@ -84,11 +84,10 @@ List<String> get userPaths => userConfig.paths;
 /// [userEnvironment] must be explicitly used as it could contain sensitive
 /// information.
 ///
-Map<String, String> get userEnvironment =>
-    ShellEnvironment.empty()
-      ..vars.addAll(userConfig.vars)
-      ..aliases.addAll(userConfig.aliases)
-      ..paths.addAll(userConfig.paths);
+Map<String, String> get userEnvironment => ShellEnvironment.empty()
+  ..vars.addAll(userConfig.vars)
+  ..aliases.addAll(userConfig.aliases)
+  ..paths.addAll(userConfig.paths);
 
 @protected
 /// Reset user config

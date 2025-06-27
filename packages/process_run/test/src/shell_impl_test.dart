@@ -64,17 +64,17 @@ void main() {
 
     test('null HOME', () async {
       try {
-        var env =
-            Map<String, String>.from(platformEnvironment)
-              ..remove('HOME')
-              ..remove('USERPROFILE')
-              ..remove('APPDATA');
+        var env = Map<String, String>.from(platformEnvironment)
+          ..remove('HOME')
+          ..remove('USERPROFILE')
+          ..remove('APPDATA');
         platformEnvironment = env;
         expect(userHomePath, '~');
         expect(userAppDataPath, join('~', '.config'));
         // echo differs on windows
-        var firstLine =
-            (await run("echo 'Hello world'")).first.stdout.toString().trim();
+        var firstLine = (await run(
+          "echo 'Hello world'",
+        )).first.stdout.toString().trim();
         if (Platform.isWindows) {
           // We have both on windows depending on the shell used
           expect(['"Hello world"', 'Hello world'], contains(firstLine));
@@ -109,8 +109,8 @@ void main() {
       () async {
         try {
           var flutterBinDirPath = dirname(localFlutterExecutablePath!);
-          platformEnvironment =
-              newEnvNoOverride()..paths.prepend(flutterBinDirPath);
+          platformEnvironment = newEnvNoOverride()
+            ..paths.prepend(flutterBinDirPath);
 
           // '/opt/app/flutter/dev/flutter/bin',
           // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
@@ -234,22 +234,19 @@ void main() {
         expect(userEnvironment['_TEKARTIK_PROCESS_RUN_TEST'], '1');
 
         var shell = Shell(verbose: false);
-        var result =
-            (await shell.run(
-              '$echo --stdout-env PATH',
-            )).first.stdout.toString().trim();
+        var result = (await shell.run(
+          '$echo --stdout-env PATH',
+        )).first.stdout.toString().trim();
         expect(result, isNotEmpty);
 
-        result =
-            (await shell.run(
-              '$echo --stdout-env _dummy_that_will_never_exist',
-            )).first.stdout.toString().trim();
+        result = (await shell.run(
+          '$echo --stdout-env _dummy_that_will_never_exist',
+        )).first.stdout.toString().trim();
         expect(result, isEmpty);
 
-        result =
-            (await shell.run(
-              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-            )).first.stdout.toString().trim();
+        result = (await shell.run(
+          '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+        )).first.stdout.toString().trim();
         // Default environment is user environment
         expect(result, '1');
 
@@ -258,30 +255,27 @@ void main() {
           environment: platformEnvironment,
           includeParentEnvironment: false,
         );
-        result =
-            (await shell.run(
-              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-            )).first.stdout.toString().trim();
+        result = (await shell.run(
+          '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+        )).first.stdout.toString().trim();
         expect(result, isEmpty);
         shell = Shell(
           verbose: false,
           environment: userEnvironment,
           includeParentEnvironment: false,
         );
-        result =
-            (await shell.run(
-              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-            )).first.stdout.toString().trim();
+        result = (await shell.run(
+          '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+        )).first.stdout.toString().trim();
         expect(result, '1');
         shell = Shell(
           verbose: false,
           environment: shellEnvironment,
           includeParentEnvironment: false,
         );
-        result =
-            (await shell.run(
-              '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-            )).first.stdout.toString().trim();
+        result = (await shell.run(
+          '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+        )).first.stdout.toString().trim();
         expect(result, '1');
         shell = Shell(
           verbose: true,
@@ -289,10 +283,9 @@ void main() {
         );
 
         try {
-          var lines =
-              (await shell.run(
-                '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
-              )).outLines;
+          var lines = (await shell.run(
+            '$echo --stdout-env _TEKARTIK_PROCESS_RUN_TEST',
+          )).outLines;
           result = lines.last;
           expect(result, '78910', reason: lines.join('\n'));
         } catch (e) {

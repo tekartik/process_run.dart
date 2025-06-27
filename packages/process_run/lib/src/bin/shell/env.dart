@@ -69,19 +69,16 @@ class ShellEnvCommandBase extends ShellBinCommand {
   /// Env file path
   String? get envFilePath => _envFilePath;
 
-  String? get _envFilePath =>
-      local
-          ? getLocalEnvFilePath(userEnvironment)
-          : getUserEnvFilePath(userEnvironment);
+  String? get _envFilePath => local
+      ? getLocalEnvFilePath(userEnvironment)
+      : getUserEnvFilePath(userEnvironment);
 
   List<String>? _sampleFileContent;
 
   /// Sample file content
-  List<String> get sampleFileContent =>
-      _sampleFileContent ??= () {
-        var content =
-            local
-                ? '''
+  List<String> get sampleFileContent => _sampleFileContent ??= () {
+    var content = local
+        ? '''
 # Local Environment path and variable for `Shell.run` calls.
 #
 # `path(s)` is a list of path, `var(s)` is a key/value map.
@@ -97,7 +94,7 @@ class ShellEnvCommandBase extends ShellBinCommand {
 # alias:
 #   qr: /path/to/my_qr_app
   '''
-                : '''
+        : '''
 # Environment path and variable for `Shell.run` calls.
 #
 # `path` is a list of path, `var` is a key/value map.
@@ -117,8 +114,8 @@ class ShellEnvCommandBase extends ShellBinCommand {
 
 ''';
 
-        return LineSplitter.split(content).toList();
-      }();
+    return LineSplitter.split(content).toList();
+  }();
 }
 
 /// Shell env command

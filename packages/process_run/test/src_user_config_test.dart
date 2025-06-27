@@ -82,10 +82,9 @@ void main() {
         ...getExpectedPartPaths(newEnvNoOverride()),
         'my_path',
       ]);
-      var shEnv =
-          ShellEnvironment.empty()
-            ..paths.addAll(userConfig.paths)
-            ..vars.addAll(userConfig.vars);
+      var shEnv = ShellEnvironment.empty()
+        ..paths.addAll(userConfig.paths)
+        ..vars.addAll(userConfig.vars);
       expect(shEnv['TEKARTIK_PROCESS_RUN_USER_ENV_FILE_PATH'], path);
       expect(shEnv['test'], '1');
       expect(
@@ -95,10 +94,9 @@ void main() {
     });
 
     test('config no overload', () async {
-      var env =
-          Map<String, String>.from(platformEnvironment)
-            ..[userEnvFilePathEnvKey] = dummyEnvPath1
-            ..[localEnvFilePathEnvKey] = dummyEnvPath1;
+      var env = Map<String, String>.from(platformEnvironment)
+        ..[userEnvFilePathEnvKey] = dummyEnvPath1
+        ..[localEnvFilePathEnvKey] = dummyEnvPath1;
       var userConfig = getUserConfig(env);
 
       expect(

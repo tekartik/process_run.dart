@@ -38,10 +38,9 @@ void defineTests() {
 
       expect(File(destination).existsSync(), isFalse);
       var shell = Shell(verbose: false);
-      final result =
-          (await shell.run(
-            'dart compile js -o ${shellArgument(destination)} ${shellArgument(source)}',
-          )).first;
+      final result = (await shell.run(
+        'dart compile js -o ${shellArgument(destination)} ${shellArgument(source)}',
+      )).first;
       expect(result.exitCode, 0);
       expect(File(destination).existsSync(), isTrue);
     });

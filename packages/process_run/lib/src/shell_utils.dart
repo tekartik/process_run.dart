@@ -89,19 +89,18 @@ String? _userAppDataPath;
 ///
 /// On windows, it is read from the `APPDATA` environment variable. Otherwise
 /// it is the `~/.config` folder
-String get userAppDataPath =>
-    _userAppDataPath ??=
-        () {
-          var override = platformEnvironment[userAppDataPathEnvKey];
-          if (override != null) {
-            return override;
-          }
-          if (Platform.isWindows) {
-            return platformEnvironment['APPDATA'];
-          }
-          return null;
-        }() ??
-        join(userHomePath, '.config');
+String get userAppDataPath => _userAppDataPath ??=
+    () {
+      var override = platformEnvironment[userAppDataPathEnvKey];
+      if (override != null) {
+        return override;
+      }
+      if (Platform.isWindows) {
+        return platformEnvironment['APPDATA'];
+      }
+      return null;
+    }() ??
+    join(userHomePath, '.config');
 
 String? _userHomePath;
 
@@ -109,12 +108,11 @@ String? _userHomePath;
 ///
 /// Usually read from the `HOME` environment variable or `USERPROFILE` on
 /// Windows.
-String get userHomePath =>
-    _userHomePath ??=
-        platformEnvironment[userHomePathEnvKey] ??
-        platformEnvironment['HOME'] ??
-        platformEnvironment['USERPROFILE'] ??
-        '~';
+String get userHomePath => _userHomePath ??=
+    platformEnvironment[userHomePathEnvKey] ??
+    platformEnvironment['HOME'] ??
+    platformEnvironment['USERPROFILE'] ??
+    '~';
 
 /// Expand home if needed
 String expandPath(String path) {
@@ -147,10 +145,8 @@ Map<String, String>? _platformEnvironment;
 /// Environment without debug VM_OPTIONS and without any user overrides
 ///
 /// Instead replace with an optional TEKARTIK_DART_VM_OPTIONS
-Map<String, String> get platformEnvironment =>
-    _platformEnvironment ??= environmentFilterOutVmOptions(
-      Platform.environment,
-    );
+Map<String, String> get platformEnvironment => _platformEnvironment ??=
+    environmentFilterOutVmOptions(Platform.environment);
 
 /// Warning, change the platform environment and reset.
 set platformEnvironment(Map<String, String>? environment) {
@@ -190,10 +186,8 @@ Map<String, String> environmentFilterOutVmOptions(
 List<String>? _windowsPathExts;
 
 /// Default extension for PATHEXT on Windows
-List<String> get windowsPathExts =>
-    _windowsPathExts ??=
-        environmentGetWindowsPathExt(platformEnvironment) ??
-        windowsDefaultPathExt;
+List<String> get windowsPathExts => _windowsPathExts ??=
+    environmentGetWindowsPathExt(platformEnvironment) ?? windowsDefaultPathExt;
 
 /// Get the PATHEXT environment variable (windows)
 List<String>? environmentGetWindowsPathExt(
@@ -218,10 +212,9 @@ bool fixRunInShell(bool? runInShell, String executable) {
 }
 
 /// Use io package shellSplit implementation
-List<String> shellSplit(String command) =>
-    context.style == windows.style
-        ? io.shellSplitWindowsImpl(command)
-        : io.shellSplitImpl(command);
+List<String> shellSplit(String command) => context.style == windows.style
+    ? io.shellSplitWindowsImpl(command)
+    : io.shellSplitImpl(command);
 
 /// Inverse of shell split
 String shellJoin(List<String> parts) =>

@@ -752,11 +752,10 @@ _tekartik_dummy_app_that_does_not_exits
     var localFile = '.dart_tool/process_run/test/local1.yaml';
     var userFile = '.dart_tool/process_run/test/user1.yaml';
     var dsCommand = 'dart run bin/shell.dart';
-    var safeShellEnvironment =
-        ShellEnvironment()
-          ..aliases['ds'] = dsCommand
-          ..vars[userEnvFilePathEnvKey] = userFile
-          ..vars[localEnvFilePathEnvKey] = localFile;
+    var safeShellEnvironment = ShellEnvironment()
+      ..aliases['ds'] = dsCommand
+      ..vars[userEnvFilePathEnvKey] = userFile
+      ..vars[localEnvFilePathEnvKey] = localFile;
 
     var shell = Shell(environment: safeShellEnvironment, verbose: true);
     expect(shell.options.environment.aliases['ds'], dsCommand);

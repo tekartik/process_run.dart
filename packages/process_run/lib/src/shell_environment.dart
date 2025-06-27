@@ -9,8 +9,8 @@ export 'shell_environment_common.dart'
 /// Use current if already and environment object.
 ShellEnvironment asShellEnvironment(Map<String, String>? environment) =>
     (environment is ShellEnvironment)
-        ? environment
-        : ShellEnvironment(environment: environment);
+    ? environment
+    : ShellEnvironment(environment: environment);
 
 /// Shell modifiable helpers. should not be modified after being set.
 class ShellEnvironment extends common.ShellEnvironmentBase {

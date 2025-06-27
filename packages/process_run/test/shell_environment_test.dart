@@ -94,9 +94,8 @@ void main() {
       var prevEnv = shellEnvironment;
       expect(shellEnvironment, isNotEmpty);
       var shell = Shell(verbose: false);
-      var env =
-          ShellEnvironment()
-            ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
+      var env = ShellEnvironment()
+        ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
 
       var result = await getEchoEnv(shell);
 
@@ -121,9 +120,8 @@ void main() {
     }); // not working
 
     test('local vars', () async {
-      var env =
-          ShellEnvironment()
-            ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
+      var env = ShellEnvironment()
+        ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
       var localShell = Shell(environment: env, verbose: false);
       var shell = Shell(verbose: false);
 
@@ -146,9 +144,8 @@ void main() {
 
     test('local one var', () async {
       try {
-        var env =
-            ShellEnvironment.empty()
-              ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
+        var env = ShellEnvironment.empty()
+          ..vars['TEST_PROCESS_RUN_VAR1'] = 'test_process_run_value1';
         var shell = Shell(environment: env, verbose: false);
 
         print(await getEchoEnv(shell));

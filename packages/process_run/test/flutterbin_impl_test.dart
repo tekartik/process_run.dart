@@ -9,17 +9,15 @@ import 'package:test/test.dart';
 void main() {
   group('flutterbin_impl', () {
     test('FlutterBinInfo', () {
-      var info =
-          FlutterBinInfo.parseVersionOutput(
-            'Flutter 1.7.8+hotfix.4 • channel stable • https://github.com/flutter/flutter.git',
-          )!;
+      var info = FlutterBinInfo.parseVersionOutput(
+        'Flutter 1.7.8+hotfix.4 • channel stable • https://github.com/flutter/flutter.git',
+      )!;
       expect(info.version, Version(1, 7, 8, build: 'hotfix.4'));
       expect(info.channel, 'stable');
 
-      info =
-          FlutterBinInfo.parseVersionOutput(
-            'Flutter 1.14.3 • channel dev • https://github.com/flutter/flutter.git',
-          )!;
+      info = FlutterBinInfo.parseVersionOutput(
+        'Flutter 1.14.3 • channel dev • https://github.com/flutter/flutter.git',
+      )!;
       expect(info.version, Version(1, 14, 3));
       expect(info.channel, 'dev');
     });

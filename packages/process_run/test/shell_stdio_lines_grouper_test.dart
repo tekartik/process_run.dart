@@ -17,8 +17,9 @@ void main() {
         verbose: false,
         environment: ShellEnvironment()..aliases['echo'] = echo,
       );
-      var lines =
-          (await Shell(options: options).run('echo --stdout test')).outLines;
+      var lines = (await Shell(
+        options: options,
+      ).run('echo --stdout test')).outLines;
       expect(lines, ['test']);
       /*
       var env = ShellEnvironment()

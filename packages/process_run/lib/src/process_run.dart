@@ -131,11 +131,12 @@ Future<ProcessResult> runExecutableArguments(
   StreamSubscription? stdinSubscription;
   if (stdin != null) {
     //stdin.pipe(process.stdin); // this closes the stream...
-    stdinSubscription = stdin.listen((List<int> data) {
-      process.stdin.add(data);
-    })..onDone(() {
-      process.stdin.close();
-    });
+    stdinSubscription =
+        stdin.listen((List<int> data) {
+          process.stdin.add(data);
+        })..onDone(() {
+          process.stdin.close();
+        });
     // OLD 2: process.stdin.addStream(stdin);
   } else {
     // Close the input sync, we want this not interractive
@@ -157,14 +158,12 @@ Future<ProcessResult> runExecutableArguments(
     return list;
   }
 
-  var out =
-      (noStdoutResult ?? false)
-          ? Future.value(null)
-          : streamToResult(outCtlr.stream, stdoutEncoding);
-  var err =
-      (noStderrResult ?? false)
-          ? Future.value(null)
-          : streamToResult(errCtlr.stream, stderrEncoding);
+  var out = (noStdoutResult ?? false)
+      ? Future.value(null)
+      : streamToResult(outCtlr.stream, stdoutEncoding);
+  var err = (noStderrResult ?? false)
+      ? Future.value(null)
+      : streamToResult(errCtlr.stream, stderrEncoding);
 
   process.stdout.listen(
     (List<int> d) {

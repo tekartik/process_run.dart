@@ -7,8 +7,9 @@ import 'package:pub_semver/pub_semver.dart';
 
 /// Return the executable path.
 Future<String> compileShellBin({bool force = false}) async {
-  var folder =
-      Platform.isWindows ? 'windows' : (Platform.isMacOS ? 'macos' : 'linux');
+  var folder = Platform.isWindows
+      ? 'windows'
+      : (Platform.isMacOS ? 'macos' : 'linux');
   var exeExtension = Platform.isWindows ? '.exe' : '';
   var dsExePath = join('build', folder, 'ds$exeExtension');
   var dsExeDir = dirname(dsExePath);

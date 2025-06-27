@@ -12,10 +12,9 @@ void main() {
   group('ShellLinesController', () {
     late ShellEnvironment env;
     setUpAll(() async {
-      env =
-          ShellEnvironment()
-            ..aliases['streamer'] = await compileStreamerExample()
-            ..aliases['echo'] = await compileEchoExample();
+      env = ShellEnvironment()
+        ..aliases['streamer'] = await compileStreamerExample()
+        ..aliases['echo'] = await compileEchoExample();
     });
     test('stream all', () async {
       var ctlr = ShellLinesController();
