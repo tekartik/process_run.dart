@@ -23,4 +23,4 @@ bool get isDebug => !isRelease;
 const isRunningAsJavascript = identical(1, 1.0);
 
 /// Borrowed from flutter (isRunningAsJavascript is false in wasm)
-const bool kDartIsWeb = bool.fromEnvironment('dart.library.js_util');
+const bool kDartIsWeb = bool.fromEnvironment('dart.library.js_interop');
