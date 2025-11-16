@@ -254,7 +254,13 @@ $echoExe -o ${shellArgument(weirdText)}
         await shell.runExecutableArguments('dart', ['--bad-arg']);
         fail('shoud fail');
       } on ShellException catch (e) {
-        expect(e.result!.exitCode, 255);
+        try {
+          // dart <3.10
+          expect(e.result!.exitCode, 255);
+        } catch (_) {
+          // dart >= 3.10
+          expect(e.result!.exitCode, 64);
+        }
       }
     });
 
