@@ -1,3 +1,7 @@
+## 1.3.0-1
+
+* ShellContext export
+
 ## 1.2.4
 
 * Allow running in a zoned environment context.
