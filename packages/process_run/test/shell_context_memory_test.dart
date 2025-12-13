@@ -8,6 +8,9 @@ import 'package:test/test.dart';
 void main() {
   shellContext = shellContextMemory;
   group('ShellContext (prv)', () {
+    test('platform', () {
+      expect(shellContext.platform.isNone, isTrue);
+    });
     test('runZoned vars', () async {
       var env1 = ShellEnvironment()..vars['test'] = 'value1';
       var env2 = ShellEnvironment()..vars['test'] = 'value2';

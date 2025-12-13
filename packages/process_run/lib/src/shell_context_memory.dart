@@ -17,6 +17,9 @@ class ShellContextMemory with ShellContextMixin implements ShellContext {
   Shell shell({ShellOptions? options}) {
     return ShellMemory(context: this, options: options ?? ShellOptions());
   }
+
+  @override
+  final platform = ShellContextPlatform.none();
 }
 
 /// In memory shell context.
