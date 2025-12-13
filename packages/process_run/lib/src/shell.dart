@@ -213,7 +213,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     /// Overrides all parameters
     ShellOptions? options,
   }) {
-    var shell = shellContext.newShell(
+    var shell = shellContext.shell(
       options:
           options ??
           ShellOptions(
@@ -369,7 +369,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   }) {
     // devPrint('Running $script');
     return _runLocked((runId) async {
-      var commands = scriptToCommands(script);
+      var commands = shellScriptSplitLines(script);
 
       var processResults = <ProcessResult>[];
       for (var command in commands) {
@@ -377,7 +377,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           throw ShellException('Script was killed', null);
         }
         // Display the comments
-        if (isLineComment(command!)) {
+        if (shellScriptLineIsComment(command)) {
           if (_options.commentVerbose) {
             stdout.writeln(command);
           }
@@ -422,12 +422,12 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   @override
   List<ProcessResult> runSync(String script) {
-    var commands = scriptToCommands(script);
+    var commands = shellScriptSplitLines(script);
 
     var processResults = <ProcessResult>[];
     for (var command in commands) {
       // Display the comments
-      if (isLineComment(command!)) {
+      if (shellScriptLineIsComment(command)) {
         if (_options.commentVerbose) {
           stdout.writeln(command);
         }

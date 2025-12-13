@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
@@ -22,66 +20,8 @@ export 'shell_utils_common.dart'
         streamSinkWrite,
         streamSinkWriteln,
         envPathKey,
-        envPathSeparator;
-
-/// True if the line is a comment.
-///
-/// line must have been trimmed before
-bool isLineComment(String line) {
-  return line.startsWith('#') ||
-      line.startsWith('// ') ||
-      line.startsWith('/// ') ||
-      (line == '//') ||
-      (line == '///');
-}
-
-/// True if the line is to be continue.
-///
-/// line must have been trimmed before
-bool isLineToBeContinued(String line) {
-  return line.endsWith(' ^') ||
-      line.endsWith(r' \') ||
-      (line == '^') ||
-      (line == '\\');
-}
-
-/// Convert a script to multiple commands
-List<String?> scriptToCommands(String script) {
-  var commands = <String?>[];
-  // non null when previous line ended with ^ or \
-  String? currentCommand;
-  for (var line in LineSplitter.split(script)) {
-    line = line.trim();
-
-    void addAndClearCurrent(String? command) {
-      commands.add(command);
-      currentCommand = null;
-    }
-
-    if (line.isNotEmpty) {
-      if (isLineComment(line)) {
-        commands.add(line);
-      } else {
-        // append to previous
-        if (currentCommand != null) {
-          line = '$currentCommand $line';
-        }
-        if (isLineToBeContinued(line)) {
-          // remove ending character
-          currentCommand = line.substring(0, line.length - 1).trim();
-        } else {
-          addAndClearCurrent(line);
-        }
-      }
-    } else {
-      // terminate current
-      if (currentCommand != null) {
-        addAndClearCurrent(currentCommand);
-      }
-    }
-  }
-  return commands;
-}
+        envPathSeparator,
+        scriptToCommands;
 
 String? _userAppDataPath;
 

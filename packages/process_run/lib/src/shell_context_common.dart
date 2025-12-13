@@ -26,12 +26,16 @@ abstract class ShellContext {
 
   /// New shell must set itself as a shell Context, shell environement is
   /// no longer relevent.
-  Shell newShell({ShellOptions? options});
+  Shell shell({ShellOptions? options});
 
   /// New shell environment
   ShellEnvironment newShellEnvironment({Map<String, String>? environment});
+
+  /// Close the context
+  Future<void> close();
 }
 
+/// Must not have the default mixin
 class _ShellContextWithDelegate implements ShellContext {
   final ShellContext delegate;
 
@@ -41,8 +45,7 @@ class _ShellContextWithDelegate implements ShellContext {
   Encoding get encoding => delegate.encoding;
 
   @override
-  Shell newShell({ShellOptions? options}) =>
-      delegate.newShell(options: options);
+  Shell shell({ShellOptions? options}) => delegate.shell(options: options);
 
   @override
   ShellEnvironment newShellEnvironment({Map<String, String>? environment}) =>
@@ -66,20 +69,23 @@ class _ShellContextWithDelegate implements ShellContext {
       includeParentEnvironment: includeParentEnvironment,
     );
   }
+
+  @override
+  Future<void> close() async {
+    await delegate.close();
+  }
 }
 
 /// Shell context mixin
 mixin ShellContextMixin implements ShellContext {
   @override
+  Future<void> close() async {}
+  @override
   Encoding get encoding =>
       throw UnimplementedError('ShellContextMixin.encoding');
   @override
-  Shell newShell({
-    ShellOptions? options,
-    Map<String, String>? environment,
-    bool includeParentEnvironment = true,
-  }) {
-    throw UnimplementedError('ShellContext.newShell');
+  Shell shell({ShellOptions? options}) {
+    throw UnimplementedError('ShellContext.shell');
   }
 
   @override
@@ -140,12 +146,3 @@ ShellContext? get zonedShellContextOrNull => _inZoneCount > 0
     ? async.Zone.current[_shellContextZoneVar] as ShellContext?
     : null;
 const _shellContextZoneVar = #tekartik_shell_context;
-
-/// In memory shell context.
-class ShellContextMemory with ShellContextMixin implements ShellContext {
-  @override
-  Encoding get encoding => utf8;
-}
-
-/// In memory shell context.
-final shellContextMemory = ShellContextMemory();

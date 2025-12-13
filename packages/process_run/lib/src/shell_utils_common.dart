@@ -101,6 +101,82 @@ String shellArgument(String argument) => argumentToString(argument);
 /// Convert multiple arguments to string than can be used in a terminal
 String shellArguments(List<String> arguments) => argumentsToString(arguments);
 
-/// Convert a string command to arguments.
+/// Convert a string command to arguments. compat
 List<String> stringToArguments(String command) =>
+    shellScriptLineToArguments(command);
+
+/// Convert a string command to arguments. only if not a comment
+List<String> shellScriptLineToArguments(String command) =>
     shell_utils.shellSplit(command);
+
+/// True if the line is a comment (compat)
+bool isLineComment(String line) => shellScriptLineIsComment(line);
+// isLineComment
+/// True if the line is a comment.
+///
+/// line must have been trimmed before
+bool shellScriptLineIsComment(String line) {
+  return line.startsWith('#') ||
+      line.startsWith('// ') ||
+      line.startsWith('/// ') ||
+      (line == '//') ||
+      (line == '///');
+}
+
+/// True if the line is to be continue.
+///
+/// line must have been trimmed before
+bool isLineToBeContinued(String line) {
+  return line.endsWith(' ^') ||
+      line.endsWith(r' \') ||
+      (line == '^') ||
+      (line == '\\');
+}
+
+/// Convert a script to multiple commands, compat
+List<String?> scriptToCommands(String script) {
+  return shellScriptSplitLines(script);
+}
+
+/// Convert a script to multiple commands (single line) or comments
+///
+/// Comments lines start with # or //
+List<String> shellScriptSplitLines(String script, {bool? skipComments}) {
+  skipComments ??= false;
+  var commands = <String>[];
+  // non null when previous line ended with ^ or \
+  String? currentCommand;
+  for (var line in LineSplitter.split(script)) {
+    line = line.trim();
+
+    void addAndClearCurrent(String command) {
+      commands.add(command);
+      currentCommand = null;
+    }
+
+    if (line.isNotEmpty) {
+      if (shellScriptLineIsComment(line)) {
+        if (!skipComments) {
+          commands.add(line);
+        }
+      } else {
+        // append to previous
+        if (currentCommand != null) {
+          line = '$currentCommand $line';
+        }
+        if (isLineToBeContinued(line)) {
+          // remove ending character
+          currentCommand = line.substring(0, line.length - 1).trim();
+        } else {
+          addAndClearCurrent(line);
+        }
+      }
+    } else {
+      // terminate current
+      if (currentCommand != null) {
+        addAndClearCurrent(currentCommand!);
+      }
+    }
+  }
+  return commands;
+}

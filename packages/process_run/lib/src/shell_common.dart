@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_context_common.dart';
+import 'package:process_run/src/shell_utils.dart';
 
 import 'io/io_import.dart' show ProcessResult, ProcessSignal;
 
@@ -286,22 +287,97 @@ Future<String?> which(
   );
 }
 
-/// Default missing implementation.
+/// Common shared implementation.
 mixin ShellMixin implements ShellCore, ShellCoreSync {
   @override
-  late ShellContext context;
+  Shell cloneWithOptions(ShellOptions options) {
+    var shell = context.shell(options: options);
+    return shell;
+  }
 
   @override
   String get path => options.workingDirectory ?? '.';
+}
 
+/// Default missing implementation.
+mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
   @override
   Future<Shell> shellVarOverride(String name, String? value, {bool? local}) {
     throw UnimplementedError('shellVarOverride');
   }
 
   @override
-  Shell cloneWithOptions(ShellOptions options) {
-    var shell = context.newShell(options: options);
-    return shell;
+  Shell cd(String path) {
+    throw UnimplementedError('cd($path)');
+  }
+
+  @override
+  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
+    throw UnimplementedError('kill($signal)');
+  }
+
+  @override
+  Shell popd() {
+    throw UnimplementedError('popd()');
+  }
+
+  @override
+  Shell pushd(String path) {
+    throw UnimplementedError('pushd($path)');
+  }
+
+  @override
+  Future<List<ProcessResult>> run(
+    String script, {
+    ShellOnProcessCallback? onProcess,
+  }) async {
+    var results = <ProcessResult>[];
+    var commands = shellScriptSplitLines(script);
+
+    for (var command in commands) {
+      // Display the comments
+      if (shellScriptLineIsComment(command)) {
+        if (options.commentVerbose) {
+          // ignore: avoid_print
+          print(command);
+        }
+        continue;
+      }
+      var parts = shellSplit(command);
+      var executable = parts[0];
+      var arguments = parts.sublist(1);
+      results.add(
+        await runExecutableArguments(
+          executable,
+          arguments,
+          onProcess: onProcess,
+        ),
+      );
+    }
+    return results;
+  }
+
+  @override
+  Future<ProcessResult> runExecutableArguments(
+    String executable,
+    List<String> arguments, {
+    ShellOnProcessCallback? onProcess,
+  }) {
+    throw UnimplementedError('runExecutableArguments($executable, $arguments)');
+  }
+
+  @override
+  ProcessResult runExecutableArgumentsSync(
+    String executable,
+    List<String> arguments,
+  ) {
+    throw UnimplementedError(
+      'runExecutableArgumentsSync($executable, $arguments)',
+    );
+  }
+
+  @override
+  List<ProcessResult> runSync(String script) {
+    throw UnimplementedError('runSync($script)');
   }
 }

@@ -10,3 +10,4 @@
 /pubspec.lock
 /pubspec.yaml
 /.dart_tool/
+/packages/process_run_test/build/

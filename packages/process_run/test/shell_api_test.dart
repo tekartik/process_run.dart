@@ -63,6 +63,9 @@ void main() {
       processCmdToDebugString;
       // shell_utils
       stringToArguments;
+      shellScriptSplitLines;
+      shellScriptLineIsComment;
+      shellScriptLineToArguments;
     });
   });
 }

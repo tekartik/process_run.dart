@@ -1,15 +1,13 @@
-@TestOn('vm')
 library;
 
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/platform/platform.dart';
-import 'package:process_run/src/shell_context_common.dart';
-import 'package:process_run/src/shell_environment_common.dart';
+
+import 'package:process_run/utils/shell_context.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('ShellContext (prv)', () {
-    test('runZoned', () async {
+    test('runZoned vars', () async {
       var env1 = ShellEnvironment()..vars['test'] = 'value1';
       var env2 = ShellEnvironment()..vars['test'] = 'value2';
       var ctx1 = shellContext.copyWith(shellEnvironment: env1);
@@ -29,8 +27,11 @@ void main() {
         await testEnv('value2');
       });
       await Future.wait([future1, future2]);
-
-      //var env1 = ShellEnvironment().runZoned()
+    });
+    test('runZoned shell', () async {
+      var shell = Shell();
+      var outText = (await shell.run('echo Hello')).outText.trim();
+      expect(outText, 'Hello');
     });
   });
 }

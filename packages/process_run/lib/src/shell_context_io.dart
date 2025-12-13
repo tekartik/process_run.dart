@@ -37,13 +37,8 @@ class ShellContextIo with ShellContextMixin implements ShellContext {
   }
 
   @override
-  Shell newShell({
-    ShellOptions? options,
-    Map<String, String>? environment,
-    bool includeParentEnvironment = true,
-  }) {
-    var ioShell = ShellIo(options: options ?? ShellOptions());
-    ioShell.context = this;
+  Shell shell({ShellOptions? options}) {
+    var ioShell = ShellIo(context: this, options: options ?? ShellOptions());
     return ioShell;
   }
 

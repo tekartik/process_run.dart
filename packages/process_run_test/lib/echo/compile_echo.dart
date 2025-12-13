@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
-import 'package:process_run/src/version.dart';
 import 'package:pub_semver/pub_semver.dart';
+
+import 'echo.dart';
 
 var _echoVersionOk = false;
 
 /// Return the executable path.
-Future<String> compileEchoExample({String? path, bool force = false}) async {
+Future<String> compileEcho({String? path, bool force = false}) async {
   //path ??= '.';
   var folder = Platform.isWindows
       ? 'windows'
@@ -32,7 +33,7 @@ Future<String> compileEchoExample({String? path, bool force = false}) async {
       var version = Version.parse(
         (await shell.run('$echoExePath --version')).outText.trim(),
       );
-      if (version != packageVersion) {
+      if (version != echoVersion) {
         needCompile = true;
       } else {
         _echoVersionOk = true;
@@ -45,7 +46,7 @@ Future<String> compileEchoExample({String? path, bool force = false}) async {
   if (needCompile) {
     Directory(echoExeDir).createSync(recursive: true);
     await shell.run(
-      'dart compile exe ${shellArgument(join('example', 'echo.dart'))} -o ${shellArgument(echoExePath)}',
+      'dart compile exe ${shellArgument(join('lib', 'echo', 'echo.dart'))} -o ${shellArgument(echoExePath)}',
     );
   }
   return echoExePath;

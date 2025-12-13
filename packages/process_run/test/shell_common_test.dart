@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 
 class ShellContextMock with ShellContextMixin implements ShellContext {
   @override
-  Shell newShell({
+  Shell shell({
     ShellOptions? options,
     Map<String, String>? environment,
     bool includeParentEnvironment = true,
@@ -82,36 +82,16 @@ var shellOptionsMock = ShellOptions(
   includeParentEnvironment: false,
 );
 
-class ShellMock with ShellMixin implements Shell {
+class ShellMock with ShellDefaultMixin, ShellMixin implements Shell {
+  @override
+  late final ShellContext context;
+  @override
+  late final ShellOptions options;
   var scripts = <String>[];
 
   ShellMock({ShellContextMock? context, ShellOptions? options}) {
     this.context = context ?? ShellContextMock();
     this.options = options ?? shellOptionsMock;
-  }
-
-  @override
-  Shell cd(String path) {
-    // TODO: implement cd
-    throw UnimplementedError();
-  }
-
-  @override
-  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
-    // TODO: implement kill
-    throw UnimplementedError();
-  }
-
-  @override
-  Shell popd() {
-    // TODO: implement popd
-    throw UnimplementedError();
-  }
-
-  @override
-  Shell pushd(String path) {
-    // TODO: implement pushd
-    throw UnimplementedError();
   }
 
   @override
@@ -138,24 +118,6 @@ class ShellMock with ShellMixin implements Shell {
     // TODO: implement runExecutableArguments
     throw UnimplementedError();
   }
-
-  @override
-  ProcessResult runExecutableArgumentsSync(
-    String executable,
-    List<String> arguments,
-  ) {
-    // TODO: implement runExecutableArguments
-    throw UnimplementedError();
-  }
-
-  @override
-  List<ProcessResult> runSync(String script) {
-    // TODO: implement runSync
-    throw UnimplementedError();
-  }
-
-  @override
-  late final ShellOptions options;
 }
 
 void main() {

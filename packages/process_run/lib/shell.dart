@@ -35,6 +35,11 @@ export 'package:process_run/src/shell_utils.dart'
         shellArguments,
         shellExecutableArguments;
 export 'package:process_run/src/shell_utils_common.dart'
+    show
+        shellScriptSplitLines,
+        shellScriptLineIsComment,
+        shellScriptLineToArguments;
+export 'package:process_run/src/shell_utils_common.dart'
     show argumentsToString, argumentToString, stringToArguments;
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;

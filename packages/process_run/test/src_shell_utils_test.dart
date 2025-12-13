@@ -6,15 +6,17 @@ import 'dart:convert';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/shell_utils_common.dart'
+    show isLineToBeContinued;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('shell_utils', () {
-    test('scriptToCommands', () {
-      expect(scriptToCommands(''), isEmpty);
-      // expect(scriptToCommands('\\'), ['\\']);
-      expect(scriptToCommands(' e\n#\n # comment\nf \n '), [
+    test('shellScriptSplitLines', () {
+      expect(shellScriptSplitLines(''), isEmpty);
+      // expect(shellScriptSplitLines('\\'), ['\\']);
+      expect(shellScriptSplitLines(' e\n#\n # comment\nf \n '), [
         'e',
         '#',
         '# comment',
@@ -36,16 +38,16 @@ void main() {
     });
 
     test('isLineComment', () {
-      expect(isLineComment(''), isFalse);
-      expect(isLineComment('a'), isFalse);
-      expect(isLineComment('\\'), isFalse);
-      expect(isLineComment('//'), isTrue);
-      expect(isLineComment('//a'), isFalse);
-      expect(isLineComment('// '), isTrue);
-      expect(isLineComment('///'), isTrue);
-      expect(isLineComment('///a'), isFalse);
-      expect(isLineComment('/// '), isTrue);
-      expect(isLineComment('#a'), isTrue);
+      expect(shellScriptLineIsComment(''), isFalse);
+      expect(shellScriptLineIsComment('a'), isFalse);
+      expect(shellScriptLineIsComment('\\'), isFalse);
+      expect(shellScriptLineIsComment('//'), isTrue);
+      expect(shellScriptLineIsComment('//a'), isFalse);
+      expect(shellScriptLineIsComment('// '), isTrue);
+      expect(shellScriptLineIsComment('///'), isTrue);
+      expect(shellScriptLineIsComment('///a'), isFalse);
+      expect(shellScriptLineIsComment('/// '), isTrue);
+      expect(shellScriptLineIsComment('#a'), isTrue);
     });
 
     test('environmentFilterOutVmOptions', () {
@@ -122,7 +124,7 @@ void main() {
 
     test('various', () {
       expect(
-        scriptToCommands('''
+        shellScriptSplitLines('''
      a ^
      
      b
@@ -130,7 +132,7 @@ void main() {
         ['a', 'b'],
       );
       expect(
-        scriptToCommands('''
+        shellScriptSplitLines('''
      a ^
      b
      
@@ -139,7 +141,7 @@ void main() {
         ['a b', 'c'],
       );
       expect(
-        scriptToCommands('''
+        shellScriptSplitLines('''
 a ^
  "b" ^
  "c" d
