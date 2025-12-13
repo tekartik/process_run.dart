@@ -32,10 +32,12 @@ int _hex2CodeUint8(int value) {
   return _hexCodeUint4(value);
 }
 
+/// byte to hex
 String byteToHex(int value) {
   return String.fromCharCodes([_hex1CodeUint8(value), _hex2CodeUint8(value)]);
 }
 
+/// bytes to hex
 String bytesToHex(List<int> bytes) {
   final sb = StringBuffer();
   for (final byte in bytes) {
@@ -44,6 +46,7 @@ String bytesToHex(List<int> bytes) {
   return sb.toString();
 }
 
+/// hex to bytes
 // It safely ignores non hex data so it can contain spaces or line feed
 List<int> hexToBytes(String text) {
   final bytes = <int>[];

@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_utils.dart';
-
-import 'io/io_import.dart' show ProcessResult, ProcessSignal;
 
 /// shell debug flag (dev only)
 var shellDebug = false; // devWarning(true); // false
@@ -184,8 +183,8 @@ class ShellOptions {
     Map<String, String>? environment,
     bool includeParentEnvironment = true,
     bool? runInShell,
-    Encoding? stdoutEncoding,
-    Encoding? stderrEncoding,
+    Encoding? stdoutEncoding = systemEncoding,
+    Encoding? stderrEncoding = systemEncoding,
     Stream<List<int>>? stdin,
     StreamSink<List<int>>? stdout,
     StreamSink<List<int>>? stderr,
@@ -380,4 +379,20 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
   List<ProcessResult> runSync(String script) {
     throw UnimplementedError('runSync($script)');
   }
+
+  @override
+  Shell cloneWithOptions(ShellOptions options) {
+    return context.shell(options: options);
+  }
+
+  @override
+  // TODO: implement context
+  ShellContext get context => throw UnimplementedError('context');
+
+  @override
+  // TODO: implement options
+  ShellOptions get options => throw UnimplementedError('options');
+
+  @override
+  String get path => options.workingDirectory ?? '.';
 }

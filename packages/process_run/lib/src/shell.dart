@@ -628,8 +628,8 @@ abstract class Shell implements ShellCore, ShellCoreSync {
               ..runInShell = _options.runInShell
               ..environment = _options.environment
               ..includeParentEnvironment = false
-              ..stderrEncoding = _options.stderrEncoding ?? io.systemEncoding
-              ..stdoutEncoding = _options.stdoutEncoding ?? io.systemEncoding
+              ..stderrEncoding = _options.stderrEncoding
+              ..stdoutEncoding = _options.stdoutEncoding
               ..workingDirectory = _options.workingDirectory;
         try {
           // devPrint(_options.environment.keys.where((element) => element.contains('TEKARTIK')));

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:process_run/stdio.dart';
 
 Future<void> writeCount(int count) async {
@@ -8,16 +10,20 @@ Future<void> writeCount(int count) async {
     } else {
       stdout.writeln('Info: ${i + 1}');
     }
-    await Future<void>.delayed(Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
   }
 }
 
 Future<void> main() async {
-  shellStdioLinesGrouper.runZoned(() async {
-    await writeCount(4);
-  });
+  unawaited(
+    shellStdioLinesGrouper.runZoned(() async {
+      await writeCount(4);
+    }),
+  );
 
-  shellStdioLinesGrouper.runZoned(() async {
-    await writeCount(10);
-  });
+  unawaited(
+    shellStdioLinesGrouper.runZoned(() async {
+      await writeCount(10);
+    }),
+  );
 }

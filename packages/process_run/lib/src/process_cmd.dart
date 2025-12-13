@@ -25,10 +25,10 @@ class ProcessCmd {
   bool? runInShell;
 
   /// Standard output encoding
-  Encoding stdoutEncoding;
+  Encoding? stdoutEncoding;
 
   /// Standard error encoding
-  Encoding stderrEncoding;
+  Encoding? stderrEncoding;
 
   /// Process command
   ProcessCmd(

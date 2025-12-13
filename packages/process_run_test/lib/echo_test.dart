@@ -10,7 +10,7 @@ import 'package:process_run_test/echo/compile_echo.dart';
 import 'package:test/test.dart';
 
 void main() async {
-  var echoExecutable = await compileEcho();
+  var echoExecutable = await compileEcho(force: true);
   echoTests(EchoTestContext(echoExecutable));
 }
 
@@ -31,44 +31,50 @@ class _LazyEchoTestContext implements EchoTestContext {
   String get echo => _echo ??= _echoProvider();
 }
 
+/// Echo test context
 abstract class EchoTestContext {
+  /// Echo test context
   factory EchoTestContext(String echo) => _EchoTestContext(echo);
+
+  /// Lazy init
   factory EchoTestContext.lazy(String Function() echoProvider) =>
       _LazyEchoTestContext(echoProvider);
+
+  /// Echo executable
   String get echo;
 }
 
+/// echo tests
 void echoTests(EchoTestContext testContext) {
-  late String echo;
+  late String echo; // Safe in run
+  late String echoBin;
+  late Shell shell;
   setUpAll(() {
-    echo = testContext.echo;
+    echoBin = testContext.echo;
+    echo = shellArgument(echoBin);
+    shell = Shell(options: ShellOptions(throwOnError: false));
   });
   group('echo', () {
     test('run echo', () async {
-      await run('$echo --stdout test');
+      await shell.run('$echo --stdout test');
     });
     Future runCheck(
       Object? Function(ProcessResult result) check,
       String executable,
       List<String> arguments, {
-      String? workingDirectory,
-      Map<String, String>? environment,
-      bool includeParentEnvironment = true,
-      bool runInShell = false,
       Encoding? stdoutEncoding = systemEncoding,
       Encoding? stderrEncoding = systemEncoding,
-      StreamSink<List<int>>? stdout,
     }) async {
-      var result = await runExecutableArguments(
+      var customShell = shell.cloneWithOptions(
+        ShellOptions(
+          stderrEncoding: stderrEncoding,
+          stdoutEncoding: stdoutEncoding,
+          throwOnError: false,
+        ),
+      );
+      var result = await customShell.runExecutableArguments(
         executable,
         arguments,
-        workingDirectory: workingDirectory,
-        environment: environment,
-        includeParentEnvironment: includeParentEnvironment,
-        runInShell: runInShell,
-        stdoutEncoding: stdoutEncoding,
-        stderrEncoding: stderrEncoding,
-        stdout: stdout,
       );
 
       check(result);
@@ -96,9 +102,9 @@ void echoTests(EchoTestContext testContext) {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(checkOut, echo, ['--stdout', 'out']);
-      await runCheck(checkEmpty, echo, []);
-      await runCheck(checkOutWriteLine, echo, [
+      await runCheck(checkOut, echoBin, ['--stdout', 'out']);
+      await runCheck(checkEmpty, echoBin, []);
+      await runCheck(checkOutWriteLine, echoBin, [
         '--stdout',
         'out',
         '--write-line',
@@ -124,30 +130,32 @@ void echoTests(EchoTestContext testContext) {
         '--stdout-hex',
         '010203',
       ], stdoutEncoding: null);
-      await runCheck(checkEmpty, echo, [], stdoutEncoding: null);
+      await runCheck(checkEmpty, echoBin, [], stdoutEncoding: null);
     });
 
     group('stdout_env', () {
       test('var', () async {
-        var result = await runExecutableArguments(echo, [
+        var result = await shell.runExecutableArguments(echoBin, [
           '--stdout-env',
           'PATH',
         ]);
         //devPrint(result.stdout.toString());
         expect(result.stdout.toString().trim(), isNotEmpty);
 
-        result = await runExecutableArguments(echo, [
+        result = await shell.runExecutableArguments(echoBin, [
           '--stdout-env',
           '__dummy_that_will_never_exists__',
         ]);
         //devPrint(result.stdout.toString());
         expect(result.stdout.toString().trim(), isEmpty);
 
-        result = await runExecutableArguments(
-          echo,
-          ['--stdout-env', '__CUSTOM'],
-          environment: <String, String>{'__CUSTOM': '12345'},
+        var customShell = shell.cloneWithOptions(
+          ShellOptions(environment: <String, String>{'__CUSTOM': '12345'}),
         );
+        result = await customShell.runExecutableArguments(echoBin, [
+          '--stdout-env',
+          '__CUSTOM',
+        ]);
         expect(result.stdout.toString().trim(), '12345');
       });
     });
@@ -174,20 +182,23 @@ void echoTests(EchoTestContext testContext) {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(checkErr, echo, ['--stderr', 'err']);
-      await runCheck(checkErrWriteLine, echo, [
+      await runCheck(checkErr, echoBin, ['--stderr', 'err']);
+      await runCheck(checkErrWriteLine, echoBin, [
         '--stderr',
         'err',
         '--write-line',
       ]);
-      await runCheck(checkEmpty, echo, []);
+      await runCheck(checkEmpty, echoBin, []);
     });
 
     test('stdin', () async {
       final inCtrl = StreamController<List<int>>();
-      final processResultFuture = runExecutableArguments(echo, [
+      var customShell = shell.cloneWithOptions(
+        ShellOptions(stdin: inCtrl.stream),
+      );
+      final processResultFuture = customShell.runExecutableArguments(echoBin, [
         '--stdin',
-      ], stdin: inCtrl.stream);
+      ]);
       inCtrl.add('in'.codeUnits);
       await inCtrl.close();
       final result = await processResultFuture;
@@ -213,11 +224,11 @@ void echoTests(EchoTestContext testContext) {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(check123, echo, [
+      await runCheck(check123, echoBin, [
         '--stderr-hex',
         '010203',
       ], stderrEncoding: null);
-      await runCheck(checkEmpty, echo, [], stderrEncoding: null);
+      await runCheck(checkEmpty, echoBin, [], stderrEncoding: null);
     });
 
     test('exitCode', () async {
@@ -235,7 +246,7 @@ void echoTests(EchoTestContext testContext) {
         expect(result.exitCode, 0);
       }
 
-      await runCheck(check123, echo, ['--exit-code', '123']);
+      await runCheck(check123, echoBin, ['--exit-code', '123']);
       await runCheck(check0, echo, []);
     });
 
@@ -247,7 +258,7 @@ void echoTests(EchoTestContext testContext) {
         expect(result.exitCode, 255);
       }
 
-      await runCheck(check, echo, ['--exit-code', 'crash']);
+      await runCheck(check, echoBin, ['--exit-code', 'crash']);
     });
   });
 }

@@ -12,7 +12,8 @@ import 'package:pub_semver/pub_semver.dart';
 
 import 'hex_utils.dart';
 
-Version echoVersion = Version(0, 1, 1);
+/// echo version, upgrade to force re-compile
+Version echoVersion = Version(0, 1, 2);
 
 /*
 Global options:
@@ -103,7 +104,7 @@ Future main(List<String> arguments) async {
   final writeLine = argsResult.flag('write-line');
 
   if (version) {
-    stdout.write(version);
+    stdout.write(echoVersion);
     return;
   }
 

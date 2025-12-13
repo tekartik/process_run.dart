@@ -8,7 +8,12 @@ import 'echo.dart';
 
 var _echoVersionOk = false;
 
-/// Return the executable path.
+Future<void> main() async {
+  var echo = await compileEcho();
+  await run('$echo --version');
+}
+
+/// Return the executable path safe to use in run as a shell argument
 Future<String> compileEcho({String? path, bool force = false}) async {
   //path ??= '.';
   var folder = Platform.isWindows

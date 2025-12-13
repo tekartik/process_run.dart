@@ -6,9 +6,9 @@ Future<void> main() async {
   shellCoreTests();
 }
 
+/// shell core tests
 void shellCoreTests() {
   test('shell test', () async {
-    print('shell context: $shellContext');
     var shell = Shell();
     var text = (await shell.run('echo Hello')).outText.trim();
     expect(text, 'Hello');
