@@ -206,7 +206,7 @@ void main() {
 
         var dartBinDir = dirname(dartExecutable!);
         var flutterDir = getFlutterAncestorPath(dartSdkBinDirPath);
-        expect(userPaths, [if (flutterDir != null) flutterDir, dartBinDir]);
+        expect(userPaths, [?flutterDir, dartBinDir]);
         expect(dirname((await which('dart'))!), flutterDir ?? dartBinDir);
       } finally {
         platformEnvironment = null;

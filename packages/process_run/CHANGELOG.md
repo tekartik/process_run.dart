@@ -1,6 +1,7 @@
-## 1.3.0-3
+## 1.3.0
 
 * ShellContext export
+* Requires dart 3.10
 
 ## 1.2.4
 

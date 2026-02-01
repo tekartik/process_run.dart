@@ -423,7 +423,6 @@ List<String> getUserPaths(Map<String, String> environment) =>
 /// Get the user env file path
 String? getUserEnvFilePath([Map<String, String>? environment]) {
   environment ??= platformEnvironment;
-  // devPrint((Map<String, String>.from(environment)..removeWhere((key, value) => !key.toLowerCase().contains('teka'))).keys);
   return environment[userEnvFilePathEnvKey] ??
       join(userAppDataPath, 'tekartik', 'process_run', 'env.yaml');
 }
