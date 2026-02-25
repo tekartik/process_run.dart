@@ -5,6 +5,18 @@ import 'package:process_run/src/env_utils.dart';
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell_utils.dart';
 
+/// Check if the executable is dart itself
+bool executableIsDart(String executable) {
+  executable = basename(executable);
+  if (executable == 'dart') {
+    return true;
+  }
+  if (executable == 'dart.exe') {
+    return true;
+  }
+  return false;
+}
+
 /// Convenient way to display a command
 String executableArgumentsToString(String executable, List<String>? arguments) {
   final sb = StringBuffer();

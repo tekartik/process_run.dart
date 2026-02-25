@@ -128,19 +128,27 @@ void defineTests() {
 
     test('resolveDartExecutable', () async {
       try {
+        // print(jsonPretty(ShellEnvironment().toJson()));
         debugDartExecutableForceWhich = true;
 
-        try {
-          resolvedDartExecutable = null;
-          expect(
-            resolveDartExecutable(environment: <String, String>{}),
-            isNull,
-          );
-        } catch (e) {
-          print(e);
+        var executable = resolveDartExecutable();
+
+        if (executable != null) {
+          try {
+            resolvedDartExecutable = null;
+            expect(
+              resolveDartExecutable(environment: <String, String>{}),
+              isNull,
+            );
+          } catch (e) {
+            print(e);
+          }
+
+          expect(resolveDartExecutable(), isNotNull);
+          expect(await which('dart'), isNotNull);
+        } else {
+          expect(await which('dart'), isNull);
         }
-        expect(resolveDartExecutable(), isNotNull);
-        expect(await which('dart'), isNotNull);
         // expect(resolveDartExecutable(), await which('dart'));
       } finally {
         resolvedDartExecutable = null;

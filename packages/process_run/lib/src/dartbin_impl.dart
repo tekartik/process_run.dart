@@ -15,7 +15,7 @@ String? findDartExecutableSync(List<String> paths) {
   return findExecutableSync('dart', paths);
 }
 
-/// Resolve dart executable from environment
+/// Resolve dart executable from environment or current running dartvm
 String? resolveDartExecutable({Map<String, String>? environment}) {
   if (!_dartExecutableLock) {
     _dartExecutableLock = true;

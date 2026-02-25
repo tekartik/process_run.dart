@@ -103,6 +103,9 @@ class ShellEnvironmentPaths with ListMixin<String> {
   void insertAll(int index, Iterable<String> paths) {
     _paths = _paths..insertAll(index, paths);
   }
+
+  /// To json
+  List<Object?> toJson() => _paths;
 }
 
 /// Shell environment aliases for executable
@@ -146,6 +149,9 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
 
   @override
   String toString() => 'Aliases($length)';
+
+  /// To json
+  Map<String, Object?> toJson() => _map;
 }
 
 /// Shell environment variables helper. Does not affect the PATH variable
@@ -208,6 +214,11 @@ class ShellEnvironmentVars with MapMixin<String, String> {
 
   @override
   String toString() => 'Vars($length)';
+
+  /// To json
+  Map<String, Object?> toJson() => Map<String, Object?>.fromEntries(
+    keys.map((key) => MapEntry(key, this[key]!)),
+  );
 }
 
 /// Shell modifiable helpers. should not be modified after being set.
@@ -320,7 +331,11 @@ abstract class ShellEnvironmentBase
   /// `paths` and `vars` key
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'paths': paths, 'vars': vars, 'aliases': aliases};
+    return <String, dynamic>{
+      'paths': paths.toJson(),
+      'vars': vars.toJson(),
+      'aliases': aliases.toJson(),
+    };
   }
 
   @override
@@ -367,20 +382,7 @@ abstract class ShellEnvironmentCore with MapMixin<String, String> {
   void merge(ShellEnvironment other);
 
   /// `paths` and `vars` key
-  Map<String, dynamic> toJson();
-
-  /*
-  /// Create a new shell environment from the current shellEnvironment.
-  ///
-  /// Defaults create a full parent environment.
-  ///
-  /// It is recommended that you apply the environment to a shell. But it can
-  /// also be set globally (be aware of the potential effect on other part of
-  /// your application) to [shellEnvironment]
-  factory ShellEnvironment({Map<String, String>? environment}) {
-    return shellContext.newShellEnvironment(environment: environment);
-  }
-   */
+  Map<String, Object?> toJson();
 }
 
 /// Shell environment extension
