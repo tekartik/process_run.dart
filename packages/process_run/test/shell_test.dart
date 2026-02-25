@@ -655,6 +655,7 @@ _tekartik_dummy_app_that_does_not_exits
     try {
       await shell.run('dummy_command_that_does_not_exist');
     } on ShellException catch (e) {
+      expect(e.command.toString(), 'dummy_command_that_does_not_exist');
       expect(e.message.contains('workingDirectory'), isTrue);
     }
   });
@@ -663,6 +664,10 @@ _tekartik_dummy_app_that_does_not_exits
     try {
       await shell.run('dart --version');
     } on ShellException catch (e) {
+      expect(
+        e.command!.workingDirectory,
+        'dummy_directory_that_does_not_exist',
+      );
       expect(e.message.contains('workingDirectory'), isTrue);
     }
   });

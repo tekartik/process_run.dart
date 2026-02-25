@@ -2,10 +2,14 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:process_run/process_run.dart';
+import 'package:process_run/src/api/shell_common.dart';
 import 'package:process_run/src/io/io.dart';
 
 /// Process command
 class ProcessCmd {
+  /// Process start mode
+  final ProcessStartMode? mode;
+
   /// Executable
   String executable;
 
@@ -40,6 +44,8 @@ class ProcessCmd {
     this.runInShell,
     this.stdoutEncoding = systemEncoding,
     this.stderrEncoding = systemEncoding,
+    ShellOptions? options,
+    this.mode,
   });
 
   /// Clone
@@ -52,6 +58,7 @@ class ProcessCmd {
     runInShell: runInShell,
     stdoutEncoding: stdoutEncoding,
     stderrEncoding: stderrEncoding,
+    mode: mode,
   );
 
   @override
@@ -68,9 +75,21 @@ class ProcessCmd {
 
   @override
   String toString() => executableArgumentsToString(executable, arguments);
+
+  /// Debug string
+  String toDebugString() {
+    final sb = StringBuffer();
+    if (workingDirectory != null) {
+      sb.writeln('dir: $workingDirectory');
+    }
+    sb.writeln('cmd: $this');
+
+    return sb.toString();
+  }
 }
 
-bool _isNotEmpty(Object? stdout) {
+/// Standard output or error helper
+bool stdIsNotEmpty(Object? stdout) {
   if (stdout is List) {
     return stdout.isNotEmpty;
   } else if (stdout is String) {
@@ -79,26 +98,9 @@ bool _isNotEmpty(Object? stdout) {
   return (stdout != null);
 }
 
-/// Process result debug string
-String processResultToDebugString(ProcessResult result) {
-  final sb = StringBuffer();
-  sb.writeln('exitCode: ${result.exitCode}');
-  if (_isNotEmpty(result.stdout)) {
-    sb.writeln('out: ${result.stdout}');
-  }
-  if (_isNotEmpty(result.stderr)) {
-    sb.writeln('err: ${result.stderr}');
-  }
-  return sb.toString();
-}
+/// Process result debug string, compat, prefer toDebugString()
+String processResultToDebugString(ProcessResult result) =>
+    result.toDebugString();
 
-/// Process command debug string
-String processCmdToDebugString(ProcessCmd cmd) {
-  final sb = StringBuffer();
-  if (cmd.workingDirectory != null) {
-    sb.writeln('dir: ${cmd.workingDirectory}');
-  }
-  sb.writeln('cmd: $cmd');
-
-  return sb.toString();
-}
+/// Process command debug string, compat, prefer toDebugString()
+String processCmdToDebugString(ProcessCmd cmd) => cmd.toDebugString();

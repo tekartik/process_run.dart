@@ -140,6 +140,7 @@ class ShellOptions {
   final bool _commentVerbose;
   final bool? _noStdoutResult;
   final bool? _noStderrResult;
+  final ProcessStartMode _mode;
 
   late final ShellEnvironment? _environment;
 
@@ -163,6 +164,9 @@ class ShellOptions {
 
   /// stderr encoding.
   Encoding? get stderrEncoding => _stderrEncoding;
+
+  /// Modes for running a new process.
+  ProcessStartMode get mode => _mode;
 
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
@@ -197,6 +201,8 @@ class ShellOptions {
     bool? noStdoutResult,
     // Default to false
     bool? noStderrResult,
+    // Process start mode
+    ProcessStartMode? mode,
   }) : _throwOnError = throwOnError,
        _workingDirectory = workingDirectory,
        _runInShell = runInShell,
@@ -209,7 +215,8 @@ class ShellOptions {
        _commandVerbose = commandVerbose ?? verbose,
        _commentVerbose = commentVerbose ?? false,
        _noStderrResult = noStderrResult,
-       _noStdoutResult = noStdoutResult {
+       _noStdoutResult = noStdoutResult,
+       _mode = mode ?? ProcessStartMode.normal {
     _environment = ShellEnvironment.full(
       environment: environment,
       includeParentEnvironment: includeParentEnvironment,
@@ -253,6 +260,7 @@ class ShellOptions {
     bool? noStdoutResult,
     bool? noStderrResult,
     ShellEnvironment? shellEnvironment,
+    ProcessStartMode? mode,
   }) {
     return ShellOptions(
       verbose: verbose ?? _verbose,
@@ -269,6 +277,7 @@ class ShellOptions {
       environment: shellEnvironment ?? _environment,
       noStdoutResult: noStdoutResult ?? _noStdoutResult,
       noStderrResult: noStderrResult ?? _noStderrResult,
+      mode: mode ?? _mode,
     );
   }
 }

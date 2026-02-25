@@ -1,13 +1,16 @@
 library;
 
 import 'package:path/path.dart';
+import 'package:process_run/src/env_utils.dart';
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/shell_utils.dart';
 
 /// Convenient way to display a command
 String executableArgumentsToString(String executable, List<String>? arguments) {
   final sb = StringBuffer();
-  if (Platform.isWindows && (basename(executable) == executable)) {
+  if (!kDartIsWeb &&
+      Platform.isWindows &&
+      (basename(executable) == executable)) {
     var ext = extension(executable);
     switch (ext) {
       case '.exe':

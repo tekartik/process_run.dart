@@ -1,3 +1,5 @@
+library;
+
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';

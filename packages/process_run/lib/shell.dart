@@ -1,17 +1,15 @@
+/// @docImport 'package:process_run/src/shell_utils.dart';
+/// @docImport 'package:process_run/src/shell_utils_common.dart';
 /// {@canonicalFor prompt.prompt}
 /// {@canonicalFor prompt.promptConfirm}
 /// {@canonicalFor prompt.promptTerminate}
-/// {@canonicalFor process_run.src.shell_utils_common.shellArgument}
+/// {@canonicalFor shell_utils_common.shellArgument}
 /// {@canonicalFor user_config.userLoadEnv}
 /// {@canonicalFor user_config.userLoadEnvFile}
-/// {@canonicalFor shell_utils.platformEnvironment}
-/// {@canonicalFor shell_utils.shellEnvironment}
-/// {@canonicalFor shell_utils.userAppDataPath}
-/// {@canonicalFor user_config.userEnvironment}
-/// {@canonicalFor shell_utils.userHomePath}
-/// {@canonicalFor user_config.userPaths}
 /// {@canonicalFor process_run.runExecutableArguments}
 library;
+
+export 'dart:io' show ProcessResult;
 
 export 'package:process_run/dartbin.dart'
     show
@@ -29,7 +27,6 @@ export 'package:process_run/src/shell_utils.dart'
     show
         userHomePath,
         userAppDataPath,
-        shellArgument,
         shellEnvironment,
         platformEnvironment,
         shellArguments,
@@ -38,9 +35,11 @@ export 'package:process_run/src/shell_utils_common.dart'
     show
         shellScriptSplitLines,
         shellScriptLineIsComment,
-        shellScriptLineToArguments;
-export 'package:process_run/src/shell_utils_common.dart'
-    show argumentsToString, argumentToString, stringToArguments;
+        shellScriptLineToArguments,
+        argumentsToString,
+        argumentToString,
+        stringToArguments,
+        shellArgument;
 export 'package:process_run/src/user_config.dart'
     show userPaths, userEnvironment, userLoadEnvFile, userLoadEnv;
 
@@ -65,8 +64,7 @@ export 'src/process_run.dart'
         executableArgumentsToString,
         runExecutableArgumentsSync;
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
-export 'src/shell.dart'
-    show run, runSync, Shell, ShellException, ShellOnProcessCallback;
+export 'src/shell.dart' show run, runSync, Shell, ShellOnProcessCallback;
 export 'src/shell_environment.dart'
     show
         ShellEnvironment,
@@ -74,6 +72,7 @@ export 'src/shell_environment.dart'
         ShellEnvironmentVars,
         ShellEnvironmentAliases;
 export 'src/shell_environment_common.dart' show ShellEnvironmentCommonExt;
+export 'src/shell_exception.dart' show ShellException;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
     show

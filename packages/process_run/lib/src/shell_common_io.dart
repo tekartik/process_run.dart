@@ -29,18 +29,3 @@ class ShellIo extends Shell with ShellMixin {
     return context.shell(options: options.clone(shellEnvironment: env));
   }
 }
-
-/// Shell exception io
-class ShellExceptionIo implements ShellException {
-  /// implementation
-  final io.ShellException impl;
-
-  /// Shell exception io
-  ShellExceptionIo(this.impl);
-
-  @override
-  String get message => impl.message;
-
-  @override
-  ProcessResult? get result => impl.result;
-}

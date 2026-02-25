@@ -39,7 +39,15 @@ Future<ProcessResult> runExecutableArguments(
   bool? noStdoutResult,
   bool? noStderrResult,
   ShellOnProcessCallback? onProcess,
+  ProcessStartMode? mode,
 }) async {
+  mode ??= ProcessStartMode.normal;
+  var noStdioOverride = <ProcessStartMode>[
+    .inheritStdio,
+    .detachedWithStdio,
+  ].contains(mode);
+  noStdoutResult ??= noStdioOverride;
+  noStderrResult ??= noStdioOverride;
   if (verbose == true) {
     commandVerbose = true;
     stdout ??= io.stdout;
@@ -90,6 +98,7 @@ Future<ProcessResult> runExecutableArguments(
       environment: shellEnvironment,
       includeParentEnvironment: false,
       runInShell: runInShell,
+      mode: mode,
     );
     if (shellDebug) {
       // ignore: avoid_print
@@ -158,36 +167,40 @@ Future<ProcessResult> runExecutableArguments(
     return list;
   }
 
-  var out = (noStdoutResult ?? false)
+  var out = (noStdoutResult)
       ? Future.value(null)
       : streamToResult(outCtlr.stream, stdoutEncoding);
-  var err = (noStderrResult ?? false)
+  var err = (noStderrResult)
       ? Future.value(null)
       : streamToResult(errCtlr.stream, stderrEncoding);
 
-  process.stdout.listen(
-    (List<int> d) {
-      if (stdout != null) {
-        stdout.add(d);
-      }
-      outCtlr.add(d);
-    },
-    onDone: () {
-      outCtlr.close();
-    },
-  );
+  if (!noStdoutResult) {
+    process.stdout.listen(
+      (List<int> d) {
+        if (stdout != null) {
+          stdout.add(d);
+        }
+        outCtlr.add(d);
+      },
+      onDone: () {
+        outCtlr.close();
+      },
+    );
+  }
 
-  process.stderr.listen(
-    (List<int> d) async {
-      if (stderr != null) {
-        stderr.add(d);
-      }
-      errCtlr.add(d);
-    },
-    onDone: () {
-      errCtlr.close();
-    },
-  );
+  if (!noStderrResult) {
+    process.stderr.listen(
+      (List<int> d) async {
+        if (stderr != null) {
+          stderr.add(d);
+        }
+        errCtlr.add(d);
+      },
+      onDone: () {
+        errCtlr.close();
+      },
+    );
+  }
 
   final exitCode = await process.exitCode;
 
@@ -379,6 +392,7 @@ Future<ProcessResult> processCmdRun(
       noStdoutResult: noStdoutResult,
       noStderrResult: noStderrResult,
       onProcess: onProcess,
+      mode: cmd.mode,
     );
   } catch (e) {
     if (verbose == true) {

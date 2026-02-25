@@ -374,7 +374,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       var processResults = <ProcessResult>[];
       for (var command in commands) {
         if (_killedRunId >= runId) {
-          throw ShellException('Script was killed', null);
+          throw ShellException(
+            'Script was killed',
+            null,
+            command: _currentProcessCmd,
+          );
         }
         // Display the comments
         if (shellScriptLineIsComment(command)) {
@@ -513,7 +517,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     }
     if (!(_currentProcessResultCompleter?.isCompleted ?? true)) {
       _currentProcessResultCompleter!.completeError(
-        ShellException('Killed by framework', null),
+        ShellException(
+          'Killed by framework',
+          null,
+          command: _currentProcessCmd,
+        ),
       );
     }
     _currentProcessResultCompleter = null;
@@ -564,8 +572,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       // devPrint('After $processCmd');
       if (_options.throwOnError && processResult.exitCode != 0) {
         throw ShellException(
-          '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
+          '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: ${processCmd.workingDirectory ?? '.'}',
           processResult,
+          command: processCmd,
         );
       }
       return processResult;
@@ -590,8 +599,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       writeln();
 
       throw ShellException(
-        '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
+        '$processCmd, error: $e, workingDirectory: ${processCmd.workingDirectory ?? '.'}',
         null,
+        command: processCmd,
       );
     }
   }
@@ -624,6 +634,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
                 executableFullPath,
                 arguments,
                 executableShortName: executable,
+                mode: _options.mode,
               )
               ..runInShell = _options.runInShell
               ..environment = _options.environment
@@ -680,8 +691,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           // devPrint('After $processCmd');
           if (_options.throwOnError && processResult.exitCode != 0) {
             throw ShellException(
-              '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: $_workingDirectoryPath',
+              '$processCmd, exitCode ${processResult.exitCode}, workingDirectory: ${processCmd.workingDirectory ?? '.'}',
               processResult,
+              command: processCmd,
             );
           }
         } on ProcessException catch (e) {
@@ -705,8 +717,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
           writeln();
 
           throw ShellException(
-            '$processCmd, error: $e, workingDirectory: $_workingDirectoryPath',
+            '$processCmd, error: $e, workingDirectory: ${processCmd.workingDirectory ?? '.'}',
             null,
+            command: processCmd,
           );
         }
 
@@ -746,25 +759,11 @@ class _ProcessCmd extends ProcessCmd {
   _ProcessCmd(
     super.executable,
     super.arguments, {
+    required super.mode,
     required this.executableShortName,
   });
 
   @override
   String toString() =>
       executableArgumentsToString(executableShortName, arguments);
-}
-
-/// Exception thrown in exitCode != 0 and throwOnError is true
-class ShellException implements Exception {
-  /// Process result
-  final ProcessResult? result;
-
-  /// Exception message
-  final String message;
-
-  /// Shell exception
-  ShellException(this.message, this.result);
-
-  @override
-  String toString() => 'ShellException($message)';
 }

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:process_run/src/process_cmd.dart';
+
 import 'bin/shell/import.dart';
 import 'lines_utils.dart';
 
@@ -38,6 +40,19 @@ extension ProcessRunProcessResultExt on ProcessResult {
 
   /// Line lists
   Iterable<String> get errLines => _outStringToLines(stderr.toString());
+
+  /// Process result debug string
+  String toDebugString() {
+    final sb = StringBuffer();
+    sb.writeln('exitCode: ${this.exitCode}');
+    if (stdIsNotEmpty(this.stdout)) {
+      sb.writeln('out: ${this.stdout}');
+    }
+    if (stdIsNotEmpty(this.stderr)) {
+      sb.writeln('err: ${this.stderr}');
+    }
+    return sb.toString();
+  }
 }
 
 /// Process helper.

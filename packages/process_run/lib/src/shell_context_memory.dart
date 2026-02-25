@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io' show ProcessResult;
 
 import 'package:process_run/utils/shell_context.dart';
 
