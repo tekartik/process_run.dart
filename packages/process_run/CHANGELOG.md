@@ -1,4 +1,4 @@
-## 1.3.1
+## 1.3.1+1
 
 * Add `command` info to `ShellException` and `toDebugString()` helper
 
