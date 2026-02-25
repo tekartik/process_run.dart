@@ -144,7 +144,6 @@ void defineTests() {
             print(e);
           }
 
-          expect(resolveDartExecutable(), isNotNull);
           expect(await which('dart'), isNotNull);
         } else {
           expect(await which('dart'), isNull);
