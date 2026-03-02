@@ -244,7 +244,7 @@ class ShellOptions {
   /// True if ProcessResult should not contain stderr
   bool? get noStderrResult => _noStderrResult;
 
-  /// Create a new shell
+  /// Create a new shell options
   ShellOptions clone({
     bool? throwOnError,
     String? workingDirectory,
