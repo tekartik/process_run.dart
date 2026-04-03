@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_context_common.dart';
+import 'package:process_run/src/shell_process_result.dart';
 import 'package:process_run/src/shell_utils.dart';
 
 /// shell debug flag (dev only)
@@ -362,7 +363,7 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
         ),
       );
     }
-    return results;
+    return ProcessResultInternalList(this as Shell, results);
   }
 
   @override
@@ -395,13 +396,25 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
   }
 
   @override
-  // TODO: implement context
   ShellContext get context => throw UnimplementedError('context');
 
   @override
-  // TODO: implement options
   ShellOptions get options => throw UnimplementedError('options');
 
   @override
   String get path => options.workingDirectory ?? '.';
+}
+
+/// Process result helper
+/// Note that in the future (2.0), it might returns ShellProcessResult directly
+extension ProcessRunShellExtension on Shell {
+  /// Create a [ShellProcessResult] from a [ProcessResult].
+  ShellProcessResult shellProcessResult(ProcessResult result) {
+    return ShellProcessResult(this, result);
+  }
+
+  /// Create a [ShellProcessResults] from a list of [ProcessResult].
+  ShellProcessResults shellProcessResults(List<ProcessResult> results) {
+    return ShellProcessResults(this, results);
+  }
 }

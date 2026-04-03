@@ -1,7 +1,5 @@
 import 'package:process_run/shell.dart';
 
-import 'process_result_common_extension.dart';
-
 export 'shell_common.dart' show shellDebug;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true

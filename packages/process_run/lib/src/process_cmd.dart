@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:process_run/process_run.dart';
-import 'package:process_run/src/api/shell_common.dart';
 import 'package:process_run/src/io/io.dart';
 
 /// Process command

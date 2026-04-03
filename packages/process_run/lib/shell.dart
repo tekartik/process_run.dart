@@ -51,7 +51,8 @@ export 'dartbin.dart'
         isFlutterSupportedSync,
         flutterDartExecutablePath,
         flutterExecutablePath;
-export 'src/lines_utils.dart' show ShellLinesController, shellStreamLines;
+export 'src/lines_utils_common.dart'
+    show ShellLinesController, shellStreamLines;
 export 'src/process_cmd.dart'
     show
         processCmdToDebugString,
@@ -73,9 +74,16 @@ export 'src/shell_environment.dart'
         ShellEnvironmentAliases;
 export 'src/shell_environment_common.dart' show ShellEnvironmentCommonExt;
 export 'src/shell_exception.dart' show ShellException;
+export 'src/shell_process_result.dart'
+    show
+        ShellProcessResults,
+        ShellProcessResult,
+        ProcessRunShellProcessResultExt,
+        ProcessRunShellProcessResultsExt;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
     show
         ProcessRunProcessExt,
         ProcessRunProcessResultExt,
-        ProcessRunProcessResultsExt;
+        ProcessRunProcessResultsExt,
+        ProcessRunFutureProcessResultsExt;

@@ -8,6 +8,7 @@ import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart';
 import 'package:process_run/src/shell_common.dart'
     show ShellCore, ShellCoreSync, ShellOptions, shellDebug;
+import 'package:process_run/src/shell_process_result.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -408,7 +409,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         processResults.add(processResult);
       }
 
-      return processResults;
+      return ProcessResultInternalList(this, processResults);
     });
   }
 
@@ -453,7 +454,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       processResults.add(processResult);
     }
 
-    return processResults;
+    return ProcessResultInternalList(this, processResults);
   }
 
   final _runLock = Lock();
