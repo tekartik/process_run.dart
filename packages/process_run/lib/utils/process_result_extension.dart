@@ -1,10 +1,11 @@
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/process_cmd.dart';
 import 'package:process_run/src/shell_bytes_controller.dart';
-import 'package:process_run/src/shell_common.dart';
 import 'package:process_run/src/shell_process_result.dart';
 
 import '../shell.dart';
+export 'package:process_run/src/shell_process_result.dart'
+    show ProcessRunProcessResultTestExt;
 
 /// run response helper.
 extension ProcessRunProcessResultsExt on List<ProcessResult> {
@@ -12,7 +13,8 @@ extension ProcessRunProcessResultsExt on List<ProcessResult> {
     if (this is ProcessResultInternalList) {
       return (this as ProcessResultInternalList).shellProcessResults;
     }
-    return Shell().shellProcessResults(this);
+    // print(ArgumentError('Invalid results type: $runtimeType'));
+    return ShellProcessResultInternalList.fromRawList(Shell(), this);
   }
 
   /// Join the out lines for a quick string access.
@@ -60,8 +62,7 @@ extension ProcessRunFutureProcessResultsExt on Future<List<ProcessResult>> {
 /// run response helper.
 extension ProcessRunProcessResultExt on ProcessResult {
   /// Use a default shell to handle encoding if needed
-  ShellProcessResult get _shellProcessResult =>
-      Shell().shellProcessResult(this);
+  ShellProcessResult get _shellProcessResult => unwrapShellProcessResult();
 
   /// Join the out lines for a quick string access.
   String get outText => _shellProcessResult.outText;
@@ -87,6 +88,10 @@ extension ProcessRunProcessResultExt on ProcessResult {
     }
     return sb.toString();
   }
+
+  /// Process executable arguments
+  ShellCommand get processExecutableArguments =>
+      _shellProcessResult.processExecutableArguments;
 }
 
 /// Process helper.

@@ -13,6 +13,8 @@ import 'package:test/test.dart';
 
 import 'dartbin_test.dart';
 
+import 'shell_test_common.dart';
+
 void main() {
   group('which', () {
     test('dart', () async {
@@ -45,16 +47,16 @@ void main() {
       if (dartVersion < Version(2, 17, 0, pre: '0')) {
         expect(whichSync('pub', environment: empty), isNotNull);
       }
-      expect(whichSync('current_dir', environment: empty), isNull);
+      expect(whichSync(currentDirScriptName, environment: empty), isNull);
 
       expect(
         basename(
           whichSync(
-            'current_dir',
+            currentDirScriptName,
             environment: <String, String>{'PATH': join('test', 'src')},
           )!,
         ),
-        Platform.isWindows ? 'current_dir.bat' : 'current_dir',
+        Platform.isWindows ? '$currentDirScriptName.bat' : currentDirScriptName,
       );
     });
 

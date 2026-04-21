@@ -71,6 +71,19 @@ class ShellEnvironmentPaths with ListMixin<String> {
     _paths = _paths..insert(index, element);
   }
 
+  @override
+  bool remove(Object? element) {
+    if (element is String) {
+      var existing = List.of(_paths);
+      var found = existing.remove(element);
+      if (found) {
+        _paths = existing;
+      }
+      return found;
+    }
+    return false;
+  }
+
   /// Merge an environment.
   ///
   /// the other object, paths are prepended.

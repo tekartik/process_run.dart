@@ -10,8 +10,11 @@ import 'package:process_run/src/utils/uint8list_utils.dart';
 abstract class ShellProcessResult {
   /// Internal constructor.
   @internal
-  factory ShellProcessResult(Shell shell, ProcessResult processResult) =>
-      _ShellProcessResult(shell, processResult);
+  factory ShellProcessResult(
+    Shell shell,
+    ShellCommand command,
+    ProcessResult processResult,
+  ) => _ShellProcessResult(shell, command, processResult);
 
   /// Exit code for the process.
   ///
@@ -44,6 +47,10 @@ extension ProcessRunShellProcessResultExt on ShellProcessResult {
 
   Iterable<String> _outputTextToLines(String output) =>
       LineSplitter.split(output);
+
+  /// Process command executed
+  ShellCommand get processExecutableArguments =>
+      _shellProcessResult.processExecutableArguments;
 
   String? _outputAsText(Object output, Encoding? encoding) {
     if (output is String) {
@@ -116,12 +123,20 @@ extension ProcessRunShellProcessResultExt on ShellProcessResult {
     }
     throw ArgumentError('Unsupported stderr type: ${stderr.runtimeType}');
   }
+
+  /// The original raw representation
+  ProcessResult get processResult => _shellProcessResult.processResult;
 }
 
 class _ShellProcessResult implements ShellProcessResult {
   final Shell shell;
   final ProcessResult processResult;
-  _ShellProcessResult(this.shell, this.processResult);
+  final ShellCommand processExecutableArguments;
+  _ShellProcessResult(
+    this.shell,
+    this.processExecutableArguments,
+    this.processResult,
+  );
 
   @override
   int get exitCode => processResult.exitCode;
@@ -142,13 +157,12 @@ class _ShellProcessResult implements ShellProcessResult {
 }
 
 /// Shell process results
-abstract class ShellProcessResults implements List<ShellProcessResult> {
-  /// Internal constructor.
-  @internal
-  factory ShellProcessResults(
-    Shell shell,
-    List<ProcessResult> processResults,
-  ) => _ShellProcessResults(shell, processResults);
+abstract class ShellProcessResults implements List<ShellProcessResult> {}
+
+/// Shell process results extension
+extension ProcessRunShellProcessResultsPrvExt on ShellProcessResults {
+  /// Get the compat precess results
+  List<ProcessResult> get processResults => _impl.processResults;
 }
 
 /// Shell process results extension
@@ -197,16 +211,23 @@ extension ProcessRunShellProcessResultsExt on ShellProcessResults {
       map((result) => result.stderrAsString).join('\n');
 }
 
-class _ShellProcessResults extends ListBase<ShellProcessResult>
-    implements ShellProcessResults {
-  final Shell shell;
-  late final List<ShellProcessResult> _list;
+abstract class _ShellProcessResults implements ShellProcessResultInternalList {
+  factory _ShellProcessResults.fromRawList(
+    Shell shell,
+    List<ProcessResult> processResults,
+  ) => _ShellProcessResultsFromRaw(shell, processResults);
+  factory _ShellProcessResults.fromList(
+    Shell shell,
+    List<ShellProcessResult> processResults,
+  ) => _ShellProcessResultsFromList(shell, processResults);
+}
 
-  _ShellProcessResults(this.shell, List<ProcessResult> processResults) {
-    _list = processResults
-        .map((processResult) => ShellProcessResult(shell, processResult))
-        .toList();
-  }
+abstract class _ShellProcessResultsBase extends ListBase<ShellProcessResult>
+    implements ShellProcessResultInternalList, _ShellProcessResults {
+  final Shell shell;
+  final List<ShellProcessResult> _list;
+
+  _ShellProcessResultsBase(this.shell, this._list);
 
   @override
   int get length => _list.length;
@@ -220,6 +241,39 @@ class _ShellProcessResults extends ListBase<ShellProcessResult>
   @override
   void operator []=(int index, ShellProcessResult value) =>
       throw UnsupportedError('ReadOnly');
+
+  @override
+  List<ProcessResult> get processResults;
+}
+
+class _ShellProcessResultsFromRaw extends _ShellProcessResultsBase
+    implements _ShellProcessResults {
+  _ShellProcessResultsFromRaw(Shell shell, this.processResults)
+    : super(
+        shell,
+        List.of(
+          processResults.map(
+            (processResult) => processResult.unwrapShellProcessResult(),
+          ),
+        ),
+      );
+
+  @override
+  final List<ProcessResult> processResults;
+}
+
+class _ShellProcessResultsFromList extends _ShellProcessResultsBase
+    implements _ShellProcessResults {
+  _ShellProcessResultsFromList(super.shell, super._list);
+
+  /// Compat
+  @override
+  late final processResults = ProcessResultInternalList(
+    shell,
+    _list
+        .map((shellProcessResult) => shellProcessResult.processResult)
+        .toList(),
+  );
 }
 
 /// Internal list for current run method
@@ -232,12 +286,76 @@ abstract class ProcessResultInternalList implements List<ProcessResult> {
 }
 
 /// Internal list for current run method
+abstract class ShellProcessResultInternalList implements ShellProcessResults {
+  /// from raw list
+  factory ShellProcessResultInternalList.fromRawList(
+    Shell shell,
+    List<ProcessResult> processResults,
+  ) => _ShellProcessResults.fromRawList(shell, processResults);
+
+  /// From full list
+  factory ShellProcessResultInternalList.fromList(
+    Shell shell,
+    List<ShellProcessResult> processResults,
+  ) => _ShellProcessResults.fromList(shell, processResults);
+
+  /// Raw process results (compat)
+  List<ProcessResult> get processResults;
+}
+
+final _expando = Expando<ShellProcessResult>();
+
+/// Needed
+/// Internal
+ShellProcessResult wrapShellProcessResult(
+  Shell shell,
+  ShellCommand processExecutableArguments,
+  ProcessResult processResult,
+) {
+  var shellProcessResult = ShellProcessResult(
+    shell,
+    processExecutableArguments,
+    processResult,
+  );
+  _expando[processResult] = shellProcessResult;
+  return shellProcessResult;
+}
+
+/// Private extension
+extension ProcessRunProcessResultPrvExt on ProcessResult {
+  /// Internal
+  ShellProcessResult unwrapShellProcessResult() {
+    var shellProcessResult = unwrapShellProcessResultOrNull();
+    shellProcessResult ??= ShellProcessResult(
+      Shell(),
+      ShellCommand.empty(),
+      this,
+    );
+    return shellProcessResult;
+  }
+
+  /// Internal
+  ShellProcessResult? unwrapShellProcessResultOrNull() {
+    return _expando[this];
+  }
+}
+
+/// Test extension
+@visibleForTesting
+extension ProcessRunProcessResultTestExt on ProcessResult {
+  /// typically only true for native shell process results
+  bool get isShellProcessResult {
+    return unwrapShellProcessResultOrNull() != null;
+  }
+}
+
+/// Internal list for current run method
 extension ProcessResultInternalListExt on ProcessResultInternalList {
   _ProcessResultInternalList get _impl => this as _ProcessResultInternalList;
 
   /// ShellProcessResults helper
   ShellProcessResults get shellProcessResults =>
-      ShellProcessResults(_impl.shell, this);
+      ShellProcessResultInternalList.fromRawList(_impl.shell, this);
 }
 
 class _ProcessResultInternalList extends ListBase<ProcessResult>

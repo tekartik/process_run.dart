@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/process_run.dart';
 import 'package:process_run/src/io/io.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
@@ -82,14 +83,14 @@ String parsePlatformChannel(String text) {
   return dartChannelStable;
 }
 
-/// Parse flutter version
+/// Parse dart version, do not throw
 Future<Version?> getDartBinVersion() async {
   // $ dart --version
   // Linux: Dart VM version: 2.7.0 (Unknown timestamp) on "linux_x64"
 
-  var result = await runExecutableArguments('dart', [
-    '--version',
-  ], verbose: false);
+  var result = await Shell(
+    options: ShellOptions(verbose: false, throwOnError: false),
+  ).runCommand(ShellCommand('dart', ['--version']));
 
   // Take from stderr first
   var version = parseDartBinVersionOutput(result.stderr.toString().trim());

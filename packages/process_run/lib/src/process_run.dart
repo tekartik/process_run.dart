@@ -4,9 +4,6 @@ import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/io/io.dart' as io;
 import 'package:process_run/src/io/io.dart';
-import 'package:process_run/src/shell.dart';
-import 'package:process_run/src/shell_utils.dart' as utils;
-import 'package:process_run/src/shell_utils.dart';
 
 import 'common/import.dart';
 
@@ -25,6 +22,10 @@ export 'shell_utils_io.dart' show executableArgumentsToString;
 Future<ProcessResult> runExecutableArguments(
   String executable,
   List<String> arguments, {
+
+  /// Prefer options, or even better, use a shell...
+  ShellOptions? options,
+  // follwing To deprecate
   String? workingDirectory,
   Map<String, String>? environment,
   bool includeParentEnvironment = true,
@@ -40,196 +41,34 @@ Future<ProcessResult> runExecutableArguments(
   bool? noStderrResult,
   ShellOnProcessCallback? onProcess,
   ProcessStartMode? mode,
+
+  /// Compat default to false...
+  bool? throwOnError,
 }) async {
-  mode ??= ProcessStartMode.normal;
-  var noStdioOverride = <ProcessStartMode>[
-    .inheritStdio,
-    .detachedWithStdio,
-  ].contains(mode);
-  noStdoutResult ??= noStdioOverride;
-  noStderrResult ??= noStdioOverride;
-  if (verbose == true) {
-    commandVerbose = true;
-    stdout ??= io.stdout;
-    stderr ??= io.stderr;
-  }
-
-  if (commandVerbose == true) {
-    utils.streamSinkWriteln(
-      stdout ?? io.stdout,
-      '\$ ${executableArgumentsToString(executable, arguments)}',
-      encoding: stdoutEncoding,
-    );
-  }
-
-  // Build our environment
-  var shellEnvironment = ShellEnvironment.full(
+  throwOnError ??= false;
+  options ??= ShellOptions(
+    verbose: verbose ?? false,
+    commandVerbose: commandVerbose,
+    stderrEncoding: stderrEncoding,
+    stdoutEncoding: stdoutEncoding,
+    workingDirectory: workingDirectory,
+    stdout: stdout,
+    stderr: stderr,
+    stdin: stdin,
     environment: environment,
     includeParentEnvironment: includeParentEnvironment,
+    runInShell: runInShell,
+    mode: mode,
+    noStderrResult: noStderrResult,
+    noStdoutResult: noStdoutResult,
+    throwOnError: throwOnError,
   );
-
-  // Default is the full command
-  var executableShortName = executable;
-
-  // Find executable if needed, i.e. if it is only a name
-  if (basename(executable) == executable) {
-    // Try to find it in path or use it as is
-    executable =
-        utils.findExecutableSync(executable, shellEnvironment.paths) ??
-        executable;
-  } else {
-    // resolve locally
-    executable =
-        utils.findExecutableSync(basename(executable), [
-          join(workingDirectory ?? Directory.current.path, dirname(executable)),
-        ]) ??
-        executable;
-  }
-
-  // Fix runInShell on windows (force run in shell for non-.exe)
-  runInShell = utils.fixRunInShell(runInShell, executable);
-
-  Process process;
-  try {
-    process = await Process.start(
-      executable,
-      arguments,
-      workingDirectory: workingDirectory,
-      environment: shellEnvironment,
-      includeParentEnvironment: false,
-      runInShell: runInShell,
-      mode: mode,
-    );
-    if (shellDebug) {
-      // ignore: avoid_print
-      print('process: ${process.pid}');
-    }
-    if (onProcess != null) {
-      onProcess(process);
-    }
-    if (shellDebug) {
-      // ignore: unawaited_futures
-      () async {
-        try {
-          var exitCode = await process.exitCode;
-          // ignore: avoid_print
-          print('process: ${process.pid} exitCode $exitCode');
-        } catch (e) {
-          // ignore: avoid_print
-          print('process: ${process.pid} Error $e waiting exit code');
-        }
-      }();
-    }
-  } catch (e) {
-    if (verbose == true) {
-      dumpException(
-        executable: executableShortName,
-        arguments: arguments,
-        exception: e,
-        workingDirectory: workingDirectory,
-      );
-    }
-    rethrow;
-  }
-
-  final outCtlr = StreamController<List<int>>(sync: true);
-  final errCtlr = StreamController<List<int>>(sync: true);
-
-  // Connected stdin
-  // Buggy!
-  StreamSubscription? stdinSubscription;
-  if (stdin != null) {
-    //stdin.pipe(process.stdin); // this closes the stream...
-    stdinSubscription =
-        stdin.listen((List<int> data) {
-          process.stdin.add(data);
-        })..onDone(() {
-          process.stdin.close();
-        });
-    // OLD 2: process.stdin.addStream(stdin);
-  } else {
-    // Close the input sync, we want this not interractive
-    //process.stdin.close();
-  }
-
-  Future<dynamic> streamToResult(
-    Stream<List<int>> stream,
-    Encoding? encoding,
-  ) async {
-    final list = <int>[];
-    await for (final data in stream) {
-      //devPrint('s: ${data}');
-      list.addAll(data);
-    }
-    if (encoding != null) {
-      return encoding.decode(list);
-    }
-    return list;
-  }
-
-  var out = (noStdoutResult)
-      ? Future.value(null)
-      : streamToResult(outCtlr.stream, stdoutEncoding);
-  var err = (noStderrResult)
-      ? Future.value(null)
-      : streamToResult(errCtlr.stream, stderrEncoding);
-
-  if (!noStdoutResult) {
-    process.stdout.listen(
-      (List<int> d) {
-        if (stdout != null) {
-          stdout.add(d);
-        }
-        outCtlr.add(d);
-      },
-      onDone: () {
-        outCtlr.close();
-      },
-    );
-  }
-
-  if (!noStderrResult) {
-    process.stderr.listen(
-      (List<int> d) async {
-        if (stderr != null) {
-          stderr.add(d);
-        }
-        errCtlr.add(d);
-      },
-      onDone: () {
-        errCtlr.close();
-      },
-    );
-  }
-
-  final exitCode = await process.exitCode;
-
-  /// Cancel input sink
-  if (stdinSubscription != null) {
-    await stdinSubscription.cancel();
-  }
-
-  // Notice that exitCode can complete before all of the lines of output have been
-  // processed. Also note that we do not explicitly close the process. In order
-  // to not leak resources we have to drain both the stderr and the stdout streams.
-  // To do that we set a listener (using await for) to drain the stderr stream.
-  //await process.stdout.drain();
-  //await process.stderr.drain();
-
-  final result = ProcessResult(process.pid, exitCode, await out, await err);
-
-  if (stdin != null) {
-    //process.stdin.close();
-  }
-
-  // flush for consistency
-  if (stdout == io.stdout) {
-    await io.stdout.safeFlush();
-  }
-  if (stderr == io.stderr) {
-    await io.stderr.safeFlush();
-  }
-
+  var shell = Shell(options: options);
+  var result = await shell.runExecutableArguments(
+    executable,
+    arguments,
+    onProcess: onProcess,
+  );
   return result;
 }
 
@@ -237,11 +76,16 @@ Future<ProcessResult> runExecutableArguments(
 /// if [commandVerbose] or [verbose] is true, display the command.
 /// if [verbose] is true, stream stdout & stdin
 ///
+/// Does not throw by default if no options are given.
+///
 /// Compared to the async version, it is not possible to kill the spawn process nor to
 /// feed any input.
 ProcessResult runExecutableArgumentsSync(
   String executable,
   List<String> arguments, {
+
+  /// Prefer options
+  ShellOptions? options,
   String? workingDirectory,
   Map<String, String>? environment,
   bool includeParentEnvironment = true,
@@ -252,91 +96,27 @@ ProcessResult runExecutableArgumentsSync(
   StreamSink<List<int>>? stderr,
   bool? verbose,
   bool? commandVerbose,
+
+  /// Compat default to false
+  bool? throwOnError,
 }) {
-  if (verbose == true) {
-    commandVerbose = true;
-    stdout ??= io.stdout;
-    stderr ??= io.stderr;
-  }
-
-  if (commandVerbose == true) {
-    utils.streamSinkWriteln(
-      stdout ?? io.stdout,
-      '\$ ${executableArgumentsToString(executable, arguments)}',
-      encoding: stdoutEncoding,
-    );
-  }
-
-  // Build our environment
-  var shellEnvironment = ShellEnvironment.full(
+  throwOnError ??= false;
+  options ??= ShellOptions(
+    verbose: verbose ?? false,
+    commandVerbose: commandVerbose,
+    stderrEncoding: stderrEncoding,
+    stdoutEncoding: stdoutEncoding,
+    workingDirectory: workingDirectory,
+    stdout: stdout,
+    stderr: stderr,
     environment: environment,
     includeParentEnvironment: includeParentEnvironment,
+    runInShell: runInShell,
+    throwOnError: false,
   );
-
-  // Default is the full command
-  var executableShortName = executable;
-
-  // Find executable if needed, i.e. if it is only a name
-  if (basename(executable) == executable) {
-    // Try to find it in path or use it as is
-    executable =
-        utils.findExecutableSync(executable, shellEnvironment.paths) ??
-        executable;
-  } else {
-    // resolve locally
-    executable =
-        utils.findExecutableSync(basename(executable), [
-          join(workingDirectory ?? Directory.current.path, dirname(executable)),
-        ]) ??
-        executable;
-  }
-
-  // Fix runInShell on windows (force run in shell for non-.exe)
-  runInShell = utils.fixRunInShell(runInShell, executable);
-
-  io.ProcessResult result;
-  try {
-    result = Process.runSync(
-      executable,
-      arguments,
-      environment: shellEnvironment,
-      includeParentEnvironment: false,
-      runInShell: runInShell,
-      workingDirectory: workingDirectory,
-      stdoutEncoding: stdoutEncoding,
-      stderrEncoding: stderrEncoding,
-    );
-  } catch (e) {
-    if (verbose == true) {
-      dumpException(
-        executable: executableShortName,
-        arguments: arguments,
-        exception: e,
-        workingDirectory: workingDirectory,
-      );
-    }
-    rethrow;
-  }
-
-  List<int> outputToIntList(dynamic data, Encoding? encoding) {
-    if (data is List<int>) {
-      return data;
-    } else if (data is String && encoding != null) {
-      return encoding.encode(data);
-    } else {
-      throw 'Unexpected data type: ${data.runtimeType}';
-    }
-  }
-
-  if (stdout != null) {
-    var out = outputToIntList(result.stdout, stdoutEncoding);
-    stdout.add(out);
-  }
-
-  if (stderr != null) {
-    var err = outputToIntList(result.stderr, stderrEncoding);
-    stderr.add(err);
-  }
+  var result = Shell(
+    options: options,
+  ).runExecutableArgumentsSync(executable, arguments);
 
   return result;
 }
@@ -351,6 +131,7 @@ ProcessResult runExecutableArgumentsSync(
 ///
 Future<ProcessResult> processCmdRun(
   ProcessCmd cmd, {
+  ShellOptions? options,
   bool? verbose,
   bool? commandVerbose,
   Stream<List<int>>? stdin,
@@ -360,62 +141,38 @@ Future<ProcessResult> processCmdRun(
   bool? noStderrResult,
   ShellOnProcessCallback? onProcess,
 }) async {
-  if (verbose == true) {
-    stdout ??= io.stdout;
-    stderr ??= io.stderr;
-    commandVerbose ??= true;
-  }
+  options ??= ShellOptions(
+    verbose: verbose ?? false,
+    commandVerbose: commandVerbose,
+    stderrEncoding: cmd.stderrEncoding,
+    stdoutEncoding: cmd.stdoutEncoding,
+    workingDirectory: cmd.workingDirectory,
+    stdin: stdin,
+    stdout: stdout,
+    stderr: stderr,
+    environment: cmd.environment,
+    includeParentEnvironment: cmd.includeParentEnvironment,
+    runInShell: cmd.runInShell,
+    mode: cmd.mode,
+  );
+  var shell = Shell(options: options);
+  var command = ShellCommand(cmd.executable, cmd.arguments);
 
-  if (commandVerbose == true) {
-    streamSinkWriteln(
-      stdout ?? io.stdout,
-      '\$ $cmd',
-      encoding: cmd.stdoutEncoding,
-    );
-  }
-
-  try {
-    return await runExecutableArguments(
-      cmd.executable,
-      cmd.arguments,
-      workingDirectory: cmd.workingDirectory,
-      environment: cmd.environment,
-      includeParentEnvironment: cmd.includeParentEnvironment,
-      runInShell: cmd.runInShell,
-      stdoutEncoding: cmd.stdoutEncoding,
-      stderrEncoding: cmd.stderrEncoding,
-      //verbose: verbose,
-      //commandVerbose: commandVerbose,
-      stdin: stdin,
-      stdout: stdout,
-      stderr: stderr,
-      noStdoutResult: noStdoutResult,
-      noStderrResult: noStderrResult,
-      onProcess: onProcess,
-      mode: cmd.mode,
-    );
-  } catch (e) {
-    if (verbose == true) {
-      dumpException(
-        executable: cmd.executable,
-        arguments: cmd.arguments,
-        exception: e,
-        workingDirectory: cmd.workingDirectory,
-      );
-    }
-    rethrow;
-  }
+  return (await shell.runCommand(
+    command,
+    options: ShellCommandRunOptions(onProcess: onProcess),
+  )).processResult;
 }
 
 /// Dump the exception to stderr
 void dumpException({
-  required String executable,
-  required List<String> arguments,
+  // Executed command
+  required ShellCommand command,
   required Object exception,
   String? workingDirectory,
 }) {
   io.stderr.writeln(exception);
-  io.stderr.writeln('\$ ${executableArgumentsToString(executable, arguments)}');
+  io.stderr.writeln('\$ ${command.toCommandString()}');
   io.stderr.writeln(
     'workingDirectory: ${normalize(absolute(workingDirectory ?? Directory.current.path))}',
   );

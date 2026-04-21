@@ -11,6 +11,7 @@ import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_common.dart';
 import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_environment_common.dart';
+import 'package:process_run/src/shell_process_result.dart';
 import 'package:test/test.dart';
 
 class ShellContextMock with ShellContextMixin implements ShellContext {
@@ -106,16 +107,15 @@ class ShellMock with ShellDefaultMixin, ShellMixin implements Shell {
     if (onProcess != null) {
       onProcess(ProcessMock(result, outLines));
     }
-    return <ProcessResult>[result];
+    return ProcessResultInternalList(this, <ProcessResult>[result]);
   }
 
   @override
-  Future<ProcessResult> runExecutableArguments(
-    String executable,
-    List<String> arguments, {
-    ShellOnProcessCallback? onProcess,
+  Future<ShellProcessResult> runCommand(
+    ShellCommand command, {
+    ShellCommandRunOptions? options,
   }) {
-    // TODO: implement runExecutableArguments
+    // TODO: implement runCommand
     throw UnimplementedError();
   }
 }

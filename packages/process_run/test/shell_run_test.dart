@@ -10,6 +10,7 @@ import 'package:process_run/shell_run.dart';
 import 'package:test/test.dart';
 
 import 'process_run_test_common.dart';
+import 'shell_test_common.dart';
 
 /// Truncate at max element.
 String stringTruncate(String text, int len) {
@@ -65,6 +66,49 @@ void main() {
       stdout.writeln('exitCode: ${result.exitCode}');
     });
 
+    test('shell echo test', () async {
+      var shell = Shell();
+      var processResults = shell.runSync('echo Hello');
+      var text = processResults.outText.trim();
+      expect(text, 'Hello');
+      var processResult = processResults.first;
+
+      expect(
+        processResult.processExecutableArguments,
+        ShellCommand('echo', ['Hello']),
+      );
+    });
+
+    test('current dir no env relative', () async {
+      await Shell(
+        options: ShellOptions(
+          workingDirectory: join('test', 'src'),
+          environment: ShellEnvironment.empty(),
+          includeParentEnvironment: false,
+          verbose: true,
+        ),
+      ).run(join('.', currentDirScriptName));
+    });
+
+    test('current dir no env name only', () async {
+      try {
+        await Shell(
+          options: ShellOptions(
+            workingDirectory: join('test', 'src'),
+            environment: ShellEnvironment.empty(),
+            includeParentEnvironment: false,
+            verbose: true,
+          ),
+        ).run(currentDirScriptName);
+        fail('should fail');
+      } on ShellException catch (e) {
+        // ShellException(current_dir_v9k2p8z5m1nx4q7w, error: ProcessException: No such file or directory)
+        // ignore: dead_code
+        if (true) {
+          print(e);
+        }
+      }
+    });
     test('--version', () async {
       for (var bin in [
         // 'dartdoc', deprecated

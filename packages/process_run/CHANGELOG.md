@@ -1,3 +1,7 @@
+## 1.3.3
+
+* Add `ShellCommand`, `ShellCommandRunOption` and `Shell.runCommand`
+
 ## 1.3.2
 
 * Add `ShellProcessResult` and `ShellProcessResults` for proper output decoding

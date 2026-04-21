@@ -12,6 +12,7 @@ import 'package:process_run/src/shell_utils.dart'
 import 'package:test/test.dart';
 
 import 'echo_test.dart';
+import 'shell_test_common.dart';
 
 void main() {
   var emptyEnv = ShellEnvironment.empty();
@@ -47,6 +48,20 @@ void main() {
       });
     });
 
+    test('paths insert/remove/delete', () {
+      var env = ShellEnvironment.empty();
+      var vars = env.paths;
+      vars.insert(0, 'test');
+      expect(vars.first, 'test');
+      var len = vars.length;
+      vars.remove('test');
+      expect(vars.length, len - 1);
+
+      vars.insert(0, 'test1');
+      expect(vars.first, 'test1');
+      vars.removeAt(0);
+      expect(vars.length, len - 1);
+    });
     test('vars', () {
       var env = ShellEnvironment.empty();
       env.vars['VAR1'] = 'var1';
@@ -170,15 +185,13 @@ void main() {
       }
     });
 
-    // ignore: non_constant_identifier_names
-    var current_dir = 'current_dir';
     test('which', () async {
       var dart = 'dart';
       var env = ShellEnvironment.empty();
       expect(await env.which(dart), isNull);
-      expect(await env.which(current_dir), isNull);
+      expect(await env.which(currentDirScriptName), isNull);
       env.paths.add('test/src');
-      expect(await env.which(current_dir), isNotNull);
+      expect(await env.which(currentDirScriptName), isNotNull);
 
       env = ShellEnvironment();
       expect(await env.which(dart), isNotNull);
@@ -186,7 +199,7 @@ void main() {
 
     test('global path', () async {
       // Don't test if there is a global current_id
-      if (whichSync(current_dir) != null) {
+      if (whichSync(currentDirScriptName) != null) {
         stderr.writeln('Global current_dir found, skipping');
       }
       var prevEnv = shellEnvironment;
@@ -194,7 +207,7 @@ void main() {
 
       var shell = Shell();
       try {
-        await shell.run(current_dir);
+        await shell.run(currentDirScriptName);
         fail('should fail');
       } catch (e) {
         expect(e, isNot(const TypeMatcher<TestFailure>()));
@@ -207,7 +220,7 @@ void main() {
         shellEnvironment = newEnvironment;
 
         var shell = Shell();
-        await shell.run(current_dir);
+        await shell.run(currentDirScriptName);
       } finally {
         shellEnvironment = prevEnv;
       }

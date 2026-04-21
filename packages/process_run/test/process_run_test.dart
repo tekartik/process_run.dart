@@ -14,6 +14,7 @@ import 'package:process_run/src/shell_utils.dart'
 import 'package:test/test.dart';
 
 import 'process_run_test_common.dart';
+import 'shell_test_common.dart';
 
 void main() {
   group('toString', () {
@@ -246,7 +247,7 @@ void main() {
 
       try {
         await runExecutableArguments(dummyExecutable, []);
-      } on ProcessException catch (_) {
+      } on ShellException catch (_) {
         // ProcessException: No such file or directory
       }
     });
@@ -260,7 +261,7 @@ void main() {
 
       try {
         await runExecutableArguments(dummyCommand, []);
-      } on ProcessException catch (_) {
+      } on ShellException catch (_) {
         // ProcessException: No such file or directory
       }
     });
@@ -280,14 +281,14 @@ void main() {
     test('relative', () async {
       if (Platform.isWindows) {
         var result = await runExecutableArguments(
-          join('test', 'src', 'current_dir.bat'),
+          join('test', 'src', '$currentDirScriptName.bat'),
           [],
         );
         expect(result.exitCode, 0);
         expect(result.stdout.toString().trim(), Directory.current.path);
       } else {
         var result = await runExecutableArguments(
-          join('test', 'src', 'current_dir'),
+          join('test', 'src', currentDirScriptName),
           [],
         );
         expect(result.exitCode, 0);

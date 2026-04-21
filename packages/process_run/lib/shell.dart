@@ -66,6 +66,8 @@ export 'src/process_run.dart'
         runExecutableArgumentsSync;
 export 'src/prompt.dart' show promptConfirm, promptTerminate, prompt;
 export 'src/shell.dart' show run, runSync, Shell, ShellOnProcessCallback;
+export 'src/shell_command.dart' show ShellCommand, ProcessRunShellCommandExt;
+export 'src/shell_command_options.dart' show ShellCommandRunOptions;
 export 'src/shell_environment.dart'
     show
         ShellEnvironment,

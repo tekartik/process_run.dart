@@ -6,7 +6,7 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/shell_context_common.dart';
 import 'package:process_run/src/shell_process_result.dart';
-import 'package:process_run/src/shell_utils.dart';
+import 'package:process_run/src/shell_utils_common.dart';
 
 /// shell debug flag (dev only)
 var shellDebug = false; // devWarning(true); // false
@@ -57,6 +57,22 @@ abstract class ShellCore {
     ShellOnProcessCallback? onProcess,
   });
 
+  /// Run a single [command].
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  Future<ShellProcessResult> runCommand(
+    ShellCommand command, {
+    ShellCommandRunOptions? options,
+  });
+
+  /// Run one or multiple plain text command(s).
+  ///
+  /// Returns a [ShellProcessResults] which is a list of [ShellProcessResult].
+  Future<ShellProcessResults> runScript(
+    String script, {
+    ShellCommandRunOptions? options,
+  });
+
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
   ///
   /// Returns a process result (or throw if specified in the shell).
@@ -97,6 +113,11 @@ abstract class ShellCore {
 
 /// Sync version of [ShellCore].
 abstract class ShellCoreSync {
+  /// Run a single [command] synchronously.
+  ///
+  /// Returns a process result (or throw if specified in the shell).
+  ShellProcessResult runCommandSync(ShellCommand command);
+
   ///
   /// Run one or multiple plain text command(s).
   ///
@@ -340,30 +361,61 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
     String script, {
     ShellOnProcessCallback? onProcess,
   }) async {
-    var results = <ProcessResult>[];
+    var results = await runScript(
+      script,
+      options: ShellCommandRunOptions(onProcess: onProcess),
+    );
+    return results.processResults;
+  }
+
+  ///
+  /// Run one or multiple plain text command(s).
+  ///
+  /// Commands can be split by line.
+  ///
+  /// Commands can be on multiple line if ending with ` ^` or `` \``.
+  ///
+  /// Returns a list of executed command line results.
+  ///
+  /// [onProcess] is called for each started process.
+  ///
+  @override
+  Future<ShellProcessResults> runScript(
+    String script, {
+    ShellCommandRunOptions? options,
+  }) async {
     var commands = shellScriptSplitLines(script);
 
+    var processResults = <ShellProcessResult>[];
     for (var command in commands) {
       // Display the comments
-      if (shellScriptLineIsComment(command)) {
-        if (options.commentVerbose) {
-          // ignore: avoid_print
-          print(command);
-        }
+      if (isLineComment(command)) {
         continue;
       }
-      var parts = shellSplit(command);
-      var executable = parts[0];
-      var arguments = parts.sublist(1);
-      results.add(
-        await runExecutableArguments(
-          executable,
-          arguments,
-          onProcess: onProcess,
-        ),
-      );
+      var shellCommand = ShellCommand.parse(command);
+
+      var processResult = await runCommand(shellCommand, options: options);
+      processResults.add(processResult);
     }
-    return ProcessResultInternalList(this as Shell, results);
+
+    var result = ShellProcessResultInternalList.fromList(
+      this as Shell,
+      processResults,
+    );
+    return result;
+  }
+
+  @override
+  Future<ShellProcessResult> runCommand(
+    ShellCommand command, {
+    ShellCommandRunOptions? options,
+  }) {
+    throw UnimplementedError('runCommand($command)');
+  }
+
+  @override
+  ShellProcessResult runCommandSync(ShellCommand command) {
+    throw UnimplementedError('runCommandSync($command)');
   }
 
   @override
@@ -371,8 +423,12 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
     String executable,
     List<String> arguments, {
     ShellOnProcessCallback? onProcess,
-  }) {
-    throw UnimplementedError('runExecutableArguments($executable, $arguments)');
+  }) async {
+    var shellResult = await runCommand(
+      ShellCommand(executable, arguments),
+      options: ShellCommandRunOptions(onProcess: onProcess),
+    );
+    return shellResult.processResult;
   }
 
   @override
@@ -409,12 +465,14 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
 /// Note that in the future (2.0), it might returns ShellProcessResult directly
 extension ProcessRunShellExtension on Shell {
   /// Create a [ShellProcessResult] from a [ProcessResult].
+  @Deprecated('removed')
   ShellProcessResult shellProcessResult(ProcessResult result) {
-    return ShellProcessResult(this, result);
+    return result.unwrapShellProcessResult();
   }
 
+  @Deprecated('removed, use processResult directly')
   /// Create a [ShellProcessResults] from a list of [ProcessResult].
   ShellProcessResults shellProcessResults(List<ProcessResult> results) {
-    return ShellProcessResults(this, results);
+    return ShellProcessResultInternalList.fromRawList(this, results);
   }
 }

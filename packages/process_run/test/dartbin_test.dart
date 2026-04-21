@@ -15,6 +15,9 @@ import 'package:process_run/src/dartbin_impl.dart'
         resolveDartExecutable,
         resolvedDartExecutable;
 import 'package:process_run/src/script_filename.dart';
+
+import 'package:process_run/utils/process_result_extension.dart'
+    show ProcessRunProcessResultTestExt;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -41,6 +44,7 @@ void defineTests() {
     group('dart', () {
       test('run_dart', () async {
         final result = await Process.run('dart', ['--version']);
+        expect(result.isShellProcessResult, isFalse);
         try {
           // New output is on stdout
           expect(result.outText.toLowerCase(), contains('dart'));

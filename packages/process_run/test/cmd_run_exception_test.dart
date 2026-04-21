@@ -1,9 +1,8 @@
 @TestOn('vm')
 library;
 
-import 'dart:io';
-
 import 'package:process_run/cmd_run.dart';
+import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -19,7 +18,7 @@ void main() {
         await runCmd(DartCmd(['version'])..workingDirectory = '/dummy');
         fail('should fail');
       } catch (e) {
-        expect(e, const TypeMatcher<ProcessException>());
+        expect(e, const TypeMatcher<ShellException>());
       }
     });
   });

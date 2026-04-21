@@ -16,6 +16,8 @@ import 'package:process_run/src/utils/hex_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
+import 'shell_test_common.dart';
+
 // Compiled version of echo.dart
 var echoExePath = join('.local', 'example', 'echo.exe');
 var echoExe = shellArgument(echoExePath);
@@ -454,12 +456,12 @@ $echoExe -o ${shellArgument(weirdText)}
     test('cd', () async {
       var shell = Shell(verbose: debug);
 
-      var results = await shell.run('dart test/src/current_dir.dart');
+      var results = await shell.run('dart test/src/$currentDirScriptName.dart');
 
       expect(results[0].stdout.toString().trim(), Directory.current.path);
 
       results = await shell.cd('test/src').run('''
-dart current_dir.dart
+dart $currentDirScriptName.dart
 ''');
       expect(
         results[0].stdout.toString().trim(),
@@ -476,11 +478,11 @@ dart current_dir.dart
     test('pushd', () async {
       var shell = Shell(verbose: debug);
 
-      var results = await shell.run('dart test/src/current_dir.dart');
+      var results = await shell.run('dart test/src/$currentDirScriptName.dart');
       expect(results[0].stdout.toString().trim(), Directory.current.path);
 
       shell = shell.pushd('test/src');
-      results = await shell.run('dart current_dir.dart');
+      results = await shell.run('dart $currentDirScriptName.dart');
       expect(
         results[0].stdout.toString().trim(),
         join(Directory.current.path, 'test', 'src'),
@@ -488,7 +490,7 @@ dart current_dir.dart
 
       // pop once
       shell = shell.popd();
-      results = await shell.run('dart test/src/current_dir.dart');
+      results = await shell.run('dart test/src/$currentDirScriptName.dart');
       expect(results[0].stdout.toString().trim(), Directory.current.path);
 
       // pop once
@@ -655,6 +657,7 @@ _tekartik_dummy_app_that_does_not_exits
     try {
       await shell.run('dummy_command_that_does_not_exist');
     } on ShellException catch (e) {
+      expect(e.shellCommand.toString(), 'dummy_command_that_does_not_exist');
       expect(e.command.toString(), 'dummy_command_that_does_not_exist');
       expect(e.message.contains('workingDirectory'), isTrue);
     }
@@ -682,7 +685,7 @@ _tekartik_dummy_app_that_does_not_exits
         environment: environment,
         includeParentEnvironment: false,
       );
-      await shell.run('current_dir');
+      await shell.run(currentDirScriptName);
     }
   });
   test(

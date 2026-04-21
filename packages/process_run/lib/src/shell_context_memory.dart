@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:process_run/src/shell_process_result.dart';
 import 'package:process_run/utils/shell_context.dart';
 
 import '../shell.dart';
@@ -16,6 +17,10 @@ class ShellContextMemory with ShellContextMixin implements ShellContext {
   Shell shell({ShellOptions? options}) {
     return ShellMemory(context: this, options: options ?? ShellOptions());
   }
+
+  @override
+  ShellEnvironment newShellEnvironment({Map<String, String>? environment}) =>
+      ShellEnvironment.empty();
 
   @override
   final platform = ShellContextPlatform.none();
@@ -35,15 +40,21 @@ class ShellMemory with ShellDefaultMixin, ShellMixin implements Shell {
   ShellMemory({required this.context, required this.options});
 
   @override
-  Future<ProcessResult> runExecutableArguments(
-    String executable,
-    List<String> arguments, {
-    ShellOnProcessCallback? onProcess,
+  Future<ShellProcessResult> runCommand(
+    ShellCommand command, {
+    ShellCommandRunOptions? options,
   }) async {
+    var executable = command.executable;
+    var arguments = command.arguments;
     switch (executable) {
       case 'echo':
-        var output = '${arguments.join(' ')}\n';
-        return ProcessResult(0, 0, output, '');
+        var output = shellArguments(arguments);
+        var result = wrapShellProcessResult(
+          this,
+          command,
+          ProcessResult(0, 0, output, ''),
+        );
+        return result;
       default:
         throw UnimplementedError(
           'Command not implemented: $executable ${arguments.join(' ')}',

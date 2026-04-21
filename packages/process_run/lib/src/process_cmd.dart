@@ -5,14 +5,16 @@ import 'package:process_run/process_run.dart';
 import 'package:process_run/src/io/io.dart';
 
 /// Process command
-class ProcessCmd {
+class ProcessCmd implements ShellCommand {
   /// Process start mode
   final ProcessStartMode? mode;
 
   /// Executable
+  @override
   String executable;
 
   /// Arguments
+  @override
   List<String> arguments;
 
   /// Working directory
@@ -72,9 +74,6 @@ class ProcessCmd {
     return false;
   }
 
-  @override
-  String toString() => executableArgumentsToString(executable, arguments);
-
   /// Debug string
   String toDebugString() {
     final sb = StringBuffer();
@@ -85,6 +84,9 @@ class ProcessCmd {
 
     return sb.toString();
   }
+
+  @override
+  String toString() => executableArgumentsToString(executable, arguments);
 }
 
 /// Standard output or error helper
