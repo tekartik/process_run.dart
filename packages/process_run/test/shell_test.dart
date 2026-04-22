@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/constant.dart';
 import 'package:process_run/src/common/import.dart';
@@ -20,6 +21,7 @@ import 'shell_test_common.dart';
 
 // Compiled version of echo.dart
 var echoExePath = join('.local', 'example', 'echo.exe');
+var echoExeAbsolutePath = normalize(absolute(echoExePath));
 var echoExe = shellArgument(echoExePath);
 Future<void> ensureEchoExe() async {
   if (!File(echoExe).existsSync()) {
@@ -758,7 +760,10 @@ _tekartik_dummy_app_that_does_not_exits
     await shell.run('echo 你好é');
     controller.close();
     if (!Platform.isWindows) {
-      expect(await controller.stream.toList(), ['\$ $echoExe -o 你好é', '你好é']);
+      expect(await controller.stream.toList(), [
+        '\$ ${shellArgument(echoExeAbsolutePath)} -o 你好é',
+        '你好é',
+      ]);
     }
   });
 
