@@ -1,16 +1,16 @@
 import 'dart:convert';
 
+import 'package:path/path.dart' as p;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/io/io.dart' as io;
 import 'package:process_run/src/platform/platform.dart';
-
 import 'package:process_run/src/process_run.dart' as impl;
 import 'package:process_run/src/shell_common.dart'
     show ShellCore, ShellCoreSync, ShellOptions, shellDebug;
 import 'package:process_run/src/shell_process_result.dart';
-import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/shell_utils.dart' as utils;
+import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
 
 export 'shell_common.dart' show shellDebug;
@@ -996,6 +996,31 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         ..stderrEncoding = _options.stderrEncoding
         ..stdoutEncoding = _options.stdoutEncoding
         ..workingDirectory = _options.workingDirectory;
+
+  /// Resolve an executable to its full path if needed. If the executable is already a path, it is returned as is.
+  String _resolveExecutableSync(String executable) {
+    var workingDirectory = _options.workingDirectory;
+    String? executableFullPath;
+
+    // Find executable if needed, i.e. if it is only a name
+
+    if (p.basename(executable) == executable) {
+      // Try to find it in path or use it as is
+      executableFullPath = utils.findExecutableSync(executable, _userPaths);
+    } else if (p.isRelative(executable)) {
+      executableFullPath = resolveExecutableFullPathSync(
+        p.normalize(
+          p.absolute(
+            p.join(workingDirectory ?? Directory.current.path, executable),
+          ),
+        ),
+      );
+    } else {
+      executableFullPath = resolveExecutableFullPathSync(executable);
+    }
+    return executableFullPath ?? executable;
+  }
+
   // Resolve the actual command ran
   ShellCommand _resolveExecutedCommand(ShellCommand command) {
     var executable = command.executable;
@@ -1008,8 +1033,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       executable = parts[0];
       arguments = [...parts.sublist(1), ...arguments];
     }
-    var executableFullPath =
-        findExecutableSync(executable, _userPaths) ?? executable;
+    var executableFullPath = _resolveExecutableSync(executable);
 
     return ShellCommand(executableFullPath, arguments);
   }
@@ -1168,4 +1192,12 @@ class _ProcessCmd extends ProcessCmd {
   @override
   String toString() =>
       executableArgumentsToString(executableShortName, arguments);
+}
+
+/// Test extension helper
+@visibleForTesting
+extension ProcessRunShellTestExt on Shell {
+  /// Resolve an absolute/relative executable to its full path if needed. If the executable is already a path, it is returned as is.
+  String resolveExecutableSync(String executable) =>
+      _resolveExecutableSync(executable);
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:path/path.dart';
+import 'package:process_run/process_run.dart';
 import 'package:process_run/src/shell_environment.dart';
 
 /// Find the command according to a given or current environment

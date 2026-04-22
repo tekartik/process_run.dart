@@ -14,8 +14,12 @@ Future<void> main() async {
 }
 
 /// Return the executable path safe to use in run as a shell argument
-Future<String> compileEcho({String? path, bool force = false}) async {
-  //path ??= '.';
+Future<String> compileEcho({
+  String? path,
+  bool force = false,
+  bool? verbose,
+}) async {
+  verbose ??= false;
   var folder = Platform.isWindows
       ? 'windows'
       : (Platform.isMacOS ? 'macos' : 'linux');
@@ -26,7 +30,7 @@ Future<String> compileEcho({String? path, bool force = false}) async {
     ),
   );
   var echoExeDir = dirname(echoExePath);
-  var shell = Shell(verbose: false, workingDirectory: path);
+  var shell = Shell(verbose: verbose, workingDirectory: path);
   var file = File(echoExePath);
   var needCompile = force || !file.existsSync();
 

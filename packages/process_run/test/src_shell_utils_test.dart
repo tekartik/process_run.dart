@@ -3,6 +3,7 @@ library;
 
 import 'dart:convert';
 
+import 'package:path/path.dart' as p;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/shell_utils.dart';
@@ -10,6 +11,8 @@ import 'package:process_run/src/shell_utils_common.dart'
     show isLineToBeContinued;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
+
+import 'shell_test_common.dart';
 
 void main() {
   group('shell_utils', () {
@@ -108,7 +111,7 @@ void main() {
       testSplitJoin("'foo bar'", expected: '"foo bar"');
     });
 
-    test('no_env', () {
+    test('findExecutableSync', () {
       expect(findExecutableSync('dart', []), isNull);
       expect(findExecutableSync('pub', []), isNull);
 
@@ -117,6 +120,22 @@ void main() {
         // no longer supported
         expect(findExecutableSync('pub', [dartSdkBinDirPath]), isNotNull);
       }
+    });
+    test('findExecutableSync local', () {
+      var currentDirScriptPath = p.join('test', 'src', currentDirScriptName);
+      var found = findExecutableSync(currentDirScriptPath, ['.']);
+      var ext = Platform.isWindows ? '.bat' : '';
+
+      expect(found, p.absolute(p.normalize('$currentDirScriptPath$ext')));
+    });
+    test('resolve', () {
+      var currentDirScriptPath = p.join('test', 'src', currentDirScriptName);
+      var found = resolveExecutableFullPathSync(
+        p.absolute(currentDirScriptPath),
+      );
+      var ext = Platform.isWindows ? '.bat' : '';
+
+      expect(found, p.absolute(p.normalize('$currentDirScriptPath$ext')));
     });
     test('folder not executable', () {
       expect(findExecutableSync('test', ['.']), isNull);

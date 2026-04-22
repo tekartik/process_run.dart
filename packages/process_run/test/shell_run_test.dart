@@ -5,8 +5,10 @@ library;
 
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:path/path.dart';
 import 'package:process_run/shell_run.dart';
+import 'package:process_run/src/shell.dart' show ProcessRunShellTestExt;
 import 'package:test/test.dart';
 
 import 'process_run_test_common.dart';
@@ -79,15 +81,38 @@ void main() {
       );
     });
 
-    test('current dir no env relative', () async {
-      await Shell(
+    test('current dir relative', () async {
+      var path = p.normalize(
+        p.absolute(join('test', 'src', currentDirHostScriptName)),
+      );
+      var shell = Shell(
         options: ShellOptions(
           workingDirectory: join('test', 'src'),
           environment: ShellEnvironment.empty(),
-          includeParentEnvironment: false,
+          includeParentEnvironment: true,
           verbose: true,
         ),
-      ).run(join('.', currentDirScriptName));
+      );
+      expect(
+        shell.resolveExecutableSync(currentDirScriptName),
+        currentDirScriptName,
+      );
+      expect(
+        shell.resolveExecutableSync(p.join('.', currentDirScriptName)),
+        path,
+      );
+      await shell.run(join('.', currentDirScriptName));
+      var relPath = join('..', 'test', 'src', currentDirScriptName);
+      shell = Shell(
+        options: ShellOptions(
+          workingDirectory: 'example',
+          environment: ShellEnvironment.empty(),
+          includeParentEnvironment: true,
+          verbose: true,
+        ),
+      );
+      expect(shell.resolveExecutableSync(relPath), path);
+      await shell.run(relPath);
     });
 
     test('current dir no env name only', () async {

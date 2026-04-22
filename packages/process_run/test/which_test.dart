@@ -5,14 +5,15 @@ library;
 
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:path/path.dart';
 import 'package:process_run/cmd_run.dart';
 import 'package:process_run/shell.dart';
+import 'package:process_run/src/shell_utils.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'dartbin_test.dart';
-
 import 'shell_test_common.dart';
 
 void main() {
@@ -58,6 +59,13 @@ void main() {
         ),
         Platform.isWindows ? '$currentDirScriptName.bat' : currentDirScriptName,
       );
+    });
+
+    test('which relative', () {
+      var currentDirScriptPath = p.join('test', 'src', currentDirScriptName);
+      var found = findExecutableSync(currentDirScriptPath, ['.']);
+      expect(found, isNotNull);
+      expect(whichSync(currentDirScriptPath), isNull);
     });
 
     test('dart_env', () async {

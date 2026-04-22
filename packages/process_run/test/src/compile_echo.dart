@@ -8,8 +8,13 @@ import 'package:pub_semver/pub_semver.dart';
 var _echoVersionOk = false;
 
 /// Return the executable path.
-Future<String> compileEchoExample({String? path, bool force = false}) async {
+Future<String> compileEchoExample({
+  String? path,
+  bool force = false,
+  bool? verbose,
+}) async {
   //path ??= '.';
+  verbose ??= false;
   var folder = Platform.isWindows
       ? 'windows'
       : (Platform.isMacOS ? 'macos' : 'linux');
@@ -20,7 +25,7 @@ Future<String> compileEchoExample({String? path, bool force = false}) async {
     ),
   );
   var echoExeDir = dirname(echoExePath);
-  var shell = Shell(verbose: false, workingDirectory: path);
+  var shell = Shell(verbose: verbose, workingDirectory: path);
   var file = File(echoExePath);
   var needCompile = force || !file.existsSync();
 
@@ -30,7 +35,9 @@ Future<String> compileEchoExample({String? path, bool force = false}) async {
   if (!needCompile && file.existsSync()) {
     try {
       var version = Version.parse(
-        (await shell.run('$echoExePath --version')).outText.trim(),
+        (await shell.run(
+          '${shellArgument(echoExePath)} --version',
+        )).outText.trim(),
       );
       if (version != packageVersion) {
         needCompile = true;

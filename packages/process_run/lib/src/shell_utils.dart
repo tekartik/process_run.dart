@@ -162,9 +162,8 @@ List<String> shellSplit(String command) => context.style == windows.style
 String shellJoin(List<String> parts) =>
     parts.map((part) => shellArgument(part)).join(' ');
 
-String? _findExecutableInPath(String command, String path) {
-  var commandPath = absolute(normalize(join(path, command)));
-
+/// command must be absolute
+String? resolveExecutableFullPathSync(String commandPath) {
   if (Platform.isWindows) {
     for (var ext in windowsPathExts) {
       var commandPathWithExt = '$commandPath$ext';
@@ -189,6 +188,11 @@ String? _findExecutableInPath(String command, String path) {
     }
   }
   return null;
+}
+
+String? _findExecutableInPath(String command, String path) {
+  var commandPath = absolute(normalize(join(path, command)));
+  return resolveExecutableFullPathSync(commandPath);
 }
 
 /// Find command in path
