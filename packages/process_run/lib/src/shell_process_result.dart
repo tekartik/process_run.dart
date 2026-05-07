@@ -14,7 +14,11 @@ abstract class ShellProcessResult {
     Shell shell,
     ShellCommand command,
     ProcessResult processResult,
-  ) => _ShellProcessResult(shell, command, processResult);
+  ) {
+    var shellProcessResult = _ShellProcessResult(shell, command, processResult);
+    _expando[processResult] = shellProcessResult;
+    return shellProcessResult;
+  }
 
   /// Exit code for the process.
   ///
@@ -38,6 +42,12 @@ abstract class ShellProcessResult {
 
   /// Process id of the process.
   int get pid;
+
+  /// The Shell
+  Shell get shell;
+
+  /// The command
+  ShellCommand get command;
 }
 
 /// Shell process result extension
@@ -129,7 +139,10 @@ extension ProcessRunShellProcessResultExt on ShellProcessResult {
 }
 
 class _ShellProcessResult implements ShellProcessResult {
+  @override
   final Shell shell;
+  @override
+  ShellCommand get command => processExecutableArguments;
   final ProcessResult processResult;
   final ShellCommand processExecutableArguments;
   _ShellProcessResult(
@@ -157,13 +170,21 @@ class _ShellProcessResult implements ShellProcessResult {
 }
 
 /// Shell process results
-abstract class ShellProcessResults implements List<ShellProcessResult> {}
+abstract class ShellProcessResults implements List<ShellProcessResult> {
+  /// Throws if already a a shell process Results
+  factory ShellProcessResults.fromList(List<ShellProcessResult> list) {
+    if (list is ShellProcessResults) {
+      throw ArgumentError('Already has ShellProcessResult attached');
+    }
+
+    /// If empty, shell is less relevant so use default
+    var shell = list.firstOrNull?.shell ?? Shell();
+    return ShellProcessResultInternalList.fromList(shell, list);
+  }
+}
 
 /// Shell process results extension
-extension ProcessRunShellProcessResultsPrvExt on ShellProcessResults {
-  /// Get the compat precess results
-  List<ProcessResult> get processResults => _impl.processResults;
-}
+extension ProcessRunShellProcessResultsPrvExt on ShellProcessResults {}
 
 /// Shell process results extension
 extension ProcessRunShellProcessResultsExt on ShellProcessResults {
@@ -209,6 +230,9 @@ extension ProcessRunShellProcessResultsExt on ShellProcessResults {
   /// Err as string
   String get stderrAsString =>
       map((result) => result.stderrAsString).join('\n');
+
+  /// Get the compat precess results
+  List<ProcessResult> get processResults => _impl.processResults;
 }
 
 abstract class _ShellProcessResults implements ShellProcessResultInternalList {
@@ -305,7 +329,7 @@ abstract class ShellProcessResultInternalList implements ShellProcessResults {
 
 final _expando = Expando<ShellProcessResult>();
 
-/// Needed
+/// Needed to set the expando
 /// Internal
 ShellProcessResult wrapShellProcessResult(
   Shell shell,
@@ -317,7 +341,6 @@ ShellProcessResult wrapShellProcessResult(
     processExecutableArguments,
     processResult,
   );
-  _expando[processResult] = shellProcessResult;
   return shellProcessResult;
 }
 
@@ -326,7 +349,8 @@ extension ProcessRunProcessResultPrvExt on ProcessResult {
   /// Internal
   ShellProcessResult unwrapShellProcessResult() {
     var shellProcessResult = unwrapShellProcessResultOrNull();
-    shellProcessResult ??= ShellProcessResult(
+    // no expando here
+    shellProcessResult ??= _ShellProcessResult(
       Shell(),
       ShellCommand.empty(),
       this,
@@ -346,6 +370,15 @@ extension ProcessRunProcessResultTestExt on ProcessResult {
   /// typically only true for native shell process results
   bool get isShellProcessResult {
     return unwrapShellProcessResultOrNull() != null;
+  }
+}
+
+/// Test extension
+@visibleForTesting
+extension ProcessRunProcessResultListTestExt on List<ProcessResult> {
+  /// typically only true for native shell process results
+  bool get isShellProcessResults {
+    return this is ProcessResultInternalList;
   }
 }
 

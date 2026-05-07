@@ -39,6 +39,7 @@ void shellCoreTests(ShellContext shellContext) {
   test('shell echo test', () async {
     var shell = shellContext.shell();
     var processResults = await shell.run('echo Hello');
+
     var text = processResults.outText.trim();
     expect(text, 'Hello');
     var processResult = processResults.first;

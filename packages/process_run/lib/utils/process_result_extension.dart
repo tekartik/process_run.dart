@@ -2,10 +2,10 @@ import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/process_cmd.dart';
 import 'package:process_run/src/shell_bytes_controller.dart';
 import 'package:process_run/src/shell_process_result.dart';
-
+import 'package:process_run/src/shell_process_result.dart' as internal;
 import '../shell.dart';
 export 'package:process_run/src/shell_process_result.dart'
-    show ProcessRunProcessResultTestExt;
+    show ProcessRunProcessResultTestExt, ProcessRunProcessResultListTestExt;
 
 /// run response helper.
 extension ProcessRunProcessResultsExt on List<ProcessResult> {
@@ -90,8 +90,19 @@ extension ProcessRunProcessResultExt on ProcessResult {
   }
 
   /// Process executable arguments
-  ShellCommand get processExecutableArguments =>
-      _shellProcessResult.processExecutableArguments;
+  /// Compat, prefer command
+  ShellCommand get processExecutableArguments => command;
+
+  /// Process command
+  ShellCommand get command => _shellProcessResult.command;
+
+  /// Used internally
+  ShellProcessResult wrapShellProcessResult(Shell shell, ShellCommand command) {
+    if (isShellProcessResult) {
+      throw ArgumentError('Already has ShellProcessResult attached');
+    }
+    return internal.wrapShellProcessResult(shell, command, this);
+  }
 }
 
 /// Process helper.

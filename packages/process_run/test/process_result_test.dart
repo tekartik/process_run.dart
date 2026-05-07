@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:process_run/shell.dart';
 import 'package:process_run/utils/process_result_extension.dart';
 import 'package:test/test.dart';
 
@@ -14,6 +14,21 @@ void main() {
       var result = ProcessResult(0, 0, '', 'err1\nerr2');
       expect(result.errLines, ['err1', 'err2']);
       expect(result.errText, 'err1\nerr2');
+    });
+
+    test('wrapShellProcessResult', () {
+      var result = ProcessResult(1, 2, 'stdout', 'stderr');
+      expect(result.isShellProcessResult, isFalse);
+      expect(result.command.toCommandString(), '');
+      expect(result.isShellProcessResult, isFalse);
+
+      var shellResult = result.wrapShellProcessResult(
+        Shell(),
+        ShellCommand.parse('test'),
+      );
+      expect(shellResult.processResult.isShellProcessResult, isTrue);
+      expect(result.exitCode, shellResult.processResult.exitCode);
+      expect(result.command.toCommandString(), 'test');
     });
   });
 
@@ -34,6 +49,32 @@ void main() {
       ];
       expect(results.errLines, ['err1', 'err2', 'err3']);
       expect(results.errText, 'err1\nerr2\nerr3');
+    });
+
+    test('wrapShellProcessResults', () {
+      var results = [
+        ProcessResult(0, 0, '', 'err1'),
+        ProcessResult(0, 0, '', 'err2\nerr3'),
+      ];
+      expect(results.isShellProcessResults, isFalse);
+      var shellResults = [
+        ShellProcessResult(
+          Shell(),
+          ShellCommand.empty(),
+          ProcessResult(1, 2, 'stdout', 'stderr'),
+        ),
+      ];
+      expect(shellResults, isNot(isA<ShellProcessResults>()));
+      var rawResult = shellResults.first.processResult;
+      expect(rawResult.isShellProcessResult, isTrue);
+      shellResults = ShellProcessResults.fromList(shellResults);
+      expect(shellResults, isA<ShellProcessResults>());
+      rawResult = shellResults.first.processResult;
+      expect(rawResult.isShellProcessResult, isTrue);
+      expect(
+        () => ShellProcessResults.fromList(shellResults),
+        throwsArgumentError,
+      );
     });
   });
 }
