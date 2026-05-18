@@ -64,5 +64,13 @@ void main() {
       expect(err.results.length, 1);
       expect(systemEncoding.decode(err.results[0].asValue!.value), 'err');
     });
+
+    test('command with error', () async {
+      if (Platform.isLinux || Platform.isMacOS) {
+        var cmd = ProcessCmd('ls', ['dummy_E67kmTUEgsPmyp74Dj8PNDFRTXxGZ9kM']);
+        var result = await runCmd(cmd);
+        expect(result.exitCode, isNot(0));
+      }
+    });
   });
 }

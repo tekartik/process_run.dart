@@ -45,7 +45,6 @@ class ProcessCmd implements ShellCommand {
     this.runInShell,
     this.stdoutEncoding = systemEncoding,
     this.stderrEncoding = systemEncoding,
-    ShellOptions? options,
     this.mode,
   });
 

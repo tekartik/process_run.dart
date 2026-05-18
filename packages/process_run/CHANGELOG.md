@@ -1,4 +1,4 @@
-## 1.3.3
+## 1.3.3+1
 
 * Add `ShellCommand`, `ShellCommandRunOption` and `Shell.runCommand`
 
@@ -6,6 +6,7 @@
 
 * Add `ShellProcessResult` and `ShellProcessResults` for proper output decoding
 * Add experiment `pipe` feature to use on `Shell.run`
+
 ## 1.3.1+1
 
 * Add `command` info to `ShellException` and `toDebugString()` helper

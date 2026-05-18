@@ -5,11 +5,9 @@ library;
 /// Command runner
 ///
 import 'dart:async';
-import 'package:process_run/src/io/io.dart';
+import 'package:process_run/shell.dart';
 
 import 'package:process_run/src/process_run.dart';
-
-import 'src/process_cmd.dart';
 
 export 'dartbin.dart'
     show
@@ -51,6 +49,7 @@ export 'src/dartbin_cmd.dart'
         dartBinFileName,
         parsePlatformChannel,
         parsePlatformVersion;
+
 // ignore: deprecated_member_use_from_same_package
 export 'src/dev_cmd_run.dart' show devRunCmd;
 export 'src/flutterbin_cmd.dart' show flutterExecutablePath, FlutterCmd;
@@ -63,6 +62,7 @@ export 'src/webdev.dart' show WebDevCmd;
 
 ///
 /// Execute a predefined ProcessCmd command
+/// Avoid and prefer Shell instead
 ///
 /// if [commandVerbose] is true, it writes the command line executed preceeded by $ to stdout. It streams
 /// stdout/error if [verbose] is true.
@@ -70,16 +70,26 @@ export 'src/webdev.dart' show WebDevCmd;
 ///
 Future<ProcessResult> runCmd(
   ProcessCmd cmd, {
+  ShellOptions? options,
   bool? verbose,
   bool? commandVerbose,
   Stream<List<int>>? stdin,
   StreamSink<List<int>>? stdout,
   StreamSink<List<int>>? stderr,
-}) => processCmdRun(
-  cmd,
-  verbose: verbose,
-  commandVerbose: commandVerbose,
-  stdin: stdin,
-  stdout: stdout,
-  stderr: stderr,
-);
+}) async {
+  options ??= ShellOptions(
+    throwOnError: false,
+    verbose: verbose ?? false,
+    commandVerbose: commandVerbose ?? verbose,
+    stderrEncoding: cmd.stderrEncoding,
+    stdoutEncoding: cmd.stdoutEncoding,
+    workingDirectory: cmd.workingDirectory,
+    stdin: stdin,
+    stdout: stdout,
+    stderr: stderr,
+    environment: cmd.environment,
+    includeParentEnvironment: cmd.includeParentEnvironment,
+    runInShell: cmd.runInShell,
+  );
+  return await processCmdRun(cmd, options: options);
+}
