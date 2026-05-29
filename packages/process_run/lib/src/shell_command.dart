@@ -4,12 +4,6 @@ import 'package:process_run/process_run.dart';
 
 /// Process executable arguments
 class ShellCommand {
-  /// Executable
-  final String executable;
-
-  /// Arguments
-  final List<String> arguments;
-
   /// Process executable and arguments
   ShellCommand(this.executable, this.arguments);
 
@@ -25,6 +19,12 @@ class ShellCommand {
   /// Empty command
   @internal
   ShellCommand.empty() : executable = '', arguments = [];
+
+  /// Executable
+  final String executable;
+
+  /// Arguments
+  final List<String> arguments;
   @override
   int get hashCode => executable.hashCode;
 

@@ -6,6 +6,19 @@ import 'package:process_run/src/io/io.dart';
 
 /// Process command
 class ProcessCmd implements ShellCommand {
+  /// Process command
+  ProcessCmd(
+    this.executable,
+    this.arguments, {
+    this.workingDirectory,
+    this.environment,
+    this.includeParentEnvironment = true,
+    this.runInShell,
+    this.stdoutEncoding = systemEncoding,
+    this.stderrEncoding = systemEncoding,
+    this.mode,
+  });
+
   /// Process start mode
   final ProcessStartMode? mode;
 
@@ -34,19 +47,6 @@ class ProcessCmd implements ShellCommand {
 
   /// Standard error encoding
   Encoding? stderrEncoding;
-
-  /// Process command
-  ProcessCmd(
-    this.executable,
-    this.arguments, {
-    this.workingDirectory,
-    this.environment,
-    this.includeParentEnvironment = true,
-    this.runInShell,
-    this.stdoutEncoding = systemEncoding,
-    this.stderrEncoding = systemEncoding,
-    this.mode,
-  });
 
   /// Clone
   ProcessCmd clone() => ProcessCmd(

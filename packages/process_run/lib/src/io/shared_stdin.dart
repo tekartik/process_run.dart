@@ -26,15 +26,14 @@ final SharedStdIn sharedStdIn = SharedStdIn(stdin);
 /// used directly.
 @visibleForTesting
 class SharedStdIn extends Stream<List<int>> {
+  /// Creates a new [SharedStdIn] instance.
+  SharedStdIn([Stream<List<int>>? stream]) : _originalStream = stream ?? stdin;
   StreamController<List<int>>? _current;
 
   // ignore: cancel_subscriptions
   StreamSubscription<List<int>>? _sub;
   var _terminated = false;
   final Stream<List<int>> _originalStream;
-
-  /// Creates a new [SharedStdIn] instance.
-  SharedStdIn([Stream<List<int>>? stream]) : _originalStream = stream ?? stdin;
 
   /// Returns a future that completes with the next line.
   ///
@@ -81,6 +80,7 @@ class SharedStdIn extends Stream<List<int>> {
     if (_terminated) {
       throw StateError('Stdin has already been terminated.');
     }
+    // ignore: close_sinks
     final controller = _getCurrent();
     if (controller.hasListener) {
       throw StateError(

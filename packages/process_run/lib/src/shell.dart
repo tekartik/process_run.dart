@@ -159,33 +159,6 @@ List<ProcessResult> runSync(
 /// A list of ProcessResult is returned
 ///
 abstract class Shell implements ShellCore, ShellCoreSync {
-  final ShellOptions _options;
-
-  /// Incremental internal runId
-  var _runId = 0;
-
-  /// Killed runId. would kill any process with a lower run id
-  var _killedRunId = 0;
-
-  /// Current kill process signal
-  late ProcessSignal _killedProcessSignal;
-
-  /// Current child process running.
-  Process? _currentProcess;
-
-  ProcessCmd? _currentProcessCmd;
-  int? _currentProcessRunId;
-
-  /// Parent shell for pushd/popd
-  Shell? _parentShell;
-
-  /// Get it only once
-  List<String>? _userPathsCache;
-
-  /// Resolve environment
-  List<String> get _userPaths =>
-      _userPathsCache ??= List.from(_options.environment.paths);
-
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
   /// Unless specified [runInShell] will be false. However on windows, it will
@@ -240,6 +213,32 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// Internal use only.
   @protected
   Shell.implWithOptions(ShellOptions options) : _options = options;
+  final ShellOptions _options;
+
+  /// Incremental internal runId
+  var _runId = 0;
+
+  /// Killed runId. would kill any process with a lower run id
+  var _killedRunId = 0;
+
+  /// Current kill process signal
+  late ProcessSignal _killedProcessSignal;
+
+  /// Current child process running.
+  Process? _currentProcess;
+
+  ProcessCmd? _currentProcessCmd;
+  int? _currentProcessRunId;
+
+  /// Parent shell for pushd/popd
+  Shell? _parentShell;
+
+  /// Get it only once
+  List<String>? _userPathsCache;
+
+  /// Resolve environment
+  List<String> get _userPaths =>
+      _userPathsCache ??= List.from(_options.environment.paths);
 
   /// Shell options.
   @override
@@ -641,7 +640,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ) {
     var verbose = options.verbose;
     var commandVerbose = options.commandVerbose;
+    // ignore: close_sinks
     var stdout = options.stdout;
+    // ignore: close_sinks
     var stderr = options.stderr;
     var stdoutEncoding = options.stdoutEncoding;
     var stderrEncoding = options.stderrEncoding;
@@ -699,7 +700,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       } else if (data is String && encoding != null) {
         return encoding.encode(data);
       } else {
-        throw 'Unexpected data type: ${data.runtimeType}';
+        throw StateError('Unexpected data type: ${data.runtimeType}');
       }
     }
 
@@ -758,6 +759,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       }
       return processResult;
     } on ProcessException catch (e) {
+      // ignore: close_sinks
       var stderr = _options.stderr ?? io.stderr;
       void writeln([String? msg]) {
         stderr.add(utf8.encode(msg ?? ''));
@@ -804,7 +806,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     var workingDirectory = _options.workingDirectory;
     var verbose = _options.verbose;
     var commandVerbose = _options.commandVerbose;
+    // ignore: close_sinks
     var stdout = _options.stdout;
+    // ignore: close_sinks
     var stderr = _options.stderr;
     var stdoutEncoding = _options.stdoutEncoding;
     var stderrEncoding = _options.stderrEncoding;
@@ -1123,6 +1127,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
             );
           }
         } on ProcessException catch (e) {
+          // ignore: close_sinks
           var stderr = _options.stderr ?? io.stderr;
           void writeln([String? msg]) {
             stderr.add(utf8.encode(msg ?? ''));
@@ -1180,14 +1185,13 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
 // Simplify toString to avoid the full path got with which
 class _ProcessCmd extends ProcessCmd {
-  final String executableShortName;
-
   _ProcessCmd(
     super.executable,
     super.arguments, {
     required super.mode,
     required this.executableShortName,
   });
+  final String executableShortName;
 
   @override
   String toString() =>

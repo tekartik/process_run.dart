@@ -6,13 +6,13 @@ import 'package:process_run/src/user_config.dart';
 
 /// File content helper
 class FileContent {
-  /// io file
-  late File file;
-
   /// File content helper
   FileContent(String path) {
     file = File(path);
   }
+
+  /// io file
+  late File file;
 
   /// Read the file
   Future<bool> read() async {

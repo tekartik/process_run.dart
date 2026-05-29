@@ -24,15 +24,6 @@ var userConfigAliasKeys = ['alias', 'aliases'];
 
 /// User config.
 class UserConfig {
-  /// never null
-  final Map<String, String> vars;
-
-  /// never null
-  final List<String> paths;
-
-  /// never null
-  final Map<String, String> aliases;
-
   /// User config
   UserConfig({
     Map<String, String>? vars,
@@ -41,6 +32,15 @@ class UserConfig {
   }) : vars = vars ?? <String, String>{},
        paths = paths ?? <String>[],
        aliases = aliases ?? <String, String>{};
+
+  /// never null
+  final Map<String, String> vars;
+
+  /// never null
+  final List<String> paths;
+
+  /// never null
+  final Map<String, String> aliases;
 
   @override
   String toString() =>
@@ -99,15 +99,6 @@ void resetUserConfig() {
 
 /// Env file config
 class EnvFileConfig {
-  /// paths
-  final List<String> paths;
-
-  /// vars
-  final Map<String, String> vars;
-
-  /// aliases
-  final Map<String, String> aliases;
-
   /// Env file config
   EnvFileConfig(
     List<String>? paths,
@@ -116,6 +107,15 @@ class EnvFileConfig {
   ) : paths = paths ?? <String>[],
       vars = vars ?? <String, String>{},
       aliases = aliases ?? <String, String>{};
+
+  /// paths
+  final List<String> paths;
+
+  /// vars
+  final Map<String, String> vars;
+
+  /// aliases
+  final Map<String, String> aliases;
 
   /// Has no vars, paths nor aliases.
   bool get isEmpty => paths.isEmpty && vars.isEmpty && aliases.isEmpty;

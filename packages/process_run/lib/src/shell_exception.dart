@@ -5,23 +5,6 @@ export 'shell_common.dart' show shellDebug;
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 abstract class ShellException implements Exception {
-  /// Prefer
-  ShellCommand? get shellCommand;
-
-  /// Command ran if any
-  /// Deprecated
-  ProcessCmd? get command;
-
-  /// Prefer
-  ShellProcessResult? get shellProcessResult;
-
-  /// Process result
-  /// Deprecated
-  ProcessResult? get result;
-
-  /// Exception message
-  String get message;
-
   /// Shell exception
   /// @deprecated
   factory ShellException(
@@ -50,6 +33,23 @@ abstract class ShellException implements Exception {
     command: processCmd,
   );
 
+  /// Prefer
+  ShellCommand? get shellCommand;
+
+  /// Command ran if any
+  /// Deprecated
+  ProcessCmd? get command;
+
+  /// Prefer
+  ShellProcessResult? get shellProcessResult;
+
+  /// Process result
+  /// Deprecated
+  ProcessResult? get result;
+
+  /// Exception message
+  String get message;
+
   @override
   String toString() => 'ShellException($message)';
 
@@ -59,6 +59,14 @@ abstract class ShellException implements Exception {
 
 /// Exception thrown in exitCode != 0 and throwOnError is true
 class _ShellException implements ShellException {
+  /// Shell exception
+  _ShellException({
+    required this.message,
+    this.shellProcessResult,
+    this.command,
+    this.shellCommand,
+  });
+
   /// Prefer
   @override
   final ShellCommand? shellCommand;
@@ -80,14 +88,6 @@ class _ShellException implements ShellException {
   /// Exception message
   @override
   final String message;
-
-  /// Shell exception
-  _ShellException({
-    required this.message,
-    this.shellProcessResult,
-    this.command,
-    this.shellCommand,
-  });
 
   @override
   String toString() => 'ShellException($message)';

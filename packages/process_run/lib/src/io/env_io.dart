@@ -6,6 +6,13 @@ import 'package:process_run/src/user_config.dart';
 
 /// Helper to read and write the environment file
 class ShellEnvIoHelper {
+  /// Create a helper
+  ShellEnvIoHelper({
+    required this.shell,
+    required this.local,
+    required this.verbose,
+  });
+
   /// Shell
   final Shell shell;
 
@@ -14,13 +21,6 @@ class ShellEnvIoHelper {
 
   /// Verbose
   final bool verbose;
-
-  /// Create a helper
-  ShellEnvIoHelper({
-    required this.shell,
-    required this.local,
-    required this.verbose,
-  });
 
   /// Label
   String get label => local ? 'local' : 'user';

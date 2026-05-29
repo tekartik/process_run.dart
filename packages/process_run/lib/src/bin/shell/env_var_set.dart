@@ -6,18 +6,17 @@ import 'package:process_run/src/io/io.dart';
 
 /// Set an environment variable in a user/local config file
 class ShellEnvVarSetCommand extends ShellEnvCommandBase {
-  late final _helper = ShellEnvVarSetIoHelper(
-    shell: Shell(),
-    local: local,
-    verbose: verbose,
-  );
-
   /// Set an environment variable in a user/local config file
   ShellEnvVarSetCommand()
     : super(
         name: 'set',
         description: 'Set environment variable in a user/local config file',
       );
+  late final _helper = ShellEnvVarSetIoHelper(
+    shell: Shell(),
+    local: local,
+    verbose: verbose,
+  );
 
   @override
   void printUsage() {

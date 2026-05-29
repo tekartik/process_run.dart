@@ -14,6 +14,8 @@ var _log = print;
 
 /// In memory implementation of [IOSink]
 class InMemoryIOSink with IOSinkMixin implements IOSink {
+  /// In memory implementation of [IOSink]
+  InMemoryIOSink(this.type);
   @override
   final StdioStreamType type;
 
@@ -23,9 +25,6 @@ class InMemoryIOSink with IOSinkMixin implements IOSink {
   /// Lines
   Iterable<String> get lines =>
       LineSplitter.split(encoding.decode(data.expand((e) => e).toList()));
-
-  /// In memory implementation of [IOSink]
-  InMemoryIOSink(this.type);
 
   @override
   void add(core.List<core.int> data) {
@@ -41,6 +40,7 @@ mixin IOSinkMixin implements IOSink {
   bool get _isErr => type == StdioStreamType.err;
 
   /// Delegate
+  // ignore: close_sinks
   late final IOSink ioSinkDelegate = _isErr ? ioStderr : ioStdout;
 
   /// sink type
@@ -106,17 +106,18 @@ mixin IOSinkMixin implements IOSink {
 
 /// Shell stdio lines grouper implementation of [IOSink]
 class ShellStdioLinesGrouperIOSink with IOSinkMixin implements IOSink {
+  /// Shell stdio lines grouper implementation of [IOSink]
+  ShellStdioLinesGrouperIOSink(this.grouper, this.type, {IOSink? ioSink}) {
+    this.ioSink = ioSink ?? super.ioSink;
+  }
+
   /// grouper
   final ShellStdioLinesGrouper grouper;
   @override
   final StdioStreamType type;
   @override
+  // ignore: close_sinks
   late final IOSink ioSink;
-
-  /// Shell stdio lines grouper implementation of [IOSink]
-  ShellStdioLinesGrouperIOSink(this.grouper, this.type, {IOSink? ioSink}) {
-    this.ioSink = ioSink ?? super.ioSink;
-  }
 
   @override
   void add(core.List<core.int> data) {
@@ -126,6 +127,7 @@ class ShellStdioLinesGrouperIOSink with IOSinkMixin implements IOSink {
       stderr: grouper.stderr,
     );
     // devPrint('[$zoneId/$currentZoneId] Adding data ${encoding.decode(data).trim()}');
+    // ignore: close_sinks
     var sink = _isErr ? streamer.err : streamer.out;
     sink.add(data);
   }
@@ -138,6 +140,9 @@ int _inZoneCount = 0;
 
 /// Group in zones.
 class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
+  /// Group in zones.
+  ShellStdioLinesGrouper({this.stdout, this.stderr});
+
   /// Overriden mainly for testing.
   final IOSink? stdout;
 
@@ -153,10 +158,8 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
   /// Ordered streamer ids
   final streamerZoneIds = <int>[];
 
-  /// Group in zones.
-  ShellStdioLinesGrouper({this.stdout, this.stderr});
-
   @override
+  // ignore: close_sinks
   late final out = ShellStdioLinesGrouperIOSink(
     this,
     StdioStreamType.out,
@@ -164,6 +167,7 @@ class ShellStdioLinesGrouper with ShellStdioMixin implements ShellStdio {
   );
 
   @override
+  // ignore: close_sinks
   late final err = ShellStdioLinesGrouperIOSink(
     this,
     StdioStreamType.err,
@@ -285,19 +289,20 @@ enum StdioStreamType {
 
 /// Stdio stream line.
 class StdioStreamLine {
+  /// Stdio stream line.
+  StdioStreamLine(this.type, this.line);
+
   /// Stream type.
   final StdioStreamType type;
 
   /// Line.
   final String line;
-
-  /// Stdio stream line.
-  StdioStreamLine(this.type, this.line);
 }
 
 /// Memory implementation of [ShellOutputLinesStreamer]
 class ShellOutputLinesStreamerMemory with ShellOutputLinesStreamerMixin {
   /// Memory implementation of [ShellOutputLinesStreamer]
+  // ignore: avoid_unused_constructor_parameters
   ShellOutputLinesStreamerMemory({io.IOSink? stdout, io.IOSink? stderr});
 
   // No effect by default (in memory), overriden on io.
@@ -356,16 +361,16 @@ mixin ShellOutputLinesStreamerMixin implements ShellOutputLinesStreamer {
 
 /// Stdio streamer.
 abstract class ShellOutputLinesStreamer {
+  /// default is io version.
+  factory ShellOutputLinesStreamer({io.IOSink? stdout, io.IOSink? stderr}) {
+    return ShellOutputLinesStreamerPlatform(stdout: stdout, stderr: stderr);
+  }
+
   /// Out stream sink
   StreamSink<List<int>> get out;
 
   /// Err stream sink
   StreamSink<List<int>> get err;
-
-  /// default is io version.
-  factory ShellOutputLinesStreamer({io.IOSink? stdout, io.IOSink? stderr}) {
-    return ShellOutputLinesStreamerPlatform(stdout: stdout, stderr: stderr);
-  }
 
   /// Get the current state.
   bool get current;

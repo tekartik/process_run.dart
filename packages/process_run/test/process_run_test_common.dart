@@ -16,7 +16,7 @@ String get streamerScriptPath => join(projectTop, 'example', 'streamer.dart');
 // does not exists
 String get dummyExecutable => join(dirname(testDir), 'example', 'dummy');
 
-final String dummyCommand = '_tekartik_process_run_dummy';
+const String dummyCommand = '_tekartik_process_run_dummy';
 
 Stream<List<int>> testStdin = stdin.asBroadcastStream();
 
@@ -24,6 +24,12 @@ Stream<List<int>> testStdin = stdin.asBroadcastStream();
 ///
 /// This is used for testing code that interacts with sinks.
 class TestSink<T> implements StreamSink<T> {
+  /// Creates a new sink.
+  ///
+  /// If [onDone] is passed, it's called when the user calls [close]. Its result
+  /// is piped to the [done] future.
+  TestSink({Object? Function()? onDone}) : _onDone = onDone ?? (() {});
+
   /// The results corresponding to events that have been added to the sink.
   final results = <Result<T>>[];
 
@@ -36,12 +42,6 @@ class TestSink<T> implements StreamSink<T> {
   final _doneCompleter = Completer<dynamic>();
 
   final Func0 _onDone;
-
-  /// Creates a new sink.
-  ///
-  /// If [onDone] is passed, it's called when the user calls [close]. Its result
-  /// is piped to the [done] future.
-  TestSink({Object? Function()? onDone}) : _onDone = onDone ?? (() {});
 
   @override
   void add(T event) {

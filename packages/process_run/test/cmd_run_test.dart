@@ -49,6 +49,7 @@ void main() {
         '\$ $dartExecutable $echoScriptPath --stdout out\n',
       );
       expect(systemEncoding.decode(out.results[1].asValue!.value), 'out');
+      await out.close();
     });
 
     test('connect_stderr', () async {
@@ -63,6 +64,7 @@ void main() {
       result = await runCmd(cmd, stderr: err);
       expect(err.results.length, 1);
       expect(systemEncoding.decode(err.results[0].asValue!.value), 'err');
+      await err.close();
     });
 
     test('command with error', () async {

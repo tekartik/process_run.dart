@@ -9,6 +9,37 @@ import 'package:pub_semver/pub_semver.dart';
 
 /// Shell command base class
 class ShellBinCommand {
+  /// Shell bin command
+  ShellBinCommand({
+    required this.name,
+    Version? version,
+    ArgParser? parser,
+    ShellBinCommand? parent,
+    String? description,
+  }) {
+    //_onRun = onRun;
+    _parser = parser;
+    _description = description;
+    _version = version;
+    // read or create
+    parser = this.parser;
+    // Add missing common commands
+    if (parent == null) {
+      parser.addFlag(
+        flagVersion,
+        help: 'Print the command version',
+        negatable: false,
+      );
+      parser.addFlag(
+        flagVerbose,
+        abbr: 'v',
+        help: 'Verbose mode',
+        negatable: false,
+      );
+    }
+    parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
+  }
+
   /// Optional parent
   ShellBinCommand? parent;
 
@@ -92,37 +123,6 @@ class ShellBinCommand {
   }
 
   final _commands = <String, ShellBinCommand>{};
-
-  /// Shell bin command
-  ShellBinCommand({
-    required this.name,
-    Version? version,
-    ArgParser? parser,
-    ShellBinCommand? parent,
-    String? description,
-  }) {
-    //_onRun = onRun;
-    _parser = parser;
-    _description = description;
-    _version = version;
-    // read or create
-    parser = this.parser;
-    // Add missing common commands
-    if (parent == null) {
-      parser.addFlag(
-        flagVersion,
-        help: 'Print the command version',
-        negatable: false,
-      );
-      parser.addFlag(
-        flagVerbose,
-        abbr: 'v',
-        help: 'Verbose mode',
-        negatable: false,
-      );
-    }
-    parser.addFlag(flagHelp, abbr: 'h', help: 'Usage help', negatable: false);
-  }
 
   /// Add a command
   void addCommand(ShellBinCommand command) {

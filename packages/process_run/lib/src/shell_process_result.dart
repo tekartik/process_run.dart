@@ -139,17 +139,17 @@ extension ProcessRunShellProcessResultExt on ShellProcessResult {
 }
 
 class _ShellProcessResult implements ShellProcessResult {
+  _ShellProcessResult(
+    this.shell,
+    this.processExecutableArguments,
+    this.processResult,
+  );
   @override
   final Shell shell;
   @override
   ShellCommand get command => processExecutableArguments;
   final ProcessResult processResult;
   final ShellCommand processExecutableArguments;
-  _ShellProcessResult(
-    this.shell,
-    this.processExecutableArguments,
-    this.processResult,
-  );
 
   @override
   int get exitCode => processResult.exitCode;
@@ -248,10 +248,9 @@ abstract class _ShellProcessResults implements ShellProcessResultInternalList {
 
 abstract class _ShellProcessResultsBase extends ListBase<ShellProcessResult>
     implements ShellProcessResultInternalList, _ShellProcessResults {
+  _ShellProcessResultsBase(this.shell, this._list);
   final Shell shell;
   final List<ShellProcessResult> _list;
-
-  _ShellProcessResultsBase(this.shell, this._list);
 
   @override
   int get length => _list.length;
@@ -393,10 +392,9 @@ extension ProcessResultInternalListExt on ProcessResultInternalList {
 
 class _ProcessResultInternalList extends ListBase<ProcessResult>
     implements ProcessResultInternalList {
+  _ProcessResultInternalList(this.shell, this.list);
   final Shell shell;
   final List<ProcessResult> list;
-
-  _ProcessResultInternalList(this.shell, this.list);
 
   @override
   int get length => list.length;

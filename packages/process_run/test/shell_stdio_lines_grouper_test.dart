@@ -61,6 +61,9 @@ echo --wait 100 --stdout hello2
         stdio.runZoned(() => printHello123Slow()),
         printHello123Slow(),
       ]);
+      await inMemoryStderr.close();
+      await isMemoryStdout.close();
+
       // Not working yet
       // expect(isMemoryStdout.lines, ['hello1', 'hello2', 'hello1', 'hello2', 'hello1', 'hello2']);
     });
@@ -78,6 +81,8 @@ echo --wait 100 --stdout hello2
       });
       expect(inMemoryStdout.lines, ['test1', 'test3']);
       expect(inMemoryStderr.lines, ['test2']);
+      await inMemoryStderr.close();
+      await inMemoryStdout.close();
     });
 
     test('empty lines', () async {
@@ -93,6 +98,8 @@ echo --wait 100 --stdout hello2
         stdout.writeln('test2');
       });
       expect(inMemoryStdout.lines, ['test1', '', 'test2']);
+      await inMemoryStderr.close();
+      await inMemoryStdout.close();
     });
 
     test('CRLF', () async {
@@ -109,6 +116,8 @@ echo --wait 100 --stdout hello2
         stdout.writeln('test4');
       });
       expect(inMemoryStdout.lines, ['test1', 'test2', 'test3', 'test4']);
+      await inMemoryStderr.close();
+      await inMemoryStdout.close();
     });
 
     test('last lines', () async {
@@ -125,6 +134,8 @@ echo --wait 100 --stdout hello2
         stdout.write('2');
       });
       expect(inMemoryStdout.lines, ['test1', '', 'test2']);
+      await inMemoryStderr.close();
+      await inMemoryStdout.close();
     });
 
     test('last done before first', () async {
@@ -154,6 +165,8 @@ echo --wait 100 --stdout hello2
       );
       await Future.wait(futures);
       expect(inMemoryStdout.lines, ['test1', 'test2', 'test3']);
+      await inMemoryStderr.close();
+      await inMemoryStdout.close();
     });
 
     test('first done before last', () async {
@@ -183,6 +196,8 @@ echo --wait 100 --stdout hello2
       );
       await Future.wait(futures);
       expect(inMemoryStdout.lines, ['test1', 'test2', 'test3']);
+      await inMemoryStderr.close();
+      await inMemoryStdout.close();
     });
   });
 }

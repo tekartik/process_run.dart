@@ -15,9 +15,8 @@ export 'package:process_run/shell.dart' show ShellEnvironment;
 
 /// Shell environment ordered paths helper. Changes the PATH variable
 class ShellEnvironmentPaths with ListMixin<String> {
-  final ShellEnvironmentCore _environment;
-
   ShellEnvironmentPaths._(this._environment);
+  final ShellEnvironmentCore _environment;
 
   List<String> get _paths {
     var pathVar = _environment[envPathKey];
@@ -123,10 +122,9 @@ class ShellEnvironmentPaths with ListMixin<String> {
 
 /// Shell environment aliases for executable
 class ShellEnvironmentAliases with MapMixin<String, String> {
-  final Map<String, String> _map;
-
   ShellEnvironmentAliases._([Map<String, String>? map])
     : _map = map ?? <String, String>{};
+  final Map<String, String> _map;
 
   /// the other object takes precedence, vars are added
   void merge(ShellEnvironmentAliases other) {
@@ -169,9 +167,8 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
 
 /// Shell environment variables helper. Does not affect the PATH variable
 class ShellEnvironmentVars with MapMixin<String, String> {
-  final ShellEnvironmentCore _environment;
-
   ShellEnvironmentVars._(this._environment);
+  final ShellEnvironmentCore _environment;
 
   /// Currently only the PATH key is ignored.
   bool _ignoreKey(Object? key) => key == envPathKey;
@@ -238,31 +235,6 @@ class ShellEnvironmentVars with MapMixin<String, String> {
 abstract class ShellEnvironmentBase
     with MapMixin<String, String>
     implements ShellEnvironmentCore {
-  /// The resulting _env
-  final _env = <String, String>{};
-
-  /// The vars but the PATH variable
-  ShellEnvironmentVars? _vars;
-
-  /// The vars but the PATH variable
-  @override
-  ShellEnvironmentVars get vars => _vars ??= ShellEnvironmentVars._(this);
-
-  /// The PATH variable as a convenient list.
-  ShellEnvironmentPaths? _paths;
-
-  /// The PATH variable as a convenient list.
-  @override
-  ShellEnvironmentPaths get paths => _paths ??= ShellEnvironmentPaths._(this);
-
-  /// The aliases.
-  ShellEnvironmentAliases? _aliases;
-
-  /// The aliases as convenient map.
-  @override
-  ShellEnvironmentAliases get aliases =>
-      _aliases ??= ShellEnvironmentAliases._();
-
   /// Create an empty shell environment.
   ///
   /// Mainly used for testing as it is not easy to which environment variable
@@ -311,6 +283,31 @@ abstract class ShellEnvironmentBase
       // Silent crash
     }
   }
+
+  /// The resulting _env
+  final _env = <String, String>{};
+
+  /// The vars but the PATH variable
+  ShellEnvironmentVars? _vars;
+
+  /// The vars but the PATH variable
+  @override
+  ShellEnvironmentVars get vars => _vars ??= ShellEnvironmentVars._(this);
+
+  /// The PATH variable as a convenient list.
+  ShellEnvironmentPaths? _paths;
+
+  /// The PATH variable as a convenient list.
+  @override
+  ShellEnvironmentPaths get paths => _paths ??= ShellEnvironmentPaths._(this);
+
+  /// The aliases.
+  ShellEnvironmentAliases? _aliases;
+
+  /// The aliases as convenient map.
+  @override
+  ShellEnvironmentAliases get aliases =>
+      _aliases ??= ShellEnvironmentAliases._();
 
   @override
   String? operator [](Object? key) => _env[key as String];

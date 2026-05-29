@@ -10,28 +10,6 @@ import 'package:process_run/src/shell_environment.dart';
 
 /// Platform info
 abstract class ShellContextPlatform {
-  /// Is linux
-  bool get isLinux;
-
-  /// Is macos
-  bool get isMacOS;
-
-  /// Is windows
-  bool get isWindows;
-
-  /// Is android
-  bool get isAndroid;
-
-  /// Is ios
-  bool get isIOS;
-
-  /// Is web
-  bool get isWeb;
-
-  /// None - no platform detected
-  bool get isNone;
-  static ShellContextPlatform? __current;
-
   /// Current cached platform
   factory ShellContextPlatform() {
     return __current ??= ShellContextPlatform._current();
@@ -94,11 +72,44 @@ abstract class ShellContextPlatform {
     }
     return _ShellContextPlatform();
   }
+
+  /// Is linux
+  bool get isLinux;
+
+  /// Is macos
+  bool get isMacOS;
+
+  /// Is windows
+  bool get isWindows;
+
+  /// Is android
+  bool get isAndroid;
+
+  /// Is ios
+  bool get isIOS;
+
+  /// Is web
+  bool get isWeb;
+
+  /// None - no platform detected
+  bool get isNone;
+  static ShellContextPlatform? __current;
 }
 
 class _ShellContextPlatform
     with ShellContextPlatformDefaultMixin
     implements ShellContextPlatform {
+  _ShellContextPlatform({
+    this.isLinux = false,
+    this.isMacOS = false,
+    this.isWindows = false,
+    this.isAndroid = false,
+    this.isIOS = false,
+    this.isWeb = false,
+    bool? isNone,
+  }) : isNone =
+           isNone ??
+           !(isLinux || isMacOS || isWindows || isAndroid || isIOS || isWeb);
   @override
   final bool isLinux;
   @override
@@ -113,18 +124,6 @@ class _ShellContextPlatform
   final bool isWeb;
   @override
   final bool isNone;
-
-  _ShellContextPlatform({
-    this.isLinux = false,
-    this.isMacOS = false,
-    this.isWindows = false,
-    this.isAndroid = false,
-    this.isIOS = false,
-    this.isWeb = false,
-    bool? isNone,
-  }) : isNone =
-           isNone ??
-           !(isLinux || isMacOS || isWindows || isAndroid || isIOS || isWeb);
 }
 
 /// Default mixin
@@ -179,9 +178,8 @@ abstract class ShellContext {
 
 /// Must not have the default mixin
 class _ShellContextWithDelegate implements ShellContext {
-  final ShellContext delegate;
-
   _ShellContextWithDelegate(this.delegate, {required this.shellEnvironment});
+  final ShellContext delegate;
 
   @override
   Encoding get encoding => delegate.encoding;

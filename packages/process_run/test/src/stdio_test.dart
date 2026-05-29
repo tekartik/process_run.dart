@@ -6,10 +6,11 @@ import 'package:test/test.dart';
 
 void main() {
   group('IOSink', () {
-    test('memory', () {
+    test('memory', () async {
       var inMemoryStdout = InMemoryIOSink(StdioStreamType.out);
       inMemoryStdout.writeln('test');
       expect(inMemoryStdout.lines, ['test']);
+      await inMemoryStdout.close();
     });
   });
 }

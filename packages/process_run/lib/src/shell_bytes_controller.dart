@@ -30,16 +30,16 @@ import 'common/import.dart';
 /// }
 /// ```
 class ShellUint8ListController {
-  /// Encoding to use
-  late final Encoding encoding;
-  late StreamController<Uint8List> _controller;
-
   /// Create a shell lines controller.
   ShellUint8ListController({Encoding? encoding}) {
     this.encoding = encoding ?? shellContext.encoding;
     // Must be sync!
     _controller = StreamController<Uint8List>(sync: true);
   }
+
+  /// Encoding to use
+  late final Encoding encoding;
+  late StreamController<Uint8List> _controller;
 
   /// The sink for the Shell stderr/stdout
   StreamSink<Uint8List> get sink => _controller.sink;

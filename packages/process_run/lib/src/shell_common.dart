@@ -148,6 +148,48 @@ abstract class ShellCoreSync {
 /// Shell options.
 ///
 class ShellOptions {
+  /// [_throwOnError] means that if an exit code is not 0, it will throw an error
+  ///
+  /// Unless specified [_runInShell] will be false. However on windows, it will
+  /// default to true for non .exe files
+  ///
+  /// if [verbose] is not false or [commentVerbose] is true, it will display the
+  /// comments as well.
+  ///
+  /// If [_noStdoutResult] is true, stdout will be null in the ProcessResult result
+  /// of the run command (runSync will still contain it).
+  ///
+  /// If [_noStderrResult] is true, stderr will be null in the ProcessResult result
+  /// of the run command (runSync will still contain it).
+  ShellOptions({
+    this._throwOnError = true,
+    this._workingDirectory,
+    Map<String, String>? environment,
+    bool includeParentEnvironment = true,
+    this._runInShell,
+    this._stdoutEncoding = systemEncoding,
+    this._stderrEncoding = systemEncoding,
+    this._stdin,
+    this._stdout,
+    this._stderr,
+    bool verbose = true,
+    // Default to true
+    bool? commandVerbose,
+    // Default to false
+    bool? commentVerbose,
+    this._noStdoutResult,
+    this._noStderrResult,
+    // Process start mode
+    ProcessStartMode? mode,
+  }) : _verbose = verbose,
+       _commandVerbose = commandVerbose ?? verbose,
+       _commentVerbose = commentVerbose ?? false,
+       _mode = mode ?? ProcessStartMode.normal {
+    _environment = ShellEnvironment.full(
+      environment: environment,
+      includeParentEnvironment: includeParentEnvironment,
+    );
+  }
   final bool _throwOnError;
   final String? _workingDirectory;
 
@@ -189,61 +231,6 @@ class ShellOptions {
 
   /// Modes for running a new process.
   ProcessStartMode get mode => _mode;
-
-  /// [throwOnError] means that if an exit code is not 0, it will throw an error
-  ///
-  /// Unless specified [runInShell] will be false. However on windows, it will
-  /// default to true for non .exe files
-  ///
-  /// if [verbose] is not false or [commentVerbose] is true, it will display the
-  /// comments as well.
-  ///
-  /// If [noStdoutResult] is true, stdout will be null in the ProcessResult result
-  /// of the run command (runSync will still contain it).
-  ///
-  /// If [noStderrResult] is true, stderr will be null in the ProcessResult result
-  /// of the run command (runSync will still contain it).
-  ShellOptions({
-    bool throwOnError = true,
-    String? workingDirectory,
-    Map<String, String>? environment,
-    bool includeParentEnvironment = true,
-    bool? runInShell,
-    Encoding? stdoutEncoding = systemEncoding,
-    Encoding? stderrEncoding = systemEncoding,
-    Stream<List<int>>? stdin,
-    StreamSink<List<int>>? stdout,
-    StreamSink<List<int>>? stderr,
-    bool verbose = true,
-    // Default to true
-    bool? commandVerbose,
-    // Default to false
-    bool? commentVerbose,
-    // Default to false
-    bool? noStdoutResult,
-    // Default to false
-    bool? noStderrResult,
-    // Process start mode
-    ProcessStartMode? mode,
-  }) : _throwOnError = throwOnError,
-       _workingDirectory = workingDirectory,
-       _runInShell = runInShell,
-       _stdoutEncoding = stdoutEncoding,
-       _stderrEncoding = stderrEncoding,
-       _stdin = stdin,
-       _stdout = stdout,
-       _stderr = stderr,
-       _verbose = verbose,
-       _commandVerbose = commandVerbose ?? verbose,
-       _commentVerbose = commentVerbose ?? false,
-       _noStderrResult = noStderrResult,
-       _noStdoutResult = noStdoutResult,
-       _mode = mode ?? ProcessStartMode.normal {
-    _environment = ShellEnvironment.full(
-      environment: environment,
-      includeParentEnvironment: includeParentEnvironment,
-    );
-  }
 
   /// True if commands are displayed.
   bool get commandVerbose => _commandVerbose;

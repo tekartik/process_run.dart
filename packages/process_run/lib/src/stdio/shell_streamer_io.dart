@@ -6,6 +6,18 @@ import 'package:process_run/src/stdio/stdio.dart';
 class ShellOutputLinesStreamerIo
     with ShellOutputLinesStreamerMixin
     implements ShellOutputLinesStreamer {
+  /// Stdio streamer.could become true at any moment!
+  ShellOutputLinesStreamerIo({io.IOSink? stdout, io.IOSink? stderr}) {
+    _stdout = stdout ?? io.ioStdout;
+    _stderr = stderr ?? io.ioStderr;
+    outController.stream.listen((line) {
+      log(line);
+    });
+    errController.stream.listen((line) {
+      error(line);
+    });
+  }
+
   /// stdout.
   late final io.IOSink _stdout;
 
@@ -38,18 +50,6 @@ class ShellOutputLinesStreamerIo
     } else {
       lines.add(StdioStreamLine(StdioStreamType.err, message));
     }
-  }
-
-  /// Stdio streamer.could become true at any moment!
-  ShellOutputLinesStreamerIo({io.IOSink? stdout, io.IOSink? stderr}) {
-    _stdout = stdout ?? io.ioStdout;
-    _stderr = stderr ?? io.ioStderr;
-    outController.stream.listen((line) {
-      log(line);
-    });
-    errController.stream.listen((line) {
-      error(line);
-    });
   }
 
   // No effect by default (in memory), overriden on io.

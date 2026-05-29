@@ -7,11 +7,10 @@ import 'dump.dart';
 
 /// Get an environment variable from a user/local config file
 class ShellEnvVarGetCommand extends ShellEnvCommandBase {
-  late final _helper = ShellEnvVarGetIoHelper();
-
   /// Get an environment variable from a user/local config file
   ShellEnvVarGetCommand()
     : super(name: 'get', description: 'Get environment variable');
+  late final _helper = ShellEnvVarGetIoHelper();
 
   @override
   void printUsage() {

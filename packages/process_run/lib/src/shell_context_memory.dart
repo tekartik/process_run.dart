@@ -31,13 +31,12 @@ final ShellContext shellContextMemory = ShellContextMemory();
 
 /// Shell memory implementation.
 class ShellMemory with ShellDefaultMixin, ShellMixin implements Shell {
+  /// Shell memory implementation.
+  ShellMemory({required this.context, required this.options});
   @override
   final ShellContextMemory context;
   @override
   final ShellOptions options;
-
-  /// Shell memory implementation.
-  ShellMemory({required this.context, required this.options});
 
   @override
   Future<ShellProcessResult> runCommand(

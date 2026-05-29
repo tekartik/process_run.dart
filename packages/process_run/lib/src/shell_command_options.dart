@@ -2,11 +2,11 @@ import '../process_run.dart';
 
 /// Shell command run options
 class ShellCommandRunOptions {
-  /// On process callback
-  final ShellOnProcessCallback? onProcess;
-
   /// Run options
   ShellCommandRunOptions({this.onProcess});
+
+  /// On process callback
+  final ShellOnProcessCallback? onProcess;
 
   /// Copy with
   ShellCommandRunOptions copyWith({ShellOnProcessCallback? onProcess}) {

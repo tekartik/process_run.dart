@@ -118,13 +118,12 @@ abstract class FlutterBinInfo {
 }
 
 class _FlutterBinInfoImpl implements FlutterBinInfo {
+  _FlutterBinInfoImpl({this.channel, this.version});
   @override
   final String? channel;
 
   @override
   final Version? version;
-
-  _FlutterBinInfoImpl({this.channel, this.version});
 }
 
 /// Get flutter info.

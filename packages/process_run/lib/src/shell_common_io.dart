@@ -7,12 +7,11 @@ import 'shell_common.dart';
 
 /// Shell implementation using io.
 class ShellIo extends Shell with ShellMixin {
-  @override
-  final ShellContext context;
-
   /// Shell implementation using io.
   ShellIo({required this.context, required ShellOptions options})
     : super.implWithOptions(options);
+  @override
+  final ShellContext context;
 
   @override
   Future<io.Shell> shellVarOverride(

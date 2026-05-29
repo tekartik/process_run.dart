@@ -28,10 +28,9 @@ class PubCmd extends DartCmd {
 }
 
 class _DartBinCmd extends ProcessCmd {
-  final String binName;
-
   _DartBinCmd(this.binName, List<String> arguments)
     : super(join(dartSdkBinDirPath, binName), arguments);
+  final String binName;
 
   @override
   String toString() => executableArgumentsToString(binName, arguments);
@@ -39,12 +38,11 @@ class _DartBinCmd extends ProcessCmd {
 
 /// pub run
 class PubRunCmd extends PubCmd {
-  final String _command;
-  final List<String> _arguments;
-
   /// Call pub run
   PubRunCmd(this._command, this._arguments)
     : super(['run', _command, ..._arguments]);
+  final String _command;
+  final List<String> _arguments;
 
   @override
   String toString() => executableArgumentsToString(_command, _arguments);
@@ -52,12 +50,11 @@ class PubRunCmd extends PubCmd {
 
 /// pub global run
 class PubGlobalRunCmd extends PubCmd {
-  final String _command;
-  final List<String> _arguments;
-
   /// Call pub global run
   PubGlobalRunCmd(this._command, this._arguments)
     : super(['global', 'run', _command, ..._arguments]);
+  final String _command;
+  final List<String> _arguments;
 
   @override
   String toString() => executableArgumentsToString(_command, _arguments);

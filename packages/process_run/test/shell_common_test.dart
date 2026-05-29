@@ -45,10 +45,9 @@ class ShellEnvironmentMock extends ShellEnvironmentBase
 }
 
 class ProcessMock implements Process {
+  ProcessMock(this.result, this.outLines);
   final ProcessResult result;
   final List<String> outLines;
-
-  ProcessMock(this.result, this.outLines);
 
   @override
   // TODO: implement exitCode
@@ -84,16 +83,15 @@ var shellOptionsMock = ShellOptions(
 );
 
 class ShellMock with ShellDefaultMixin, ShellMixin implements Shell {
+  ShellMock({ShellContextMock? context, ShellOptions? options}) {
+    this.context = context ?? ShellContextMock();
+    this.options = options ?? shellOptionsMock;
+  }
   @override
   late final ShellContext context;
   @override
   late final ShellOptions options;
   var scripts = <String>[];
-
-  ShellMock({ShellContextMock? context, ShellOptions? options}) {
-    this.context = context ?? ShellContextMock();
-    this.options = options ?? shellOptionsMock;
-  }
 
   @override
   Future<List<ProcessResult>> run(
