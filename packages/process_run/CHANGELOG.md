@@ -1,3 +1,7 @@
+## 1.3.4
+
+* Requires dart 3.12
+
 ## 1.3.3+1
 
 * Add `ShellCommand`, `ShellCommandRunOption` and `Shell.runCommand`
