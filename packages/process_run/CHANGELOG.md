@@ -1,6 +1,7 @@
-## 1.3.4
+## 1.3.4+1
 
 * Requires dart 3.12
+* Fixes `ShellBinCommand.verbose` flag resolution
 
 ## 1.3.3+1
 

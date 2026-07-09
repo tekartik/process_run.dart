@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:process_run/src/bin/shell/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:process_run/src/io/io.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
@@ -158,6 +159,10 @@ class ShellBinCommand {
         stdout.writeln(version);
         return true;
       }
+    } else if (results.wasParsed(flagVerbose)) {
+      // Handle verbose set in the sub command, otherwise inherited from the
+      // parent
+      _verbose = true;
     }
     // Handle help
     final help = results[flagHelp] as bool;
