@@ -5,9 +5,7 @@ import 'package:process_run/src/io/io.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 
-///
 /// Get dart vm either from executable or using the which command
-///
 String? get dartExecutable => resolvedDartExecutable;
 
 /// Get dart bin directory path

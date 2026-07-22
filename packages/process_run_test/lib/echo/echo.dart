@@ -28,9 +28,7 @@ Global options:
     --version       Print the command version
 */
 
-///
 /// write rest arguments as lines
-///
 Future main(List<String> arguments) async {
   //setupQuickLogging();
 

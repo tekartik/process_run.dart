@@ -1,4 +1,3 @@
-///
 /// Returns `true` if [rune] represents a whitespace character.
 ///
 /// The definition of whitespace matches that used in [String.trim] which is
@@ -7,7 +6,6 @@
 /// ECMAScript standard: http://ecma-international.org/ecma-262/5.1/#sec-15.10
 ///
 /// from quiver
-///
 bool isWhitespace(int rune) =>
     ((rune >= 0x0009 && rune <= 0x000D) ||
     rune == 0x0020 ||

@@ -27,10 +27,8 @@ Global options:
 
 const udelayOption = 'udelay';
 
-///
 /// Stream lines to stdout, according to count (count of lines), delay (delay
 /// between 2 lines) and/or timeout (stop after timeout)
-///
 Future main(List<String> arguments) async {
   //setupQuickLogging();
 

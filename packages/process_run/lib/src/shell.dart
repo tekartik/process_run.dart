@@ -18,7 +18,6 @@ export 'shell_common.dart' show shellDebug;
 /// Shell on process callback
 typedef ShellOnProcessCallback = void Function(Process process);
 
-///
 /// Run one or multiple plain text command(s).
 ///
 /// Commands can be split by line.
@@ -77,7 +76,6 @@ Future<List<ProcessResult>> run(
   ).run(script, onProcess: onProcess);
 }
 
-///
 /// Run one or multiple plain text command(s).
 ///
 /// Commands can be split by line.
@@ -85,7 +83,6 @@ Future<List<ProcessResult>> run(
 /// Commands can be on multiple line if ending with ` ^` or `` \``.
 ///
 /// Returns a list of executed command line results. Verbose by default.
-///
 ///
 /// ```dart
 /// runSync('flutter build');
@@ -157,7 +154,6 @@ List<ProcessResult> runSync(
 /// ```
 ///
 /// A list of ProcessResult is returned
-///
 abstract class Shell implements ShellCore, ShellCoreSync {
   /// [throwOnError] means that if an exit code is not 0, it will throw an error
   ///
@@ -352,7 +348,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     }
   }
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be split by line.
@@ -362,7 +357,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// Returns a list of executed command line results.
   ///
   /// [onProcess] is called for each started process.
-  ///
   @override
   Future<List<ProcessResult>> run(
     String script, {
@@ -397,7 +391,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     return false;
   }
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be split by line.
@@ -407,7 +400,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// Returns a list of executed command line results.
   ///
   /// [onProcess] is called for each started process.
-  ///
   @override
   Future<ShellProcessResults> runScript(
     String script, {
@@ -444,7 +436,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     });
   }
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be split by line.
@@ -455,13 +446,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   /// Compare to the async version, it is not possible to kill the spawn process nor to
   /// feed any input.
-  ///
   @override
   List<ProcessResult> runSync(String script) {
     return _runScriptSync(script).processResults;
   }
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be split by line.
@@ -472,7 +461,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   ///
   /// Compare to the async version, it is not possible to kill the spawn process nor to
   /// feed any input.
-  ///
   ShellProcessResults _runScriptSync(String script) {
     var commands = shellScriptSplitLines(script);
 
@@ -628,7 +616,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     _currentProcessResultCompleter = null;
   }
 
-  ///
   /// if [commandVerbose] or [verbose] is true, display the command.
   /// if [verbose] is true, stream stdout & stdin
   ///
@@ -787,7 +774,6 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     }
   }
 
-  ///
   /// if [commandVerbose] or [verbose] is true, display the command.
   /// if [verbose] is true, stream stdout & stdin
   ///
@@ -1200,6 +1186,7 @@ class _ProcessCmd extends ProcessCmd {
 
 /// Test extension helper
 @visibleForTesting
+/// Extension representing [ProcessRunShellTestExt].
 extension ProcessRunShellTestExt on Shell {
   /// Resolve an absolute/relative executable to its full path if needed. If the executable is already a path, it is returned as is.
   String resolveExecutableSync(String executable) =>

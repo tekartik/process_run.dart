@@ -25,6 +25,7 @@ final SharedStdIn sharedStdIn = SharedStdIn(stdin);
 /// implementations of `stdin`. In normal programs, [sharedStdIn] should be
 /// used directly.
 @visibleForTesting
+/// Class representing [SharedStdIn].
 class SharedStdIn extends Stream<List<int>> {
   /// Creates a new [SharedStdIn] instance.
   SharedStdIn([Stream<List<int>>? stream]) : _originalStream = stream ?? stdin;

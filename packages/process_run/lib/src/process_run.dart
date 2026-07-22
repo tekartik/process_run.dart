@@ -9,7 +9,6 @@ import 'common/import.dart';
 
 export 'shell_utils_io.dart' show executableArgumentsToString;
 
-///
 /// if [commandVerbose] or [verbose] is true, display the command.
 /// if [verbose] is true, stream stdout & stdin
 ///
@@ -72,7 +71,6 @@ Future<ProcessResult> runExecutableArguments(
   return result;
 }
 
-///
 /// if [commandVerbose] or [verbose] is true, display the command.
 /// if [verbose] is true, stream stdout & stdin
 ///
@@ -128,7 +126,6 @@ ProcessResult runExecutableArgumentsSync(
 /// if [commandVerbose] is true, it writes the command line executed preceeded by $ to stdout. It streams
 /// stdout/error if [verbose] is true.
 /// [verbose] implies [commandVerbose]
-///
 Future<ProcessResult> processCmdRun(
   ProcessCmd cmd, {
   ShellOptions? options,

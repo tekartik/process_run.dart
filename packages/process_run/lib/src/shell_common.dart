@@ -31,7 +31,6 @@ var shellDebug = false; // devWarning(true); // false
 /// ```
 ///
 /// A list of ProcessResult is returned
-///
 abstract class ShellCore {
   /// Kills the current running process.
   ///
@@ -40,7 +39,6 @@ abstract class ShellCore {
   /// that the process is already dead.
   bool kill([ProcessSignal signal = ProcessSignal.sigterm]);
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be splitted by line.
@@ -51,7 +49,6 @@ abstract class ShellCore {
   /// Returns a list of executed command line results.
   ///
   /// [onProcess] is called for each started process.
-  ///
   Future<List<ProcessResult>> run(
     String script, {
     ShellOnProcessCallback? onProcess,
@@ -118,7 +115,6 @@ abstract class ShellCoreSync {
   /// Returns a process result (or throw if specified in the shell).
   ShellProcessResult runCommandSync(ShellCommand command);
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be split by line.
@@ -130,7 +126,6 @@ abstract class ShellCoreSync {
   ///
   /// Compared to the async version, it is not possible to kill the spawn process nor to
   /// feed any input.
-  ///
   List<ProcessResult> runSync(String script);
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
@@ -146,7 +141,6 @@ abstract class ShellCoreSync {
 }
 
 /// Shell options.
-///
 class ShellOptions {
   /// [_throwOnError] means that if an exit code is not 0, it will throw an error
   ///
@@ -355,7 +349,6 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
     return results.processResults;
   }
 
-  ///
   /// Run one or multiple plain text command(s).
   ///
   /// Commands can be split by line.
@@ -365,7 +358,6 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
   /// Returns a list of executed command line results.
   ///
   /// [onProcess] is called for each started process.
-  ///
   @override
   Future<ShellProcessResults> runScript(
     String script, {

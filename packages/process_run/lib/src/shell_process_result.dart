@@ -365,6 +365,7 @@ extension ProcessRunProcessResultPrvExt on ProcessResult {
 
 /// Test extension
 @visibleForTesting
+/// Extension representing [ProcessRunProcessResultTestExt].
 extension ProcessRunProcessResultTestExt on ProcessResult {
   /// typically only true for native shell process results
   bool get isShellProcessResult {
@@ -374,6 +375,7 @@ extension ProcessRunProcessResultTestExt on ProcessResult {
 
 /// Test extension
 @visibleForTesting
+/// Extension representing [ProcessRunProcessResultListTestExt].
 extension ProcessRunProcessResultListTestExt on List<ProcessResult> {
   /// typically only true for native shell process results
   bool get isShellProcessResults {
