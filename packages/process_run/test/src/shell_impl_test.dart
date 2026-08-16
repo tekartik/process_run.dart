@@ -104,33 +104,29 @@ void main() {
     });
 
     var localFlutterExecutablePath = flutterExecutablePath;
-    test(
-      'userEnvironment in flutter context',
-      () async {
-        try {
-          var flutterBinDirPath = dirname(localFlutterExecutablePath!);
-          platformEnvironment = newEnvNoOverride()
-            ..paths.prepend(flutterBinDirPath);
+    test('userEnvironment in flutter context', () async {
+      try {
+        var flutterBinDirPath = dirname(localFlutterExecutablePath!);
+        platformEnvironment = newEnvNoOverride()
+          ..paths.prepend(flutterBinDirPath);
 
-          // '/opt/app/flutter/dev/flutter/bin',
-          // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
-          if (dartSdkBinDirPath.contains(flutterBinDirPath)) {
-            expect(userPaths, [
-              dirname(localFlutterExecutablePath),
-              dartSdkBinDirPath,
-            ]);
-          } else {
-            expect(userPaths, [
-              dartSdkBinDirPath,
-              dirname(localFlutterExecutablePath),
-            ]);
-          }
-        } finally {
-          platformEnvironment = null;
+        // '/opt/app/flutter/dev/flutter/bin',
+        // '/opt/app/flutter/dev/flutter/bin/cache/dart-sdk/bin'
+        if (dartSdkBinDirPath.contains(flutterBinDirPath)) {
+          expect(userPaths, [
+            dirname(localFlutterExecutablePath),
+            dartSdkBinDirPath,
+          ]);
+        } else {
+          expect(userPaths, [
+            dartSdkBinDirPath,
+            dirname(localFlutterExecutablePath),
+          ]);
         }
-      },
-      skip: localFlutterExecutablePath == null,
-    );
+      } finally {
+        platformEnvironment = null;
+      }
+    }, skip: localFlutterExecutablePath == null);
 
     test('userEnvironment', () async {
       try {
