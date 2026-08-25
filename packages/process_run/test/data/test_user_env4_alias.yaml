@@ -1,0 +1,9 @@
+# User env file used to test `ds run <alias> <arguments>`
+#
+# The local env file is pointed to a non existing file so that the test does
+# not depend on the local `.local/ds_env.yaml` content.
+var:
+  TEKARTIK_PROCESS_RUN_LOCAL_ENV_FILE_PATH: .dart_tool/process_run/test/test_local_env4_alias_none.yaml
+alias:
+  tk_test_echo: echo tk_hello
+  tk_test_nested: tk_test_echo nested

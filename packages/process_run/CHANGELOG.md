@@ -1,3 +1,15 @@
+## 1.3.5-1
+
+* Support nested aliases (an alias can refer to another alias) when resolving
+  the executable of a command, in `Shell.run` and `ds run <alias> <arguments>`
+* Linux/macOS only: fallback on the user shell aliases when a command cannot
+  be resolved, so that `ds run ll` works with `alias ll='ls -alF'` defined in
+  `~/.bashrc`, `~/.zshrc`... The shell is read from the `SHELL` environment
+  variable (`bash`, `zsh`, `sh`, `dash`, `ash` and `ksh` variants are
+  supported), an unsupported shell (`fish`...) means no fallback. Can be
+  turned off using `userShellAliasEnabled`
+* `ds run --info` also dumps the aliases
+
 ## 1.3.4+1
 
 * Requires dart 3.12

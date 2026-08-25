@@ -22,6 +22,14 @@ var safeShellEnvironment = ShellEnvironment()
 
 Shell get safeShell => Shell(environment: safeShellEnvironment, verbose: false);
 
+/// User env file defining `tk_test_echo` and `tk_test_nested` aliases.
+var aliasShellEnvironment = ShellEnvironment()
+  ..aliases['ds'] = 'dart run bin/shell.dart'
+  ..vars[userEnvFilePathEnvKey] = 'test/data/test_user_env4_alias.yaml';
+
+Shell get aliasShell =>
+    Shell(environment: aliasShellEnvironment, verbose: false);
+
 void main() {
   group('bin_shell', () {
     test('version', () async {
@@ -38,6 +46,29 @@ void main() {
       test('run', () async {
         await shell.run('ds run --help');
         await shell.run('ds run echo Hello World');
+      });
+      test('run alias', () async {
+        // Alias only
+        expect(
+          (await aliasShell.run('ds run tk_test_echo')).outLines,
+          contains('tk_hello'),
+        );
+        // Alias with extra arguments
+        expect(
+          (await aliasShell.run('ds run tk_test_echo world')).outLines,
+          contains('tk_hello world'),
+        );
+        // Single argument form
+        expect(
+          (await aliasShell.run("ds run 'tk_test_echo world'")).outLines,
+          contains('tk_hello world'),
+        );
+      });
+      test('run nested alias', () async {
+        expect(
+          (await aliasShell.run('ds run tk_test_nested world')).outLines,
+          contains('tk_hello nested world'),
+        );
       });
     });
 

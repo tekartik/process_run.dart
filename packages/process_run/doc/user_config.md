@@ -43,6 +43,23 @@ var:
 These added environment variable will be available in the `userEnvironment` map. It must be explicitely used as the
 `environment` argument in the `run` methods to get used by the callee.
 
+## Add aliases
+
+`env.yaml`:
+```yaml
+alias:
+  qr: /path/to/my_qr_app
+  hello: echo Hello
+```
+
+An alias is resolved when the command executable (the first word of the command
+line) matches its name, the alias arguments being prepended to the command
+arguments. `await run('hello World')` (or `ds run hello World`) runs
+`echo Hello World`.
+
+An alias can refer to another alias. Like in bash, a given alias is only
+expanded once, so `ls: ls --color` does not loop forever.
+
 ## Sample file
 
 `~/.config/tekartik/process_run/env.yaml`:

@@ -19,13 +19,18 @@ class ShellRunCommand extends ShellBinCommand {
   void printUsage() {
     stdout.writeln('Run a command');
     stdout.writeln();
-    stdout.writeln('Usage: $script run <command>');
+    stdout.writeln('Usage: $script run <command> [<arguments>]');
     stdout.writeln(
       '  command being a command line as a single argument, examples:',
     );
     stdout.writeln("  - 'firebase deploy'");
     stdout.writeln('  - script.bat');
     stdout.writeln('  - script.sh');
+    stdout.writeln('');
+    stdout.writeln('  command can be an alias (see `$script env alias`),');
+    stdout.writeln('  the extra arguments are appended to the alias, example:');
+    stdout.writeln('  - $script env alias set hello echo Hello');
+    stdout.writeln('  - $script run hello World # runs `echo Hello World`');
     stdout.writeln('');
     stdout.writeln('Get information about the added path(s) and var(s)');
     stdout.writeln('  pub run process_run:shell run --version');
@@ -53,6 +58,7 @@ class ShellRunCommand extends ShellBinCommand {
         stdout.writeln('file: ${relative(path, from: Directory.current.path)}');
         stdout.writeln('vars: ${config.vars}');
         stdout.writeln('paths: ${config.paths}');
+        stdout.writeln('aliases: ${config.aliases}');
       }
 
       stdout.writeln('command: $command');

@@ -4,8 +4,10 @@ import 'package:path/path.dart' as p;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/io/io.dart' as io;
+import 'package:process_run/src/io/user_shell_alias_io.dart';
 import 'package:process_run/src/platform/platform.dart';
 import 'package:process_run/src/process_run.dart' as impl;
+import 'package:process_run/src/shell_alias.dart';
 import 'package:process_run/src/shell_common.dart'
     show ShellCore, ShellCoreSync, ShellOptions, shellDebug;
 import 'package:process_run/src/shell_process_result.dart';
@@ -988,7 +990,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         ..workingDirectory = _options.workingDirectory;
 
   /// Resolve an executable to its full path if needed. If the executable is already a path, it is returned as is.
-  String _resolveExecutableSync(String executable) {
+  String _resolveExecutableSync(String executable) =>
+      _resolveExecutableSyncOrNull(executable) ?? executable;
+
+  /// Resolve an executable to its full path, null if it cannot be found.
+  String? _resolveExecutableSyncOrNull(String executable) {
     var workingDirectory = _options.workingDirectory;
     String? executableFullPath;
 
@@ -1008,24 +1014,42 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     } else {
       executableFullPath = resolveExecutableFullPathSync(executable);
     }
-    return executableFullPath ?? executable;
+    return executableFullPath;
   }
 
   // Resolve the actual command ran
   ShellCommand _resolveExecutedCommand(ShellCommand command) {
-    var executable = command.executable;
-    var arguments = command.arguments;
-    // Find alias
-    var alias = _options.environment.aliases[executable];
-    if (alias != null) {
-      // The alias itself should be split
-      var parts = shellSplit(alias);
-      executable = parts[0];
-      arguments = [...parts.sublist(1), ...arguments];
-    }
-    var executableFullPath = _resolveExecutableSync(executable);
+    // Find alias, i.e. the aliases defined in the user/local environment file
+    // (`ds env alias set <name> <command>`). Nested aliases are supported.
+    var aliasCommand = resolveShellCommandAliases(
+      command,
+      _options.environment.aliases,
+    );
+    var executable = aliasCommand.executable;
+    var arguments = aliasCommand.arguments;
 
-    return ShellCommand(executableFullPath, arguments);
+    var executableFullPath = _resolveExecutableSyncOrNull(executable);
+
+    if (executableFullPath == null) {
+      // Last resort: no binary found, the executable might be an alias defined
+      // in the user shell configuration (`alias ll='ls -alF'` in `~/.bashrc`,
+      // `~/.zshrc`...). The shell is read from the `SHELL` environment
+      // variable, unsupported shells are simply ignored.
+      //
+      // Linux/macOS only for now, and only when the command could not be
+      // resolved otherwise (i.e. when it was going to fail anyway), see
+      // `user_shell_alias_io.dart`.
+      var linuxAliasCommand = resolveShellCommandUserShellAlias(
+        ShellCommand(executable, arguments),
+      );
+      if (linuxAliasCommand != null) {
+        executable = linuxAliasCommand.executable;
+        arguments = linuxAliasCommand.arguments;
+        executableFullPath = _resolveExecutableSyncOrNull(executable);
+      }
+    }
+
+    return ShellCommand(executableFullPath ?? executable, arguments);
   }
 
   /// Run a single [executable] with [arguments], resolving the [executable] if needed.
@@ -1191,4 +1215,8 @@ extension ProcessRunShellTestExt on Shell {
   /// Resolve an absolute/relative executable to its full path if needed. If the executable is already a path, it is returned as is.
   String resolveExecutableSync(String executable) =>
       _resolveExecutableSync(executable);
+
+  /// Resolve the command actually run (aliases and executable resolution).
+  ShellCommand resolveExecutedCommand(ShellCommand command) =>
+      _resolveExecutedCommand(command);
 }
