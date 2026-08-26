@@ -1,4 +1,4 @@
-## 1.3.5-1
+## 1.3.5
 
 * Support nested aliases (an alias can refer to another alias) when resolving
   the executable of a command, in `Shell.run` and `ds run <alias> <arguments>`
