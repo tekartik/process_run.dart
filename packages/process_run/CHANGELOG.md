@@ -1,3 +1,7 @@
+## 1.3.6
+
+* Add `process-run-environment`, `process-run-shell` and `process-run-tools` agent skills in `skills/`, installable with `dart run skills@ get`
+
 ## 1.3.5
 
 * Support nested aliases (an alias can refer to another alias) when resolving
