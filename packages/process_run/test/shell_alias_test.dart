@@ -114,7 +114,7 @@ void main() {
         ),
         "echo 'hi'",
       );
-    });
+    }, skip: Platform.isWindows);
     test('escaped single quote (dash/ash)', () {
       // dash prints an embedded `'` as `'"'"'`
       expect(
@@ -183,6 +183,15 @@ void main() {
         ShellCommand('ls', ['-alF', 'dir']),
       );
     });
+    test('quoted and escaped (posix rules on non windows platform)', () {
+      // The definition comes from a posix shell, its quoting rules apply
+      // even on Windows.
+      _fakeLinuxShellAliases = {'say': r"echo 'a b' \$HOME c\ d"};
+      expect(
+        resolveShellCommandUserShellAlias(ShellCommand('say', ['e'])),
+        ShellCommand('echo', ['a b', r'$HOME', 'c d', 'e']),
+      );
+    }, skip: Platform.isWindows);
     test('not found', () {
       expect(resolveShellCommandUserShellAlias(ShellCommand('la', [])), isNull);
     });

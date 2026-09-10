@@ -1,5 +1,3 @@
-/// @docImport 'package:process_run/src/shell_utils.dart';
-/// @docImport 'package:process_run/src/shell_utils_common.dart';
 /// {@canonicalFor prompt.prompt}
 /// {@canonicalFor prompt.promptConfirm}
 /// {@canonicalFor prompt.promptTerminate}
