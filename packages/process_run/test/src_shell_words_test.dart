@@ -376,13 +376,22 @@ void main() {
 
   group('shellSplit', () {
     test('platform implementation', () {
-      var command = r'"C:\dir\" \foo';
+      // Valid on both platforms but split differently.
+      var command = r'"C:\dir" \foo';
       if (Platform.isWindows) {
         expect(shellSplit(command), shellSplitWindowsImpl(command));
-        expect(shellSplit(command), [r'C:\dir\', r'\foo']);
+        expect(shellSplit(command), [r'C:\dir', r'\foo']);
       } else {
         expect(shellSplit(command), shellSplitImpl(command));
-        expect(shellSplit(command), [r'C:\dir\', 'foo']);
+        expect(shellSplit(command), [r'C:\dir', 'foo']);
+      }
+      // A trailing backslash inside double quotes is an escaped quote on
+      // POSIX (unmatched quote) but a literal backslash on Windows.
+      var windowsOnlyCommand = r'"C:\dir\" \foo';
+      if (Platform.isWindows) {
+        expect(shellSplit(windowsOnlyCommand), [r'C:\dir\', r'\foo']);
+      } else {
+        expect(() => shellSplit(windowsOnlyCommand), throwsFormatException);
       }
     });
   });
