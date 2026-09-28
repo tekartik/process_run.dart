@@ -21,6 +21,12 @@ void main() {
 
         userHomePath;
         userAppDataPath;
+        dartToolPaths;
+        pubCachePath;
+        pubCacheBinPath;
+        dartDataHomePath;
+        dartInstallPath;
+        dartInstallBinPath;
         shellEnvironment;
         platformEnvironment;
         userPaths;
@@ -28,6 +34,8 @@ void main() {
         isFlutterSupportedSync;
         isFlutterSupported;
       }
+      DartToolPaths;
+      DartToolOs;
       shellArgument;
       shellArguments;
       shellExecutableArguments;

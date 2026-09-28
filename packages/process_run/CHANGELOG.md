@@ -1,3 +1,10 @@
+## 1.3.7
+
+* Add `DartToolPaths` and the `pubCachePath`, `pubCacheBinPath`, `dartDataHomePath`,
+  `dartInstallPath` and `dartInstallBinPath` getters: where `dart pub global activate`
+  and `dart install` put their files on Linux, macOS and Windows, with the `PUB_CACHE`
+  and `DART_DATA_HOME` overrides
+
 ## 1.3.6
 
 * Add `process-run-environment`, `process-run-shell` and `process-run-tools` agent skills in `skills/`, installable with `dart run skills@ get`

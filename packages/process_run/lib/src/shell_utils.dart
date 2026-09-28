@@ -45,6 +45,38 @@ String get userAppDataPath => _userAppDataPath ??=
     join(userHomePath, '.config');
 
 String? _userHomePath;
+DartToolPaths? _dartToolPaths;
+
+DartToolOs get _currentDartToolOs => Platform.isWindows
+    ? DartToolOs.windows
+    : Platform.isMacOS
+    ? DartToolOs.macos
+    : DartToolOs.linux;
+
+/// The `dart pub global` and `dart install` locations of the current platform
+/// and environment (see [DartToolPaths]).
+DartToolPaths get dartToolPaths => _dartToolPaths ??= DartToolPaths(
+  os: _currentDartToolOs,
+  environment: platformEnvironment,
+);
+
+/// The pub cache: `PUB_CACHE`, else `%LOCALAPPDATA%\Pub\Cache` on Windows,
+/// else `~/.pub-cache`.
+String get pubCachePath => dartToolPaths.pubCachePath;
+
+/// Where `dart pub global activate` puts its binstubs (`<pubCachePath>/bin`).
+String get pubCacheBinPath => dartToolPaths.pubCacheBinPath;
+
+/// The Dart data home: `DART_DATA_HOME`, else the OS state directory for
+/// `Dart` (`%LOCALAPPDATA%\Dart`, `~/Library/Application Support/Dart`,
+/// `$XDG_STATE_HOME/Dart` or `~/.local/state/Dart`).
+String get dartDataHomePath => dartToolPaths.dartDataHomePath;
+
+/// The `dart install` directory (`<dartDataHomePath>/install`).
+String get dartInstallPath => dartToolPaths.dartInstallPath;
+
+/// Where `dart install` puts its executables (`<dartInstallPath>/bin`).
+String get dartInstallBinPath => dartToolPaths.dartInstallBinPath;
 
 /// Return the user home path.
 ///
@@ -94,6 +126,7 @@ Map<String, String> get platformEnvironment => _platformEnvironment ??=
 set platformEnvironment(Map<String, String>? environment) {
   _userAppDataPath = null;
   _userHomePath = null;
+  _dartToolPaths = null;
   _platformEnvironment = environment;
   shellEnvironment = null;
 }

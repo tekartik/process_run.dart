@@ -19,6 +19,8 @@ export 'package:process_run/dartbin.dart'
         dartChannelDev,
         dartChannelMaster;
 export 'package:process_run/src/api/shell_common.dart' show ShellOptions;
+export 'package:process_run/src/dart_tool_paths.dart'
+    show DartToolPaths, DartToolOs;
 // We reuse io sharedStdIn definition.
 export 'package:process_run/src/io/shared_stdin.dart' show sharedStdIn;
 export 'package:process_run/src/io/user_shell_alias_io.dart'
@@ -31,6 +33,12 @@ export 'package:process_run/src/shell_utils.dart'
     show
         userHomePath,
         userAppDataPath,
+        dartToolPaths,
+        pubCachePath,
+        pubCacheBinPath,
+        dartDataHomePath,
+        dartInstallPath,
+        dartInstallBinPath,
         shellEnvironment,
         platformEnvironment,
         shellArguments,

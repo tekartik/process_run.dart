@@ -5,7 +5,8 @@ description: >-
   which/whichSync, dartExecutable, dartSdkBinDirPath, dartSdkDirPath,
   dartVersion, dartChannel, getDartBinVersion, flutterExecutablePath,
   flutterDartExecutablePath, isFlutterSupported, getFlutterBinVersion,
-  getFlutterBinChannel, userHomePath, userAppDataPath, getPackageVersion,
+  getFlutterBinChannel, userHomePath, userAppDataPath, pubCacheBinPath,
+  dartInstallBinPath, DartToolPaths, getPackageVersion,
   prompt/promptConfirm/promptTerminate, sharedStdIn, the zone aware
   stdout/stderr of package:process_run/stdio.dart and
   shellStdioLinesGrouper, and the legacy ProcessCmd/DartCmd/runCmd API of
@@ -87,6 +88,14 @@ Future<void> main() async {
 
 * `userHomePath`: `HOME` (`USERPROFILE` on Windows), `'~'` when neither is
   set. `userAppDataPath`: `%APPDATA%` on Windows, `~/.config` elsewhere.
+* `pubCacheBinPath`: where `dart pub global activate` puts its binstubs
+  (`PUB_CACHE`, else `%LOCALAPPDATA%\Pub\Cache\bin` or `~/.pub-cache/bin`).
+  `dartInstallBinPath`: where `dart install` puts its executables
+  (`DART_DATA_HOME`, else `%LOCALAPPDATA%\Dart`, `~/Library/Application Support/Dart`
+  or `$XDG_STATE_HOME`/`~/.local/state/Dart`, then `install/bin`). Also
+  `pubCachePath`, `dartDataHomePath`, `dartInstallPath`, and
+  `DartToolPaths(os: DartToolOs.windows, environment: {...})` to compute them for
+  another platform or environment (`pathIndexOf`/`isDirOnPath` check `PATH`).
   Both honor the `TEKARTIK_PROCESS_RUN_USER_HOME_PATH` and
   `TEKARTIK_PROCESS_RUN_USER_APP_DATA_PATH` overrides. Use them with
   `package:path` `join` to locate tool configuration files.
