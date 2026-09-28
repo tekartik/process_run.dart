@@ -20,6 +20,9 @@ dev_dependencies:
   lints: ">=6.0.0"
   test: ">=1.25.8"
   async: ">=2.11.0"
+  # Cross-check of DartToolPaths against the official rules (test only)
+  cli_util: ">=0.6.0"
+  dart_data_home: ">=0.1.1"
 
 executables:
   # Shell helper
