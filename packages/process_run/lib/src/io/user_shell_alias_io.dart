@@ -17,14 +17,14 @@
 /// expand aliases. The alias name is passed as an argument (never interpolated
 /// in the script) so that it cannot be injected. The shell prints the
 /// definition on stdout, in one of the 2 forms handled by
-/// [parseUserShellAliasDefinition]:
+/// [parseUserShellAliasDefinition].
 ///
 /// ```
 /// alias ll='ls -alF'
 /// ll='ls -alF'
 /// ```
 ///
-/// Supported shells are listed in [userShellAliasSupportedShells]: they all
+/// Supported shells are listed in [userShellAliasSupportedShells]. They all
 /// support `-i -c` with positional arguments and have an `alias <name>`
 /// builtin. That covers the linux (`bash`) and macOS (`zsh`) defaults. Note
 /// that `--` is *not* used to end the options as `dash` does not support it
@@ -51,6 +51,7 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:process_run/src/io/io.dart';
+import 'package:process_run/src/io/shell_words.dart' as shell_words;
 import 'package:process_run/src/shell_command.dart';
 import 'package:process_run/src/shell_utils.dart';
 
@@ -150,7 +151,7 @@ String? parseUserShellAliasDefinition(String line, {String? name}) {
   try {
     // Let the shell word splitter handle the quoting, whichever the shell
     // escaping style is. A properly quoted value is a single word.
-    var parts = shellSplit(value);
+    var parts = shell_words.shellSplitImpl(value);
     if (parts.length == 1) {
       value = parts.first;
     }
