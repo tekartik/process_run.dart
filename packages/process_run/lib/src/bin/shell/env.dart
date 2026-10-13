@@ -157,7 +157,7 @@ class ShellEnvCommand extends ShellEnvCommandBase {
           stdout.writeln(' path: ${config.paths}');
         }
         if (config.aliases.isNotEmpty) {
-          stdout.writeln('alias: ${config.paths}');
+          stdout.writeln('alias: ${config.aliases}');
         }
         if (config.isEmpty) {
           stdout.writeln('empty');

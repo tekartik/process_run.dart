@@ -47,7 +47,7 @@ class ShellEnvAliasDeleteCommand extends ShellEnvCommandBase {
       // Force reload
       shellEnvironment = null;
       if (verbose) {
-        stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
+        stdout.writeln('After: ${jsonEncode(ShellEnvironment().aliases)}');
       }
       return true;
     }

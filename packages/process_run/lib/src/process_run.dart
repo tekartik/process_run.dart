@@ -110,7 +110,7 @@ ProcessResult runExecutableArgumentsSync(
     environment: environment,
     includeParentEnvironment: includeParentEnvironment,
     runInShell: runInShell,
-    throwOnError: false,
+    throwOnError: throwOnError,
   );
   var result = Shell(
     options: options,

@@ -42,16 +42,13 @@ extension ProcessRunFutureProcessResultsExt on Future<List<ProcessResult>> {
       var shell = shellResults.shell;
       var stdinController = ShellUint8ListController();
       stdinController.sink.add(output);
+      // Closed now (the output is buffered) so that the command reading its
+      // input (i.e. cat) gets the end of it.
+      stdinController.close();
       var newShell = shell.cloneWithOptions(
         shell.options.clone(stdin: stdinController.stream),
       );
-      newShell = shell.cloneWithOptions(shell.options.clone());
-      try {
-        var newResults = await newShell.run(script);
-        return newResults;
-      } finally {
-        stdinController.close();
-      }
+      return await newShell.run(script);
     }
     throw UnsupportedError(
       'Invalid results type: ${results.runtimeType}, expected ProcessResultInternalList',

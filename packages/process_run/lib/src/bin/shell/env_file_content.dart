@@ -3,6 +3,22 @@ import 'dart:convert';
 import 'package:process_run/src/characters.dart';
 import 'package:process_run/src/io/io.dart';
 import 'package:process_run/src/user_config.dart';
+import 'package:yaml/yaml.dart';
+
+/// [value] as a yaml scalar: as is when it reads back as the same string,
+/// double quoted otherwise (json is valid yaml), so that a value such as
+/// `a: b` cannot corrupt the file.
+String _yamlScalar(String value) {
+  try {
+    var map = loadYaml('key: $value');
+    if (map is Map && map['key'] == value) {
+      return value;
+    }
+  } catch (_) {
+    // Invalid as is, quoted
+  }
+  return jsonEncode(value);
+}
 
 /// File content helper
 class FileContent {
@@ -97,7 +113,7 @@ class FileContent {
     }
     if (!delete) {
       modified = true;
-      lines!.insert(index++, '  $key: $value');
+      lines!.insert(index++, '  $key: ${_yamlScalar(value ?? '')}');
     }
 
     return modified;

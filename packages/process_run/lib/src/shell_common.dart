@@ -175,7 +175,8 @@ class ShellOptions {
     this._noStderrResult,
     // Process start mode
     ProcessStartMode? mode,
-  }) : _verbose = verbose,
+  }) : _includeParentEnvironment = includeParentEnvironment,
+       _verbose = verbose,
        _commandVerbose = commandVerbose ?? verbose,
        _commentVerbose = commentVerbose ?? false,
        _mode = mode ?? ProcessStartMode.normal {
@@ -186,6 +187,9 @@ class ShellOptions {
   }
   final bool _throwOnError;
   final String? _workingDirectory;
+
+  /// Kept for [clone], the environment does not get the parent one back.
+  final bool _includeParentEnvironment;
 
   final bool? _runInShell;
   final Encoding? _stdoutEncoding;
@@ -278,6 +282,7 @@ class ShellOptions {
       throwOnError: throwOnError ?? _throwOnError,
       workingDirectory: workingDirectory ?? _workingDirectory,
       environment: shellEnvironment ?? _environment,
+      includeParentEnvironment: _includeParentEnvironment,
       noStdoutResult: noStdoutResult ?? _noStdoutResult,
       noStderrResult: noStderrResult ?? _noStderrResult,
       mode: mode ?? _mode,

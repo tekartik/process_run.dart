@@ -90,6 +90,7 @@ Future<ProcessResult> runCmd(
     environment: cmd.environment,
     includeParentEnvironment: cmd.includeParentEnvironment,
     runInShell: cmd.runInShell,
+    mode: cmd.mode,
   );
   return await processCmdRun(cmd, options: options);
 }

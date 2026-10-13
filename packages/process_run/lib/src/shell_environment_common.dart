@@ -152,7 +152,7 @@ class ShellEnvironmentAliases with MapMixin<String, String> {
 
   @override
   bool operator ==(Object other) {
-    if (other is ShellEnvironmentVars) {
+    if (other is ShellEnvironmentAliases) {
       return const MapEquality<Object?, Object?>().equals(this, other);
     }
     return false;

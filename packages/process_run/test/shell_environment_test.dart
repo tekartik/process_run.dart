@@ -201,6 +201,7 @@ void main() {
       // Don't test if there is a global current_id
       if (whichSync(currentDirScriptName) != null) {
         stderr.writeln('Global current_dir found, skipping');
+        return;
       }
       var prevEnv = shellEnvironment;
       expect(shellEnvironment, isNotEmpty);

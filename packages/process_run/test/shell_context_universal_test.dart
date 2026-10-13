@@ -29,9 +29,14 @@ void main() {
       await Future.wait([future1, future2]);
     });
     test('runZoned shell', () async {
-      var shell = Shell();
-      var outText = (await shell.run('echo Hello')).outText.trim();
-      expect(outText, 'Hello');
+      var env = ShellEnvironment()..vars['test'] = 'zoned';
+      var ctx = shellContext.copyWith(shellEnvironment: env);
+      await ctx.runZoned(() async {
+        var shell = Shell();
+        expect(shell.options.environment.vars['test'], 'zoned');
+        var outText = (await shell.run('echo Hello')).outText.trim();
+        expect(outText, 'Hello');
+      });
     });
   });
 }

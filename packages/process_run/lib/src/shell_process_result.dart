@@ -244,11 +244,16 @@ abstract class _ShellProcessResults implements ShellProcessResultInternalList {
     Shell shell,
     List<ShellProcessResult> processResults,
   ) => _ShellProcessResultsFromList(shell, processResults);
+
+  /// The shell that ran the processes (without it, the extension getter
+  /// `shell` called itself).
+  Shell get shell;
 }
 
 abstract class _ShellProcessResultsBase extends ListBase<ShellProcessResult>
     implements ShellProcessResultInternalList, _ShellProcessResults {
   _ShellProcessResultsBase(this.shell, this._list);
+  @override
   final Shell shell;
   final List<ShellProcessResult> _list;
 

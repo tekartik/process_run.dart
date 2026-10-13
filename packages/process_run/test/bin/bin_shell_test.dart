@@ -5,9 +5,11 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env_file_content.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/common/constant.dart';
+import 'package:process_run/src/user_config.dart' show loadFromMap;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
 var shell = Shell(
   environment: ShellEnvironment()..aliases['ds'] = 'dart run bin/shell.dart',
@@ -160,6 +162,23 @@ void main() {
         expect(fileContent.lines, ['alias:', '  a2: v2']);
         expect(fileContent.deleteAlias('a1'), false);
         expect(fileContent.lines, ['alias:', '  a2: v2']);
+      });
+      test('addVar yaml quoting', () {
+        var fileContent = EnvFileContent('dummy')..lines = [];
+        fileContent.addVar('V1', 'plain value');
+        fileContent.addVar('V2', 'a: b');
+        fileContent.addVar('V3', '123');
+        // Quoted only when needed
+        expect(fileContent.lines, [
+          'var:',
+          '  V3: "123"',
+          '  V2: "a: b"',
+          '  V1: plain value',
+        ]);
+        var config = loadFromMap(
+          loadYaml(fileContent.lines!.join('\n')) as Map,
+        );
+        expect(config.vars, {'V1': 'plain value', 'V2': 'a: b', 'V3': '123'});
       });
       test('addPath', () {
         var fileContent = EnvFileContent('dummy')..lines = [];

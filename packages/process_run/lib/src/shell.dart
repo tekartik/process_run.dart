@@ -278,7 +278,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       throw StateError('no previous shell');
     }
     if (_options.commandVerbose) {
-      stdout.writeln('\$ cd ${_parentShell!._workingDirectoryPath}');
+      streamSinkWriteln(
+        _options.stdout ?? stdout,
+        '\$ cd ${_parentShell!._workingDirectoryPath}',
+        encoding: _options.stdoutEncoding,
+      );
     }
     return _parentShell!;
   }
@@ -386,7 +390,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     // Display the comments
     if (shellScriptLineIsComment(command)) {
       if (_options.commentVerbose) {
-        stdout.writeln(command);
+        streamSinkWriteln(
+          _options.stdout ?? stdout,
+          command,
+          encoding: _options.stdoutEncoding,
+        );
       }
       return true;
     }
@@ -496,7 +504,10 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     ShellOnProcessCallback? onProcess,
   }) async {
     var command = ShellCommand(executable, arguments);
-    return (await _runCommand(command)).processResult;
+    return (await _runCommand(
+      command,
+      options: ShellCommandRunOptions(onProcess: onProcess),
+    )).processResult;
   }
 
   /// Run a single [command].
@@ -648,12 +659,12 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     if (commandVerbose) {
       utils.streamSinkWriteln(
         stdout ?? io.stdout,
-        '\$ ${command.toCommandString()}',
+        '\$ ${executedCommand.toCommandString()}',
         encoding: stdoutEncoding,
       );
     }
 
-    var executedCommand = _resolveExecutedCommand(command);
+    // Already resolved (aliases must not be applied twice)
     var executable = executedCommand.executable;
     var arguments = executedCommand.arguments;
 
@@ -725,7 +736,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         }
 
         var rawProcessResult = _runRawExecutableArgumentsSyncImpl(
-          executedCommand,
+          command,
           executedCommand,
         );
 

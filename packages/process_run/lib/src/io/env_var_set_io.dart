@@ -22,21 +22,23 @@ class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
       stdout.writeln('before: ${jsonEncode(ShellEnvironment().vars)}');
     }
 
-    var fileContent = await envFileReadOrCreate();
-    bool modified;
-    if (value != null) {
-      modified = fileContent.addVar(name, value);
-    } else {
-      modified = fileContent.deleteVar(name);
-    }
-    if (modified) {
-      if (verbose) {
-        stdout.writeln('writing file');
-      }
-      await fileContent.write();
-    }
     if (local && name == localEnvFilePathEnvKey) {
+      // Not written, it would have no effect
       stderr.writeln('$name cannot be set in local file');
+    } else {
+      var fileContent = await envFileReadOrCreate();
+      bool modified;
+      if (value != null) {
+        modified = fileContent.addVar(name, value);
+      } else {
+        modified = fileContent.deleteVar(name);
+      }
+      if (modified) {
+        if (verbose) {
+          stdout.writeln('writing file');
+        }
+        await fileContent.write();
+      }
     }
     // reload
     var newShellEnvironment = shell.context.newShellEnvironment(
@@ -48,7 +50,7 @@ class ShellEnvVarSetIoHelper extends ShellEnvIoHelper {
       newShellEnvironment.vars[name] = value;
     }
     if (verbose) {
-      stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
+      stdout.writeln('After: ${jsonEncode(newShellEnvironment.vars)}');
     }
     return newShellEnvironment;
   }

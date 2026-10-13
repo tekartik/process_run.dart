@@ -28,10 +28,6 @@ class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
       await fileContent.write();
     }
 
-    if (verbose) {
-      stdout.writeln('After: ${jsonEncode(ShellEnvironment().vars)}');
-    }
-
     // Convenient fix, although it could be wrong...
     var newShellEnvironment = shell.context.newShellEnvironment(
       environment: ShellEnvironment(environment: shell.options.environment),
@@ -39,6 +35,9 @@ class ShellEnvVarDeleteIoHelper extends ShellEnvIoHelper {
 
     newShellEnvironment.vars.removeWhere((name, _) => keys.contains(name));
 
-    return ShellEnvironment();
+    if (verbose) {
+      stdout.writeln('After: ${jsonEncode(newShellEnvironment.vars)}');
+    }
+    return newShellEnvironment;
   }
 }

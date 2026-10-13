@@ -18,6 +18,7 @@ Future<ProcessResult> devRunCmd(
     verbose: true,
     commandVerbose: commandVerbose,
     stdin: stdin,
+    stdout: stdout,
     stderr: stderr,
   );
 }

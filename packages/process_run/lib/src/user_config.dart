@@ -315,6 +315,7 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   var config = userConfig;
   var paths = List<String>.from(config.paths);
   var vars = Map<String, String>.from(config.vars);
+  var aliases = Map<String, String>.from(config.aliases);
   var added = envFileConfig;
   // devPrint('adding config: $config');
   if (const ListEquality<Object?>().equals(
@@ -329,9 +330,10 @@ void userLoadEnvFileConfig(EnvFileConfig envFileConfig) {
   added.vars.forEach((key, value) {
     vars[key] = value;
   });
+  aliases.addAll(added.aliases);
   // Set env PATH from path
   vars[envPathKey] = paths.join(envPathSeparator);
-  userConfig = UserConfig(vars: vars, paths: paths);
+  userConfig = UserConfig(vars: vars, paths: paths, aliases: aliases);
 }
 
 /// Returns the matching flutter ancestor if any

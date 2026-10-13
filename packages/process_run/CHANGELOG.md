@@ -1,3 +1,24 @@
+## 1.4.0
+
+* Behavior change: a shell created with `includeParentEnvironment: false` keeps
+  its environment after `cd`, `pushd`, `shellVarOverride` and `pipe` (the
+  parent environment came back)
+* Fix `pipe` and `ShellProcessResults.shell` (stack overflow), the piped command
+  now gets the output as its input, ended
+* Fix `onProcess` ignored by `runExecutableArguments` (top-level and `Shell`)
+* Fix `userLoadEnv` and `userLoadEnvFile` losing the aliases, `userLoadEnv(aliases:)`
+  is now applied
+* Fix `runExecutableArgumentsSync(throwOnError: true)` not throwing
+* Fix aliases applied twice in `runSync`, `runExecutableArgumentsSync` and
+  `runCommandSync`
+* `ds env var set` and `ds env alias set` quote the value when needed so that a
+  value such as `a: b` no longer corrupts the env file; a var that cannot be set
+  in the local file is no longer written
+* Fix `ShellEnvironment ==` (always false)
+* `runCmd` uses `ProcessCmd.mode`, `devRunCmd` uses its `stdout`
+* `popd` and the comments use the shell `stdout`
+* `ds env --info` and `ds env alias delete --verbose` display the aliases
+
 ## 1.3.7
 
 * Add `DartToolPaths` and the `pubCachePath`, `pubCacheBinPath`, `dartDataHomePath`,
