@@ -86,6 +86,11 @@ void main() {
       // echo is not found (no PATH) and run in a shell, its alias must not be
       // applied again on the resolved command.
       var environment = ShellEnvironment.empty()..aliases['echo'] = 'echo AA';
+      // Windows cannot start a process (cmd.exe) with a fully empty environment
+      // (The parameter is incorrect).
+      if (Platform.isWindows) {
+        environment.vars['SystemRoot'] = Platform.environment['SystemRoot']!;
+      }
       var shell = Shell(
         environment: environment,
         includeParentEnvironment: false,
