@@ -1,3 +1,10 @@
+## 1.4.1
+
+* Reading an env file is tolerant for values written as is before 1.4.0: an
+  invalid value such as `a: b` no longer makes the whole file unreadable, and an
+  unquoted number, boolean or empty value keeps its text (`007`, `1.50`, an empty
+  value used to read back as `7`, `1.5` and `null`)
+
 ## 1.4.0
 
 * Behavior change: a shell created with `includeParentEnvironment: false` keeps

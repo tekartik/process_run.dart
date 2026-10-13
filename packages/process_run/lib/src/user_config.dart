@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -139,6 +140,55 @@ class EnvFileConfig {
   String toString() => toDebugMap().toString();
 }
 
+/// The string entries of a var or alias [map].
+///
+/// In a yaml map, an unquoted number, boolean or null keeps its source text,
+/// as written before 1.4.0 (`007`, `1.50`, an empty value).
+Iterable<MapEntry<String, String>> _mapEntries(Map map) {
+  if (map is YamlMap) {
+    return map.nodes.entries.map((entry) {
+      var keyNode = entry.key;
+      var key = keyNode is YamlNode ? keyNode.value : keyNode;
+      var valueNode = entry.value;
+      var value = valueNode.value;
+      String text;
+      if (value is! String &&
+          valueNode is YamlScalar &&
+          valueNode.style == ScalarStyle.PLAIN) {
+        text = valueNode.span.text;
+      } else {
+        text = value.toString();
+      }
+      return MapEntry(key.toString(), text);
+    });
+  }
+  return map.entries.map(
+    (entry) => MapEntry(entry.key.toString(), entry.value.toString()),
+  );
+}
+
+/// `key: value` line in an env file
+final _envFileKeyValueRegExp = RegExp(r'^(\s+[^\s#\-][^:]*): (.*)$');
+
+/// Quote the values that are not valid yaml (such as `a: b`), written as is
+/// before 1.4.0.
+String _envFileContentQuoteInvalidValues(String content) {
+  return LineSplitter.split(content)
+      .map((line) {
+        var match = _envFileKeyValueRegExp.firstMatch(line);
+        if (match != null) {
+          var value = match.group(2)!;
+          try {
+            loadYaml('key: $value');
+          } on YamlException catch (_) {
+            return '${match.group(1)}: ${jsonEncode(value)}';
+          }
+        }
+        return line;
+      })
+      .join('\n');
+}
+
 /// Never null, all members can be null
 EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
   var paths = <String>[];
@@ -193,10 +243,8 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       for (var item in vars) {
         if (item is Map) {
           if (item.isNotEmpty) {
-            var entry = item.entries.first;
-            var key = entry.key.toString();
-            var value = entry.value.toString();
-            addVar(key, value);
+            var entry = _mapEntries(item).first;
+            addVar(entry.key, entry.value);
           }
         } else {
           // devPrint(item.runtimeType);
@@ -205,9 +253,9 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       }
     }
     if (vars is Map) {
-      vars.forEach((key, value) {
-        addVar(key.toString(), value.toString());
-      });
+      for (var entry in _mapEntries(vars)) {
+        addVar(entry.key, entry.value);
+      }
     }
 
     // Handle variable like
@@ -232,10 +280,8 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       for (var item in alias) {
         if (item is Map) {
           if (item.isNotEmpty) {
-            var entry = item.entries.first;
-            var key = entry.key.toString();
-            var value = entry.value.toString();
-            addAlias(key, value);
+            var entry = _mapEntries(item).first;
+            addAlias(entry.key, entry.value);
           }
         } else {
           // devPrint(item.runtimeType);
@@ -244,9 +290,9 @@ EnvFileConfig loadFromMap(Map<dynamic, dynamic> map) {
       }
     }
     if (alias is Map) {
-      alias.forEach((key, value) {
-        addAlias(key.toString(), value.toString());
-      });
+      for (var entry in _mapEntries(alias)) {
+        addAlias(entry.key, entry.value);
+      }
     }
   } catch (e) {
     stderr.writeln('error reading yaml $e');
@@ -274,7 +320,13 @@ EnvFileConfig _loadFromPath(String path) {
       //  stderr.writeln('error reading env file $path $e');
     }
     if (fileContent != null) {
-      var yaml = loadYaml(fileContent);
+      Object? yaml;
+      try {
+        yaml = loadYaml(fileContent);
+      } on YamlException catch (_) {
+        // A value written as is before 1.4.0 can make the whole file invalid
+        yaml = loadYaml(_envFileContentQuoteInvalidValues(fileContent));
+      }
       // devPrint('yaml: $yaml');
       if (yaml is Map) {
         var config = loadFromMap(yaml);
