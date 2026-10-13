@@ -2,20 +2,13 @@
 library;
 
 import 'dart:io';
-import 'dart:mirrors';
 
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
-String getScriptPath(Type type) =>
-    (reflectClass(type).owner as LibraryMirror).uri.toFilePath();
+import 'process_run_test_common.dart';
 
-class Script {
-  static String get path => getScriptPath(Script);
-}
-
-String projectTop = dirname(dirname(Script.path));
 String testOut = join(projectTop, '.dart_tool', 'process_run_test');
 
 void main() => defineTests();
