@@ -300,11 +300,22 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     return _kill();
   }
 
+  /// Writes [message] to the shell's stderr when it shows its commands.
+  void _killVerbose(String message) {
+    if (options.verbose || options.commandVerbose) {
+      utils.streamSinkWriteln(
+        options.stderr ?? io.stderr,
+        message,
+        encoding: options.stderrEncoding,
+      );
+    }
+  }
+
   bool _kill() {
     if (_currentProcess != null) {
       bool result;
       try {
-        io.stderr.writeln(
+        _killVerbose(
           'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal',
         );
 
@@ -349,7 +360,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       _clearPreviousContext();
       return false;
     } else {
-      io.stderr.writeln('Killing $_killedRunId');
+      _killVerbose('Killing $_killedRunId');
       return false;
     }
   }

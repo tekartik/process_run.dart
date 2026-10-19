@@ -321,6 +321,28 @@ $echoExe -o ${shellArgument(weirdText)}
         stderr.writeln('Allowed: could happen on CI');
       }
     }, timeout: const Timeout(Duration(seconds: 50)));
+    test('kill message only when verbose', () async {
+      await ensureEchoExe();
+      for (var verbose in [false, true]) {
+        var out = StreamController<List<int>>();
+        var err = StreamController<List<int>>();
+        var outDone = out.stream.drain<void>();
+        var errText = err.stream.transform(utf8.decoder).join();
+        var shell = Shell(verbose: verbose, stdout: out.sink, stderr: err.sink);
+        var started = Completer<void>();
+        var future = shell.run(
+          '$echoExe --wait 30000',
+          onProcess: (_) => started.complete(),
+        );
+        await started.future;
+        shell.kill();
+        await expectLater(future, throwsA(isA<ShellException>()));
+        await out.close();
+        await err.close();
+        await outDone;
+        expect((await errText).contains('killing'), verbose);
+      }
+    }, timeout: const Timeout(Duration(seconds: 50)));
     test('kill complex', () async {
       await ensureEchoExe();
       try {
