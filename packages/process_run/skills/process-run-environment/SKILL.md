@@ -131,8 +131,10 @@ Future<void> main() async {
 
 ### The `ds` command line
 
-* Install with `dart pub global activate process_run` (executable `ds`), or
-  run it in a project with `dart run process_run:shell <args>`.
+* Install with `dart install process_run` (Dart 3.10+, executable `ds`) or
+  `dart pub global activate process_run` (legacy), or run it in a project
+  with `dart run process_run:ds <args>` (`process_run:shell` with older
+  versions).
 * `ds run <command...>`: run one command line with the process_run
   environment (aliases, paths, vars). `ds run --info <command>` dumps the
   files, vars, paths and aliases used.

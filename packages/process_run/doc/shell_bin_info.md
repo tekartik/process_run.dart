@@ -5,8 +5,12 @@ Binary utility that allow changing from the command line the environment (var, p
 ### Setup
 
 ```shell
-# Add ds utility
-pub global activate process_run
+# Add ds utility (Dart 3.10+)
+dart install process_run
+# or (legacy)
+dart pub global activate process_run
+# or run it from a project depending on process_run
+dart run process_run:ds --version
 ```
 ### Example
 

@@ -7,6 +7,8 @@
 * `Shell.kill` writes its `killing ...` line only when the shell shows its
   commands (`verbose` or `commandVerbose`), to the shell's `stderr` when one is
   given (it always went to the process stderr)
+* Add `bin/ds.dart` (the `ds` executable now points to it) so that `dart run process_run:ds` works,
+  `process_run:shell` still does; the docs mention `dart install process_run`
 
 ## 1.4.0
 

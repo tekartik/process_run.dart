@@ -91,8 +91,12 @@ If somehow you cannot modify the system path, it will look for any path (last) d
  
 ### Command line
 
-$ pub global active process_run
-$ alias ds='dart pub global run process_run:shell'
+```shell
+# ds on the PATH (Dart 3.10+), or `dart pub global activate process_run` (legacy)
+$ dart install process_run
+# from a project depending on process_run
+$ dart run process_run:ds --version
+```
  
 ### Helper
 

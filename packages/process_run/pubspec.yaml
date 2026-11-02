@@ -25,6 +25,6 @@ dev_dependencies:
   dart_data_home: ">=0.1.1"
 
 executables:
-  # Shell helper
-  ds: shell
+  # Shell helper (bin/ds.dart, bin/shell.dart is the same)
+  ds:
 

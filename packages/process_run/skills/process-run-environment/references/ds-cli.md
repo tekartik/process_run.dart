@@ -3,10 +3,16 @@
 ## Invocation
 
 ```
-dart pub global activate process_run   # installs `ds`
+dart install process_run               # installs `ds` (Dart 3.10+, recommended)
+dart pub global activate process_run   # installs `ds` (legacy)
 ds <command> [arguments]
-dart run process_run:shell <command> [arguments]   # same, from a project
+dart run process_run:ds <command> [arguments]   # same, from a project
+dart run process_run:ds@ <command> [arguments]  # same, without installing
 ```
+
+`dart run process_run:shell` is the same script, use it from a project
+depending on an older process_run (without `bin/ds.dart`);
+`process_run:ds@` works with any version.
 
 Global flags: `-h`/`--help`, `-v`/`--verbose`, `--version`.
 `env` flags: `-l`/`--local` (default, `.local/ds_env.yaml` in the current

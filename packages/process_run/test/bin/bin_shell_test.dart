@@ -34,6 +34,13 @@ Shell get aliasShell =>
 
 void main() {
   group('bin_shell', () {
+    test('bin/ds.dart', () async {
+      // `dart run process_run:ds`, same as bin/shell.dart
+      var output = (await shell.run(
+        'dart run bin/ds.dart --version',
+      )).outText.trim();
+      expect(Version.parse(output), shellBinVersion);
+    });
     test('version', () async {
       var output = (await shell.run('ds --version')).outText.trim();
       await shell.run('ds env edit -h');
