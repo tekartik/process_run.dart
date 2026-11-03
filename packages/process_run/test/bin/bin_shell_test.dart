@@ -1,6 +1,7 @@
 @TestOn('vm')
 library;
 
+import 'package:path/path.dart' show absolute, join, normalize;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env_file_content.dart';
 import 'package:process_run/src/bin/shell/import.dart';
@@ -199,6 +200,50 @@ void main() {
         expect(fileContent.lines, ['path:', '  - a1']);
         expect(fileContent.deletePaths(['b1', 'c1']), false);
       });
+    });
+    group('remote run', () {
+      // `dart run process_run:ds@<descriptor>` (Dart 3.10+), here from this
+      // package: a remote run compiles the `ds` executable of the pubspec (an
+      // AOT bundle, like `dart install`), not `bin/ds.dart` by its script
+      // name.
+      late Directory tempDir;
+      late Shell remoteShell;
+      // Single quoted yaml keeps the backslashes of a windows path.
+      final descriptor = "process_run:ds@{path: '${normalize(absolute('.'))}'}";
+
+      setUpAll(() async {
+        tempDir = await Directory.systemTemp.createTemp(
+          'process_run_remote_run_',
+        );
+        // The bundle goes to <DART_DATA_HOME>/install/app-bundles, not in the
+        // user one.
+        remoteShell = Shell(
+          environment: ShellEnvironment()
+            ..vars['DART_DATA_HOME'] = join(tempDir.path, 'dart_data_home'),
+          verbose: false,
+        );
+      });
+      tearDownAll(() async {
+        try {
+          await tempDir.delete(recursive: true);
+        } catch (_) {}
+      });
+
+      Future<ProcessResult> ds(List<String> arguments) => remoteShell
+          .runExecutableArguments('dart', ['run', descriptor, ...arguments]);
+
+      test('version', () async {
+        // The first run builds the bundle (`Generated: ...` before the
+        // output).
+        var result = await ds(['--version']);
+        expect(Version.parse(result.outLines.last.trim()), shellBinVersion);
+      }, timeout: const Timeout(Duration(minutes: 5)));
+      test('run', () async {
+        // Runs from the bundle: dart is found in the path, not as the
+        // current executable.
+        var result = await ds(['run', 'dart', '--version']);
+        expect(result.outText, contains('Dart SDK version'));
+      }, timeout: const Timeout(Duration(minutes: 5)));
     });
   });
 }
