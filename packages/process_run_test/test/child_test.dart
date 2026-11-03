@@ -127,10 +127,12 @@ void main() {
   test('ready: the pids of the tree', () async {
     var started = await start([], depth: 2);
     expect(started.pids.toSet(), hasLength(3));
-    expect(
-      await ShellProcesses.descendantsOf(started.process.pid),
-      unorderedEquals(started.descendants),
-    );
+    // Windows adds a console host (conhost.exe) child to each of them.
+    var descendants = await ShellProcesses.descendantsOf(started.process.pid);
+    expect(descendants, containsAll(started.descendants));
+    if (!Platform.isWindows) {
+      expect(descendants, hasLength(2));
+    }
     expect(
       await ShellProcesses.findByExecutable(child),
       containsAll(started.pids),

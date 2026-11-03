@@ -190,7 +190,11 @@ void main() {
       var pids = await waitProcesses(exe, 3);
       expect(pids, contains(process.pid));
       var descendants = await ShellProcesses.descendantsOf(process.pid);
-      expect(descendants, unorderedEquals(pids.toSet()..remove(process.pid)));
+      // Windows adds a console host (conhost.exe) child to each of them.
+      expect(descendants, containsAll(pids.toSet()..remove(process.pid)));
+      if (!Platform.isWindows) {
+        expect(descendants, hasLength(2));
+      }
       // The relative path too.
       expect(
         await ShellProcesses.findByExecutable(p.relative(exe)),

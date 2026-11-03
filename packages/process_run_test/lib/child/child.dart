@@ -18,7 +18,7 @@ import 'package:args/args.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 /// Child version, bump it to force a re-compile by `compileChild()`.
-final childVersion = Version(0, 1, 0);
+final childVersion = Version(0, 1, 1);
 
 /// Waits (`--wait`, 60 seconds by default), starting first a chain of
 /// `--depth` descendants, then exits with `--exit-code`.
@@ -84,10 +84,14 @@ Future<void> main(List<String> arguments) async {
     exit(code);
   }
 
-  /// Watches [signal], false when it cannot be watched (Windows sigterm).
+  /// Watches [signal], false when it cannot be watched (sigterm on Windows,
+  /// where the watch fails later, on the stream).
   bool watch(ProcessSignal signal, void Function() onSignal) {
+    if (Platform.isWindows && signal == ProcessSignal.sigterm) {
+      return false;
+    }
     try {
-      signal.watch().listen((_) => onSignal());
+      signal.watch().listen((_) => onSignal(), onError: (Object _) {});
       return true;
     } catch (_) {
       return false;

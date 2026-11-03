@@ -409,6 +409,9 @@ abstract final class ShellProcesses {
   /// The pids of the running descendants of [pid] (its children, their
   /// children...), the closest first, empty when none.
   ///
+  /// On Windows a console program started without a console has a console
+  /// host child (`conhost.exe`), one of its descendants too.
+  ///
   /// Read them before killing [pid]: an orphan gets another parent.
   static Future<List<int>> descendantsOf(int pid) async =>
       processTableDescendantIds(await readProcessTable(), [pid]);
