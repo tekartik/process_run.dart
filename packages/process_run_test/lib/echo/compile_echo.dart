@@ -1,62 +1,30 @@
-import 'dart:io';
-
 import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
-import 'package:pub_semver/pub_semver.dart';
 
+import '../src/compile_test_executable.dart';
 import 'echo.dart';
-
-var _echoVersionOk = false;
 
 Future<void> main() async {
   var echo = await compileEcho();
-  await run('$echo --version');
+  await run('${shellArgument(echo)} --version');
 }
 
-/// Return the executable path safe to use in run as a shell argument
-Future<String> compileEcho({
-  String? path,
-  bool force = false,
-  bool? verbose,
-}) async {
-  verbose ??= false;
-  var folder = Platform.isWindows
-      ? 'windows'
-      : (Platform.isMacOS ? 'macos' : 'linux');
-  var exeExtension = Platform.isWindows ? '.exe' : '';
-  var echoExePath = normalize(
-    absolute(
-      joinAll([?path, 'build', folder, 'process_run_echo$exeExtension']),
-    ),
-  );
-  var echoExeDir = dirname(echoExePath);
-  var shell = Shell(verbose: verbose, workingDirectory: path);
-  var file = File(echoExePath);
-  var needCompile = force || !file.existsSync();
-
-  if (!needCompile && _echoVersionOk) {
-    return echoExePath;
-  }
-  if (!needCompile && file.existsSync()) {
-    try {
-      var version = Version.parse(
-        (await shell.run('$echoExePath --version')).outText.trim(),
-      );
-      if (version != echoVersion) {
-        needCompile = true;
-      } else {
-        _echoVersionOk = true;
-        return echoExePath;
-      }
-    } catch (_) {
-      needCompile = true;
-    }
-  }
-  if (needCompile) {
-    Directory(echoExeDir).createSync(recursive: true);
-    await shell.run(
-      'dart compile exe ${shellArgument(join('lib', 'echo', 'echo.dart'))} -o ${shellArgument(echoExePath)}',
+/// Compiles the echo test program (`lib/echo/echo.dart`) for the current
+/// host into `<path>/build/<linux|macos|windows>/process_run_echo[.exe]`
+/// when needed, returns its absolute path (quote it with [shellArgument] in
+/// a script).
+///
+/// [path] is the root of the `process_run_test` package (the current
+/// directory by default). An existing executable is reused when its
+/// `--version` is [echoVersion]: checked once per process, the calls are
+/// serialized (concurrent calls compile once). [force] compiles anyway,
+/// [verbose] shows the commands.
+Future<String> compileEcho({String? path, bool force = false, bool? verbose}) =>
+    compileTestExecutable(
+      name: 'process_run_echo',
+      source: join('lib', 'echo', 'echo.dart'),
+      version: echoVersion,
+      path: path,
+      force: force,
+      verbose: verbose,
     );
-  }
-  return echoExePath;
-}

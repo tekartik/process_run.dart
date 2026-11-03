@@ -3,7 +3,9 @@ name: process-run-test-setup
 description: >-
   Use when testing code that spawns processes or implements a process_run
   ShellContext, with the process_run_test helper package: compileEcho() to
-  build the process_run_echo test executable, EchoTestContext and
+  build the process_run_echo test executable, compileChild() to build the
+  process_run_child program for kill and signal tests (process trees,
+  explicit exit codes on sigterm/sigint), EchoTestContext and
   echoTests(context) for the shared echo suite, shellCoreTests(shellContext)
   for the shared Shell suite on the io or memory context (shellContext,
   shellContextMemory, ShellContextMemory), and the echo command options
@@ -34,9 +36,13 @@ application.
   path to the sibling package; a consumer gets the published one.
 * Everything is `dart:io` based: start such a test file with
   `@TestOn('vm')` + `library;` and run it with `dart test`.
-* Public entry points (there are only three, plus the echo source):
+* Public entry points (four, plus the echo and child sources):
   * `package:process_run_test/echo/compile_echo.dart`: `Future<String>
     compileEcho({String? path, bool force = false, bool? verbose})`.
+  * `package:process_run_test/child/compile_child.dart`: `Future<String>
+    compileChild({String? path, bool force = false, bool? verbose})`,
+    `childVersion`, `int childSignalExitCode(ProcessSignal signal)` (`-9`
+    for `sigkill`, the exit code of a killed process on Linux and macOS).
   * `package:process_run_test/echo_test.dart`: `EchoTestContext` and
     `void echoTests(EchoTestContext testContext)`.
   * `package:process_run_test/shell_core_test.dart`:
@@ -55,6 +61,22 @@ application.
   it once in a `setUpAll`. The result is cached: an existing binary whose
   `--version` matches `echoVersion` is reused, `force: true` recompiles,
   `verbose: true` shows the compile command.
+* `compileEcho()` and `compileChild()` are serialized (a `Lock`: concurrent
+  calls compile once) and check an existing binary once per process.
+* The child program (`compileChild()`, `build/<os>/process_run_child[.exe]`,
+  same `path` rule) is the process to kill: it waits (`--wait <ms>`, 60 s by
+  default, then exits with `--exit-code <n>`), starts a chain of
+  descendants with `--depth <n>` (same options, one level less), and writes
+  `ready <pid>` once it and its descendants are started (theirs first, so
+  `ready <rootPid>` is the last line: wait for it, the lines give the pids of
+  the tree). `--sigterm-exit-code <n>` and `--sigint-exit-code <n>` catch the
+  signal, write `signal SIGTERM` / `signal SIGINT` and exit with `n`;
+  `--ignore-sigterm` catches it and keeps running (the sigkill fallback of
+  `Shell.kill()`). Sigterm cannot be caught on Windows, and sigkill nowhere:
+  check `childSignalExitCode(ProcessSignal.sigkill)` (`-9`) on Linux and
+  macOS, a non zero code on Windows. Read the lines with
+  `Shell(stdout: ShellLinesController().sink)` and get the `Process` (its
+  `exitCode`) with `onProcess`; `test/child_test.dart` shows the pattern.
 * Quote the returned path with `shellArgument(echoPath)` before putting it in a
   `shell.run('...')` script (it is absolute and may contain spaces); pass it
   raw to `runExecutableArguments(echoPath, [...])`.
