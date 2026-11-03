@@ -1,0 +1,20 @@
+# New default (preferred over run_ci_action_flutter_default.yml): run ci as
+# separate jobs (pub get, analyze, format, test, build).
+name: Run CI workflow flutter default
+on:
+  push:
+    branches: ['**'] # Not on tag pushes
+    paths-ignore: ['**.md'] # Not on doc only changes
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 28 * *'  # at midnight, on day 28 of the month
+
+# A new run on the same ref cancels the older one.
+concurrency:
+  group: ${{ github.workflow_ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Run ci
+    uses: tekartik/ci.dart/.github/workflows/run_ci_flutter_jobs.yml@v1
