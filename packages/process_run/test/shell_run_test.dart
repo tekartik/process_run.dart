@@ -133,7 +133,11 @@ void main() {
           print(e);
         }
       }
-    });
+      // Not on Windows: cmd.exe looks in the working directory first, the
+      // script may be found and run; when it is not, the process failed to
+      // start with an empty environment (The parameter is incorrect), it is
+      // not the missing script.
+    }, testOn: '!windows');
     test('--version', () async {
       for (var bin in [
         // 'dartdoc', deprecated
