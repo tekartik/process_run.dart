@@ -94,6 +94,7 @@ export 'src/shell_process_result.dart'
         ShellProcessResult,
         ProcessRunShellProcessResultExt,
         ProcessRunShellProcessResultsExt;
+export 'src/shell_processes.dart' show ShellProcesses;
 export 'src/which.dart' show whichSync, which;
 export 'utils/process_result_extension.dart'
     show

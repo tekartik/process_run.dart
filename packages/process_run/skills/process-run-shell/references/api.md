@@ -43,7 +43,9 @@ the environment).
 * `ProcessResult runExecutableArgumentsSync(String executable, List<String> arguments)`
 * `Shell cd(String path)`, `Shell pushd(String path)`, `Shell popd()`,
   `String get path`
-* `bool kill([ProcessSignal signal = ProcessSignal.sigterm])`
+* `bool kill([ProcessSignal? signal])`: without `signal`, the command and
+  its descendants, `sigterm` then `sigkill` after 5 s; with `signal`, the
+  command only (`sigkill`: the descendants too)
 * `Shell cloneWithOptions(ShellOptions options)`, `ShellOptions get options`,
   `ShellContext get context`
 * `Future<Shell> shellVarOverride(String name, String? value, {bool? local})`
@@ -118,6 +120,29 @@ code (or the `ProcessException` text) and the working directory.
 `Stream<List<int>>`, give it to `Shell(stdin:)`), `write(String)`,
 `writeln(String)`, `close()`, `done`, `isClosed`. The controller is
 single-subscription.
+
+## `ShellProcesses`
+
+Static methods on any process of the machine by its pid (not only the ones a
+`Shell` started), Linux (`/proc`), macOS (`ps`) and Windows (PowerShell,
+`tasklist`). Another user's processes are seen (`isRunning`,
+`descendantsOf`) but usually not found by their executable (except on macOS)
+and cannot be killed (unless root or administrator).
+
+* `Future<List<int>> ShellProcesses.findByExecutable(String executable)`:
+  the pids of the running processes of an executable file (its path,
+  relative or absolute; macOS matches the command line, the executable
+  started by its path)
+* `Future<List<int>> ShellProcesses.descendantsOf(int pid)`: its children,
+  their children..., the closest first (read it before killing `pid`: an
+  orphan gets another parent)
+* `Future<bool> ShellProcesses.isRunning(int pid)`: false once exited (a
+  zombie is not running)
+* `Future<List<int>> ShellProcesses.kill(Iterable<int> pids, {ProcessSignal
+  signal = sigterm, bool tree = false, Duration timeout = 5 s})`: sends
+  `signal`, waits up to `timeout`, then sigkills the remaining ones; `tree`
+  adds the descendants; never the current process; returns the pids still
+  running (empty when all exited)
 
 ## Prompt helpers
 

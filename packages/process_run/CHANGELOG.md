@@ -1,3 +1,22 @@
+## 1.4.2
+
+* Add `ShellProcesses` (`shell.dart`), any process of the machine by its pid
+  on Linux, macOS and Windows: `findByExecutable` (the running processes of an
+  executable file), `descendantsOf` (the children of a process, their
+  children...), `isRunning` and `kill` (sigterm, then sigkill after a
+  timeout, with the descendants when `tree` is true)
+* Behavior change: `Shell.kill()` without a signal (its signal is now
+  nullable, `kill([ProcessSignal? signal])`) kills the command and all its
+  descendants, `sigterm` first then `sigkill` for the ones still running after
+  5 seconds (in the background); on Windows the whole tree at once
+  (`taskkill /t /f`). It sent `sigterm` to the command only, its children kept
+  running. An explicit signal keeps the previous behavior
+  (`kill(ProcessSignal.sigterm)` signals the command only)
+* `Shell.kill(ProcessSignal.sigkill)` kills all the descendants of the
+  running command on Linux and macOS (`pkill -P` sent sigterm to its direct
+  children only: grandchildren, such as the browser of `flutter test`, kept
+  running)
+
 ## 1.4.1+1
 
 * Reading an env file is tolerant for values written as is before 1.4.0: an

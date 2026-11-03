@@ -34,10 +34,15 @@ var shellDebug = false; // devWarning(true); // false
 abstract class ShellCore {
   /// Kills the current running process.
   ///
+  /// Without [signal], kills the command and all its descendants: `sigterm`
+  /// first, then `sigkill` for the ones still running after 5 seconds. With
+  /// [signal], sends it to the command only (`ProcessSignal.sigkill` kills
+  /// its descendants too).
+  ///
   /// Returns `true` if the signal is successfully delivered to the process.
   /// Otherwise the signal could not be sent, usually meaning,
   /// that the process is already dead.
-  bool kill([ProcessSignal signal = ProcessSignal.sigterm]);
+  bool kill([ProcessSignal? signal]);
 
   /// Run one or multiple plain text command(s).
   ///
@@ -328,7 +333,7 @@ mixin ShellDefaultMixin implements ShellCore, ShellCoreSync {
   }
 
   @override
-  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
+  bool kill([ProcessSignal? signal]) {
     throw UnimplementedError('kill($signal)');
   }
 

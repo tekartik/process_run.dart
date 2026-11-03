@@ -152,11 +152,19 @@ git status
   ends (otherwise it never exits). To feed generated text use a
   `ShellLinesController`: `Shell(stdin: input.binaryStream)`,
   `input.writeln('...')`, `input.close()`.
-* `shell.kill([ProcessSignal signal])` kills the running command (default
-  `sigterm`); the pending `run` future completes with `ShellException`.
-  `ProcessSignal.sigkill` additionally kills child processes (`pkill -P` on
-  Linux/macOS, `taskkill /t` on Windows), needed for servers such as
-  `dhttpd`.
+* `shell.kill()` kills the running command and all its descendant
+  processes (children, grandchildren...): `sigterm`, then `sigkill` for the
+  ones still running after 5 s (`taskkill /t /f` on Windows); the pending
+  `run` future completes with `ShellException`. Prefer it: servers such as
+  `dhttpd` and `flutter test` (its browser) leave processes behind otherwise.
+  `shell.kill(signal)` sends `signal` to the command only (`sigint` to stop
+  the Firebase emulators), except `ProcessSignal.sigkill` which kills the
+  descendants too.
+* Any process, by pid (an app started from elsewhere, a process tree):
+  `ShellProcesses.findByExecutable(path)`, `ShellProcesses.descendantsOf(pid)`,
+  `ShellProcesses.isRunning(pid)` and `ShellProcesses.kill(pids, tree: true)`
+  (sigterm, sigkill after `timeout`, 5 s by default; returns the ones still
+  running).
 * `run(script, onProcess: (process) {...})` gives the `dart:io` `Process`
   of each command as it starts (pid, manual kill).
 * Calls on one `Shell` are serialized with a lock: two concurrent

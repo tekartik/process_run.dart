@@ -11,6 +11,11 @@ import 'package:process_run/src/shell_alias.dart';
 import 'package:process_run/src/shell_common.dart'
     show ShellCore, ShellCoreSync, ShellOptions, shellDebug;
 import 'package:process_run/src/shell_process_result.dart';
+import 'package:process_run/src/shell_processes.dart'
+    show
+        findProcessDescendantIdsSync,
+        shellKillAfterGracePeriod,
+        shellKillGracePeriod;
 import 'package:process_run/src/shell_utils.dart' as utils;
 import 'package:process_run/src/shell_utils.dart';
 import 'package:synchronized/synchronized.dart';
@@ -219,8 +224,9 @@ abstract class Shell implements ShellCore, ShellCoreSync {
   /// Killed runId. would kill any process with a lower run id
   var _killedRunId = 0;
 
-  /// Current kill process signal
-  late ProcessSignal _killedProcessSignal;
+  /// Current kill process signal, null for the default kill (the command and
+  /// its descendants, sigterm then sigkill after the grace period).
+  ProcessSignal? _killedProcessSignal;
 
   /// Current child process running.
   Process? _currentProcess;
@@ -289,11 +295,19 @@ abstract class Shell implements ShellCore, ShellCoreSync {
 
   /// Kills the current running process.
   ///
+  /// Without [signal], kills the command and all its descendants (children,
+  /// grandchildren...): `sigterm` first, then `sigkill` for the ones still
+  /// running after 5 seconds (in the background, the call returns at once).
+  /// On Windows the whole tree is terminated at once (`taskkill /t /f`).
+  ///
+  /// With [signal], sends it to the command only, except
+  /// `ProcessSignal.sigkill` which kills all its descendants too.
+  ///
   /// Returns `true` if the signal is successfully delivered to the process.
   /// Otherwise the signal could not be sent, usually meaning,
   /// that the process is already dead.
   @override
-  bool kill([ProcessSignal signal = ProcessSignal.sigterm]) {
+  bool kill([ProcessSignal? signal]) {
     // Picked the current 'timestamp' of the run killed
     _killedRunId = _runId;
     _killedProcessSignal = signal;
@@ -315,19 +329,29 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     if (_currentProcess != null) {
       bool result;
       try {
+        var process = _currentProcess!;
+        var pid = process.pid;
+        var signal = _killedProcessSignal;
         _killVerbose(
-          'killing $_killedRunId, ${_currentProcessToString()} signal $_killedProcessSignal',
+          'killing $_killedRunId, ${_currentProcessToString()} signal '
+          '${signal ?? '${ProcessSignal.sigterm} (descendants too, '
+                  '${ProcessSignal.sigkill} after ${shellKillGracePeriod.inSeconds}s)'}',
         );
 
-        if (_killedProcessSignal == ProcessSignal.sigkill) {
-          var pid = _currentProcess!.pid;
-
+        var treeKilled = false;
+        // The descendants given sigterm, sigkill after the grace period.
+        List<int>? gracefulDescendants;
+        if (signal == ProcessSignal.sigkill ||
+            (signal == null && io.Platform.isWindows)) {
           /// Workaround when using sigkill to kill the children processes too
           if (io.Platform.isLinux || io.Platform.isMacOS) {
-            try {
-              /// Kill the children
-              runExecutableArgumentsSync('pkill', ['-P', '$pid']);
-            } catch (_) {}
+            /// Kill the descendants (children, grandchildren...), found
+            /// before any kill: an orphan gets another parent.
+            for (var descendant in findProcessDescendantIdsSync(pid)) {
+              try {
+                io.Process.killPid(descendant, ProcessSignal.sigkill);
+              } catch (_) {}
+            }
           } else if (io.Platform.isWindows) {
             try {
               /// Kill the children
@@ -335,21 +359,32 @@ abstract class Shell implements ShellCore, ShellCoreSync {
               // /pid <processID>	Specifies the process ID of the process to be terminated.
               // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.
               // /t	Ends the specified process and any child processes started by it.
-              runExecutableArgumentsSync('taskkill', [
+              var taskkill = runExecutableArgumentsSync('taskkill', [
                 '/t',
                 '/f',
                 '/pid',
                 '$pid',
               ]);
+              treeKilled = taskkill.exitCode == 0;
+            } catch (_) {}
+          }
+        } else if (signal == null) {
+          gracefulDescendants = findProcessDescendantIdsSync(pid);
+          for (var descendant in gracefulDescendants) {
+            try {
+              io.Process.killPid(descendant, ProcessSignal.sigterm);
             } catch (_) {}
           }
         }
 
         try {
           /// kill the parent process
-          result = _currentProcess!.kill(_killedProcessSignal);
+          result = process.kill(signal ?? ProcessSignal.sigterm) || treeKilled;
         } catch (_) {
-          result = false;
+          result = treeKilled;
+        }
+        if (gracefulDescendants != null) {
+          unawaited(shellKillAfterGracePeriod(process, gracefulDescendants));
         }
         _clearPreviousContext();
       } catch (_) {

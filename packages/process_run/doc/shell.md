@@ -209,9 +209,35 @@ That will prompt for the user to type his password and then will run the script.
 
 ### Killing a shell
 
-You can kill a shell using the `kill()` method. It will kill the shell and all its spawn children.
-By default its uses `ProcessSignal.sigterm` signal. You can specify a different signal using the `signal` parameter.
+You can kill a shell using the `kill()` method. Without a signal (since 1.4.2), it kills the running command and all
+its descendants (children, grandchildren...): `ProcessSignal.sigterm` first, so that they can clean up (git removes its
+lock file), then `ProcessSignal.sigkill` for the ones still running after 5 seconds. On Windows the whole tree is
+terminated at once (taskkill).
 
-A special trick is made when `ProcessSignal.sigkill` used as it will force killing all children processes on Windows (taskkill), MacOS and Linux (pkill).
-As I was experiencing with `dhttpd`, killing the process was not really killing the server so using `sigkill` (and so taskkill and pkill) was properly
+You can specify a signal using the `signal` parameter, it is then sent to the running command only (as `kill()` did
+before 1.4.2), such as `ProcessSignal.sigint` (ctrl-c) to stop the Firebase emulators.
+
+A special trick is made when `ProcessSignal.sigkill` used as it will force killing all the descendant processes (children, grandchildren...)
+on Windows (taskkill), MacOS and Linux (since 1.4.2, `pkill -P` before, direct children only).
+As I was experiencing with `dhttpd`, killing the process was not really killing the server so using `sigkill` was properly
 killing the server.
+
+### Killing processes
+
+`ShellProcesses` finds and kills any process by its pid, not only the ones a shell started (Linux, MacOS and Windows),
+the way `ps`, `pgrep` and `kill` do in a terminal:
+
+```dart
+// The running processes of an executable, an app started from elsewhere.
+var pids = await ShellProcesses.findByExecutable('deploy/linux/my_app');
+// sigterm, then sigkill for the ones still running after 5 seconds, their
+// descendants (children, grandchildren...) too.
+var stillRunning = await ShellProcesses.kill(pids, tree: true);
+
+// The descendants of a process, its state.
+var descendants = await ShellProcesses.descendantsOf(process.pid);
+var running = await ShellProcesses.isRunning(process.pid);
+```
+
+The processes of another user are seen (`isRunning`, `descendantsOf`) but usually not found by their executable
+(except on MacOS) and cannot be killed (unless root or administrator).
