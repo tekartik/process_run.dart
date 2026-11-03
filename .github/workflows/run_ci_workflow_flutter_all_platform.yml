@@ -1,0 +1,42 @@
+# Same as run_ci_workflow_flutter_all.yml on ubuntu (pub get, analyze, format,
+# test, build for each channel) but only the platform specific part (vm test)
+# on windows and macos.
+name: Run CI workflow flutter all platform
+on:
+  push:
+    branches: ['**'] # Not on tag pushes
+    paths-ignore: ['**.md'] # Not on doc only changes
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # every sunday at midnight
+
+# One job per os/channel (no matrix) so that each one is displayed as its own
+# group in the workflow graph.
+jobs:
+  ubuntu_stable:
+    name: ubuntu stable
+    uses: tekartik/ci.dart/.github/workflows/run_ci_flutter_jobs.yml@v1
+    with:
+      channel: stable
+      runs-on: ubuntu-latest
+
+  ubuntu_beta:
+    name: ubuntu beta
+    uses: tekartik/ci.dart/.github/workflows/run_ci_flutter_jobs.yml@v1
+    with:
+      channel: beta
+      runs-on: ubuntu-latest
+
+  windows_stable:
+    name: windows stable
+    uses: tekartik/ci.dart/.github/workflows/run_ci_flutter_platform_jobs.yml@v1
+    with:
+      channel: stable
+      runs-on: windows-latest
+
+  macos_stable:
+    name: macos stable
+    uses: tekartik/ci.dart/.github/workflows/run_ci_flutter_platform_jobs.yml@v1
+    with:
+      channel: stable
+      runs-on: macos-latest
