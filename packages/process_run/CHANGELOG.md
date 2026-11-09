@@ -12,7 +12,9 @@
 * `shellStreamLines`, `ShellLinesController.stream`: a listener pausing
   (`await for`) no longer gets each line twice
 * `Shell.kill()`: a command killed while it starts is killed even when the
-  shell ran a new command since
+  shell ran a new command since, and that new command keeps running (on
+  Windows the taskkill ended it); on Windows the taskkill command no longer
+  shows in the shell output
 * `stdoutAsUint8List`, `stderrAsUint8List`, `pipe()`: support the output of a
   run without encoding
 * `Shell.run`: a last command ending with ` \` or ` ^` is run

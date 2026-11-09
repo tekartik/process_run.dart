@@ -378,7 +378,11 @@ abstract class Shell implements ShellCore, ShellCoreSync {
             // /pid <processID>	Specifies the process ID of the process to be terminated.
             // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.
             // /t	Ends the specified process and any child processes started by it.
-            var taskkill = runExecutableArgumentsSync('taskkill', [
+            // The global one, in a shell of its own: this shell's method
+            // would end its current run ("Killed by framework"), the one of
+            // a command started since when the process killed is an older
+            // one, and show the taskkill command in its output.
+            var taskkill = impl.runExecutableArgumentsSync('taskkill', [
               '/t',
               '/f',
               '/pid',
