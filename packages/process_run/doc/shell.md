@@ -100,7 +100,11 @@ $ dart run process_run:ds --version
  
 ### Helper
 
-`ShellLinesController` allows listening line from a command line script.
+`ShellLinesController` gives the output of a command as lines, or feeds its
+input; use one per direction. Prefer it (with `Shell`) to `dart:io`
+`Process.start`, tests included.
+
+Output, as lines:
 
 ```dart
 var controller = ShellLinesController();
@@ -118,6 +122,38 @@ try {
   // We might get a shell exception
 }
 ```
+
+Input, written while the command runs (for example once it printed a
+prompt); closing the controller is the end of input of the command:
+
+```dart
+var input = ShellLinesController();
+var shell = Shell(stdin: input.binaryStream, verbose: false);
+var done = shell.run('sort');
+input.writeln('b');
+input.writeln('a');
+// End of input: sort then writes its output and exits
+input.close();
+print((await done).outLines); // (a, b)
+```
+
+Both together drive an interactive program: wait for a line on the output
+controller, answer on the input one. The process-run-shell skill
+(`skills/process-run-shell/SKILL.md`) has the full example, with a timeout
+killing a program that hangs.
+
+### Shared stdin
+
+`sharedStdIn` is the program's own stdin, which several commands
+(`Shell(stdin: sharedStdIn)`) and prompts (`prompt`, `promptConfirm`) can
+read in turn. Call `await sharedStdIn.terminate()` before the program ends,
+otherwise it never exits.
+
+At the end of its input (stdin a pipe, `< /dev/null`, CI), its listeners get
+done: `sharedStdIn.lines()` completes, a command given `stdin: sharedStdIn`
+gets its end of input, and `prompt`, `promptConfirm` and
+`sharedStdIn.nextLine()` throw a `StateError` (no element).
+
 ### Running sudo (Linux)
 
 You can run your dart program using sudo to run all you child scripts as a super user.

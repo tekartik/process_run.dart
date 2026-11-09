@@ -6,9 +6,10 @@ import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/import.dart';
+import 'package:process_run/src/io/shell_words.dart';
 import 'package:process_run/src/shell_utils.dart';
 import 'package:process_run/src/shell_utils_common.dart'
-    show isLineToBeContinued;
+    show argumentToStringImpl, isLineToBeContinued;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
@@ -109,6 +110,69 @@ void main() {
       // testSplitJoin(r'\');
       testSplitJoin('"foo bar"');
       testSplitJoin("'foo bar'", expected: '"foo bar"');
+    });
+
+    test('shellArgument round trip', () {
+      var arguments = [
+        '',
+        'a',
+        'a b',
+        r'a\b',
+        r'\d+',
+        r'a\\b',
+        r'a b\',
+        r'a b\\',
+        r'a b\"',
+        r'a/\b c/\d',
+        r'C:\Program Files\x',
+        r'C:\dir\',
+        "it's",
+        r"it's\",
+        'say "hi"',
+        r'a$b c\$d',
+        'a`b c\\`d',
+        '#foo',
+        '#',
+        'a#b',
+        'é 你好',
+        'a\tb',
+        'a\nb',
+        'a\\\nb',
+      ];
+      // Not supported on Windows (no escape in the double quotes).
+      var bothQuotes = ['it\'s "x"', r'''a'\"''', r'''{"a":"it's \"x\""}'''];
+      for (var argument in [...arguments, ...bothQuotes]) {
+        var posix = argumentToStringImpl(argument, windows: false);
+        expect(shellSplitImpl(posix), [argument], reason: posix);
+      }
+      for (var argument in arguments) {
+        var windows = argumentToStringImpl(argument, windows: true);
+        expect(shellSplitWindowsImpl(windows), [argument], reason: windows);
+      }
+      for (var argument in [
+        ...arguments,
+        if (!Platform.isWindows) ...bothQuotes,
+      ]) {
+        expect(shellSplit(shellArgument(argument)), [argument]);
+        expect(shellSplit(shellJoin([argument, argument])), [
+          argument,
+          argument,
+        ]);
+      }
+      // Unchanged when it already read back as is.
+      expect(
+        argumentToStringImpl(r'a/\b c/\d', windows: false),
+        r'"a/\b c/\d"',
+      );
+      expect(argumentToStringImpl(r'C:\x\y.exe', windows: true), r'C:\x\y.exe');
+      expect(argumentToStringImpl(r'a\b', windows: false), r'"a\b"');
+      expect(argumentToStringImpl('#foo', windows: true), '"#foo"');
+    });
+
+    test('shellScriptSplitLines continued last line', () {
+      expect(shellScriptSplitLines('echo a \\'), ['echo a']);
+      expect(shellScriptSplitLines('echo a \\\n  b ^\n'), ['echo a b']);
+      expect(shellScriptSplitLines('\\'), isEmpty);
     });
 
     test('findExecutableSync', () {

@@ -58,18 +58,42 @@ class SharedStdIn extends Stream<List<int>> {
     return transform(utf8.decoder).transform(const LineSplitter());
   }
 
+  /// True once the original stream is done (end of input).
+  var _done = false;
+
   void _onInput(List<int> event) => _getCurrent().add(event);
 
-  StreamController<List<int>> _getCurrent() =>
-      _current ??= StreamController<List<int>>(
+  void _onError(Object error, StackTrace stackTrace) =>
+      _getCurrent().addError(error, stackTrace);
+
+  /// End of input: the current subscriber, and any later one, gets done.
+  void _onDone() {
+    _done = true;
+    _current?.close();
+  }
+
+  StreamController<List<int>> _getCurrent() {
+    var current = _current;
+    if (current == null) {
+      current = _current = StreamController<List<int>>(
         onListen: () {
-          _sub ??= _originalStream.listen(_onInput);
+          _sub ??= _originalStream.listen(
+            _onInput,
+            onError: _onError,
+            onDone: _onDone,
+          );
         },
         onCancel: () {
           _current = null;
         },
         sync: true,
       );
+      if (_done) {
+        current.close();
+      }
+    }
+    return current;
+  }
 
   @override
   StreamSubscription<List<int>> listen(
@@ -105,7 +129,9 @@ class SharedStdIn extends Stream<List<int>> {
     }
     _terminated = true;
     await _sub?.cancel();
-    await _current?.close();
+    // Not awaited: the close of a controller nobody listens to (input typed
+    // while no subscriber) never completes.
+    unawaited(_current?.close());
     _sub = null;
   }
 }

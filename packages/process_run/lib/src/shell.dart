@@ -329,63 +329,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     if (_currentProcess != null) {
       bool result;
       try {
-        var process = _currentProcess!;
-        var pid = process.pid;
-        var signal = _killedProcessSignal;
-        _killVerbose(
-          'killing $_killedRunId, ${_currentProcessToString()} signal '
-          '${signal ?? '${ProcessSignal.sigterm} (descendants too, '
-                  '${ProcessSignal.sigkill} after ${shellKillGracePeriod.inSeconds}s)'}',
-        );
-
-        var treeKilled = false;
-        // The descendants given sigterm, sigkill after the grace period.
-        List<int>? gracefulDescendants;
-        if (signal == ProcessSignal.sigkill ||
-            (signal == null && io.Platform.isWindows)) {
-          /// Workaround when using sigkill to kill the children processes too
-          if (io.Platform.isLinux || io.Platform.isMacOS) {
-            /// Kill the descendants (children, grandchildren...), found
-            /// before any kill: an orphan gets another parent.
-            for (var descendant in findProcessDescendantIdsSync(pid)) {
-              try {
-                io.Process.killPid(descendant, ProcessSignal.sigkill);
-              } catch (_) {}
-            }
-          } else if (io.Platform.isWindows) {
-            try {
-              /// Kill the children
-              // Kill children process
-              // /pid <processID>	Specifies the process ID of the process to be terminated.
-              // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.
-              // /t	Ends the specified process and any child processes started by it.
-              var taskkill = runExecutableArgumentsSync('taskkill', [
-                '/t',
-                '/f',
-                '/pid',
-                '$pid',
-              ]);
-              treeKilled = taskkill.exitCode == 0;
-            } catch (_) {}
-          }
-        } else if (signal == null) {
-          gracefulDescendants = findProcessDescendantIdsSync(pid);
-          for (var descendant in gracefulDescendants) {
-            try {
-              io.Process.killPid(descendant, ProcessSignal.sigterm);
-            } catch (_) {}
-          }
-        }
-
-        try {
-          /// kill the parent process
-          result = process.kill(signal ?? ProcessSignal.sigterm) || treeKilled;
-        } catch (_) {
-          result = treeKilled;
-        }
-        if (gracefulDescendants != null) {
-          unawaited(shellKillAfterGracePeriod(process, gracefulDescendants));
-        }
+        result = _killProcess(_currentProcess!, _currentProcessToString());
         _clearPreviousContext();
       } catch (_) {
         result = false;
@@ -398,6 +342,73 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       _killVerbose('Killing $_killedRunId');
       return false;
     }
+  }
+
+  /// Sends the kill signal to [process] (described as [description]) and,
+  /// as [kill] says, to its descendants.
+  bool _killProcess(Process process, String description) {
+    bool result;
+    try {
+      var pid = process.pid;
+      var signal = _killedProcessSignal;
+      _killVerbose(
+        'killing $_killedRunId, $description signal '
+        '${signal ?? '${ProcessSignal.sigterm} (descendants too, '
+                '${ProcessSignal.sigkill} after ${shellKillGracePeriod.inSeconds}s)'}',
+      );
+
+      var treeKilled = false;
+      // The descendants given sigterm, sigkill after the grace period.
+      List<int>? gracefulDescendants;
+      if (signal == ProcessSignal.sigkill ||
+          (signal == null && io.Platform.isWindows)) {
+        /// Workaround when using sigkill to kill the children processes too
+        if (io.Platform.isLinux || io.Platform.isMacOS) {
+          /// Kill the descendants (children, grandchildren...), found
+          /// before any kill: an orphan gets another parent.
+          for (var descendant in findProcessDescendantIdsSync(pid)) {
+            try {
+              io.Process.killPid(descendant, ProcessSignal.sigkill);
+            } catch (_) {}
+          }
+        } else if (io.Platform.isWindows) {
+          try {
+            /// Kill the children
+            // Kill children process
+            // /pid <processID>	Specifies the process ID of the process to be terminated.
+            // /f	Specifies that processes be forcefully ended. This parameter is ignored for remote processes; all remote processes are forcefully ended.
+            // /t	Ends the specified process and any child processes started by it.
+            var taskkill = runExecutableArgumentsSync('taskkill', [
+              '/t',
+              '/f',
+              '/pid',
+              '$pid',
+            ]);
+            treeKilled = taskkill.exitCode == 0;
+          } catch (_) {}
+        }
+      } else if (signal == null) {
+        gracefulDescendants = findProcessDescendantIdsSync(pid);
+        for (var descendant in gracefulDescendants) {
+          try {
+            io.Process.killPid(descendant, ProcessSignal.sigterm);
+          } catch (_) {}
+        }
+      }
+
+      try {
+        /// kill the parent process
+        result = process.kill(signal ?? ProcessSignal.sigterm) || treeKilled;
+      } catch (_) {
+        result = treeKilled;
+      }
+      if (gracefulDescendants != null) {
+        unawaited(shellKillAfterGracePeriod(process, gracefulDescendants));
+      }
+    } catch (_) {
+      result = false;
+    }
+    return result;
   }
 
   /// Run one or multiple plain text command(s).
@@ -1148,9 +1159,16 @@ abstract class Shell implements ShellCore, ShellCoreSync {
               executedCommand,
               options: runOptions.copyWith(
                 onProcess: (process) {
-                  _currentProcess = process;
-                  _currentProcessCmd = processCmd;
-                  _currentProcessRunId = runId;
+                  // Killed while starting. Compared to this run id, not the
+                  // last one: a run started since the kill (it may be the
+                  // current one by now) must neither save this process nor
+                  // be killed in its place.
+                  var killed = _killedRunId >= runId;
+                  if (!killed) {
+                    _currentProcess = process;
+                    _currentProcessCmd = processCmd;
+                    _currentProcessRunId = runId;
+                  }
                   if (shellDebug) {
                     // ignore: avoid_print
                     print('onProcess ${_currentProcessToString()}');
@@ -1158,12 +1176,27 @@ abstract class Shell implements ShellCore, ShellCoreSync {
                   if (onProcess != null) {
                     onProcess(process);
                   }
-                  if (_killedRunId >= _runId) {
+                  if (killed) {
                     if (shellDebug) {
                       // ignore: avoid_print
                       print('shell was killed');
                     }
-                    _kill();
+                    _killProcess(
+                      process,
+                      'runId:$runId, process: ${process.pid}: $processCmd',
+                    );
+                    if (!completer.isCompleted) {
+                      completer.completeError(
+                        ShellException.process(
+                          'Killed by framework',
+                          command: processCmd,
+                          processCmd: processCmd,
+                        ),
+                      );
+                    }
+                    if (identical(_currentProcessResultCompleter, completer)) {
+                      _currentProcessResultCompleter = null;
+                    }
                     return;
                   }
                 },

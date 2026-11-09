@@ -7,9 +7,11 @@ description: >-
   runCommand, runScript, outText/outLines/errText/errLines, verbose,
   commandVerbose, throwOnError, workingDirectory, cd/pushd/popd,
   shellArgument/shellArguments quoting, stdout/stderr sinks,
-  ShellLinesController, stdin, kill, noStdoutResult). Covers script syntax,
-  executable resolution, result capture and error handling on Linux, macOS
-  and Windows.
+  ShellLinesController, stdin, sharedStdIn, prompt, kill, onProcess,
+  noStdoutResult), and instead of dart:io Process.start / Process.run, tests
+  included: driving a program (feed its stdin, wait for an output line,
+  answer, end of input, timeout and kill). Covers script syntax, executable
+  resolution, result capture and error handling on Linux, macOS and Windows.
 ---
 
 # process_run shell: run commands portably
@@ -37,6 +39,11 @@ git status
 
 ### Choosing the entry point
 
+* Start every process through process_run, tests included, never with
+  `dart:io` `Process.start` / `Process.run`: same executable resolution,
+  quoting and output capture everywhere, and `kill()` stops the whole
+  process tree. Each raw `Process` piece has a `Shell` equivalent, see
+  [Driving a program](#driving-a-program-instead-of-processstart).
 * `Shell()` then `shell.run(script)` is the primary API. Use the global
   `run(script)` for one-off calls; it builds a `Shell` with the same
   parameters. Both default to `verbose: true` (command echoed, stdout and
@@ -147,11 +154,23 @@ git status
 ### stdin, long running processes and kill
 
 * Feed input with `Shell(stdin: stream)` where the stream is a
-  `Stream<List<int>>`. To forward the user's terminal input use
-  `sharedStdIn` and call `await sharedStdIn.terminate()` before the program
-  ends (otherwise it never exits). To feed generated text use a
-  `ShellLinesController`: `Shell(stdin: input.binaryStream)`,
-  `input.writeln('...')`, `input.close()`.
+  `Stream<List<int>>`. To feed generated text use a `ShellLinesController`:
+  `Shell(stdin: input.binaryStream)`, `input.write('...')` /
+  `input.writeln('...')` (also after the run started, e.g. once the program
+  printed a prompt), `input.close()`. Closing it is the end of input of the
+  command: one reading its input until the end (`cat`, `sort`) only exits
+  then.
+* `ShellLinesController` works both ways: as `stdout:` / `stderr:` (give
+  its `sink`, listen to its `stream` of lines) and as `stdin:` (write to it,
+  give its `binaryStream`). One controller per direction.
+* To forward the user's terminal input use `sharedStdIn` (the program's own
+  stdin, shareable by several commands and prompts in turn) and call
+  `await sharedStdIn.terminate()` before the program ends (otherwise it
+  never exits). At the end of its input (a pipe, `< /dev/null`, CI),
+  `sharedStdIn` listeners get done: `lines()` completes, a command given
+  `stdin: sharedStdIn` gets its end of input, and `prompt`,
+  `promptConfirm` and `nextLine` throw a `StateError` (no element): catch it
+  in a tool that may run without a terminal.
 * `shell.kill()` kills the running command and all its descendant
   processes (children, grandchildren...): `sigterm`, then `sigkill` for the
   ones still running after 5 s (`taskkill /t /f` on Windows); the pending
@@ -170,6 +189,21 @@ git status
 * Calls on one `Shell` are serialized with a lock: two concurrent
   `shell.run` on the same instance execute one after the other. Create
   distinct shells for parallel work.
+
+### Driving a program (instead of Process.start)
+
+| `dart:io` `Process` | process_run |
+|---|---|
+| `Process.start(exe, args)` | `shell.runExecutableArguments(exe, args)`: a future of the result, do not await it before driving the program |
+| `process.stdin.write(...)`, `.close()` | `ShellLinesController` input: `Shell(stdin: input.binaryStream)`, `input.write(...)`, `input.close()` (end of input) |
+| `process.stdout` lines | `ShellLinesController` output: `Shell(stdout: output.sink)`, `output.stream` |
+| `await process.exitCode` | `(await done).exitCode`, with `throwOnError: false` |
+| all the output after exit | `result.outLines` / `outText`: still captured with a `stdout:` sink |
+| `process.kill()` | `shell.kill()` (the whole tree; the run then throws `ShellException`) |
+| `process.pid` | `onProcess: (process) { ... }` |
+
+See the [Drive an interactive program](#drive-an-interactive-program)
+example: wait for a line, answer, end of input, timeout and kill.
 
 ### Platform notes
 
@@ -323,6 +357,56 @@ Future<void> main() async {
 }
 ```
 
+### Drive an interactive program
+
+A test or a tool answering a program: one `ShellLinesController` for its
+stdin, one for its stdout, a timeout killing it when it hangs.
+
+```dart
+import 'dart:async';
+import 'dart:io';
+
+import 'package:process_run/shell.dart';
+
+/// Answers the `name:` prompt of `my_tool` with [name]; null when it hangs.
+Future<ProcessResult?> answerName(String name) async {
+  var input = ShellLinesController();
+  var output = ShellLinesController();
+  var shell = Shell(
+    stdin: input.binaryStream,
+    stdout: output.sink,
+    verbose: false,
+    throwOnError: false,
+  );
+  var asked = Completer<void>();
+  output.stream.listen((line) {
+    if (line.startsWith('name:') && !asked.isCompleted) {
+      asked.complete();
+    }
+  });
+  // Not awaited: the program runs while we drive it.
+  var done = shell.runExecutableArguments('my_tool', ['--ask-name']);
+  try {
+    await asked.future.timeout(const Duration(seconds: 15));
+    input.writeln(name);
+    // End of input: the program gets done on its stdin.
+    input.close();
+    return await done.timeout(const Duration(seconds: 15));
+  } on TimeoutException catch (_) {
+    done.ignore(); // A killed run throws a ShellException.
+    shell.kill(ProcessSignal.sigkill);
+    return null;
+  } finally {
+    input.close();
+    output.close();
+  }
+}
+```
+
+The result holds the whole output (`result.outLines`) and the exit code.
+`package:process_run_test` `test/shared_stdin_test.dart` uses this pattern on
+a program reading through `sharedStdIn`.
+
 ### Options object, clone, sync run
 
 ```dart
@@ -359,8 +443,14 @@ void main() {
   expecting the sink to receive the output: the output is dropped.
 * Reading `e.result!.exitCode` in a `ShellException` handler: `result` is
   null when the executable was not found or the directory does not exist.
+* Using `dart:io` `Process.start` (with its `stdin`/`stdout` streams and
+  `exitCode`) in a tool or a test: use `Shell` with two
+  `ShellLinesController`s, see Driving a program.
 * Leaving a `ShellLinesController` open or never calling
-  `sharedStdIn.terminate()`: the program does not exit.
+  `sharedStdIn.terminate()`: the program does not exit. Not closing the
+  stdin controller: a command reading until the end of input never ends.
+* Awaiting `prompt` / `promptConfirm` without catching the `StateError` it
+  throws at the end of input (stdin a pipe or `/dev/null`).
 * Reusing one `Shell` for parallel `run` calls and expecting concurrency; they
   are serialized.
 

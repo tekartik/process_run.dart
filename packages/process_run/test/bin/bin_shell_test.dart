@@ -6,7 +6,8 @@ import 'package:process_run/shell.dart';
 import 'package:process_run/src/bin/shell/env_file_content.dart';
 import 'package:process_run/src/bin/shell/import.dart';
 import 'package:process_run/src/common/constant.dart';
-import 'package:process_run/src/user_config.dart' show loadFromMap;
+import 'package:process_run/src/user_config.dart'
+    show EnvFileConfig, loadFromMap;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
@@ -199,6 +200,35 @@ void main() {
         expect(fileContent.deletePaths(['b1', 'c1']), true);
         expect(fileContent.lines, ['path:', '  - a1']);
         expect(fileContent.deletePaths(['b1', 'c1']), false);
+      });
+      test('inline values', () {
+        EnvFileConfig load(EnvFileContent fileContent) =>
+            loadFromMap(loadYaml(fileContent.lines!.join('\n')) as Map);
+        // `path: ~/bin`, as documented, read back as one path
+        // `~/bin - /opt/x` once a path was prepended.
+        var fileContent = EnvFileContent('dummy')..lines = ['path: /opt/a'];
+        fileContent.prependPaths(['/opt/x']);
+        expect(load(fileContent).paths, ['/opt/x', '/opt/a']);
+        expect(fileContent.deletePaths(['/opt/a']), true);
+        expect(load(fileContent).paths, ['/opt/x']);
+
+        fileContent = EnvFileContent('dummy')..lines = ['path: [/opt/a, b]'];
+        fileContent.prependPaths(['/opt/x']);
+        expect(load(fileContent).paths, ['/opt/x', '/opt/a', 'b']);
+
+        // A flow map made the whole file unreadable.
+        fileContent = EnvFileContent('dummy')
+          ..lines = ['path:', '  - /opt/a', 'var: {A: b, N: 007}'];
+        fileContent.addVar('B', 'c');
+        var config = load(fileContent);
+        expect(config.paths, ['/opt/a']);
+        expect(config.vars, {'A': 'b', 'N': '007', 'B': 'c'});
+        expect(fileContent.deleteVar('A'), true);
+        expect(load(fileContent).vars, {'N': '007', 'B': 'c'});
+
+        fileContent = EnvFileContent('dummy')..lines = ['alias: {ll: ls -l}'];
+        fileContent.addAlias('la', 'ls -a');
+        expect(load(fileContent).aliases, {'la': 'ls -a', 'll': 'ls -l'});
       });
     });
     group('remote run', () {

@@ -7,11 +7,13 @@ import 'package:process_run/src/shell_utils_common.dart';
 
 import 'common/import.dart';
 
-/// Basic bi-directionnal shell lines controller.
+/// Shell lines controller, for the output or the input of a command.
 ///
-/// Use either sink for stdout/stderr or binaryStream for stdin
+/// Use one per direction: give its [sink] as `stdout:`/`stderr:` and listen
+/// to its [stream] of lines, or give its [binaryStream] as `stdin:` and
+/// [write]/[writeln] to it, [close] being the end of input of the command.
 ///
-/// Usage:
+/// Output:
 /// ```dart
 /// var controller = ShellLinesController();
 /// var shell = Shell(stdout: controller.sink, verbose: false);
@@ -28,6 +30,18 @@ import 'common/import.dart';
 /// } on ShellException catch (_) {
 ///   // We might get a shell exception
 /// }
+/// ```
+///
+/// Input:
+/// ```dart
+/// var input = ShellLinesController();
+/// var shell = Shell(stdin: input.binaryStream, verbose: false);
+/// var done = shell.run('sort');
+/// input.writeln('b');
+/// input.writeln('a');
+/// // End of input: sort then writes its output and exits
+/// input.close();
+/// print((await done).outLines); // (a, b)
 /// ```
 class ShellLinesController {
   /// Create a shell lines controller.
@@ -86,20 +100,23 @@ Stream<String> shellStreamLines(
 
   // devPrint('listen (paused: $paused)');
   void addCurrentLine() {
+    // Cleared before being added: a listener pausing when it gets the line
+    // calls onPause, hence addCurrentLine, again.
+    var line = currentLine;
+    currentLine = null;
     if (subscription?.isPaused ?? false) {
       // Do nothing, current line is discarded
     } else {
-      if (currentLine != null) {
+      if (line != null) {
         try {
-          ctlr.add(encoding!.decode(currentLine!));
+          ctlr.add(encoding!.decode(line));
         } catch (_) {
           // Ignore bad encoding
           // ignore: avoid_print
-          print('ignoring: $currentLine');
+          print('ignoring: $line');
         }
       }
     }
-    currentLine = null;
   }
 
   ctlr = StreamController<String>(

@@ -75,8 +75,9 @@ extension ProcessRunShellProcessResultExt on ShellProcessResult {
   }
 
   Uint8List? _outputAsUint8List(Object output, Encoding? encoding) {
-    if (output is Uint8List) {
-      return output;
+    if (output is List<int>) {
+      // Uint8List, or the List<int> of an async run without encoding
+      return asUint8List(output);
     } else if (output is String) {
       if (output.isEmpty) {
         return Uint8List(0);

@@ -1,3 +1,26 @@
+## 1.4.3
+
+* `sharedStdIn`: the end of input (and errors) reaches its subscribers. A
+  command given `stdin: sharedStdIn` gets its end of input, it hung (or the
+  program quit silently at the read, exit code 0); `prompt`, `promptConfirm`
+  and `nextLine` throw a `StateError` at the end of input (stdin a pipe or
+  `/dev/null`). `terminate()` no longer hangs on input typed while nobody
+  listened
+* `shellArgument`, `shellArguments`, `shellJoin`: on posix an argument holding
+  a backslash is quoted and escaped, and an argument starting with `#` is
+  quoted, so that `Shell.run` reads them back
+* `shellStreamLines`, `ShellLinesController.stream`: a listener pausing
+  (`await for`) no longer gets each line twice
+* `Shell.kill()`: a command killed while it starts is killed even when the
+  shell ran a new command since
+* `stdoutAsUint8List`, `stderrAsUint8List`, `pipe()`: support the output of a
+  run without encoding
+* `Shell.run`: a last command ending with ` \` or ` ^` is run
+* `ds env path/var/alias`: editing a key with an inline value
+  (`path: ~/bin`, `var: {A: b}`) no longer corrupts the env file
+* Doc and skill: driving a program with `Shell` and `ShellLinesController`
+  (its stdin and its stdout lines) instead of `dart:io` `Process.start`
+
 ## 1.4.2
 
 * Add `ShellProcesses` (`shell.dart`), any process of the machine by its pid

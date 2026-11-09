@@ -3,6 +3,8 @@ library;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:process_run/src/platform/platform.dart';
 
 import 'characters.dart';
@@ -53,8 +55,19 @@ void streamSinkWrite(
 /// Use to safely enclose an argument if needed
 ///
 /// argument must not be null
-String argumentToString(String argument) {
+String argumentToString(String argument) =>
+    argumentToStringImpl(argument, windows: p.context.style == p.Style.windows);
+
+/// [argumentToString] for the Windows ([windows] true) or posix splitter (see
+/// `shellSplit`).
+///
+/// On posix a backslash escapes the next character outside quotes and `\`,
+/// `"`, `$`, `` ` `` and a newline inside double quotes; the Windows splitter
+/// has no escape.
+@visibleForTesting
+String argumentToStringImpl(String argument, {required bool windows}) {
   var hasWhitespace = false;
+  var hasBackslash = false;
   var singleQuoteCount = 0;
   var doubleQuoteCount = 0;
   if (argument.isEmpty) {
@@ -69,19 +82,51 @@ String argumentToString(String argument) {
     } else if (rune == 0x0022) {
       // "
       doubleQuoteCount++;
+    } else if (rune == 0x005C) {
+      // \
+      hasBackslash = true;
     }
   }
+
+  /// The content of a double quoted posix argument: the backslashes read
+  /// back as an escape doubled.
+  String posixDoubleQuoted(String text) {
+    if (windows || !hasBackslash) {
+      return text;
+    }
+    var sb = StringBuffer();
+    for (var i = 0; i < text.length; i++) {
+      var char = text[i];
+      if (char == r'\') {
+        var next = i + 1 < text.length ? text[i + 1] : null;
+        if (next == null ||
+            next == r'\' ||
+            next == '"' ||
+            next == r'$' ||
+            next == '`' ||
+            next == '\n') {
+          sb.write(r'\');
+        }
+      }
+      sb.write(char);
+    }
+    return sb.toString();
+  }
+
   if (singleQuoteCount > 0) {
     if (doubleQuoteCount > 0) {
       // simply escape all double quotes
-      argument = '"${argument.replaceAll('"', '\\"')}"';
+      argument = '"${posixDoubleQuoted(argument).replaceAll('"', '\\"')}"';
     } else {
-      argument = '"$argument"';
+      argument = '"${posixDoubleQuoted(argument)}"';
     }
   } else if (doubleQuoteCount > 0) {
     argument = "'$argument'";
-  } else if (hasWhitespace) {
-    argument = '"$argument"';
+  } else if (hasWhitespace ||
+      (hasBackslash && !windows) ||
+      // Read back as a comment otherwise
+      argument.startsWith('#')) {
+    argument = '"${posixDoubleQuoted(argument)}"';
   }
   return argument;
 }
@@ -177,6 +222,10 @@ List<String> shellScriptSplitLines(String script, {bool? skipComments}) {
         addAndClearCurrent(currentCommand!);
       }
     }
+  }
+  // The last line ended with ^ or \
+  if (currentCommand?.isNotEmpty ?? false) {
+    commands.add(currentCommand!);
   }
   return commands;
 }

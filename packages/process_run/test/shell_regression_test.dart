@@ -2,12 +2,14 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:process_run/cmd_run.dart' show runCmd;
 import 'package:process_run/shell.dart';
 // ignore: deprecated_member_use_from_same_package
 import 'package:process_run/src/dev_cmd_run.dart' show devRunCmd;
+import 'package:process_run/src/io/shared_stdin.dart' show SharedStdIn;
 import 'package:process_run/src/user_config.dart';
 import 'package:test/test.dart';
 
@@ -183,6 +185,103 @@ void main() {
       });
       expect(lines, contains('\$ cd ${Directory.current.path}'));
       expect(lines, contains('# a comment'));
+    });
+
+    test('kill while starting, then a new run', () async {
+      var shell = Shell(verbose: false);
+      int? pid;
+      var first = shell.run(
+        '$echoExe --wait 5000',
+        onProcess: (process) => pid = process.pid,
+      );
+      // Process.start in flight
+      for (var i = 0; i < 10; i++) {
+        await Future<void>.microtask(() {});
+      }
+      expect(pid, isNull);
+      shell.kill();
+      // The restart pattern: the killed command used to keep running.
+      var second = shell.run('$echoExe -o second');
+      await expectLater(first, throwsA(isA<ShellException>()));
+      expect((await second).outText, 'second');
+      var stopwatch = Stopwatch()..start();
+      while (pid == null && stopwatch.elapsed < const Duration(seconds: 10)) {
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+      var running = true;
+      while (running && stopwatch.elapsed < const Duration(seconds: 3)) {
+        running = await ShellProcesses.isRunning(pid!);
+        if (running) {
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+        }
+      }
+      expect(running, isFalse);
+    });
+
+    test('output without encoding as bytes', () async {
+      var shell = Shell(
+        options: ShellOptions(stdoutEncoding: null, verbose: false),
+      );
+      var results = await shell.runScript('$echoExe -o hello');
+      expect(results.first.stdout, isNot(isA<String>()));
+      expect(utf8.decode(results.stdoutAsUint8List).trim(), 'hello');
+      var piped = await shell.run('$echoExe -o hello').pipe('$echoExe -i');
+      expect(piped.outText, 'hello');
+    });
+
+    test('shellStreamLines listener pausing', () async {
+      var controller = StreamController<List<int>>();
+      var lines = <String>[];
+      var done = () async {
+        // await for pauses the subscription while the body runs
+        await for (var line in shellStreamLines(controller.stream)) {
+          lines.add(line);
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+      }();
+      controller.add(utf8.encode('a\n'));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      controller.add(utf8.encode('b\nc'));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      controller.add(utf8.encode('d\n'));
+      await controller.close();
+      await done;
+      // Each line once
+      expect(lines, ['a', 'b', 'cd']);
+    });
+
+    test('sharedStdIn end of input', () async {
+      var stdin = SharedStdIn(Stream.fromIterable([utf8.encode('a\n')]));
+      expect(
+        await stdin.lines().toList().timeout(const Duration(seconds: 10)),
+        ['a'],
+      );
+      // Later listeners are done at once
+      expect(
+        await stdin.lines().toList().timeout(const Duration(seconds: 10)),
+        isEmpty,
+      );
+      await stdin.terminate();
+
+      // The command reading its input until the end gets it.
+      stdin = SharedStdIn(Stream.fromIterable([utf8.encode('hello')]));
+      var results = await Shell(
+        stdin: stdin,
+        verbose: false,
+      ).run('$echoExe -i').timeout(const Duration(seconds: 10));
+      expect(results.outText, 'hello');
+      await stdin.terminate();
+    });
+
+    test('sharedStdIn terminate with input nobody read', () async {
+      var controller = StreamController<List<int>>();
+      var stdin = SharedStdIn(controller.stream);
+      await stdin.listen((_) {}).cancel();
+      // Typed once the command exited
+      controller.add(utf8.encode('typed\n'));
+      await Future<void>.delayed(Duration.zero);
+      await stdin.terminate().timeout(const Duration(seconds: 10));
+      await controller.close();
     });
   });
 }

@@ -56,6 +56,48 @@ class FileContent {
     return -1;
   }
 
+  /// Expands the inline value of the top level key line at [index] (`path:
+  /// ~/bin`, `path: [a, b]`, `var: {A: b}`) to block lines, so that block
+  /// items can be inserted and removed below it. A scalar becomes a list item
+  /// when [scalarAsListItem] is true (a single path), it is kept otherwise.
+  void _expandInlineValue(int index, {required bool scalarAsListItem}) {
+    var line = lines![index];
+    var colon = line.indexOf(':');
+    if (colon < 0) {
+      return;
+    }
+    var inline = line.substring(colon + 1).trim();
+    if (inline.isEmpty || inline.startsWith('#')) {
+      return;
+    }
+    YamlNode node;
+    try {
+      node = loadYamlNode(inline);
+    } catch (_) {
+      // A flow value on several lines, kept as is.
+      return;
+    }
+    List<String> block;
+    if (node is YamlMap) {
+      block = [
+        for (var entry in node.nodes.entries)
+          '  ${(entry.key as YamlNode).span.text}: ${entry.value.span.text}',
+      ];
+    } else if (node is YamlList) {
+      block = [for (var item in node.nodes) '  - ${item.span.text}'];
+    } else if (node is YamlScalar && node.value == null) {
+      block = [];
+    } else if (node is YamlScalar && scalarAsListItem) {
+      block = ['  - ${node.span.text}'];
+    } else {
+      return;
+    }
+    lines!.replaceRange(index, index + 1, [
+      '${line.substring(0, colon)}:',
+      ...block,
+    ]);
+  }
+
   /// Write the file
   Future<void> write() async {
     var content = lines!.join(Platform.isWindows ? '\r\n' : '\n');
@@ -89,6 +131,7 @@ class FileContent {
       index = lines!.length;
       insertTopLevelKey = true;
     } else {
+      _expandInlineValue(index, scalarAsListItem: false);
       // Skip top level key
       index++;
       // Remove existing alias
@@ -160,6 +203,7 @@ class EnvFileContent extends FileContent {
       index = lines!.length;
       insertTopLevelKey = true;
     } else {
+      _expandInlineValue(index, scalarAsListItem: true);
       // Skip top level key
       index++;
       // Remove existing paths
