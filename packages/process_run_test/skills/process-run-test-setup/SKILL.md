@@ -5,7 +5,10 @@ description: >-
   ShellContext, with the process_run_test helper package: compileEcho() to
   build the process_run_echo test executable, compileChild() to build the
   process_run_child program for kill and signal tests (process trees,
-  explicit exit codes on sigterm/sigint), EchoTestContext and
+  explicit exit codes on sigterm/sigint), compileSharedStdinChild() for the
+  sharedStdIn program (end of input, prompt, terminate, compiled and as a
+  dart run script), driving these programs with Shell and
+  ShellLinesController (not dart:io Process.start), EchoTestContext and
   echoTests(context) for the shared echo suite, shellCoreTests(shellContext)
   for the shared Shell suite on the io or memory context (shellContext,
   shellContextMemory, ShellContextMemory), and the echo command options
@@ -36,13 +39,24 @@ application.
   path to the sibling package; a consumer gets the published one.
 * Everything is `dart:io` based: start such a test file with
   `@TestOn('vm')` + `library;` and run it with `dart test`.
-* Public entry points (four, plus the echo and child sources):
+* Drive the test programs with `Shell` (`runExecutableArguments`,
+  `throwOnError: false`), a `ShellLinesController` for their stdin
+  (`binaryStream`, `write`, `close()` = end of input) and one for their
+  stdout lines (`sink`, `stream`), `onProcess` for the `Process`, never
+  `dart:io` `Process.start`: see the process-run-shell skill, "Driving a
+  program"; `test/child_test.dart` and `test/shared_stdin_test.dart` show
+  it.
+* Public entry points (five, plus the echo, child and shared stdin child
+  sources):
   * `package:process_run_test/echo/compile_echo.dart`: `Future<String>
     compileEcho({String? path, bool force = false, bool? verbose})`.
   * `package:process_run_test/child/compile_child.dart`: `Future<String>
     compileChild({String? path, bool force = false, bool? verbose})`,
     `childVersion`, `int childSignalExitCode(ProcessSignal signal)` (`-9`
     for `sigkill`, the exit code of a killed process on Linux and macOS).
+  * `package:process_run_test/shared_stdin/compile_shared_stdin_child.dart`:
+    `Future<String> compileSharedStdinChild({String? path, bool? verbose})`,
+    `sharedStdinChildVersion`.
   * `package:process_run_test/echo_test.dart`: `EchoTestContext` and
     `void echoTests(EchoTestContext testContext)`.
   * `package:process_run_test/shell_core_test.dart`:
@@ -77,6 +91,20 @@ application.
   macOS, a non zero code on Windows. Read the lines with
   `Shell(stdout: ShellLinesController().sink)` and get the `Process` (its
   `exitCode`) with `onProcess`; `test/child_test.dart` shows the pattern.
+* The shared stdin child (`compileSharedStdinChild()`,
+  `build/<os>/process_run_shared_stdin_child[.exe]`, same `path` rule) reads
+  its input through `sharedStdIn` like a tool and prints `done` once
+  `sharedStdIn.terminate()` returned. Modes (first argument): `lines` (reads
+  until the end of input, prints `lines: a,b`), `shell` (runs itself as
+  `cat` with `Shell(stdin: sharedStdIn)`, prints `out: <its output>`), `cat`,
+  `terminate` (prints `ready`, a line then written is pending, unread, at
+  `terminate()`), `prompt` (`prompt('name')` at the end of input, prints
+  `no input` on the `StateError`), `--version`. **Compiled on every call**,
+  unlike echo and child: it embeds process_run, a binary reused while its
+  version is the same would test an older process_run. It also runs from its
+  source (`dart run lib/shared_stdin/shared_stdin_child.dart <mode>`): a
+  program embedding process_run is tested both ways, as
+  `test/shared_stdin_test.dart` does (one group each).
 * Quote the returned path with `shellArgument(echoPath)` before putting it in a
   `shell.run('...')` script (it is absolute and may contain spaces); pass it
   raw to `runExecutableArguments(echoPath, [...])`.
