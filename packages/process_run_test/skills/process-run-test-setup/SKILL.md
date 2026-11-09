@@ -34,7 +34,8 @@ application.
         url: https://github.com/tekartik/process_run.dart
         path: packages/process_run_test
   ```
-  It brings `process_run` (pub.dev), `args`, `path`, `pub_semver` and `test`.
+  It brings `process_run` (pub.dev), `args`, `path`, `pub_semver`,
+  `synchronized` and `test`.
   Inside the repo it resolves `process_run` through a `dependency_overrides`
   path to the sibling package; a consumer gets the published one.
 * Everything is `dart:io` based: start such a test file with
@@ -75,8 +76,9 @@ application.
   it once in a `setUpAll`. The result is cached: an existing binary whose
   `--version` matches `echoVersion` is reused, `force: true` recompiles,
   `verbose: true` shows the compile command.
-* `compileEcho()` and `compileChild()` are serialized (a `Lock`: concurrent
-  calls compile once) and check an existing binary once per process.
+* `compileEcho()`, `compileChild()` and `compileSharedStdinChild()` are
+  serialized (a `Lock`: concurrent calls compile once); the first two check
+  an existing binary once per process.
 * The child program (`compileChild()`, `build/<os>/process_run_child[.exe]`,
   same `path` rule) is the process to kill: it waits (`--wait <ms>`, 60 s by
   default, then exits with `--exit-code <n>`), starts a chain of
@@ -110,7 +112,8 @@ application.
   raw to `runExecutableArguments(echoPath, [...])`.
 * echo options, all optional and combinable: `--stdout <text>` /
   `-o`, `--stderr <text>` / `-e`, `--stdout-hex <hex>` / `-p` and
-  `--stderr-hex <hex>` / `-f` (raw bytes, read them with
+  `--stderr-hex <hex>` / `-f` (raw bytes, upper or lower case, any other
+  character such as a space is ignored; read them with
   `stdoutEncoding: null` / `stderrEncoding: null`), `--stdin` / `-i` (echo the
   first stdin line to stdout), `--write-line` / `-l` (add a trailing newline),
   `--exit-code <n>` / `-x` (a non numeric value crashes with exit code 255),

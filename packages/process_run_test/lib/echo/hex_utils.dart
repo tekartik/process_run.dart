@@ -6,7 +6,7 @@ int? _hexCharValue(int charCode) {
   if (charCode >= _upperACodeUnit && charCode < _upperACodeUnit + 6) {
     return charCode - _upperACodeUnit + 10;
   }
-  if (charCode >= _upperACodeUnit && charCode < _lowerACodeUnit + 6) {
+  if (charCode >= _lowerACodeUnit && charCode < _lowerACodeUnit + 6) {
     return charCode - _lowerACodeUnit + 10;
   }
   if (charCode >= _digit0CodeUnit && charCode < _digit0CodeUnit + 10) {

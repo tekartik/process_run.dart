@@ -13,7 +13,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'hex_utils.dart';
 
 /// echo version, upgrade to force re-compile
-Version echoVersion = Version(0, 1, 2);
+Version echoVersion = Version(0, 1, 3);
 
 /*
 Global options:
