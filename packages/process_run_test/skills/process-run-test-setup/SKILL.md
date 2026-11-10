@@ -59,7 +59,8 @@ application.
     `Future<String> compileSharedStdinChild({String? path, bool? verbose})`,
     `sharedStdinChildVersion`.
   * `package:process_run_test/echo_test.dart`: `EchoTestContext` and
-    `void echoTests(EchoTestContext testContext)`.
+    `void echoTests(EchoTestContext testContext, {bool supportsStdin = true,
+    bool supportsBinaryOutput = true})`.
   * `package:process_run_test/shell_core_test.dart`:
     `void shellCoreTests(ShellContext shellContext)`.
   * `package:process_run_test/echo/echo.dart` is the echo `main` itself; it is
@@ -125,6 +126,11 @@ application.
   (stdout, stderr, binary output, environment, stdin, exit codes, crash)
   inside the current `group`. Use `EchoTestContext.lazy(() => echo)` when the
   path is only known in `setUpAll`, since `echoTests` runs at collection time.
+  The shell under test is `Shell()` made in its `setUpAll`, so the global
+  `shellContext`: set that global to test another context (a `runZoned`
+  around the declarations does not reach the test bodies), and pass
+  `supportsStdin: false` / `supportsBinaryOutput: false` to skip the stdin
+  and binary output tests on a context that cannot do them.
   Run it to validate a `process_run` change, or as a smoke test that spawning
   processes works in your environment.
 * `shellCoreTests(shellContext)` defines the shared `Shell` suite

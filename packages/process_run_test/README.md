@@ -71,7 +71,7 @@ void main() {
 | `package:process_run_test/echo/compile_echo.dart` | `compileEcho()`: the echo program (`--stdout`, `--stderr`, `--stdout-hex`, `--stdin`, `--exit-code`, `--wait`, `--stdout-env`, `--help`) |
 | `package:process_run_test/child/compile_child.dart` | `compileChild()`: a program to kill (waits, starts a chain of children, catches sigterm/sigint), `childSignalExitCode` |
 | `package:process_run_test/shared_stdin/compile_shared_stdin_child.dart` | `compileSharedStdinChild()`: a program reading `sharedStdIn` (end of input, `prompt`, `terminate`) |
-| `package:process_run_test/echo_test.dart` | `echoTests(EchoTestContext(echo))`: the shared echo suite |
+| `package:process_run_test/echo_test.dart` | `echoTests(EchoTestContext(echo))`: the shared echo suite, on the `Shell()` of the global `shellContext` (`supportsStdin: false`, `supportsBinaryOutput: false` skip what a shell context cannot do) |
 | `package:process_run_test/shell_core_test.dart` | `shellCoreTests(shellContext)`: the shared `Shell` suite, real or in memory (`ShellContextMemory`) |
 
 ## Common mistakes

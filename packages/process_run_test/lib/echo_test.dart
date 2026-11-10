@@ -45,7 +45,23 @@ abstract class EchoTestContext {
 }
 
 /// echo tests
-void echoTests(EchoTestContext testContext) {
+///
+/// The shell under test is `Shell()`, made in `setUpAll`: the one of the
+/// global `shellContext` (`package:process_run/utils/shell_context.dart`).
+/// To test another shell context, set that global before the tests run: a
+/// `runZoned` around the declarations does not reach the test bodies.
+///
+/// [supportsStdin] false skips the test sending stdin to the program,
+/// [supportsBinaryOutput] false the tests reading stdout or stderr as bytes
+/// (a null encoding), for a shell context that cannot do it (a remote one).
+void echoTests(
+  EchoTestContext testContext, {
+  bool supportsStdin = true,
+  bool supportsBinaryOutput = true,
+}) {
+  var noBinaryOutput = supportsBinaryOutput
+      ? null
+      : 'the shell context returns text only';
   late String echo; // Safe in run
   late String echoBin;
   late Shell shell;
@@ -131,7 +147,7 @@ void echoTests(EchoTestContext testContext) {
         '010203',
       ], stdoutEncoding: null);
       await runCheck(checkEmpty, echoBin, [], stdoutEncoding: null);
-    });
+    }, skip: noBinaryOutput);
 
     group('stdout_env', () {
       test('var', () async {
@@ -207,7 +223,7 @@ void echoTests(EchoTestContext testContext) {
       expect(result.stderr, '');
       expect(result.pid, isNotNull);
       expect(result.exitCode, 0);
-    });
+    }, skip: supportsStdin ? null : 'the shell context sends no stdin');
 
     test('stderr_bin', () async {
       void check123(ProcessResult result) {
@@ -229,7 +245,7 @@ void echoTests(EchoTestContext testContext) {
         '010203',
       ], stderrEncoding: null);
       await runCheck(checkEmpty, echoBin, [], stderrEncoding: null);
-    });
+    }, skip: noBinaryOutput);
 
     test('exitCode', () async {
       void check123(ProcessResult result) {
