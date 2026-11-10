@@ -32,6 +32,7 @@ void main() {
       Encoding? stderrEncoding = systemEncoding,
       StreamSink<List<int>>? stdout,
     }) async {
+      // Process.run on purpose: compared with runExecutableArguments.
       var result = await Process.run(
         executable,
         arguments,

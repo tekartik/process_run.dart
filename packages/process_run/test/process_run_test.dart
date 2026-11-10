@@ -63,6 +63,7 @@ void main() {
       Encoding? stderrEncoding = systemEncoding,
       StreamSink<List<int>>? stdout,
     }) async {
+      // Process.run on purpose: compared with runExecutableArguments.
       var result = await Process.run(
         executable,
         arguments,
@@ -240,6 +241,7 @@ void main() {
 
     test('invalid_executable', () async {
       try {
+        // Process.run on purpose: same error as runExecutableArguments.
         await Process.run(dummyExecutable, []);
       } on ProcessException catch (_) {
         // ProcessException: No such file or directory
@@ -254,6 +256,7 @@ void main() {
 
     test('invalid_command', () async {
       try {
+        // Process.run on purpose: same error as runExecutableArguments.
         await Process.run(dummyCommand, []);
       } on ProcessException catch (_) {
         // ProcessException: No such file or directory

@@ -126,6 +126,7 @@ Future<void> main(List<String> arguments) async {
       if (sigintExitCode != null) '--sigint-exit-code=$sigintExitCode',
       if (ignoreSigterm) '--ignore-sigterm',
     ];
+    // Process.start on purpose: a descendant of the process tree under test.
     var child = await Process.start(
       Platform.resolvedExecutable,
       childArguments,

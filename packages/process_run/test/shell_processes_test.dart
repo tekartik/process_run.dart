@@ -22,6 +22,7 @@ Future<void> main(List<String> arguments) async {
     ProcessSignal.sigterm.watch().listen((_) {});
   }
   if (depth > 0) {
+    // Process.start on purpose: the child tree is what the test kills.
     await Process.start(Platform.resolvedExecutable, [
       '\${depth - 1}',
       if (ignoreSigterm) '--ignore-sigterm',
