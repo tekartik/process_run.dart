@@ -879,12 +879,21 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     var noStderrResult = _options.noStderrResult;
 
     var mode = _options.mode;
-    var noStdioOverride = <ProcessStartMode>[
-      .inheritStdio,
-      .detachedWithStdio,
-    ].contains(mode);
+    // Detached: the process outlives the shell and has no exit code.
+    var detached =
+        mode == ProcessStartMode.detached ||
+        mode == ProcessStartMode.detachedWithStdio;
+    // No pipe to the process: nothing to read, nothing to feed.
+    var noStdio =
+        mode == ProcessStartMode.inheritStdio ||
+        mode == ProcessStartMode.detached;
+    var noStdioOverride = noStdio || detached;
     noStdoutResult ??= noStdioOverride;
     noStderrResult ??= noStdioOverride;
+    if (noStdio) {
+      noStdoutResult = true;
+      noStderrResult = true;
+    }
     if (verbose) {
       commandVerbose = true;
       stdout ??= io.stdout;
@@ -953,7 +962,7 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     // Connected stdin
     // Buggy!
     StreamSubscription? stdinSubscription;
-    if (stdin != null) {
+    if (stdin != null && !noStdio) {
       //stdin.pipe(process.stdin); // this closes the stream...
       stdinSubscription =
           stdin.listen((List<int> data) {
@@ -990,11 +999,10 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         : streamToResult(errCtlr.stream, stderrEncoding);
 
     if (!noStdoutResult) {
+      var forward = _sinkForwarder(stdout);
       process.stdout.listen(
         (List<int> d) {
-          if (stdout != null) {
-            stdout.add(d);
-          }
+          forward(d);
           outCtlr.add(d);
         },
         onDone: () {
@@ -1004,11 +1012,10 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     }
 
     if (!noStderrResult) {
+      var forward = _sinkForwarder(stderr);
       process.stderr.listen(
         (List<int> d) async {
-          if (stderr != null) {
-            stderr.add(d);
-          }
+          forward(d);
           errCtlr.add(d);
         },
         onDone: () {
@@ -1017,21 +1024,33 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       );
     }
 
-    final exitCode = await process.exitCode;
+    final ProcessResult result;
+    if (detached) {
+      // No exit code to wait for (0 in the result): started is all there is
+      // to know. A result asked (`detachedWithStdio` only) comes with the end
+      // of the output; the input, if any, is fed until its own end otherwise.
+      var waitOutput = !(noStdoutResult && noStderrResult);
+      result = ProcessResult(process.pid, 0, await out, await err);
+      if (waitOutput && stdinSubscription != null) {
+        await stdinSubscription.cancel();
+      }
+    } else {
+      final exitCode = await process.exitCode;
 
-    /// Cancel input sink
-    if (stdinSubscription != null) {
-      await stdinSubscription.cancel();
+      /// Cancel input sink
+      if (stdinSubscription != null) {
+        await stdinSubscription.cancel();
+      }
+
+      // Notice that exitCode can complete before all of the lines of output have been
+      // processed. Also note that we do not explicitly close the process. In order
+      // to not leak resources we have to drain both the stderr and the stdout streams.
+      // To do that we set a listener (using await for) to drain the stderr stream.
+      //await process.stdout.drain();
+      //await process.stderr.drain();
+
+      result = ProcessResult(process.pid, exitCode, await out, await err);
     }
-
-    // Notice that exitCode can complete before all of the lines of output have been
-    // processed. Also note that we do not explicitly close the process. In order
-    // to not leak resources we have to drain both the stderr and the stdout streams.
-    // To do that we set a listener (using await for) to drain the stderr stream.
-    //await process.stdout.drain();
-    //await process.stderr.drain();
-
-    final result = ProcessResult(process.pid, exitCode, await out, await err);
 
     if (stdin != null) {
       //process.stdin.close();
@@ -1045,6 +1064,23 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       await io.stderr.safeFlush();
     }
     return result;
+  }
+
+  /// What sends the output of a command to [sink] (the `stdout` or `stderr`
+  /// of the options, nothing when null), until its owner closes it: a
+  /// command can still write then (killed, it takes time to end) and adding
+  /// to a closed sink throws.
+  void Function(List<int> data) _sinkForwarder(StreamSink<List<int>>? sink) {
+    var open = sink != null;
+    return (data) {
+      if (open) {
+        try {
+          sink!.add(data);
+        } on StateError catch (_) {
+          open = false;
+        }
+      }
+    };
   }
 
   ProcessCmd _processCmd(ShellCommand command, ShellCommand executedCommand) =>
@@ -1206,6 +1242,15 @@ abstract class Shell implements ShellCore, ShellCoreSync {
                 },
               ),
             );
+
+            var mode = _options.mode;
+            if ((mode == ProcessStartMode.detached ||
+                    mode == ProcessStartMode.detachedWithStdio) &&
+                _currentProcessRunId == runId) {
+              // Started detached: no longer a command of this shell, which
+              // kill() would end.
+              _currentProcess = null;
+            }
 
             // Fix impl return value
             processResult = wrapShellProcessResult(

@@ -1,3 +1,25 @@
+## 1.4.4
+
+* `ShellOptions(mode: ProcessStartMode.detached)` and `detachedWithStdio`
+  (the `mode` of the global `runExecutableArguments` and of `ProcessCmd`
+  too) start a detached process instead of throwing a `StateError`: the run
+  ends once the command started, exit code 0 (a detached process has none),
+  nothing read (with `detachedWithStdio` the streams are the ones of the
+  process given to `onProcess`, unless `noStdoutResult: false` asks for the
+  output: the run then ends with it). `Shell.kill()` leaves such a process
+* A `stdout:` or `stderr:` sink closed while the command still writes (closed
+  once a `kill()` made the run throw, the command taking time to end) no
+  longer throws an unhandled `Cannot add event after closing`: it gets
+  nothing more
+* `ShellLinesController.stream`, `shellStreamLines`: a line that is not in
+  the encoding is no longer dropped (and printed as bytes on stdout): it is
+  read as UTF-8, its malformed sequences replaced by U+FFFD
+* A `stdin:` given with `ProcessStartMode.inheritStdio` is ignored (the
+  process has the terminal), it threw when its first data came
+* Doc and skill: what replaces each use of `dart:io` `Process.run` and
+  `Process.start` (no input, detached start, exit code before the end of the
+  output, kill keeping the result of the run)
+
 ## 1.4.3
 
 * `sharedStdIn`: the end of input (and errors) reaches its subscribers. A

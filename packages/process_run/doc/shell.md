@@ -277,3 +277,51 @@ var running = await ShellProcesses.isRunning(process.pid);
 
 The processes of another user are seen (`isRunning`, `descendantsOf`) but usually not found by their executable
 (except on MacOS) and cannot be killed (unless root or administrator).
+
+The run of a command killed by `shell.kill()` throws a `ShellException` at once, before the command ended. To keep
+its result (its exit code, its output to the end), kill the process given to `onProcess`: the run then ends as the
+command does.
+
+```dart
+var shell = Shell(throwOnError: false);
+late Process process;
+var done = shell.runExecutableArguments('my_server', [], onProcess: (started) => process = started);
+// ...
+// What it started too (process.kill() for the command only).
+await ShellProcesses.kill([process.pid], tree: true);
+var result = await done; // its exit code, all its output
+```
+
+The process given to `onProcess` has its exit code as soon as the command exits (`process.exitCode`); the result of
+the run comes with the end of its output, which a process it left behind can hold.
+
+### Detached process
+
+A program started to live on after yours (an editor, a browser, another window of the app) is started detached
+(since 1.4.4): the run ends as soon as it started, with an exit code 0 (a detached process has none) and no output.
+
+```dart
+var shell = Shell(options: ShellOptions(mode: ProcessStartMode.detached, verbose: false));
+var result = await shell.runExecutableArguments('gedit', ['notes.txt']);
+print(result.pid);
+```
+
+`shell.kill()` leaves such a process alone (`ShellProcesses.kill([result.pid])` ends it). With
+`ProcessStartMode.detachedWithStdio` the process keeps pipes to your program: the shell reads nothing, its streams
+are the ones of the process given to `onProcess` (unless `noStdoutResult: false` asks for the output in the result,
+the run then ends with it).
+
+### Replacing dart:io Process
+
+| `dart:io` | process_run |
+|---|---|
+| `Process.run(exe, args)` | `Shell(verbose: false, throwOnError: false).runExecutableArguments(exe, args)`; add `stdin: const Stream.empty()` for a command reading its input (`Process.run` ends it, a shell leaves it open) |
+| `Process.runSync(exe, args)` | `runExecutableArgumentsSync(exe, args)` |
+| `Process.start(exe, args)` | `shell.runExecutableArguments(exe, args)`, not awaited, its input and output in `ShellLinesController`s (see Helper) |
+| `process.pid`, `process.exitCode` at exit | the process given to `onProcess` |
+| `process.kill()` | `shell.kill()` (the whole tree, the run throws); to keep the result of the run, the process of `onProcess`: `process.kill()` or `ShellProcesses.kill([process.pid], tree: true)` |
+| `Process.start(..., mode: ProcessStartMode.detached)` | `ShellOptions(mode: ProcessStartMode.detached)` |
+| `Process.start(..., mode: ProcessStartMode.inheritStdio)` | `ShellOptions(mode: ProcessStartMode.inheritStdio)` |
+| `Process.killPid(pid)` | `ShellProcesses.kill([pid])` |
+
+An output sink (`stdout:`, `stderr:`) can be closed while the command still runs: it then gets nothing more.

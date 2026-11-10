@@ -86,7 +86,21 @@ class ShellLinesController {
   }
 }
 
-/// Basic line streaming. Assuming system encoding
+/// The text of the bytes of a [line] in [encoding]. A line that is not in
+/// this encoding is not lost: it is read as UTF-8, what is not text replaced
+/// by U+FFFD.
+String _decodeLine(Encoding encoding, List<int> line) {
+  try {
+    return encoding.decode(line);
+  } catch (_) {
+    return utf8.decode(line, allowMalformed: true);
+  }
+}
+
+/// Basic line streaming. Assuming system encoding.
+///
+/// A line that cannot be decoded with [encoding] is read as UTF-8, its
+/// malformed sequences replaced by U+FFFD.
 Stream<String> shellStreamLines(
   Stream<List<int>> stream, {
   Encoding? encoding,
@@ -108,13 +122,7 @@ Stream<String> shellStreamLines(
       // Do nothing, current line is discarded
     } else {
       if (line != null) {
-        try {
-          ctlr.add(encoding!.decode(line));
-        } catch (_) {
-          // Ignore bad encoding
-          // ignore: avoid_print
-          print('ignoring: $line');
-        }
+        ctlr.add(_decodeLine(encoding!, line));
       }
     }
   }

@@ -121,6 +121,18 @@ git status
   `stderrEncoding`) when the tool prints UTF-8 on Windows.
 * `ShellOptions(mode: ProcessStartMode.inheritStdio)` hands the terminal to
   the child (interactive tools); nothing is captured in that mode.
+* `ShellOptions(mode: ProcessStartMode.detached)` starts a program that
+  lives on after yours (an editor, a browser, another window): the run ends
+  once it started, exit code 0 (it has none), no output, and `kill()` leaves
+  it. With `detachedWithStdio` its pipes are the ones of the process given
+  to `onProcess`, the shell reads nothing (since 1.4.4, it threw before).
+* A `stdout:`/`stderr:` sink can be closed while the command still writes
+  (after a `kill()`, it takes time to end): it gets nothing more.
+* `ShellLinesController` never drops a line: one that is not in its
+  encoding is read as UTF-8 with U+FFFD for what is not text. The result of
+  a run is decoded strictly (`FormatException` on a tool printing bytes):
+  pass `stdoutEncoding: const Utf8Codec(allowMalformed: true)` for such a
+  tool.
 
 ### Errors
 
@@ -199,8 +211,19 @@ git status
 | `process.stdout` lines | `ShellLinesController` output: `Shell(stdout: output.sink)`, `output.stream` |
 | `await process.exitCode` | `(await done).exitCode`, with `throwOnError: false` |
 | all the output after exit | `result.outLines` / `outText`: still captured with a `stdout:` sink |
-| `process.kill()` | `shell.kill()` (the whole tree; the run then throws `ShellException`) |
-| `process.pid` | `onProcess: (process) { ... }` |
+| `process.kill()` | `shell.kill()` (the whole tree; the run then throws `ShellException`, at once) |
+| `process.kill()` then `await process.exitCode` | with the process of `onProcess`: `process.kill()` (the command only) or `await ShellProcesses.kill([process.pid], tree: true)` (what it started too); the run then ends as the command does, `(await done).exitCode` |
+| `process.pid`, `process.exitCode` at exit | `onProcess: (process) { ... }`: the result of the run comes later, with the end of the output (a process left behind holds it) |
+| `Process.run(exe, args)` | `Shell(verbose: false, throwOnError: false).runExecutableArguments(exe, args)`; `Process.run` ends the input of the command, a shell leaves it open: add `stdin: const Stream.empty()` for a command reading it |
+| `Process.start(..., mode: ProcessStartMode.detached)` | `ShellOptions(mode: ProcessStartMode.detached)`: the run ends once started |
+| `Process.killPid(pid)` | `ShellProcesses.kill([pid])` |
+
+Code meant to run on another shell context too (a remote shell, a web app)
+keeps to `Shell`, its sinks, `kill()` and the process of `onProcess` (pid,
+exit code, kill), and asks the context for the rest: `shellContext`
+(`package:process_run/utils/shell_context.dart`) has `which`, `platform`,
+`path` and `shellEnvironment`. The global `which`/`whichSync`,
+`ShellProcesses`, `sharedStdIn` and the sync runs are for the local machine.
 
 See the [Drive an interactive program](#drive-an-interactive-program)
 example: wait for a line, answer, end of input, timeout and kill.

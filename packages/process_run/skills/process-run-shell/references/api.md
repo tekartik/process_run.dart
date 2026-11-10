@@ -22,7 +22,7 @@ otherwise. `package:process_run/process_run.dart` re-exports `shell.dart`.
 | `commandVerbose` | `verbose` | print `$ command` before running |
 | `commentVerbose` | `false` | print script comments |
 | `noStdoutResult`, `noStderrResult` | `null` | `ShellOptions` and global `runExecutableArguments` only: discard the output (result field `null`, nothing streamed); ignored by the sync variants |
-| `mode` | `ProcessStartMode.normal` | `ShellOptions` only; `inheritStdio` and `detachedWithStdio` disable result capture |
+| `mode` | `ProcessStartMode.normal` | `ShellOptions` only; `inheritStdio`, `detached` and `detachedWithStdio` disable result capture; the detached ones end the run once the command started (exit code 0, `kill()` leaves the process) |
 | `options` | `null` | a `ShellOptions` overriding all the other parameters |
 
 `ShellOptions` getters: `throwOnError`, `workingDirectory`, `environment`

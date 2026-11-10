@@ -394,6 +394,205 @@ $echoExe -o ${shellArgument(weirdText)}
       }
     }, timeout: const Timeout(Duration(seconds: 10)));
 
+    test('stdout sink closed while the command still writes', () async {
+      await ensureEchoExe();
+      var controller = ShellLinesController();
+      var shell = Shell(stdout: controller.sink, verbose: false);
+      var started = Completer<void>();
+      var future = shell.run(
+        '$echoExe --wait 1000 --stdout late',
+        onProcess: (_) => started.complete(),
+      );
+      await started.future;
+      // Its owner is done with it: what the command writes next is not sent
+      // to it (it threw "Cannot add event after closing", unhandled).
+      controller.close();
+      var results = await future;
+      expect(results.outText, 'late');
+    }, timeout: const Timeout(Duration(seconds: 50)));
+
+    test(
+      'kill, stdout sink closed, the command still writes',
+      () async {
+        var controller = ShellLinesController();
+        var shell = Shell(stdout: controller.sink, verbose: false);
+        var ready = Completer<void>();
+        controller.stream.listen((line) {
+          if (line == 'ready' && !ready.isCompleted) {
+            ready.complete();
+          }
+        });
+        late Process process;
+        // Ignores the sigterm of the kill (what it starts too) and keeps
+        // writing for 2 seconds.
+        var script =
+            "trap '' TERM; echo ready; i=0; "
+            r'while [ $i -lt 20 ]; do sleep 0.1; echo late; i=$((i+1)); done';
+        var future = shell.runExecutableArguments('sh', [
+          '-c',
+          script,
+        ], onProcess: (started) => process = started);
+        await ready.future;
+        expect(shell.kill(), isTrue);
+        await expectLater(future, throwsA(isA<ShellException>()));
+        controller.close();
+        // It ends having written to a closed sink: nothing is thrown.
+        await process.exitCode;
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      },
+      testOn: '!windows',
+      timeout: const Timeout(Duration(seconds: 50)),
+    );
+
+    test(
+      'killed by the pid of onProcess: the run ends with its exit code',
+      () async {
+        await ensureEchoExe();
+        var shell = Shell(verbose: false, throwOnError: false);
+        var started = Completer<Process>();
+        var future = shell.runExecutableArguments(echoExeAbsolutePath, [
+          '--wait',
+          '30000',
+        ], onProcess: started.complete);
+        var process = await started.future;
+        // The process and what it started, until they exited.
+        expect(await ShellProcesses.kill([process.pid], tree: true), isEmpty);
+        // Not a kill of the shell: the run ends as the command does.
+        var result = await future;
+        expect(result.exitCode, isNot(0));
+        expect(result.exitCode, await process.exitCode);
+      },
+      timeout: const Timeout(Duration(seconds: 50)),
+    );
+
+    test('no input: stdin ended at once', () async {
+      await ensureEchoExe();
+      // As `Process.run` does: a command reading its input gets the end of
+      // it (it waits for it without `stdin:`).
+      var result = await Shell(
+        stdin: const Stream<List<int>>.empty(),
+        verbose: false,
+      ).runExecutableArguments(echoExeAbsolutePath, ['--stdin', '-o', 'done']);
+      expect(result.stdout, 'done');
+    }, timeout: const Timeout(Duration(seconds: 50)));
+
+    test('inheritStdio: a stdin given is ignored', () async {
+      await ensureEchoExe();
+      // The process has the terminal, no pipe to feed (it threw, unhandled,
+      // at the first data).
+      var result = await Shell(
+        options: ShellOptions(
+          mode: ProcessStartMode.inheritStdio,
+          stdin: Stream.value(utf8.encode('ignored\n')),
+          verbose: false,
+        ),
+      ).runExecutableArguments(echoExeAbsolutePath, ['--wait', '300']);
+      expect(result.exitCode, 0);
+      expect(result.stdout, isNull);
+    }, timeout: const Timeout(Duration(seconds: 50)));
+
+    group('detached', () {
+      test('detached: the run ends once the command started', () async {
+        await ensureEchoExe();
+        var shell = Shell(
+          options: ShellOptions(
+            mode: ProcessStartMode.detached,
+            verbose: false,
+          ),
+        );
+        Process? process;
+        var result = await shell
+            .runExecutableArguments(echoExeAbsolutePath, [
+              '--wait',
+              '30000',
+            ], onProcess: (started) => process = started)
+            .timeout(const Duration(seconds: 15));
+        addTearDown(() => ShellProcesses.kill([result.pid]));
+        expect(result.pid, process!.pid);
+        // No exit code, nothing read.
+        expect(result.exitCode, 0);
+        expect(result.stdout, isNull);
+        expect(result.stderr, isNull);
+        expect(await ShellProcesses.isRunning(result.pid), isTrue);
+        // No longer a command of the shell: its kill leaves it.
+        expect(shell.kill(), isFalse);
+        expect(await ShellProcesses.isRunning(result.pid), isTrue);
+        expect(await ShellProcesses.kill([result.pid]), isEmpty);
+        expect(await ShellProcesses.isRunning(result.pid), isFalse);
+      }, timeout: const Timeout(Duration(seconds: 50)));
+
+      test('detached: global runExecutableArguments', () async {
+        await ensureEchoExe();
+        var result = await runExecutableArguments(
+          echoExeAbsolutePath,
+          ['--wait', '30000'],
+          mode: ProcessStartMode.detached,
+        ).timeout(const Duration(seconds: 15));
+        addTearDown(() => ShellProcesses.kill([result.pid]));
+        expect(result.exitCode, 0);
+        expect(await ShellProcesses.isRunning(result.pid), isTrue);
+        expect(await ShellProcesses.kill([result.pid]), isEmpty);
+      }, timeout: const Timeout(Duration(seconds: 50)));
+
+      test(
+        'detachedWithStdio: the streams are the ones of onProcess',
+        () async {
+          await ensureEchoExe();
+          Process? process;
+          var result =
+              await Shell(
+                    options: ShellOptions(
+                      mode: ProcessStartMode.detachedWithStdio,
+                      verbose: false,
+                    ),
+                  )
+                  .runExecutableArguments(echoExeAbsolutePath, [
+                    '--stdin',
+                    '--write-line',
+                  ], onProcess: (started) => process = started)
+                  .timeout(const Duration(seconds: 15));
+          addTearDown(() => ShellProcesses.kill([result.pid]));
+          expect(result.exitCode, 0);
+          expect(result.stdout, isNull);
+          // Nothing read by the shell: the caller talks to the process.
+          var out = process!.stdout.transform(utf8.decoder).join();
+          process!.stderr.drain<void>().ignore();
+          process!.stdin.writeln('hello');
+          await process!.stdin.flush();
+          expect((await out).trim(), 'hello');
+        },
+        timeout: const Timeout(Duration(seconds: 50)),
+      );
+
+      test(
+        'detachedWithStdio: a result asked comes with the end of the output',
+        () async {
+          await ensureEchoExe();
+          var result =
+              await Shell(
+                options: ShellOptions(
+                  mode: ProcessStartMode.detachedWithStdio,
+                  verbose: false,
+                  noStdoutResult: false,
+                  noStderrResult: false,
+                ),
+              ).runExecutableArguments(echoExeAbsolutePath, [
+                '--stdout',
+                'out',
+                '--stderr',
+                'err',
+                '--exit-code',
+                '3',
+              ]);
+          // A detached process has no exit code.
+          expect(result.exitCode, 0);
+          expect(result.stdout, 'out');
+          expect(result.stderr, 'err');
+        },
+        timeout: const Timeout(Duration(seconds: 50)),
+      );
+    });
+
     group('ShellLinesController', () {
       test('Shell Lines out', () async {
         await ensureEchoExe();

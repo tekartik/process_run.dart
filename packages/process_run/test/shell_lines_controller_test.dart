@@ -1,6 +1,8 @@
 @TestOn('vm')
 library;
 
+import 'dart:convert';
+
 import 'package:process_run/shell.dart';
 import 'package:process_run/src/common/import.dart';
 import 'package:test/test.dart';
@@ -47,6 +49,18 @@ void main() {
         // Should fail
       }
     }, timeout: const Timeout(Duration(milliseconds: 30000)));
+    test('a line not in the encoding is kept', () async {
+      var ctlr = ShellLinesController(encoding: utf8);
+      var lines = ctlr.stream.toList();
+      ctlr.sink.add([
+        ...utf8.encode('ok\nbad '),
+        0xff,
+        ...utf8.encode('\nlast\n'),
+      ]);
+      ctlr.close();
+      // It was dropped (and printed as bytes).
+      expect(await lines, ['ok', 'bad \u{FFFD}', 'last']);
+    });
     test('addError', () async {
       var ctlr = ShellLinesController();
       var completer = Completer<bool>();
