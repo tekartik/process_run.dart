@@ -1,4 +1,4 @@
-## 1.4.4
+## 1.4.4+1
 
 * `ShellOptions(mode: ProcessStartMode.detached)` and `detachedWithStdio`
   (the `mode` of the global `runExecutableArguments` and of `ProcessCmd`
@@ -16,6 +16,9 @@
   read as UTF-8, its malformed sequences replaced by U+FFFD
 * A `stdin:` given with `ProcessStartMode.inheritStdio` is ignored (the
   process has the terminal), it threw when its first data came
+* A command that closes its input (or ends) before reading all of the
+  `stdin:` given no longer throws an unhandled `SocketException` (broken
+  pipe) when more input comes: the rest is dropped
 * Doc and skill: what replaces each use of `dart:io` `Process.run` and
   `Process.start` (no input, detached start, exit code before the end of the
   output, kill keeping the result of the run)

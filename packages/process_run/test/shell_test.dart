@@ -476,6 +476,28 @@ $echoExe -o ${shellArgument(weirdText)}
       expect(result.stdout, 'done');
     }, timeout: const Timeout(Duration(seconds: 50)));
 
+    test(
+      'a command closing its input before the end of it',
+      () async {
+        // The write once the command closed its input fails (broken pipe):
+        // it was an unhandled exception, killing the program.
+        var input = ShellLinesController();
+        var future = Shell(
+          stdin: input.binaryStream,
+          verbose: false,
+        ).runExecutableArguments('sh', ['-c', 'exec 0<&-; sleep 2']);
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        input.writeln('nobody reads this line');
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+        input.writeln('nor this one');
+        input.close();
+        var result = await future;
+        expect(result.exitCode, 0);
+      },
+      testOn: '!windows',
+      timeout: const Timeout(Duration(seconds: 50)),
+    );
+
     test('inheritStdio: a stdin given is ignored', () async {
       await ensureEchoExe();
       // The process has the terminal, no pipe to feed (it threw, unhandled,

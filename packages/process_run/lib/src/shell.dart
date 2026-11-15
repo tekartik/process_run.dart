@@ -960,15 +960,29 @@ abstract class Shell implements ShellCore, ShellCoreSync {
     final errCtlr = StreamController<List<int>>(sync: true);
 
     // Connected stdin
-    // Buggy!
     StreamSubscription? stdinSubscription;
     if (stdin != null && !noStdio) {
+      // A command that ends (or closes its input) before reading all of it:
+      // the write fails (broken pipe) and completes `process.stdin.done`
+      // with the error, unhandled, which killed the program. The rest of the
+      // input is dropped, the exit code of the command tells what happened.
+      var stdinOpen = true;
+      unawaited(
+        process.stdin.done.catchError((Object _) {
+          stdinOpen = false;
+        }),
+      );
       //stdin.pipe(process.stdin); // this closes the stream...
       stdinSubscription =
           stdin.listen((List<int> data) {
-            process.stdin.add(data);
+            if (stdinOpen) {
+              process.stdin.add(data);
+            }
           })..onDone(() {
-            process.stdin.close();
+            if (stdinOpen) {
+              // Returns done, handled above.
+              process.stdin.close();
+            }
           });
       // OLD 2: process.stdin.addStream(stdin);
     } else {
