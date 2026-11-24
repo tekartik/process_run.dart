@@ -41,7 +41,7 @@ void _sharedStdinTests(List<String> Function() command) {
   /// [keepStdinOpen] (closed once it exited).
   ///
   /// Returns null when it did not exit within [_timeout] (it is then
-  /// killed).
+  /// killed), the lines it printed shown if the test fails.
   Future<ProcessResult?> run(
     String mode, {
     String input = '',
@@ -57,7 +57,9 @@ void _sharedStdinTests(List<String> Function() command) {
       throwOnError: false,
     );
     var ready = Completer<void>();
+    var lines = <String>[];
     stdoutController.stream.listen((line) {
+      lines.add(line);
       if (line == 'ready' && !ready.isCompleted) {
         ready.complete();
       }
@@ -77,6 +79,9 @@ void _sharedStdinTests(List<String> Function() command) {
       }
       return await done.timeout(_timeout);
     } on TimeoutException catch (_) {
+      // Where it hangs: before `ready`, in `terminate()` (no `done`) or at
+      // the exit (`done` printed).
+      printOnFailure('$mode: no exit within $_timeout, printed $lines');
       // A killed shell throws.
       done.ignore();
       shell.kill(ProcessSignal.sigkill);
