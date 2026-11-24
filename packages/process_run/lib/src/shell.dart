@@ -1012,12 +1012,22 @@ abstract class Shell implements ShellCore, ShellCoreSync {
         ? Future.value(null)
         : streamToResult(errCtlr.stream, stderrEncoding);
 
-    if (!noStdoutResult) {
+    // The output is read whenever there is a pipe (a detached process may
+    // outlive us: only when its result is asked): forwarded to [stdout] and
+    // [stderr], collected for the result unless [noStdoutResult] or
+    // [noStderrResult]. Not read, a command writing more than a pipe holds
+    // would block, and a [stdout] given would receive nothing (binary
+    // output such as raw audio, never decoded).
+    var readOutput = !noStdio && !detached;
+    if (!noStdoutResult || readOutput) {
       var forward = _sinkForwarder(stdout);
+      var collect = !noStdoutResult;
       process.stdout.listen(
         (List<int> d) {
           forward(d);
-          outCtlr.add(d);
+          if (collect) {
+            outCtlr.add(d);
+          }
         },
         onDone: () {
           outCtlr.close();
@@ -1025,12 +1035,15 @@ abstract class Shell implements ShellCore, ShellCoreSync {
       );
     }
 
-    if (!noStderrResult) {
+    if (!noStderrResult || readOutput) {
       var forward = _sinkForwarder(stderr);
+      var collect = !noStderrResult;
       process.stderr.listen(
         (List<int> d) async {
           forward(d);
-          errCtlr.add(d);
+          if (collect) {
+            errCtlr.add(d);
+          }
         },
         onDone: () {
           errCtlr.close();

@@ -124,6 +124,42 @@ $echoExe -o éà
       expect(results.length, 7);
     });
 
+    test(
+      'noStdoutResult/noStderrResult: still sent to stdout/stderr',
+      () async {
+        await ensureEchoExe();
+        var out = <int>[];
+        var err = <int>[];
+        var outController = StreamController<List<int>>();
+        var errController = StreamController<List<int>>();
+        var outDone = outController.stream.listen(out.addAll).asFuture<void>();
+        var errDone = errController.stream.listen(err.addAll).asFuture<void>();
+        var shell = Shell(
+          options: ShellOptions(
+            noStdoutResult: true,
+            noStderrResult: true,
+            verbose: false,
+            stdout: outController.sink,
+            stderr: errController.sink,
+          ),
+        );
+        var result = await shell.runExecutableArguments(echoExe, [
+          '-o',
+          'Out',
+          '-e',
+          'Err',
+        ]);
+        expect(result.stdout, isNull);
+        expect(result.stderr, isNull);
+        await outController.close();
+        await errController.close();
+        await outDone;
+        await errDone;
+        expect(utf8.decode(out).trim(), 'Out');
+        expect(utf8.decode(err).trim(), 'Err');
+      },
+    );
+
     test('noStdoutResult/noStderrResult', () async {
       await ensureEchoExe();
       var options = ShellOptions(noStdoutResult: true, verbose: false);
