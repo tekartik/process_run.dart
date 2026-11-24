@@ -38,7 +38,11 @@ void main() {
 void _sharedStdinTests(List<String> Function() command) {
   /// Runs the program [mode] with [input] on its stdin, written once the
   /// program printed `ready` when [onReady]. Its stdin is then closed, unless
-  /// [keepStdinOpen] (closed once it exited).
+  /// [keepStdinOpen]: closed once the program printed `done`, its
+  /// `terminate()` returned. On Windows the program may not exit while its
+  /// stdin, a pipe it read then cancelled, stays open (GitHub Actions, Dart
+  /// 3.14.1, `[ready, done]` printed; never on Linux): the Windows stdin of
+  /// the Dart VM, out of `sharedStdIn`'s hands.
   ///
   /// Returns null when it did not exit within [_timeout] (it is then
   /// killed), the lines it printed shown if the test fails.
@@ -57,11 +61,15 @@ void _sharedStdinTests(List<String> Function() command) {
       throwOnError: false,
     );
     var ready = Completer<void>();
+    var printedDone = Completer<void>();
     var lines = <String>[];
     stdoutController.stream.listen((line) {
       lines.add(line);
       if (line == 'ready' && !ready.isCompleted) {
         ready.complete();
+      }
+      if (line == 'done' && !printedDone.isCompleted) {
+        printedDone.complete();
       }
     });
     var executable = command();
@@ -74,7 +82,9 @@ void _sharedStdinTests(List<String> Function() command) {
         await ready.future.timeout(_timeout);
       }
       stdinController.write(input);
-      if (!keepStdinOpen) {
+      if (keepStdinOpen) {
+        unawaited(printedDone.future.then((_) => stdinController.close()));
+      } else {
         stdinController.close();
       }
       return await done.timeout(_timeout);
